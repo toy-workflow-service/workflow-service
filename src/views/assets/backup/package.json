@@ -1,0 +1,53 @@
+{
+  "name": "Hexadash",
+  "version": "1.0.0",
+  "description": "Multipurpose business, consulting, agency HTML template.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.12",
+    "del": "^3.0.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^3.9.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-dom": "^1.0.0",
+    "gulp-filter": "^5.1.0",
+    "gulp-html-beautify": "^1.0.1",
+    "gulp-htmlclean": "^2.7.22",
+    "gulp-htmltidy": "^0.2.4",
+    "gulp-hydra": "^1.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-inject": "^4.3.0",
+    "gulp-nunjucks-render": "^2.2.2",
+    "gulp-plumber": "^1.2.1",
+    "gulp-remove-empty-lines": "^0.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-rtlcss": "^1.4.2",
+    "gulp-sass": "^5.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-tinypng-compress": "^1.2.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-uglify-es": "^2.0.0",
+    "gulp-w3c-html-validator": "^2.0.1",
+    "imagemin-jpeg-recompress": "^7.0.0",
+    "imagemin-pngquant": "^9.0.1",
+    "merge-stream": "^1.0.1",
+    "stream-series": "^0.1.1",
+    "util": "^0.11.1",
+    "sass": "^1.54.4"
+  },
+  "author": "SovWare",
+  "license": "ISC",
+  "dependencies": {
+    "cache": "^2.3.1",
+    "gulp-beautify": "^3.0.0",
+    "gulp-merge-media-queries": "^0.2.1",
+    "imagemin": "^7.0.0",
+    "node-sass": "^6.0.1",
+    "npm-install-global": "^1.0.0"
+  }
+}
