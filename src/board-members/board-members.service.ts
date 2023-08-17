@@ -19,6 +19,8 @@ export class BoardMembersService {
   //보드 멤버 조회
   async GetBoardMembers(boardId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const board = await this.boardRepository.findOneBy({ id: boardId });
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
     return boardMembers.filter((boardMember) => {
       return boardMember.board.id == boardId;
