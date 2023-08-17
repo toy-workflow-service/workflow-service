@@ -27,7 +27,6 @@ export class UploadMiddleware implements NestMiddleware {
           key: function (_, file: Express.Multer.File, callback: Callback) {
             const fileId = uuid();
             const type = file.mimetype.split('/')[1];
-            console.log('??/');
 
             if (
               !allowedExtensions.includes(path.extname(file.originalname.toLowerCase())) ||

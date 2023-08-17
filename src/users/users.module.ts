@@ -7,12 +7,13 @@ import { UploadMiddleware } from 'src/_common/middlewares/upload-middleware';
 import { JwtStrategy } from 'src/_common/security/passport.jwt.strategy';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
+import { MailService } from 'src/_common/mail/mail.service';
 
 @Module({
   imports: [RedisCacheModule, TypeOrmModule.forFeature([User])],
   exports: [UsersModule],
   controllers: [UsersController],
-  providers: [UsersService, JwtStrategy, JwtService],
+  providers: [UsersService, JwtStrategy, JwtService, MailService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {

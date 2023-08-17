@@ -3,5 +3,5 @@ export class UserDTO {
   password: string;
   name: string;
   profile_url: string;
-  phone_number: number;
+  phone_number: string;
 }

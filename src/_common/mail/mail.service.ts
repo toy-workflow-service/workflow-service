@@ -17,6 +17,26 @@ export class MailService {
     });
   }
 
+  async sendEmail(email: string): Promise<any> {
+    const code = Math.random().toString(36).substr(2, 6);
+    const expireTime = Date.now() + 1000 * 60 * 3;
+
+    await this.transporter
+      .sendMail({
+        to: email,
+        from: process.env.EMAIL_USER,
+        subject: 'Work Flow 서비스 인증 번호',
+        html: `<p>이메일 인증코드는 ${code} 입니다.</p>
+               <p>이 코드는 3분 후 만료됩니다.</p>`,
+      })
+      .then(() => {})
+      .catch((err: any) => {
+        console.log(err);
+        throw new HttpException('메일 전송에 실패했습니다.', HttpStatus.CONFLICT);
+      });
+    return { code, expireTime };
+  }
+
   async inviteProjectMail(email: string, userName: string, projectName: string, projectId: number): Promise<boolean> {
     await this.transporter
       .sendMail({
