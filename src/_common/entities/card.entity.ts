@@ -30,6 +30,9 @@ export class Card {
   @Column({ type: 'json', nullable: false })
   members: number[];
 
+  @Column()
+  color: string;
+
   @CreateDateColumn()
   created_at: Date;
 
