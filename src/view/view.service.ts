@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AccessPayload } from 'src/common/interfaces/access-payload.interface';
+import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
 @Injectable()
 export class ViewService {
