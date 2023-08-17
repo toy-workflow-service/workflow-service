@@ -1,7 +1,7 @@
 import { Controller, Get, Render, Req } from '@nestjs/common';
 import { ViewService } from './view.service';
-import { RequestInfo } from 'src/common/interfaces/request-info.interface';
-import { AccessPayload } from 'src/common/interfaces/access-payload.interface';
+import { RequestInfo } from 'src/_common/interfaces/request-info.interface';
+import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
 @Controller('view')
 export class ViewController {

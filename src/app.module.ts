@@ -15,9 +15,35 @@ import { MentionsModule } from './mentions/mentions.module';
 import { UserMessageRoomsModule } from './user-message-rooms/user-message-rooms.module';
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { RemindersModule } from './reminders/reminders.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ormConfig } from './_common/configs/orm.config';
+import { RedisCacheModule } from './_common/cache/redis.module';
+import { MailModule } from './_common/mail/mail.module';
+import { JwtModule } from './_common/security/jwt/jwt.module';
 
 @Module({
-  imports: [ViewModule, UsersModule, WorkspacesModule, WorkspaceMembersModule, BoardsModule, BoardColumnsModule, BoardMessagesModule, BoardMembersModule, CardsModule, CommentsModule, MentionsModule, UserMessageRoomsModule, DirectMessagesModule, RemindersModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
+    ViewModule,
+    UsersModule,
+    JwtModule,
+    RedisCacheModule,
+    WorkspacesModule,
+    WorkspaceMembersModule,
+    BoardsModule,
+    BoardMembersModule,
+    BoardColumnsModule,
+    BoardMessagesModule,
+    CardsModule,
+    CommentsModule,
+    MentionsModule,
+    UserMessageRoomsModule,
+    DirectMessagesModule,
+    RemindersModule,
+    MailModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
