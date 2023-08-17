@@ -99,5 +99,13 @@ export class UsersService {
     password = await bcrypt.hash(password, salt);
 
     await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
+
+  async findUserByEmail(email: string): Promise<User> {
+    const existUser = await this.usersRepository.findOne({ where: { email } });
+
+    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    return existUser;
+
   }
 }

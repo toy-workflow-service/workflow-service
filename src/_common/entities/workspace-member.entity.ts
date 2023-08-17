@@ -10,6 +10,9 @@ export class Workspace_Member {
   @Column({ type: 'tinyint', nullable: false })
   role: number;
 
+  @Column({ default: false })
+  participation: Boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
