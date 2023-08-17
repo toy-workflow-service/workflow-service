@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './create-board.dto';
 import { UpdateBoardDto } from './update-board.dto';
@@ -8,27 +8,27 @@ export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
   //보드 조회
-  @Get('/boards/:workspaceId')
-  async GetBoards(@Param('workspaceId') workspaceId: number) {
+  @Get('/boards')
+  async GetBoards(@Query('workspaceId') workspaceId: number) {
     return await this.boardsService.GetBoards(workspaceId);
   }
 
   //보드 상세 조회
-  @Get('/boards/:workspaceId/:boardId')
-  async GetBoardById(@Param('workspaceId') workspaceId: number, @Param('boardId') id: number) {
+  @Get('/boards/:boardId')
+  async GetBoardById(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number) {
     return await this.boardsService.GetBoardById(workspaceId, id);
   }
 
   //보드 생성
-  @Post('/boards/:workspaceId')
-  async CreateBoard(@Param('workspaceId') workspaceId: number, @Body() data: CreateBoardDto) {
+  @Post('/boards')
+  async CreateBoard(@Query('workspaceId') workspaceId: number, @Body() data: CreateBoardDto) {
     return await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
   }
 
   //보드 수정
-  @Put('/boards/:workspaceId/:boardId')
+  @Put('/boards/:boardId')
   async UpdateBoard(
-    @Param('workspaceId') workspaceId: number,
+    @Query('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
     @Body() data: UpdateBoardDto,
   ) {
@@ -36,8 +36,8 @@ export class BoardsController {
   }
 
   //보드 삭제
-  @Delete('/boards/:workspaceId/:boardId')
-  async DeleteBoard(@Param('workspaceId') workspaceId: number, @Param('boardId') id: number) {
+  @Delete('/boards/:boardId')
+  async DeleteBoard(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number) {
     return await this.boardsService.DeleteBoard(workspaceId, id);
   }
 }
