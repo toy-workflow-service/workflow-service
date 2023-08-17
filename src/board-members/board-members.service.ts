@@ -18,7 +18,7 @@ export class BoardMembersService {
 
   //보드 멤버 조회
   async GetBoardMembers(boardId: number) {
-    const boardMembers = await this.boardMemberRepository.find({ relations: ['board'] });
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
 
     return boardMembers.filter((boardMember) => {
       return boardMember.board.id == boardId;
@@ -29,7 +29,12 @@ export class BoardMembersService {
   async CreateBoardMember(boardId: number, name: string) {
     const user = await this.userRepository.findOneBy({ name });
     const board = await this.boardRepository.findOneBy({ id: boardId });
-    const boardMember = await this.boardMemberRepository.findBy({ user, board });
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
+    const boardMember = boardMembers.find((member) => {
+      if (member.user.id == user.id && member.board.id == boardId) {
+        return member;
+      }
+    });
     if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (boardMember) throw new NotAcceptableException('이미 초대된 멤버입니다.');
@@ -41,7 +46,14 @@ export class BoardMembersService {
   async DeleteBoardMember(boardId: number, userId: number) {
     const user = await this.userRepository.findOneBy({ id: userId });
     const board = await this.boardRepository.findOneBy({ id: boardId });
-    const boardMember = await this.boardMemberRepository.findOneBy({ user, board });
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
+    const boardMember = boardMembers.find((member) => {
+      if (member.user.id == userId && member.board.id == boardId) {
+        return member;
+      }
+    });
+    if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (!boardMember) throw new NotFoundException('해당 보드에서 존재하지 않는 멤버입니다.');
 
     await this.boardMemberRepository.delete({ id: boardMember.id });
