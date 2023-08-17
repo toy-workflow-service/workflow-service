@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
-import { CreateBoardColumnDto } from './create-board-column.dto';
-import { UpdateBoardColumnNameDto } from './update-board-column-name.dto';
-import { UpdateBoardColumnSequenceDto } from './update-board-column-sequence.dto';
+import { CreateBoardColumnDto } from '../_common/dtos/create-board-column.dto';
+import { UpdateBoardColumnNameDto } from '../_common/dtos/update-board-column-name.dto';
+import { UpdateBoardColumnSequenceDto } from '../_common/dtos/update-board-column-sequence.dto';
 
 @Controller('board-columns')
 export class BoardColumnsController {
