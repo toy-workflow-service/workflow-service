@@ -28,13 +28,13 @@ export class User {
   @Column({ nullable: false, length: 20 })
   name: string;
 
-  @Column({ nullable: false, length: 20 })
+  @Column({ nullable: false })
   password: string;
 
-  @Column({ type: 'tinyint', nullable: false })
+  @Column({ type: 'tinyint', nullable: false, default: null })
   phone_number: number;
 
-  @Column()
+  @Column({ nullable: true })
   profile_url: string;
 
   @CreateDateColumn()

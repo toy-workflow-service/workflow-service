@@ -20,7 +20,7 @@ export class Direct_Message {
   @Column({ type: 'text' })
   message: string;
 
-  @Column()
+  @Column({ nullable: true })
   file_url: string;
 
   @CreateDateColumn()
