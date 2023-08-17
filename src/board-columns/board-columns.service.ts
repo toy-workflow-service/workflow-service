@@ -15,7 +15,9 @@ export class BoardColumnsService {
 
   //보드 칼럼 조회
   async GetBoardColumns(boardId: number) {
+    const board = await this.boardRepository.findOneBy({ id: boardId });
     const boardColumns = await this.boardColumnRepository.find({ relations: ['board'] });
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
     return boardColumns.filter((boardColumn) => {
       return boardColumn.board.id == boardId;
@@ -33,7 +35,9 @@ export class BoardColumnsService {
   //보드 칼럼 이름 수정
   async UpdateBoardColumnName(boardId: number, columnId: number, name: string) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
+    const column = await this.boardColumnRepository.findOneBy({ id: columnId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     if (!name) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardColumnRepository.update({ id: columnId }, { name });
   }
@@ -41,7 +45,9 @@ export class BoardColumnsService {
   //보드 칼럼 순서 수정
   async UpdateBoardColumnSequence(boardId: number, columnId: number, sequence: number) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
+    const column = await this.boardColumnRepository.findOneBy({ id: columnId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     if (!sequence) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardColumnRepository.update({ id: columnId }, { sequence });
   }
@@ -49,7 +55,9 @@ export class BoardColumnsService {
   //보드 칼럼 삭제
   async DeleteBoardColumn(boardId: number, columnId: number) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
+    const column = await this.boardColumnRepository.findOneBy({ id: columnId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     await this.boardColumnRepository.delete({ id: columnId });
   }
 }
