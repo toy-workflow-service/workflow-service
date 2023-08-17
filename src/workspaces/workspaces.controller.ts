@@ -12,28 +12,33 @@ import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-inte
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 
 @Controller('workspaces')
-@UseInterceptors(CheckMemberInterceptor)
 export class WorkspacesController {
   constructor(private readonly workspaceService: WorkspacesService) {}
 
+  // 워크스페이스 생성
   @Post()
   @UseGuards(AuthGuard)
   async createWorkspace(@Body() body: CreateWorkspaceDto, @GetUser() user: AccessPayload): Promise<IResult> {
     return await this.workspaceService.createWorkspace(body, user.id);
   }
 
+  // 워크스페이스 전체 조회
   @Get()
+  @UseInterceptors(CheckMemberInterceptor)
   @UseGuards(AuthGuard)
   async getAllWorkspaces(): Promise<Workspace[]> {
     return await this.workspaceService.getAllWorkspaces();
   }
 
+  // 워크스페이스 상세 조회
   @Get(':workspaceId')
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
   async getWorkspaceDetail(@Param('workspaceId') workspaceId: number): Promise<Workspace> {
     return await this.workspaceService.getWorkspaceDetail(workspaceId);
   }
 
+  // 워크스페이스 수정
   @Patch(':workspaceId')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAdminInterceptor)
@@ -41,6 +46,7 @@ export class WorkspacesController {
     return await this.workspaceService.updateWorkspace(body, workspaceId);
   }
 
+  // 워크스페이스 삭제
   @Delete(':workspaceId')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAdminInterceptor)
@@ -48,6 +54,7 @@ export class WorkspacesController {
     return await this.workspaceService.deleteWorkspace(workspaceId);
   }
 
+  // 워크스페이스 멤버초대
   @Post(':workspaceId/members')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAuthInterceptor)
@@ -59,6 +66,7 @@ export class WorkspacesController {
     return await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name);
   }
 
+  // 워크스페이스 멤버역할 변경
   @Patch(':workspaceId/:userId/role')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAuthInterceptor)
@@ -70,6 +78,7 @@ export class WorkspacesController {
     return await this.workspaceService.setMemberRole(body, workspaceId, userId);
   }
 
+  // 워크스페이스 참여자 상태변경, 이메일에서 수락버튼 클릭 시 실행
   @Post(':workspaceId/participation')
   async acceptInvitaion(@Param('workspaceId') workspaceId: number, @Req() req: Request): Promise<IResult> {
     const { email } = req.query;
