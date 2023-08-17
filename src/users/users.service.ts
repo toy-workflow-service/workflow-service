@@ -62,4 +62,12 @@ export class UsersService {
       select: ['id', 'email', 'name', 'phone_number', 'profile_url'],
     });
   }
+
+  async findUserByEmail(email: string): Promise<User> {
+    const existUser = await this.usersRepository.findOne({ where: { email } });
+
+    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    return existUser;
+  }
 }
