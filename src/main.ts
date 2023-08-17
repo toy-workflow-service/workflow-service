@@ -18,7 +18,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
 
   app.useStaticAssets(join(__dirname, '..', 'src', 'views'));
