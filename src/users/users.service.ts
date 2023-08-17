@@ -63,13 +63,6 @@ export class UsersService {
     await this.usersRepository.update({ id }, { name, profile_url: profileUrl });
   }
 
-  async tokenValidateUser(userId: number) {
-    return await this.usersRepository.findOne({
-      where: { id: userId },
-      select: ['id', 'email', 'name', 'phone_number', 'profile_url'],
-    });
-  }
-
   async updatePassword(id: number, passwordDTO: PasswordDTO): Promise<void> {
     const existUser = await this.usersRepository.findOne({ where: { id } });
     const salt = await bcrypt.genSalt();
@@ -99,6 +92,7 @@ export class UsersService {
     password = await bcrypt.hash(password, salt);
 
     await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
+  }
 
   async findUserByEmail(email: string): Promise<User> {
     const existUser = await this.usersRepository.findOne({ where: { email } });
@@ -106,6 +100,12 @@ export class UsersService {
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
 
     return existUser;
+  }
 
+  async tokenValidateUser(userId: number) {
+    return await this.usersRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'email', 'name', 'phone_number', 'profile_url'],
+    });
   }
 }
