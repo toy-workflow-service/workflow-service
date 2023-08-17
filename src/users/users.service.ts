@@ -6,7 +6,9 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserDTO } from 'src/_common/dtos/user.dto';
 import { LoginDTO } from 'src/_common/dtos/login.dto';
-import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { PasswordDTO } from 'src/_common/dtos/password.dto';
+import { MailService } from 'src/_common/mail/mail.service';
+import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +16,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async signup(newUser: UserDTO): Promise<void> {
@@ -24,10 +27,10 @@ export class UsersService {
       where: { email: newUser.email },
     });
     if (existUser) throw new HttpException('이미 존재하는 이메일입니다.', HttpStatus.CONFLICT);
-    console.log(password);
+
     password = await bcrypt.hash(password, salt);
     newUser.password = password;
-    console.log(password, newUser.password);
+
     await this.usersRepository.save(newUser);
   }
 
@@ -56,6 +59,10 @@ export class UsersService {
     return { accessToken, refreshToken, userName: existUser.name };
   }
 
+  async updateUserInfo(id: number, name: string, profileUrl: string): Promise<void> {
+    await this.usersRepository.update({ id }, { name, profile_url: profileUrl });
+  }
+
   async tokenValidateUser(userId: number) {
     return await this.usersRepository.findOne({
       where: { id: userId },
@@ -63,11 +70,42 @@ export class UsersService {
     });
   }
 
+  async updatePassword(id: number, passwordDTO: PasswordDTO): Promise<void> {
+    const existUser = await this.usersRepository.findOne({ where: { id } });
+    const salt = await bcrypt.genSalt();
+
+    const validPassword = await bcrypt.compare(passwordDTO.currentPassword, existUser.password);
+    if (!validPassword) throw new HttpException('현재 비밀번호가 일치하지 않습니다.', HttpStatus.FORBIDDEN);
+
+    const validNewPassword = await bcrypt.compare(passwordDTO.newPassword, existUser.password);
+    if (validNewPassword)
+      throw new HttpException('바꾸려는 비밀번호가 현재 비밀번호와 일치합니다.', HttpStatus.FORBIDDEN);
+
+    const password = await bcrypt.hash(passwordDTO.newPassword, salt);
+    await this.usersRepository.update({ id }, { password });
+  }
+
+  async findPassword(email: string): Promise<any> {
+    const existUser = await this.usersRepository.findOne({ where: { email } });
+    if (!existUser)
+      throw new HttpException('가입되지 않은 이메일입니다. 이메일을 확인해 주세요.', HttpStatus.NOT_FOUND);
+
+    return await this.mailService.sendEmail(email);
+  }
+
+  async changePassword(changePasswordDTO: ChangePasswordDTO): Promise<void> {
+    let { password } = changePasswordDTO;
+    const salt = await bcrypt.genSalt();
+    password = await bcrypt.hash(password, salt);
+
+    await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
+
   async findUserByEmail(email: string): Promise<User> {
     const existUser = await this.usersRepository.findOne({ where: { email } });
 
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
 
     return existUser;
+
   }
 }

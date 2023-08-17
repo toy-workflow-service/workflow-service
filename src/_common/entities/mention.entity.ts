@@ -12,10 +12,10 @@ export class Mention {
   @CreateDateColumn()
   timestamp: Date;
 
-  @OneToOne(() => User, (user) => user.mention_send_id)
+  @OneToOne(() => User, (user) => user.mention_send)
   send_id: User;
 
-  @ManyToOne(() => User, (user) => user.mention_receive_ids, {
+  @ManyToOne(() => User, (user) => user.mention_receives, {
     onDelete: 'CASCADE',
     nullable: false,
   })
