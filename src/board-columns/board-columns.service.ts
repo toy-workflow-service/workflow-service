@@ -26,6 +26,7 @@ export class BoardColumnsService {
   async PostBoardColumn(boardId: number, name: string, sequence: number) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!name || !sequence) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardColumnRepository.insert({ name, sequence, board });
   }
 
@@ -33,6 +34,7 @@ export class BoardColumnsService {
   async UpdateBoardColumnName(boardId: number, columnId: number, name: string) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!name) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardColumnRepository.update({ id: columnId }, { name });
   }
 
@@ -40,6 +42,7 @@ export class BoardColumnsService {
   async UpdateBoardColumnSequence(boardId: number, columnId: number, sequence: number) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!sequence) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardColumnRepository.update({ id: columnId }, { sequence });
   }
 

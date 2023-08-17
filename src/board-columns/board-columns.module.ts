@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board_Column])],
+  exports: [TypeOrmModule],
   controllers: [BoardColumnsController],
   providers: [BoardColumnsService],
 })
