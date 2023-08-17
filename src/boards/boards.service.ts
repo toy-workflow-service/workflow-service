@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from 'src/_common/entities/board.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
@@ -30,12 +30,14 @@ export class BoardsService {
   //보드 생성
   async CreateBoard(workspaceId: number, name: string, description: string) {
     const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });
+    if (!name || !description) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
 
     await this.boardRepository.insert({ name, description, workspace });
   }
 
   //보드 수정
   async UpdateBoard(workspaceId: number, id: number, name: string, description: string) {
+    if (!name || !description) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardRepository.update({ id }, { name, description });
   }
 
