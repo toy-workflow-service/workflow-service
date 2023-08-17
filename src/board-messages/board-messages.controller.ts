@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Req, Res } from '@nestjs/common';
 import { BoardMessagesService } from './board-messages.service';
-import { CreateBoardMessageDto } from '../_common/dtos/create-board-message.dto';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
 import { Response } from 'express';
+import { CreateBoardMessageDto } from 'src/_common/dtos/board.dto';
 
 @Controller('board-messages')
 export class BoardMessagesController {

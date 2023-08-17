@@ -36,7 +36,6 @@ export class BoardsService {
   async CreateBoard(workspaceId: number, name: string, description: string) {
     const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    if (!name || !description) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
 
     await this.boardRepository.insert({ name, description, workspace });
   }
@@ -47,7 +46,6 @@ export class BoardsService {
     const board = await this.boardRepository.findOneBy({ id });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-    if (!name || !description) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     await this.boardRepository.update({ id }, { name, description });
   }
 

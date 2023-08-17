@@ -29,7 +29,6 @@ export class BoardMessagesService {
   async PostBoardMessage(boardId: number, message: string, file_url: string, userId: number) {
     const board = await this.boardRepository.findOneBy({ id: boardId });
     const user = await this.userRepository.findOneBy({ id: userId });
-    if (!message) throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardMessageRepository.insert({ message, file_url, user, board });
   }
