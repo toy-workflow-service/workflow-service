@@ -3,7 +3,7 @@ import { ViewService } from './view.service';
 import { RequestInfo } from 'src/_common/interfaces/request-info.interface';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
-@Controller('view')
+@Controller()
 export class ViewController {
   constructor(private viewService: ViewService) {}
 

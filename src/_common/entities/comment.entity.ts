@@ -17,7 +17,7 @@ export class Comment {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   reply_id: number;
 
   @Column({ nullable: false })

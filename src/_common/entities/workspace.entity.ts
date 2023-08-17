@@ -22,7 +22,7 @@ export class Workspace {
   @Column({ nullable: false })
   type: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @CreateDateColumn()
