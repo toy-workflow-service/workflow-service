@@ -4,13 +4,15 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/_common/entities/user.entitiy';
 import { UploadMiddleware } from 'src/_common/middlewares/upload-middleware';
-import { TokenValidMiddleware } from 'src/_common/middlewares/token-valid.middleware';
+import { JwtStrategy } from 'src/_common/security/passport.jwt.strategy';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
+import { JwtService } from 'src/_common/security/jwt/jwt.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([User])],
   exports: [UsersModule],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, JwtStrategy, JwtService],
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
@@ -20,6 +22,5 @@ export class UsersModule {
         { path: '/users/signup', method: RequestMethod.POST },
         { path: '/users', method: RequestMethod.PATCH },
       );
-    consumer.apply(TokenValidMiddleware).forRoutes(UsersController);
   }
 }

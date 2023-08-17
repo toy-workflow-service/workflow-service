@@ -21,7 +21,7 @@ export class Card {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @Column()
+  @Column({ nullable: true })
   file_url: string;
 
   @Column({ type: 'tinyint', nullable: false })
