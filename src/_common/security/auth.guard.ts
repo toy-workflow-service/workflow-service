@@ -38,12 +38,15 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   //@ts-ignore
   async handleRequest(err: any, user: any, info: any, context: ExecutionContext): Promise<any> {
     if (err || !user) {
-      const request = context.switchToHttp().getRequest();
-      const response = context.switchToHttp().getResponse();
-      const refreshToken = request.cookies.refreshToken;
-      const user = await this.verifyRefreshToken(refreshToken, response);
+      if (info.name === 'TokenExpiredError') {
+        const request = context.switchToHttp().getRequest();
+        const response = context.switchToHttp().getResponse();
+        const refreshToken = request.cookies.refreshToken;
+        const user = await this.verifyRefreshToken(refreshToken, response);
 
-      if (user) return user;
+        if (user) return user;
+        else throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
+      }
 
       throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
     }
