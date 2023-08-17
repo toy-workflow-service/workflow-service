@@ -5,7 +5,7 @@ import { IResult } from '../interfaces/result.interface';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
-export class CheckMemberInterceptor implements NestInterceptor {
+export class CheckAdminInterceptor implements NestInterceptor {
   constructor(private readonly workspaceService: WorkspacesService) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -13,7 +13,7 @@ export class CheckMemberInterceptor implements NestInterceptor {
     const { id } = req;
     const { workspaceId } = req.params;
 
-    await this.workspaceService.checkMember(workspaceId, id);
+    await this.workspaceService.checkAdmin(workspaceId, id);
 
     return next.handle().pipe(tap((data: IResult) => ({ data })));
   }

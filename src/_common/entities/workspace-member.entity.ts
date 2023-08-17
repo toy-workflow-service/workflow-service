@@ -7,8 +7,11 @@ export class Workspace_Member {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'tinyint', nullable: false, default: 0 })
+  @Column({ type: 'tinyint', nullable: false })
   role: number;
+
+  @Column({ default: false })
+  participation: Boolean;
 
   @CreateDateColumn()
   createdAt: Date;

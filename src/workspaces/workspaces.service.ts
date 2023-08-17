@@ -142,4 +142,50 @@ export class WorkspacesService {
 
     return { result: true };
   }
+
+  // 초대 수락 시 참여자 상태 true로 변경
+  async acceptInvitaion(workspaceId: number, email: any): Promise<IResult> {
+    const { id } = await this.userService.findUserByEmail(email);
+
+    await this.workspaceMemberRepository.update(
+      { workspace: { id: workspaceId }, user: { id } },
+      { participation: true },
+    );
+
+    return { result: true };
+  }
+
+  // 워크스페이스 소유자 체크
+  async checkAdmin(workspaceId: number, userId: number): Promise<IResult> {
+    const checkAdmin = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (checkAdmin.role !== 1) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
+  }
+
+  // 워크스페이스 권한 체크
+  async checkAuth(workspaceId: number, userId: number): Promise<IResult> {
+    const checkRole = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (checkRole.role !== 1 && checkRole.role !== 2)
+      throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
+  }
+
+  // 워크스페이스 멤버체크
+  async checkMember(workspaceId: number, userId: number): Promise<IResult> {
+    const checkMember = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (!checkMember) throw new HttpException('워크스페이스 멤버가 아닙니다.', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
+  }
 }
