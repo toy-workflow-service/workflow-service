@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { SocialLoginService } from './social-login.service';
@@ -28,14 +28,13 @@ export class SocailLoginController {
   @UseGuards(NestAuthGuard('google'))
   async loginGoogle(@Req() req: SocialRequest, @Res() res: Response): Promise<any> {
     const userDTO: SocialUser = { ...req.user };
-    const { accessToken, refreshToken, userName, email, name, profileUrl } =
-      await this.socialLoginService.socialLogin(userDTO);
+    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
 
     if (accessToken && refreshToken) {
       res.setHeader('authorization', `Bearer ${accessToken}`);
       res.cookie('refreshToken', refreshToken);
 
-      return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
+      return res.redirect('/');
     } else {
       const { key, value } = this.tempUserInfo(email, name, profileUrl);
       this.cacheManager.set(key, value, 600);
@@ -53,14 +52,13 @@ export class SocailLoginController {
       photo: req.user.photo,
     };
 
-    const { accessToken, refreshToken, userName, email, name, profileUrl } =
-      await this.socialLoginService.socialLogin(userDTO);
+    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
 
     if (accessToken && refreshToken) {
       res.setHeader('authorization', `Bearer ${accessToken}`);
       res.cookie('refreshToken', refreshToken);
 
-      return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
+      return res.redirect('/');
     } else {
       const { key, value } = this.tempUserInfo(email, name, profileUrl);
       this.cacheManager.set(key, value, 600);
@@ -77,14 +75,13 @@ export class SocailLoginController {
       name: req.user.name,
       photo: req.user.photo,
     };
-    const { accessToken, refreshToken, userName, email, name, profileUrl } =
-      await this.socialLoginService.socialLogin(userDTO);
+    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
 
     if (accessToken && refreshToken) {
       res.setHeader('authorization', `Bearer ${accessToken}`);
       res.cookie('refreshToken', refreshToken);
 
-      return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
+      return res.redirect('/');
     } else {
       const { key, value } = this.tempUserInfo(email, name, profileUrl);
       this.cacheManager.set(key, value, 600);

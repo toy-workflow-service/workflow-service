@@ -52,6 +52,7 @@ export class UsersController {
     };
 
     await this.usersService.signup(userDAO);
+    await this.cacheManager.delete(user.tempId);
     return res.status(HttpStatus.CREATED).json({ message: '회원가입이 완료되었습니다.' });
   }
 

@@ -25,7 +25,7 @@ export class SocialLoginService {
         process.env.REFRESH_SECRET_KEY,
         process.env.REFRESH_EXPIRE_TIME,
       );
-      return { accessToken, refreshToken, userName: existUser.name };
+      return { accessToken, refreshToken };
     } else {
       return { email, name, profileUrl: photo };
     }
