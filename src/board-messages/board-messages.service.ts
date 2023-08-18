@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Message } from 'src/_common/entities/board-message.entity';
 import { Board } from 'src/_common/entities/board.entity';
 import { User } from 'src/_common/entities/user.entitiy';
+import { BoardsService } from 'src/boards/boards.service';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -10,10 +12,8 @@ export class BoardMessagesService {
   constructor(
     @InjectRepository(Board_Message)
     private boardMessageRepository: Repository<Board_Message>,
-    @InjectRepository(Board)
-    private boardRepository: Repository<Board>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private boardsService: BoardsService,
+    private usersService: UsersService,
   ) {}
 
   //보드 메세지 조회
@@ -39,8 +39,8 @@ export class BoardMessagesService {
 
   //보드 메세지 생성
   async PostBoardMessage(boardId: number, message: string, file_url: string, userId: number) {
-    const board = await this.boardRepository.findOneBy({ id: boardId });
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const board = await this.boardsService.GetBoardById(boardId);
+    const user = await this.usersService.findUserById(userId);
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     const mention = await this.boardMessageMentions(message, boardId);
     console.log(mention);
@@ -60,7 +60,7 @@ export class BoardMessagesService {
       }
     }
     for (let i: number = 0; i < mentionMessages.length; i++) {
-      const user = await this.userRepository.findOneBy({ name: mentionMessages[i] });
+      const user = await this.usersService.findUserByName(mentionMessages[i]);
       if (!user) {
         mentionMessages.splice(i);
       }

@@ -1,8 +1,8 @@
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
-import { Board } from 'src/_common/entities/board.entity';
-import { User } from 'src/_common/entities/user.entitiy';
+import { BoardsService } from 'src/boards/boards.service';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -10,16 +10,14 @@ export class BoardMembersService {
   constructor(
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(Board)
-    private boardRepository: Repository<Board>,
+    private usersService: UsersService,
+    private boardsService: BoardsService,
   ) {}
 
   //보드 멤버 조회
   async GetBoardMembers(boardId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
-    const board = await this.boardRepository.findOneBy({ id: boardId });
+    const board = await this.boardsService.GetBoardById(boardId);
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
     const members = boardMembers.filter((boardMember) => {
@@ -39,8 +37,8 @@ export class BoardMembersService {
 
   //보드 멤버 초대
   async CreateBoardMember(boardId: number, name: string) {
-    const user = await this.userRepository.findOneBy({ name });
-    const board = await this.boardRepository.findOneBy({ id: boardId });
+    const user = await this.usersService.findUserByName(name);
+    const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.find((member) => {
       if (member.user.id == user.id && member.board.id == boardId) {
@@ -56,8 +54,8 @@ export class BoardMembersService {
 
   //보드 멤버 제외
   async DeleteBoardMember(boardId: number, userId: number) {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    const board = await this.boardRepository.findOneBy({ id: boardId });
+    const user = await this.usersService.findUserById(userId);
+    const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.find((member) => {
       if (member.user.id == userId && member.board.id == boardId) {
