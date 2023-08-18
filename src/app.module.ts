@@ -21,13 +21,18 @@ import { ormConfig } from './_common/configs/orm.config';
 import { RedisCacheModule } from './_common/cache/redis.module';
 import { MailModule } from './_common/mail/mail.module';
 import { JwtModule } from './_common/security/jwt/jwt.module';
+import { PassportModule } from '@nestjs/passport';
+import { SMSModule } from './_common/sms/sms.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     ViewModule,
     UsersModule,
+    MailModule,
+    SMSModule,
     JwtModule,
     RedisCacheModule,
     WorkspacesModule,
@@ -42,7 +47,6 @@ import { JwtModule } from './_common/security/jwt/jwt.module';
     UserMessageRoomsModule,
     DirectMessagesModule,
     RemindersModule,
-    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

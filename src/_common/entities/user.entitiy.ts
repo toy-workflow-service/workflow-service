@@ -28,13 +28,13 @@ export class User {
   @Column({ nullable: false, length: 20 })
   name: string;
 
-  @Column({ nullable: false, length: 20 })
+  @Column({ nullable: false })
   password: string;
 
-  @Column({ type: 'tinyint', nullable: false })
-  phone_number: number;
+  @Column({ type: 'tinytext', nullable: false, default: null })
+  phone_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   profile_url: string;
 
   @CreateDateColumn()
@@ -80,10 +80,10 @@ export class User {
 
   @OneToOne(() => Mention, (mention) => mention.send_id)
   @JoinColumn()
-  mention_send_id: Mention;
+  mention_send: Mention;
 
   @OneToMany(() => Mention, (mention) => mention.receive_id, {
     cascade: true,
   })
-  mention_receive_ids: Mention[];
+  mention_receives: Mention[];
 }

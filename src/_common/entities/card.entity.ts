@@ -21,7 +21,7 @@ export class Card {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @Column()
+  @Column({ nullable: true })
   file_url: string;
 
   @Column({ type: 'tinyint', nullable: false })
@@ -29,6 +29,9 @@ export class Card {
 
   @Column({ type: 'json', nullable: false })
   members: number[];
+
+  @Column()
+  color: string;
 
   @CreateDateColumn()
   created_at: Date;
