@@ -7,7 +7,7 @@ import { Board } from 'src/_common/entities/board.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board_Column, Board])],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, BoardColumnsService],
   controllers: [BoardColumnsController],
   providers: [BoardColumnsService],
 })

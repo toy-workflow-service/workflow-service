@@ -30,7 +30,7 @@ export class BoardsController {
   async UpdateBoard(
     @Param('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
-    @Body() data: UpdateBoardDto,
+    @Body() data: UpdateBoardDto
   ) {
     return await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
   }

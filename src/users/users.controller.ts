@@ -19,7 +19,7 @@ export class UsersController {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private cacheManager: RedisCacheService,
+    private cacheManager: RedisCacheService
   ) {}
 
   @Post('signup')
@@ -67,7 +67,7 @@ export class UsersController {
     @GetUser() user: AccessPayload,
     @Req() req: MulterRequest,
     @Body() updateInfo: UpdateInfoDTO,
-    @Res() res: Response,
+    @Res() res: Response
   ): Promise<Object> {
     const profileUrl = req.file ? req.file.location : user.profile_url;
 
@@ -81,7 +81,7 @@ export class UsersController {
     @GetUser() user: AccessPayload,
     @Req() req: Request,
     @Body() passwordDTO: PasswordDTO,
-    @Res() res: Response,
+    @Res() res: Response
   ): Promise<Object> {
     await this.usersService.updatePassword(user.id, passwordDTO);
     const token = req.header('authorization').split(' ')[1];

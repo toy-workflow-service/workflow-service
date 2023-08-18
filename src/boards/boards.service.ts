@@ -10,7 +10,7 @@ export class BoardsService {
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
     @InjectRepository(Workspace)
-    private workspaceRepository: Repository<Workspace>,
+    private workspaceRepository: Repository<Workspace>
   ) {}
 
   // 보드 조회

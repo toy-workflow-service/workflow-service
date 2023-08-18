@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
 import { BoardMessagesService } from './board-messages.service';
-import { CreateBoardMessageDto } from './create-board-message.dto';
+import { CreateBoardMessageDto } from 'src/_common/dtos/create-board-message.dto';
 
 @Controller('board-messages')
 export class BoardMessagesController {
@@ -17,7 +17,7 @@ export class BoardMessagesController {
   async PostBoardMessage(
     @Param('boardId') boardId: number,
     @Body() data: CreateBoardMessageDto,
-    @Request() req: Request,
+    @Request() req: Request
   ) {
     await this.boardMessagesService.PostBoardMessage(boardId, data.message, data.file_url, req);
   }
