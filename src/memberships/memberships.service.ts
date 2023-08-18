@@ -30,6 +30,14 @@ export class MembershipsService {
     return { result: true };
   }
 
+  async getMyMembership(workspaceId: number): Promise<Membership> {
+    const myMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+
+    if (!myMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
+
+    return myMembership;
+  }
+
   // 만료된 멤버십 삭제
   async deleteExpiredMembership(): Promise<IResult> {
     const expiredMembership = await this.membershipRepository.find({
