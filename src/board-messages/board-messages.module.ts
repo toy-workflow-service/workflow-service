@@ -9,11 +9,15 @@ import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/_common/mail/mail.service';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { BoardsService } from 'src/boards/boards.service';
+import { Board } from 'src/_common/entities/board.entity';
+import { Workspace } from 'src/_common/entities/workspace.entity';
+import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board_Message, User])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board_Message, Board, Workspace, Workspace_Member, User])],
   exports: [TypeOrmModule],
   controllers: [BoardMessagesController],
-  providers: [BoardMessagesService, BoardsService, JwtService, UsersService, MailService],
+  providers: [BoardMessagesService, BoardsService, WorkspacesService, JwtService, UsersService, MailService],
 })
 export class BoardMessagesModule {}

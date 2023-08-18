@@ -16,7 +16,7 @@ export class BoardMessagesService {
 
   //보드 메세지 조회
   async GetBoardMessages(boardId: number) {
-    const boardMessages = await this.boardMessageRepository.find({ relations: ['board'] });
+    const boardMessages = await this.boardMessageRepository.find({ relations: ['board', 'user'] });
 
     const messages = boardMessages.filter((boardMessage) => {
       return boardMessage.board.id == boardId;
