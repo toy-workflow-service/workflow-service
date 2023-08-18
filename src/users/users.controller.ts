@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
 import { Request, Response } from 'express';
@@ -13,6 +13,10 @@ import { UpdateInfoDTO } from 'src/_common/dtos/update-info.dto';
 import { PasswordDTO } from 'src/_common/dtos/password.dto';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
+import { SocialSignUpDTO } from 'src/_common/dtos/social-signup.dto';
+import { UserDAO } from 'src/_common/dtos/user.dto';
+import { SocialSignupPipe } from 'src/_common/pipes/social-signup.pipe';
+import { uuid } from 'uuidv4';
 
 @Controller('users')
 export class UsersController {
@@ -31,6 +35,26 @@ export class UsersController {
     return res.status(HttpStatus.CREATED).json({ message: '회원가입이 완료되었습니다.' });
   }
 
+  // 소셜 로그인의 회원가입
+  @Post('socialSignup')
+  async socialSignup(@Body(SocialSignupPipe) user: SocialSignUpDTO, @Res() res: Response): Promise<Object> {
+    const userData = await this.cacheManager.get(user.tempId);
+    if (!userData)
+      throw new HttpException('제한 시간이 초과되었습니다. 다시 소셜 로그인 해주세요. ', HttpStatus.BAD_REQUEST);
+
+    const userInfo = userData.split(' ');
+    const userDAO: UserDAO = {
+      email: userInfo[0],
+      name: userInfo[1],
+      profile_url: userInfo[2],
+      phone_number: user.phoneNumber,
+      password: uuid(),
+    };
+
+    await this.usersService.signup(userDAO);
+    return res.status(HttpStatus.CREATED).json({ message: '회원가입이 완료되었습니다.' });
+  }
+
   @Post('login')
   async loginAccount(@Body() LoginDTO: LoginDTO, @Res() res: Response): Promise<Object> {
     const { accessToken, refreshToken, userName } = await this.usersService.login(LoginDTO);
@@ -43,7 +67,7 @@ export class UsersController {
 
   @Get('userInfo')
   @UseGuards(AuthGuard)
-  getUserInfo(@GetUser() user: AccessPayload, @Res() res: Response): Object {
+  async getUserInfo(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
     return res.status(HttpStatus.OK).json({ user });
   }
 
@@ -54,6 +78,7 @@ export class UsersController {
     const newDate: number = Date.now() / 1000;
     const { exp } = this.jwtService.verify(token, process.env.ACCESS_SECRET_KEY);
     const expireTime = Math.ceil(exp - newDate);
+
     await this.cacheManager.set(token, 'blackList', expireTime);
     res.clearCookie('refreshToken');
 

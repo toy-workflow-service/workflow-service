@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/_common/entities/user.entitiy';
 import { UploadMiddleware } from 'src/_common/middlewares/upload-middleware';
-import { JwtStrategy } from 'src/_common/security/passport.jwt.strategy';
+import { JwtStrategy } from 'src/_common/security/passport/passport.jwt.strategy';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { MailService } from 'src/_common/mail/mail.service';

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
 import { BoardMessagesService } from './board-messages.service';
-import { CreateBoardMessageDto } from './create-board-message.dto';
+import { CreateBoardMessageDto } from 'src/_common/dtos/create-board-message.dto';
 
 @Controller('board-messages')
 export class BoardMessagesController {

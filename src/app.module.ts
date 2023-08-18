@@ -23,6 +23,7 @@ import { MailModule } from './_common/mail/mail.module';
 import { JwtModule } from './_common/security/jwt/jwt.module';
 import { PassportModule } from '@nestjs/passport';
 import { SMSModule } from './_common/sms/sms.module';
+import { SocialLoginModule } from './social-login/social-login.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { SMSModule } from './_common/sms/sms.module';
     UserMessageRoomsModule,
     DirectMessagesModule,
     RemindersModule,
+    SocialLoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],
