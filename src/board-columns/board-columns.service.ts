@@ -34,6 +34,11 @@ export class BoardColumnsService {
     });
   }
 
+  //보드 칼럼 상세 조회
+  async findOneBoardColumnById(id: number) {
+    return await this.boardColumnRepository.findOne({ where: { id }, relations: ['board'] });
+  }
+
   //보드 칼럼 생성
   async PostBoardColumn(boardId: number, name: string, sequence: number) {
     const board = await this.boardsService.GetBoardById(boardId);
