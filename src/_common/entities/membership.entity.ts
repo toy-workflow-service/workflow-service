@@ -22,7 +22,6 @@ export class Membership {
   updated_at: Date;
 
   @ManyToOne(() => Workspace, (workspace) => workspace.memberships, {
-    cascade: true,
     nullable: true,
   })
   workspace: Workspace;

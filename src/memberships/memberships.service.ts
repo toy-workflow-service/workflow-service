@@ -25,9 +25,10 @@ export class MembershipsService {
       package_type: body.packageType,
       package_price: body.packagePrice,
       end_date: endDate,
+      workspace: { id: workspaceId },
     });
 
-    await this.membershipRepository.save({ ...newMembership, workspace: { id: workspaceId } });
+    await this.membershipRepository.save(newMembership);
 
     return { result: true };
   }

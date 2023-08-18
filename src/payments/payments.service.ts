@@ -34,8 +34,13 @@ export class PaymentsService {
           workspaceId,
           user: { id: userId },
         });
+        console.log('1');
         await transactionEntityManager.save(newPayment);
+        console.log('2');
+
         await this.membershipService.createMembership(body, workspaceId);
+
+        console.log('3');
       });
 
       return { result: true };
