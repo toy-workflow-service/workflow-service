@@ -12,9 +12,13 @@ import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Membership, User, Workspace, Workspace_Member, ScheduleModule])],
+  imports: [
+    RedisCacheModule,
+    TypeOrmModule.forFeature([Membership, User, Workspace, Workspace_Member, ScheduleModule]),
+  ],
   controllers: [MembershipsController],
   providers: [MembershipsService, UsersService, JwtService, JwtStrategy, MailService, WorkspacesService],
 })

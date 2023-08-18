@@ -7,7 +7,7 @@ import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipDto } from 'src/_common/dtos/membership.dto';
 
-@Controller('payments')
+@Controller('workspaces/:workspaceId/payments')
 export class PaymentsController {
   constructor(private readonly paymentService: PaymentsService) {}
 

@@ -18,18 +18,21 @@ export class MembershipsService {
     const servicePeriod = body.servicePeriod * 24 * 60 * 60 * 1000;
     const endDate = new Date(startDate.getTime() + servicePeriod);
 
+    const existMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+    if (existMembership) throw new HttpException('이미 멤버십 결제가 되어있습니다.', HttpStatus.CONFLICT);
+
     const newMembership = this.membershipRepository.create({
       package_type: body.packageType,
       package_price: body.packagePrice,
       end_date: endDate,
-      workspace: { id: workspaceId },
     });
 
-    await this.membershipRepository.save(newMembership);
+    await this.membershipRepository.save({ ...newMembership, workspace: { id: workspaceId } });
 
     return { result: true };
   }
 
+  // 멤버십 조회
   async getMyMembership(workspaceId: number): Promise<Membership> {
     const myMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
 
@@ -57,8 +60,7 @@ export class MembershipsService {
 
     if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
 
-    await this.membershipRepository.update({ workspace: { id: workspaceId } }, { end_date: newEndDate });
-
+    await this.membershipRepository.save({ ...targetMembership, end_date: newEndDate });
     return { result: true };
   }
 

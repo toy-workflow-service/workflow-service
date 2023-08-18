@@ -37,7 +37,7 @@ export class WorkspacesService {
           workspace: { id: newWorkspace.id },
           //role 정보 : 1.Admin, 2.Manager, 3.Member, 4.Outsourcing
           role: 1,
-          participation: 1,
+          participation: true,
         });
 
         await transactionEntityManager.save(Workspace_Member, newMember);

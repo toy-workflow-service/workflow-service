@@ -13,9 +13,10 @@ import { MailService } from 'src/_common/mail/mail.service';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { Membership } from 'src/_common/entities/membership.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment, User, Workspace, Workspace_Member, Membership])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Payment, User, Workspace, Workspace_Member, Membership])],
   controllers: [PaymentsController],
   providers: [
     PaymentsService,
