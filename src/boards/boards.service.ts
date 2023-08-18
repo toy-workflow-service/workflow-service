@@ -19,8 +19,17 @@ export class BoardsService {
     const findBoards = await this.boardRepository.find({ relations: ['workspace'] });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
-    return findBoards.filter((board) => {
+    const boards = findBoards.filter((board) => {
       return board.workspace.id == workspaceId;
+    });
+    return boards.map((board) => {
+      return {
+        workspaceId: board.workspace.id,
+        boardId: board.id,
+        boardName: board.name,
+        createdAt: board.created_at,
+        updatedAt: board.updated_at,
+      };
     });
   }
 
@@ -29,7 +38,7 @@ export class BoardsService {
     const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
-    return await this.boardRepository.findOneBy({ id });
+    return await this.boardRepository.findOne({ where: { id }, relations: ['workspace'] });
   }
 
   //보드 생성

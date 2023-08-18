@@ -19,8 +19,19 @@ export class BoardColumnsService {
     const boardColumns = await this.boardColumnRepository.find({ relations: ['board'] });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
-    return boardColumns.filter((boardColumn) => {
+    const columns = boardColumns.filter((boardColumn) => {
       return boardColumn.board.id == boardId;
+    });
+
+    return columns.map((column) => {
+      return {
+        boardId: column.board.id,
+        columnId: column.id,
+        coumnName: column.name,
+        sequence: column.sequence,
+        createdAt: column.created_at,
+        updatedAt: column.updated_at,
+      };
     });
   }
 

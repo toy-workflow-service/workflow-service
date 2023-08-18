@@ -22,8 +22,18 @@ export class BoardMembersService {
     const board = await this.boardRepository.findOneBy({ id: boardId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
-    return boardMembers.filter((boardMember) => {
+    const members = boardMembers.filter((boardMember) => {
       return boardMember.board.id == boardId;
+    });
+
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
     });
   }
 
