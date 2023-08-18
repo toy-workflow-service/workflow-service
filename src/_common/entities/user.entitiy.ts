@@ -91,6 +91,8 @@ export class User {
   })
   mention_receives: Mention[];
 
-  @OneToMany(() => Payment, (payment) => payment.user)
+  @OneToMany(() => Payment, (payment) => payment.user, {
+    nullable: true,
+  })
   payments: Payment[];
 }

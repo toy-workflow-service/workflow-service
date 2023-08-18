@@ -24,6 +24,7 @@ import { PassportModule } from '@nestjs/passport';
 import { SMSModule } from './_common/sms/sms.module';
 import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
 import { PaymentsModule } from './payments/payments.module';
+import { MembershipsModule } from './memberships/memberships.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { PaymentsModule } from './payments/payments.module';
     RemindersModule,
     WorkspaceMembersModule,
     PaymentsModule,
+    MembershipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

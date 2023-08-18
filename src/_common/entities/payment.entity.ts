@@ -7,11 +7,8 @@ export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  price: number;
-
-  @Column()
-  end_date: Date;
+  @Column({ default: true })
+  status: boolean;
 
   @CreateDateColumn()
   created_at: Date;
@@ -21,12 +18,12 @@ export class Payment {
 
   @ManyToOne(() => Workspace, (workspace) => workspace.payments, {
     cascade: true,
-    nullable: true,
+    nullable: false,
   })
   workspace: Workspace;
 
   @ManyToOne(() => User, (user) => user.payments, {
-    nullable: true,
+    nullable: false,
   })
   user: User;
 }
