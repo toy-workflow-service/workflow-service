@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MembershipDto } from 'src/_common/dtos/membership.dto';
 import { Membership } from 'src/_common/entities/membership.entity';
@@ -47,7 +47,20 @@ export class MembershipsService {
     const servicePeriod = body.servicePeriod * 24 * 60 * 60 * 1000;
     const newEndDate = new Date(targetMembership.end_date.getTime() + servicePeriod);
 
+    if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
+
     await this.membershipRepository.update({ workspace: { id: workspaceId } }, { end_date: newEndDate });
+
+    return { result: true };
+  }
+
+  // 멤버십 취소
+  async cancelMembership(workspaceId: number): Promise<IResult> {
+    const targetMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+
+    if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
+
+    await this.membershipRepository.remove(targetMembership);
 
     return { result: true };
   }
