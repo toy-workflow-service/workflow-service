@@ -16,6 +16,7 @@ import { Comment } from './comment.entity';
 import { Direct_Message } from './direct-message.entity';
 import { Reminder } from './reminder.entity';
 import { Mention } from './mention.entity';
+import { Payment } from './payment.entity';
 
 @Entity('users')
 export class User {
@@ -36,6 +37,9 @@ export class User {
 
   @Column({ nullable: true })
   profile_url: string;
+
+  @Column({ default: 1000000 })
+  points: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -86,4 +90,7 @@ export class User {
     cascade: true,
   })
   mention_receives: Mention[];
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments: Payment[];
 }

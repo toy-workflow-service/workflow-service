@@ -23,6 +23,7 @@ import { JwtModule } from './_common/security/jwt/jwt.module';
 import { PassportModule } from '@nestjs/passport';
 import { SMSModule } from './_common/sms/sms.module';
 import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { WorkspaceMembersModule } from './workspace-members/workspace-members.mo
     DirectMessagesModule,
     RemindersModule,
     WorkspaceMembersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
