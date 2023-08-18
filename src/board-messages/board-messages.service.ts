@@ -1,8 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Message } from 'src/_common/entities/board-message.entity';
-import { Board } from 'src/_common/entities/board.entity';
-import { User } from 'src/_common/entities/user.entitiy';
 import { BoardsService } from 'src/boards/boards.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
