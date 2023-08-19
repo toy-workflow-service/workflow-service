@@ -1,43 +1,55 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { BoardsService } from './boards.service';
-import { CreateBoardDto } from '../_common/dtos/create-board.dto';
-import { UpdateBoardDto } from '../_common/dtos/update-board.dto';
+import { Response } from 'express';
+import { CreateBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
+import { AuthGuard } from 'src/_common/security/auth.guard';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
   //보드 조회
-  @Get('/boards/:workspaceId')
-  async GetBoards(@Param('workspaceId') workspaceId: number) {
-    return await this.boardsService.GetBoards(workspaceId);
+  @Get()
+  @UseGuards(AuthGuard)
+  async GetBoards(@Query('workspaceId') workspaceId: number, @Res() res: Response) {
+    const boards = await this.boardsService.GetBoards(workspaceId);
+    return res.status(HttpStatus.OK).json({ boards });
   }
 
   //보드 상세 조회
-  @Get('/boards/:workspaceId/:boardId')
-  async GetBoardById(@Param('workspaceId') workspaceId: number, @Param('boardId') id: number) {
-    return await this.boardsService.GetBoardById(workspaceId, id);
+  @Get('/:boardId')
+  @UseGuards(AuthGuard)
+  async GetBoardById(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
+    const board = await this.boardsService.GetBoard(workspaceId, id);
+    return res.status(HttpStatus.OK).json({ board });
   }
 
   //보드 생성
-  @Post('/boards/:workspaceId')
-  async CreateBoard(@Param('workspaceId') workspaceId: number, @Body() data: CreateBoardDto) {
-    return await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+  @Post()
+  @UseGuards(AuthGuard)
+  async CreateBoard(@Query('workspaceId') workspaceId: number, @Body() data: CreateBoardDto, @Res() res: Response) {
+    await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+    return res.status(HttpStatus.CREATED).json({ message: '보드를 생성하였습니다.' });
   }
 
   //보드 수정
-  @Put('/boards/:workspaceId/:boardId')
+  @Put('/:boardId')
+  @UseGuards(AuthGuard)
   async UpdateBoard(
-    @Param('workspaceId') workspaceId: number,
+    @Query('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
     @Body() data: UpdateBoardDto,
+    @Res() res: Response,
   ) {
-    return await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
+    await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
+    return res.status(HttpStatus.OK).json({ message: '보드를 수정하였습니다.' });
   }
 
   //보드 삭제
-  @Delete('/boards/:workspaceId/:boardId')
-  async DeleteBoard(@Param('workspaceId') workspaceId: number, @Param('boardId') id: number) {
-    return await this.boardsService.DeleteBoard(workspaceId, id);
+  @Delete('/:boardId')
+  @UseGuards(AuthGuard)
+  async DeleteBoard(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
+    await this.boardsService.DeleteBoard(workspaceId, id);
+    return res.status(HttpStatus.OK).json({ message: '보드를 삭제하였습니다.' });
   }
 }

@@ -11,6 +11,6 @@ export class ViewController {
   async index(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'Work Flow', subtitle: '메인페이지' };
+    return { title: 'Work Flow', subtitle: '메인페이지', header };
   }
 }

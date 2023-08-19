@@ -4,7 +4,7 @@ import { WorkspacesService } from './workspaces.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
-import { JwtStrategy } from 'src/_common/security/passport.jwt.strategy';
+import { JwtStrategy } from 'src/_common/security/passport/passport.jwt.strategy';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entitiy';
