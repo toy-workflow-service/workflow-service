@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ViewModule } from './view/view.module';
 import { UsersModule } from './users/users.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
 import { BoardsModule } from './boards/boards.module';
 import { BoardColumnsModule } from './board-columns/board-columns.module';
 import { BoardMessagesModule } from './board-messages/board-messages.module';
@@ -22,7 +23,7 @@ import { MailModule } from './_common/mail/mail.module';
 import { JwtModule } from './_common/security/jwt/jwt.module';
 import { PassportModule } from '@nestjs/passport';
 import { SMSModule } from './_common/sms/sms.module';
-import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
+import { SocialLoginModule } from './social-login/social-login.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { WorkspaceMembersModule } from './workspace-members/workspace-members.mo
     JwtModule,
     RedisCacheModule,
     WorkspacesModule,
+    WorkspaceMembersModule,
     BoardsModule,
     BoardMembersModule,
     BoardColumnsModule,
@@ -46,7 +48,7 @@ import { WorkspaceMembersModule } from './workspace-members/workspace-members.mo
     UserMessageRoomsModule,
     DirectMessagesModule,
     RemindersModule,
-    WorkspaceMembersModule,
+    SocialLoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],

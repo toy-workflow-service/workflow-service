@@ -3,12 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/_common/entities/user.entitiy';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { UserDTO } from 'src/_common/dtos/user.dto';
+import { UserDAO } from 'src/_common/dtos/user.dto';
 import { LoginDTO } from 'src/_common/dtos/login.dto';
 import { PasswordDTO } from 'src/_common/dtos/password.dto';
 import { MailService } from 'src/_common/mail/mail.service';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
+import { comparePassword } from 'src/_common/utils/password.compare';
+import { bcryptPassword } from 'src/_common/utils/bcrypt-password';
 
 @Injectable()
 export class UsersService {
@@ -19,16 +20,15 @@ export class UsersService {
     private mailService: MailService,
   ) {}
 
-  async signup(newUser: UserDTO): Promise<void> {
+  async signup(newUser: UserDAO): Promise<void> {
     let { password } = newUser;
-    const salt = await bcrypt.genSalt();
 
-    const existUser: UserDTO = await this.usersRepository.findOne({
+    const existUser: UserDAO = await this.usersRepository.findOne({
       where: { email: newUser.email },
     });
     if (existUser) throw new HttpException('이미 존재하는 이메일입니다.', HttpStatus.CONFLICT);
 
-    password = await bcrypt.hash(password, salt);
+    password = await bcryptPassword(password);
     newUser.password = password;
 
     await this.usersRepository.save(newUser);
@@ -40,7 +40,7 @@ export class UsersService {
     const existUser: User = await this.usersRepository.findOne({ where: { email: userInfo.email } });
     if (!existUser)
       throw new HttpException('존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.', HttpStatus.PRECONDITION_FAILED);
-    const validatePassword = await bcrypt.compare(userInfo.password, existUser.password);
+    const validatePassword = await comparePassword(userInfo.password, existUser.password);
 
     if (!validatePassword)
       throw new HttpException('존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.', HttpStatus.PRECONDITION_FAILED);
@@ -65,16 +65,15 @@ export class UsersService {
 
   async updatePassword(id: number, passwordDTO: PasswordDTO): Promise<void> {
     const existUser = await this.usersRepository.findOne({ where: { id } });
-    const salt = await bcrypt.genSalt();
 
-    const validPassword = await bcrypt.compare(passwordDTO.currentPassword, existUser.password);
+    const validPassword = await comparePassword(passwordDTO.currentPassword, existUser.password);
     if (!validPassword) throw new HttpException('현재 비밀번호가 일치하지 않습니다.', HttpStatus.FORBIDDEN);
 
-    const validNewPassword = await bcrypt.compare(passwordDTO.newPassword, existUser.password);
+    const validNewPassword = await comparePassword(passwordDTO.newPassword, existUser.password);
     if (validNewPassword)
       throw new HttpException('바꾸려는 비밀번호가 현재 비밀번호와 일치합니다.', HttpStatus.FORBIDDEN);
 
-    const password = await bcrypt.hash(passwordDTO.newPassword, salt);
+    const password = await bcryptPassword(passwordDTO.newPassword);
     await this.usersRepository.update({ id }, { password });
   }
 
@@ -88,10 +87,13 @@ export class UsersService {
 
   async changePassword(changePasswordDTO: ChangePasswordDTO): Promise<void> {
     let { password } = changePasswordDTO;
-    const salt = await bcrypt.genSalt();
-    password = await bcrypt.hash(password, salt);
+    password = await bcryptPassword(password);
 
     await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
+  }
+
+  async findEmail(email: string, name: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { email, name } });
   }
 
   async findUserByEmail(email: string): Promise<User> {
