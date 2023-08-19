@@ -9,9 +9,10 @@ import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entitiy';
 import { MailService } from 'src/_common/mail/mail.service';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Workspace, Workspace_Member, User])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Workspace, Workspace_Member, User])],
   controllers: [WorkspacesController],
   providers: [WorkspacesService, UsersService, JwtStrategy, JwtService, MailService],
 })

@@ -10,7 +10,7 @@ export class CheckAdminInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
-    const { id } = req;
+    const { id } = req.user;
     const { workspaceId } = req.params;
 
     await this.workspaceService.checkAdmin(workspaceId, id);

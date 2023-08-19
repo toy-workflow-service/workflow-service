@@ -37,6 +37,7 @@ export class WorkspacesService {
           workspace: { id: newWorkspace.id },
           //role 정보 : 1.Admin, 2.Manager, 3.Member, 4.Outsourcing
           role: 1,
+          participation: 1,
         });
 
         await transactionEntityManager.save(Workspace_Member, newMember);
@@ -59,8 +60,6 @@ export class WorkspacesService {
       where: { id: workspaceId },
       relations: ['workspace_members'],
     });
-
-    if (!existWorkspace) throw new HttpException('해당 워크스페이스가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
     return existWorkspace;
   }
@@ -138,7 +137,10 @@ export class WorkspacesService {
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    await this.workspaceMemberRepository.update({ id: userId }, { role: body.role });
+    await this.workspaceMemberRepository.update(
+      { user: { id: userId }, workspace: { id: workspaceId } },
+      { role: body.role },
+    );
 
     return { result: true };
   }
@@ -158,7 +160,7 @@ export class WorkspacesService {
   // 워크스페이스 소유자 체크
   async checkAdmin(workspaceId: number, userId: number): Promise<IResult> {
     const checkAdmin = await this.workspaceMemberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: userId } },
+      where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
 
     if (checkAdmin.role !== 1) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
@@ -169,7 +171,7 @@ export class WorkspacesService {
   // 워크스페이스 권한 체크
   async checkAuth(workspaceId: number, userId: number): Promise<IResult> {
     const checkRole = await this.workspaceMemberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: userId } },
+      where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
 
     if (checkRole.role !== 1 && checkRole.role !== 2)
@@ -181,7 +183,7 @@ export class WorkspacesService {
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
     const checkMember = await this.workspaceMemberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: userId } },
+      where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
 
     if (!checkMember) throw new HttpException('워크스페이스 멤버가 아닙니다.', HttpStatus.UNAUTHORIZED);
