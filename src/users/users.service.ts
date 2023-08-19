@@ -110,4 +110,14 @@ export class UsersService {
       select: ['id', 'email', 'name', 'phone_number', 'profile_url'],
     });
   }
+
+  // userId로만 조회
+  async findUserById(userId: number) {
+    return await this.usersRepository.findOneBy({ id: userId });
+  }
+
+  // name으로만 조회
+  async findUserByName(name: string) {
+    return await this.usersRepository.findOneBy({ name });
+  }
 }

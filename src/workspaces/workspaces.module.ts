@@ -12,7 +12,7 @@ import { MailService } from 'src/_common/mail/mail.service';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Workspace, Workspace_Member, User]), RedisCacheModule],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Workspace, Workspace_Member, User])],
   controllers: [WorkspacesController],
   providers: [WorkspacesService, UsersService, JwtStrategy, JwtService, MailService],
 })
