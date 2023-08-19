@@ -97,7 +97,7 @@ export class PaymentsService {
 
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        await transactionEntityManager.remove(targetMembership);
+        await this.membershipService.cancelMembership(workspaceId);
 
         targetPayment.status = false;
         await transactionEntityManager.save(targetPayment);
