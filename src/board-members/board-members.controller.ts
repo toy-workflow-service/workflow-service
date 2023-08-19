@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { BoardMembersService } from './board-members.service';
-import { CreateBoardMemberDto } from './create-board-member.dto';
+import { CreateBoardMemberDto } from '../_common/dtos/create-board-member.dto';
 
 @Controller('board-members')
 export class BoardMembersController {
