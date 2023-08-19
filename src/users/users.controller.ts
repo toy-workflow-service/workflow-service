@@ -13,10 +13,6 @@ import { UpdateInfoDTO } from 'src/_common/dtos/update-info.dto';
 import { PasswordDTO } from 'src/_common/dtos/password.dto';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
-import { SocialSignUpDTO } from 'src/_common/dtos/social-signup.dto';
-import { UserDAO } from 'src/_common/dtos/user.dto';
-import { SocialSignupPipe } from 'src/_common/pipes/social-signup.pipe';
-import { uuid } from 'uuidv4';
 
 @Controller('users')
 export class UsersController {
@@ -28,31 +24,13 @@ export class UsersController {
 
   @Post('signup')
   async signup(@Body() userDTO: SignUpDTO, @Req() req: MulterRequest, @Res() res: Response): Promise<Object> {
+    if (!userDTO.emailAuth)
+      throw new HttpException('이메일이 인증되지 않았습니다. 이메일 인증을 해주세요. ', HttpStatus.BAD_REQUEST);
+
     const profileUrl = req.file ? req.file.location : null;
     userDTO.profile_url = profileUrl;
 
     await this.usersService.signup(userDTO);
-    return res.status(HttpStatus.CREATED).json({ message: '회원가입이 완료되었습니다.' });
-  }
-
-  // 소셜 로그인의 회원가입
-  @Post('socialSignup')
-  async socialSignup(@Body(SocialSignupPipe) user: SocialSignUpDTO, @Res() res: Response): Promise<Object> {
-    const userData = await this.cacheManager.get(user.tempId);
-    if (!userData)
-      throw new HttpException('제한 시간이 초과되었습니다. 다시 소셜 로그인 해주세요. ', HttpStatus.BAD_REQUEST);
-
-    const userInfo = userData.split(' ');
-    const userDAO: UserDAO = {
-      email: userInfo[0],
-      name: userInfo[1],
-      profile_url: userInfo[2],
-      phone_number: user.phoneNumber,
-      password: uuid(),
-    };
-
-    await this.usersService.signup(userDAO);
-    await this.cacheManager.delete(user.tempId);
     return res.status(HttpStatus.CREATED).json({ message: '회원가입이 완료되었습니다.' });
   }
 

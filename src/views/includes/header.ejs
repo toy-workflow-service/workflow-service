@@ -8,44 +8,28 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
     <!-- inject:css-->
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/bootstrap/bootstrap.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/daterangepicker.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/fontawesome.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/footable.standalone.min.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/fullcalendar@5.2.0.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/jquery-jvectormap-2.0.5.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/jquery.mCustomScrollbar.min.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/leaflet.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/line-awesome.min.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/magnific-popup.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.Default.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/select2.min.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/slick.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/star-rating-svg.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/trumbowyg.min.css" />
-
     <link rel="stylesheet" href="../assets/vendor_assets/css/wickedpicker.min.css" />
-
     <link rel="stylesheet" href="../assets/css/style.css" />
-
     <!-- endinject -->
 
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png" />
@@ -66,7 +50,7 @@
       <nav class="navbar navbar-light">
         <div class="navbar-left">
           <div class="logo-area">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
               <img class="dark" src="../assets/img/logo-dark.png" alt="logo" />
               <img class="light" src="../assets/img/logo-white.png" alt="logo" />
             </a>
@@ -839,6 +823,7 @@
           </div>
         </div>
         <!-- ends: navbar-left -->
+        <% if(header.isLogin) { %>
         <div class="navbar-right">
           <ul class="navbar-right__menu">
             <li class="nav-search">
@@ -1055,91 +1040,6 @@
               </div>
             </li>
             <!-- ends: .nav-notification -->
-            <li class="nav-settings">
-              <div class="dropdown-custom">
-                <a href="javascript:;" class="nav-item-toggle">
-                  <img src="../assets/img/setting.png" alt="setting" />
-                </a>
-                <div class="dropdown-parent-wrapper">
-                  <div class="dropdown-wrapper dropdown-wrapper--large">
-                    <ul class="list-settings">
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/mail.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">All Features</a>
-                          </h6>
-                          <p>Introducing Increment subscriptions</p>
-                        </div>
-                      </li>
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/color-palette.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">Themes</a>
-                          </h6>
-                          <p>Third party themes that are compatible</p>
-                        </div>
-                      </li>
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/home.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">Payments</a>
-                          </h6>
-                          <p>We handle billions of dollars</p>
-                        </div>
-                      </li>
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/video-camera.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">Design Mockups</a>
-                          </h6>
-                          <p>Share planning visuals with clients</p>
-                        </div>
-                      </li>
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/document.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">Content Planner</a>
-                          </h6>
-                          <p>Centralize content gethering and editing</p>
-                        </div>
-                      </li>
-                      <li class="d-flex">
-                        <div class="me-3"><img src="../assets/img/microphone.png" alt="" /></div>
-                        <div class="flex-grow-1">
-                          <h6>
-                            <a href="" class="stretched-link">Diagram Maker</a>
-                          </h6>
-                          <p>Plan user flows & test scenarios</p>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <!-- ends: .nav-support -->
-            <li class="nav-flag-select">
-              <div class="dropdown-custom">
-                <a href="javascript:;" class="nav-item-toggle"
-                  ><img src="../assets/img/flag.png" alt="" class="rounded-circle"
-                /></a>
-                <div class="dropdown-parent-wrapper">
-                  <div class="dropdown-wrapper dropdown-wrapper--small">
-                    <a href=""><img src="../assets/img/eng.png" alt="" /> English</a>
-                    <a href=""><img src="../assets/img/ger.png" alt="" /> German</a>
-                    <a href=""><img src="../assets/img/spa.png" alt="" /> Spanish</a>
-                    <a href=""><img src="../assets/img/tur.png" alt="" /> Turkish</a>
-                    <a href=""><img src="../assets/img/iraq.png" alt="" /> Arabic</a>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <!-- ends: .nav-flag-select -->
             <li class="nav-author">
               <div class="dropdown-custom">
                 <a href="javascript:;" class="nav-item-toggle"
@@ -1199,6 +1099,39 @@
           </div>
         </div>
         <!-- ends: .navbar-right -->
+        <% } else { %>
+        <div class="navbar-right">
+          <ul class="navbar-right__menu">
+            <li class="nav-search">
+              <a href="#" class="search-toggle">
+                <i class="uil uil-search"></i>
+                <i class="uil uil-times"></i>
+              </a>
+              <form action="/" class="search-form-topMenu">
+                <span class="search-icon uil uil-search"></span>
+                <input
+                  class="form-control me-sm-2 box-shadow-none"
+                  type="search"
+                  placeholder="Search..."
+                  aria-label="Search"
+                />
+              </form>
+            </li>
+            <li class="">
+              <a href="/signup">
+                <span class="nav-icon uil uil-sign-out-alt"></span>
+                <span class="menu-text">회원가입</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="/login">
+                <span class="nav-icon uil uil-signin"></span>
+                <span class="menu-text">로그인</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <% } %>
       </nav>
     </header>
     <main class="main-content">
@@ -1260,12 +1193,6 @@
                   </li>
                   <li class="l_navbar">
                     <a href="#" data-layout="top">Top Menu</a>
-                  </li>
-                  <li class="layout">
-                    <a href="../rtl">RTL</a>
-                  </li>
-                  <li class="layout">
-                    <a href="../ltr">LTR</a>
                   </li>
                 </ul>
               </li>
@@ -1960,18 +1887,6 @@
                 <a href="coming-soon.html">
                   <span class="nav-icon uil uil-sync"></span>
                   <span class="menu-text">Coming Soon</span>
-                </a>
-              </li>
-              <li class="">
-                <a href="login.html">
-                  <span class="nav-icon uil uil-signin"></span>
-                  <span class="menu-text">Log In</span>
-                </a>
-              </li>
-              <li class="">
-                <a href="sign-up.html">
-                  <span class="nav-icon uil uil-sign-out-alt"></span>
-                  <span class="menu-text">Sign Up</span>
                 </a>
               </li>
             </ul>
