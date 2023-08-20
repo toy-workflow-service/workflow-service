@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { IsBoolean, IsEmail, IsString, Length, Matches } from 'class-validator';
 import { Match } from '../decorators/match.decorator';
 
 export class SignUpDTO {
@@ -27,4 +27,7 @@ export class SignUpDTO {
     message: '휴대폰 번호는 하이픈(-)을 제외한 숫자 10~11자리만 입력이 가능합니다.',
   })
   phone_number: string;
+
+  @IsBoolean({ message: '이메일이 인증되지 않았습니다. ' })
+  emailAuth: boolean;
 }

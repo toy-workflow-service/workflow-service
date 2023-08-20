@@ -12,6 +12,7 @@ export class RedisCacheService {
   async get(key: string): Promise<any> {
     return await this.cache.get(key);
   }
+
   async set(key: string, value: any, ttl?: Milliseconds) {
     // @ts-ignore
     await this.cache.set(key, value, { ttl });

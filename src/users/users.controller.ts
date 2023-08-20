@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
 import { Request, Response } from 'express';
@@ -24,6 +24,9 @@ export class UsersController {
 
   @Post('signup')
   async signup(@Body() userDTO: SignUpDTO, @Req() req: MulterRequest, @Res() res: Response): Promise<Object> {
+    if (!userDTO.emailAuth)
+      throw new HttpException('이메일이 인증되지 않았습니다. 이메일 인증을 해주세요. ', HttpStatus.BAD_REQUEST);
+
     const profileUrl = req.file ? req.file.location : null;
     userDTO.profile_url = profileUrl;
 
@@ -43,7 +46,7 @@ export class UsersController {
 
   @Get('userInfo')
   @UseGuards(AuthGuard)
-  getUserInfo(@GetUser() user: AccessPayload, @Res() res: Response): Object {
+  async getUserInfo(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
     return res.status(HttpStatus.OK).json({ user });
   }
 
@@ -54,6 +57,7 @@ export class UsersController {
     const newDate: number = Date.now() / 1000;
     const { exp } = this.jwtService.verify(token, process.env.ACCESS_SECRET_KEY);
     const expireTime = Math.ceil(exp - newDate);
+
     await this.cacheManager.set(token, 'blackList', expireTime);
     res.clearCookie('refreshToken');
 
