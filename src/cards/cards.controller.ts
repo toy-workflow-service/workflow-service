@@ -9,8 +9,8 @@ export class CardsController {
 
   //카드 조회
   @Get('/:columnId')
-  async GetCards(@Param('columnId') columnId: number) {
-    return await this.cardsService.GetCards(columnId);
+  async GetCards(@Param('columnId') board_columnId: number) {
+    return await this.cardsService.GetCards(board_columnId);
   }
 
   //카드 상세 조회

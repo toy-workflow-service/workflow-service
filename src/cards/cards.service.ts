@@ -14,7 +14,7 @@ export class CardsService {
 
   //카드 조회
   async GetCards(columnId: number) {
-    const findCards = await this.cardRepository.find({ relations: ['Board_column'] });
+    const findCards = await this.cardRepository.find({ relations: ['board_column'] });
 
     return findCards.filter((card) => {
       return card.board_column.id == columnId;
