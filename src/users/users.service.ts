@@ -20,7 +20,7 @@ export class UsersService {
     private mailService: MailService,
   ) {}
 
-  async signup(newUser: UserDAO): Promise<void> {
+  async signup(newUser: UserDAO): Promise<User> {
     let { password } = newUser;
 
     const existUser: UserDAO = await this.usersRepository.findOne({
@@ -31,7 +31,7 @@ export class UsersService {
     password = await bcryptPassword(password);
     newUser.password = password;
 
-    await this.usersRepository.save(newUser);
+    return await this.usersRepository.save(newUser);
   }
 
   async login(

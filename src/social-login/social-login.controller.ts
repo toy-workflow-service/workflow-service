@@ -8,39 +8,18 @@ import { SocialUser } from 'src/_common/interfaces/social-user.interface';
 
 @Controller('socialLogin')
 export class SocailLoginController {
-  constructor(
-    private socialLoginService: SocialLoginService,
-    private cacheManager: RedisCacheService,
-  ) {}
-
-  private tempUserInfo = (email: string, name: string, profileUrl: string): any => {
-    let userInfo = [];
-    const tempId: string = Math.floor(Math.random() * 1000000)
-      .toString()
-      .padStart(6, '0');
-    userInfo.push(email);
-    userInfo.push(name);
-    userInfo.push(profileUrl);
-    return { key: tempId, value: userInfo.join(' ') };
-  };
+  constructor(private socialLoginService: SocialLoginService) {}
 
   @Get('google')
   @UseGuards(NestAuthGuard('google'))
   async loginGoogle(@Req() req: SocialRequest, @Res() res: Response): Promise<any> {
     const userDTO: SocialUser = { ...req.user };
-    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
+    const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    if (accessToken && refreshToken) {
-      res.setHeader('authorization', `Bearer ${accessToken}`);
-      res.cookie('refreshToken', refreshToken);
+    res.setHeader('authorization', `Bearer ${accessToken}`);
+    res.cookie('refreshToken', refreshToken);
 
-      return res.redirect('/');
-    } else {
-      const { key, value } = this.tempUserInfo(email, name, profileUrl);
-      this.cacheManager.set(key, value, 600);
-
-      res.redirect(`http://127.0.0.1:3000/addInfo?tempId=${key}`);
-    }
+    return res.redirect('/');
   }
 
   @Get('kakao')
@@ -51,20 +30,12 @@ export class SocailLoginController {
       name: req.user.name,
       photo: req.user.photo,
     };
+    const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
+    res.setHeader('authorization', `Bearer ${accessToken}`);
+    res.cookie('refreshToken', refreshToken);
 
-    if (accessToken && refreshToken) {
-      res.setHeader('authorization', `Bearer ${accessToken}`);
-      res.cookie('refreshToken', refreshToken);
-
-      return res.redirect('/');
-    } else {
-      const { key, value } = this.tempUserInfo(email, name, profileUrl);
-      this.cacheManager.set(key, value, 600);
-
-      res.redirect(`http://127.0.0.1:3000/addInfo?tempId=${key}`);
-    }
+    return res.redirect('/');
   }
 
   @Get('naver')
@@ -75,18 +46,11 @@ export class SocailLoginController {
       name: req.user.name,
       photo: req.user.photo,
     };
-    const { accessToken, refreshToken, email, name, profileUrl } = await this.socialLoginService.socialLogin(userDTO);
+    const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    if (accessToken && refreshToken) {
-      res.setHeader('authorization', `Bearer ${accessToken}`);
-      res.cookie('refreshToken', refreshToken);
+    res.setHeader('authorization', `Bearer ${accessToken}`);
+    res.cookie('refreshToken', refreshToken);
 
-      return res.redirect('/');
-    } else {
-      const { key, value } = this.tempUserInfo(email, name, profileUrl);
-      this.cacheManager.set(key, value, 600);
-
-      res.redirect(`http://127.0.0.1:3000/addInfo?tempId=${key}`);
-    }
+    return res.redirect('/');
   }
 }

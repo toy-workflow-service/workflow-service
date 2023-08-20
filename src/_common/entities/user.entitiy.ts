@@ -35,6 +35,9 @@ export class User {
   @Column({ type: 'tinytext', nullable: false, default: null })
   phone_number: string;
 
+  @Column({ default: false })
+  phone_authentication: boolean;
+
   @Column({ nullable: true })
   profile_url: string;
 

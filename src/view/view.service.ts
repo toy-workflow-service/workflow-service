@@ -4,7 +4,7 @@ import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 @Injectable()
 export class ViewService {
   async header(user: AccessPayload) {
-    if (user) return { isLoign: true, email: user.email, name: user.name, profileUrl: user.profile_url };
+    if (user) return { isLogin: true, email: user.email, name: user.name, profileUrl: user.profile_url };
 
     return { isLogin: false };
   }

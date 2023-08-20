@@ -794,12 +794,14 @@
 
   function uploadfile() {
     if (window.File && window.FileList && window.FileReader) {
-      let files = event.target.files; //FileList object
+      let files = event.target.files; // FileList object
       let uploadedList = $('.dm-upload__file ul');
 
-      for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        if (!file.type.match('image')) continue;
+      //한 번의 하나의 파일만 업로드 되도록
+      uploadedList.empty();
+
+      if (files.length > 0) {
+        let file = files[0]; // Take the first file
 
         let fileReader = new FileReader();
 
@@ -813,6 +815,12 @@
                     `;
 
           uploadedList.append(fileName);
+
+          // 파일 지우기
+          let deleteButton = uploadedList.find('.btn-delete');
+          deleteButton.on('click', function () {
+            $(this).closest('li').remove();
+          });
         });
 
         fileReader.readAsDataURL(file);
@@ -823,7 +831,7 @@
   }
 
   if (imageUpload !== null) {
-    imageUpload.addEventListener('change', uploadfile, false);
+    imageUpload.addEventListener('change', uploadfile, true);
   }
 
   /* Time Picker */

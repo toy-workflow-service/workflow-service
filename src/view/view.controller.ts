@@ -13,4 +13,24 @@ export class ViewController {
     const header = await this.viewService.header(user);
     return { title: 'Work Flow', subtitle: '메인페이지', header };
   }
+
+  /**No header & footer */
+
+  @Get('signup')
+  @Render('signup.ejs')
+  async signup() {
+    return { title: 'Work Flow', subtitle: '회원가입' };
+  }
+
+  @Get('login')
+  @Render('login.ejs')
+  async login() {
+    return { title: 'Work Flow', subtitle: '로그인' };
+  }
+
+  @Get('findPassword')
+  @Render('find-password.ejs')
+  async findPassword() {
+    return { title: 'Work Flow', subtitle: '비밀번호 찾기' };
+  }
 }
