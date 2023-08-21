@@ -69,7 +69,11 @@ function addDnDHandlers(elem) {
 var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
-$(init);
+// -----------------여기서부터 작업함--------------------
+let boardId = new URLSearchParams(window.location.search).get('boardId');
+boardId = Number(boardId);
+
+// $(init);
 $(BoardColumnsGet);
 
 function init() {
@@ -77,19 +81,25 @@ function init() {
     .sortable({
       connectWith: '.kanban-items,.todo-task1 tbody',
       stack: '.kanban-items  ul,.todo-task1 tbody',
+      start: function (e, i) {
+        console.log('start : ', e, i);
+      },
+      stop: function (e, i) {
+        console.log('stop : ', e, i);
+        CardListReorder();
+      },
     })
     .disableSelection();
   $('.kanban-container,.todo-task2 tbody')
     .sortable({
       connectWith: '.kanban-container,.todo-task2 tbody ',
       stack: '.kanban-container,.todo-task2 tbody',
-      item: $('.kanban-container,.todo-task2 tbody'),
       start: function (e, i) {
         console.log('start : ', e, i);
       },
       stop: function (e, i) {
         console.log('stop : ', e, i);
-        reorder();
+        KanbanListReorder();
       },
     })
     .disableSelection();
@@ -99,21 +109,54 @@ function init() {
   // });
 }
 
-// 번호 재입력( 내부적으로 )
-function reorder() {
-  Object.values($('.kanban-list')).forEach(async (column, index) => {
-    console.log('testest: ', column, index);
+// 바뀐 순서 출력 (여기서 순서 update api 사용할듯)
+function KanbanListReorder() {
+  const columns = document.querySelectorAll('.kanban-list');
+  Object.values(columns).forEach(async (column, index) => {
+    // console.log('testest: ', column, index + 1);
+    // console.log('columnId : ', column.getAttribute('data-columnid'));
+    const columnId = column.getAttribute('data-columnid');
+    if (columnId != 0) {
+      //컬럼 순서 저장
+      //data: {boardId: boardId}
+      const sequence = index + 1;
+      await $.ajax({
+        type: 'PUT',
+        url: `/board-columns/${columnId}/sequence?boardId=` + 1,
+        headers: {
+          Accept: 'application/json',
+        },
+        data: { sequence },
+        success: (data) => {
+          console.log(data.message);
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+    }
   });
+  // console.dir($('.kanban-list'));
+}
+
+function CardListReorder() {
+  Object.values($('.list-items').children('li')).forEach(async (column, index) => {
+    console.log('card list : ', column, index + 1);
+  });
+  // console.log($('.list-items').children('li'));
+  // console.dir($('.list-items'));
 }
 
 // get column API
-function BoardColumnsGet() {
-  $.ajax({
-    method: 'GET',
+async function BoardColumnsGet() {
+  // data: {boardId: boardId}
+  await $.ajax({
+    type: 'GET',
     data: { boardId: 1 },
     url: `/board-columns`,
     success: (data) => {
       BoardColumns(data);
+      init();
     },
     error: (error) => {
       console.log(error);
@@ -122,13 +165,17 @@ function BoardColumnsGet() {
 }
 
 // get board column, card getHtml
+// 아직 card api가 없기 때문에 column만 일단 넣음
 function BoardColumns(data) {
   console.log(data);
   const kanbanList = document.querySelector('.kanban-container');
-  kanbanList.innerHTML = `<div class="list kanban-list draggable" draggable="true">
+  kanbanList.innerHTML = '';
+  let i = 0;
+  for (i in data) {
+    kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
                             <div class="kanban-tops list-tops">
                               <div class="d-flex justify-content-between align-items-center py-10">
-                                  <h3 class="list-title">To Do</h3>
+                                  <h3 class="list-title">${data[i].columnName}</h3>
                                   <div class="dropdown dropdown-click">
                                     <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -190,7 +237,9 @@ function BoardColumns(data) {
                               card</button>
 
                           </div>`;
-  kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true">
+  }
+
+  kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
                               <div class="kanban-board__add-card">
                                   <button class="shadow-none border-0"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">

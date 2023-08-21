@@ -30,7 +30,7 @@ export class BoardColumnsService {
       return {
         boardId: column.board.id,
         columnId: column.id,
-        coumnName: column.name,
+        columnName: column.name,
         sequence: column.sequence,
         createdAt: column.created_at,
         updatedAt: column.updated_at,
