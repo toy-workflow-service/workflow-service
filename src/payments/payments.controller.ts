@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-interceptors';
@@ -6,6 +6,7 @@ import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipDto } from 'src/_common/dtos/membership.dto';
+import { Payment } from 'src/_common/entities/payment.entity';
 
 @Controller('workspaces/:workspaceId/payments')
 export class PaymentsController {
@@ -45,5 +46,12 @@ export class PaymentsController {
     @GetUser() user: AccessPayload,
   ): Promise<Object> {
     return await this.paymentService.cancelPurchase(workspaceId, paymentId, user.id);
+  }
+
+  // 결제내역 조회
+  @Get()
+  @UseGuards(AuthGuard)
+  async getMyPayments(@GetUser() user: AccessPayload): Promise<Payment[]> {
+    return await this.paymentService.getMyPayments(user.id);
   }
 }

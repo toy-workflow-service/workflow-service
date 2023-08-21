@@ -6,7 +6,6 @@ import { User } from 'src/_common/entities/user.entitiy';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UsersService } from 'src/users/users.service';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -111,5 +110,14 @@ export class PaymentsService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  // 나의 결제내역 조회
+  async getMyPayments(userId: number): Promise<Payment[]> {
+    const payments = await this.paymentRepository.find({ where: { user: { id: userId } } });
+
+    if (!payments) throw new HttpException('결제 내역이 없습니다.', HttpStatus.NOT_FOUND);
+
+    return payments;
   }
 }
