@@ -70,6 +70,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
 // -----------------여기서부터 작업함--------------------
+const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 boardId = Number(boardId);
 
@@ -118,21 +119,8 @@ function KanbanListReorder() {
     const columnId = column.getAttribute('data-columnid');
     if (columnId != 0) {
       //컬럼 순서 저장
-      const sequence = index + 1;
-      await $.ajax({
-        type: 'PUT',
-        url: `/board-columns/${columnId}/sequence?boardId=` + 1,
-        headers: {
-          Accept: 'application/json',
-        },
-        data: { sequence },
-        success: (data) => {
-          console.log(data.message);
-        },
-        error: (error) => {
-          console.log(error.responseJSON.errorMessage);
-        },
-      });
+      const sequence = Number(index) + 1;
+      await BoardColumnSequenceUpdate(columnId, sequence);
     }
   });
   // console.dir($('.kanban-list'));
@@ -146,18 +134,41 @@ function CardListReorder() {
   // console.dir($('.list-items'));
 }
 
+// put column sequence API
+async function BoardColumnSequenceUpdate(columnId, sequence) {
+  $.ajax({
+    type: 'PUT',
+    url: `/board-columns/${columnId}/sequence?boardId=` + 1,
+    data: JSON.stringify({ sequence }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
 // get column API
 async function BoardColumnsGet() {
   // data: {boardId: boardId}
   await $.ajax({
     type: 'GET',
     url: `/board-columns?boardId=` + 1,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
     success: (data) => {
       BoardColumns(data);
       init();
     },
     error: (error) => {
-      console.log(error.responseJSON.errorMessage);
+      console.log(error);
     },
   });
 }
@@ -260,16 +271,20 @@ async function BoardColumnsCreate(name, sequence) {
   await $.ajax({
     type: 'POST',
     url: `/board-columns?boardId=` + 1,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
     headers: {
       Accept: 'application/json',
     },
-    data: { name, sequence },
+    data: JSON.stringify({ name, sequence }),
     success: function (data) {
       console.log(data.message);
       window.location.reload();
     },
     error: (error) => {
-      console.log(error.responseJSON.errorMessage);
+      console.log(error);
     },
   });
 }
