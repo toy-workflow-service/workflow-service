@@ -22,6 +22,10 @@ export class BoardColumnsService {
       return boardColumn.board.id == boardId;
     });
 
+    columns.sort((a, b) => {
+      return a.sequence - b.sequence;
+    });
+
     return columns.map((column) => {
       return {
         boardId: column.board.id,

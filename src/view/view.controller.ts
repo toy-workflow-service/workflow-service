@@ -33,4 +33,10 @@ export class ViewController {
   async findPassword() {
     return { title: 'Work Flow', subtitle: '비밀번호 찾기' };
   }
+
+  @Get('kanban')
+  @Render('kanban.ejs')
+  async kanban() {
+    return { title: 'Work Flow', subtitle: 'board' };
+  }
 }
