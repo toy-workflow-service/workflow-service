@@ -275,9 +275,6 @@ async function BoardColumnsCreate(name, sequence) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    headers: {
-      Accept: 'application/json',
-    },
     data: JSON.stringify({ name, sequence }),
     success: function (data) {
       console.log(data.message);
