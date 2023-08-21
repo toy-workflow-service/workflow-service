@@ -82,10 +82,10 @@ function init() {
       connectWith: '.kanban-items,.todo-task1 tbody',
       stack: '.kanban-items  ul,.todo-task1 tbody',
       start: function (e, i) {
-        console.log('start : ', e, i);
+        // console.log('start : ', e, i);
       },
       stop: function (e, i) {
-        console.log('stop : ', e, i);
+        // console.log('stop : ', e, i);
         CardListReorder();
       },
     })
@@ -95,10 +95,10 @@ function init() {
       connectWith: '.kanban-container,.todo-task2 tbody ',
       stack: '.kanban-container,.todo-task2 tbody',
       start: function (e, i) {
-        console.log('start : ', e, i);
+        // console.log('start : ', e, i);
       },
       stop: function (e, i) {
-        console.log('stop : ', e, i);
+        // console.log('stop : ', e, i);
         KanbanListReorder();
       },
     })
@@ -118,7 +118,6 @@ function KanbanListReorder() {
     const columnId = column.getAttribute('data-columnid');
     if (columnId != 0) {
       //컬럼 순서 저장
-      //data: {boardId: boardId}
       const sequence = index + 1;
       await $.ajax({
         type: 'PUT',
@@ -131,7 +130,7 @@ function KanbanListReorder() {
           console.log(data.message);
         },
         error: (error) => {
-          console.log(error);
+          console.log(error.responseJSON.errorMessage);
         },
       });
     }
@@ -141,7 +140,7 @@ function KanbanListReorder() {
 
 function CardListReorder() {
   Object.values($('.list-items').children('li')).forEach(async (column, index) => {
-    console.log('card list : ', column, index + 1);
+    // console.log('card list : ', column, index + 1);
   });
   // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
@@ -152,14 +151,13 @@ async function BoardColumnsGet() {
   // data: {boardId: boardId}
   await $.ajax({
     type: 'GET',
-    data: { boardId: 1 },
-    url: `/board-columns`,
+    url: `/board-columns?boardId=` + 1,
     success: (data) => {
       BoardColumns(data);
       init();
     },
     error: (error) => {
-      console.log(error);
+      console.log(error.responseJSON.errorMessage);
     },
   });
 }
@@ -167,7 +165,7 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 function BoardColumns(data) {
-  console.log(data);
+  // console.log(data);
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
@@ -181,8 +179,8 @@ function BoardColumns(data) {
                                         <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                     </button>
                                     <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                        <a class="dropdown-item" href="#">Edit Card Title</a>
-                                        <a class="dropdown-item" href="#">Delete Card</a>
+                                        <a class="dropdown-item" href="#">Edit Column Title</a>
+                                        <a class="dropdown-item" href="#">Delete Column</a>
                                     </div>
                                   </div>
                               </div>
@@ -190,7 +188,7 @@ function BoardColumns(data) {
 
                             <ul class="kanban-items list-items  drag-drop ">
 
-                              <li class="d-flex justify-content-between align-items-center ">
+                              <li class="d-flex justify-content-between align-items-center " data-cardId=>
                                   <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
                                     File Manager Design
                                   </div>
@@ -242,10 +240,36 @@ function BoardColumns(data) {
   kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
                               <div class="kanban-board__add-card">
-                                  <button class="shadow-none border-0"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
+                                  <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
                                     Add
                                     column</button>
                               </div>
                             </div>
                           </div>`;
+
+  document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
+    // Number(i) + 1 -> sequence
+    const columnTitle = document.getElementById('columnTitle').value;
+    console.log(a, Number(i) + 1, columnTitle);
+    BoardColumnsCreate(columnTitle, Number(i) + 1);
+  });
+}
+
+// column create api
+async function BoardColumnsCreate(name, sequence) {
+  await $.ajax({
+    type: 'POST',
+    url: `/board-columns?boardId=` + 1,
+    headers: {
+      Accept: 'application/json',
+    },
+    data: { name, sequence },
+    success: function (data) {
+      console.log(data.message);
+      window.location.reload();
+    },
+    error: (error) => {
+      console.log(error.responseJSON.errorMessage);
+    },
+  });
 }
