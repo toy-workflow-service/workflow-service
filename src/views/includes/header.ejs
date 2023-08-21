@@ -33,7 +33,7 @@
     <!-- endinject -->
 
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png" />
-
+    <script src="../assets/js/header.js" defer></script>
     <!-- Fonts -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
   </head>
@@ -261,7 +261,7 @@
                 <div class="dropdown-parent-wrapper">
                   <div class="dropdown-wrapper">
                     <h2 class="dropdown-wrapper__title">
-                      최근 알림 <span class="badge-circle badge-warning ms-1">4</span>
+                      최근 알림 <span class="badge-circle badge-warning ms-1">1</span>
                     </h2>
                     <ul>
                       <li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
@@ -278,64 +278,8 @@
                           </p>
                         </div>
                       </li>
-                      <li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
-                        <div class="nav-notification__type nav-notification__type--secondary">
-                          <img class="svg" src="../assets/img/svg/upload.svg" alt="upload" />
-                        </div>
-                        <div class="nav-notification__details">
-                          <p>
-                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
-                            <span>sent you a message</span>
-                          </p>
-                          <p>
-                            <span class="time-posted">5 hours ago</span>
-                          </p>
-                        </div>
-                      </li>
-                      <li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
-                        <div class="nav-notification__type nav-notification__type--success">
-                          <img class="svg" src="../assets/img/svg/log-in.svg" alt="log-in" />
-                        </div>
-                        <div class="nav-notification__details">
-                          <p>
-                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
-                            <span>sent you a message</span>
-                          </p>
-                          <p>
-                            <span class="time-posted">5 hours ago</span>
-                          </p>
-                        </div>
-                      </li>
-                      <li class="nav-notification__single nav-notification__single d-flex flex-wrap">
-                        <div class="nav-notification__type nav-notification__type--info">
-                          <img class="svg" src="../assets/img/svg/at-sign.svg" alt="at-sign" />
-                        </div>
-                        <div class="nav-notification__details">
-                          <p>
-                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
-                            <span>sent you a message</span>
-                          </p>
-                          <p>
-                            <span class="time-posted">5 hours ago</span>
-                          </p>
-                        </div>
-                      </li>
-                      <li class="nav-notification__single nav-notification__single d-flex flex-wrap">
-                        <div class="nav-notification__type nav-notification__type--danger">
-                          <img src="../assets/img/svg/heart.svg" alt="heart" class="svg" />
-                        </div>
-                        <div class="nav-notification__details">
-                          <p>
-                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
-                            <span>sent you a message</span>
-                          </p>
-                          <p>
-                            <span class="time-posted">5 hours ago</span>
-                          </p>
-                        </div>
-                      </li>
                     </ul>
-                    <a href="" class="dropdown-wrapper__more">See all incoming activity</a>
+                    <a href="" class="dropdown-wrapper__more"></a>
                   </div>
                 </div>
               </div>
@@ -344,24 +288,26 @@
             <li class="nav-author">
               <div class="dropdown-custom">
                 <a href="javascript:;" class="nav-item-toggle"
-                  ><img src="../assets/img/author-nav.jpg" alt="" class="rounded-circle" />
-                  <span class="nav-item__title">Danial<i class="las la-angle-down nav-item__arrow"></i></span>
+                  ><img src="<%= header.profileUrl %>" alt="" class="rounded-circle" />
+                  <span class="nav-item__title"
+                    ><%= header.name %><i class="las la-angle-down nav-item__arrow"></i
+                  ></span>
                 </a>
                 <div class="dropdown-parent-wrapper">
                   <div class="dropdown-wrapper">
                     <div class="nav-author__info">
                       <div class="author-img">
-                        <img src="../assets/img/author-nav.jpg" alt="" class="rounded-circle" />
+                        <img src="<%= header.profileUrl %>" alt="" class="rounded-circle" />
                       </div>
                       <div>
-                        <h6>Rabbi Islam Rony</h6>
-                        <span>UI Designer</span>
+                        <h6><%= header.name %></h6>
+                        <span><%= header.email %></span>
                       </div>
                     </div>
                     <div class="nav-author__options">
                       <ul>
                         <li>
-                          <a href=""> <i class="uil uil-user"></i> Profile</a>
+                          <a href="/userInfo"> <i class="uil uil-user"></i> Profile</a>
                         </li>
                         <li>
                           <a href="">
@@ -372,14 +318,15 @@
                         <li>
                           <a href=""> <i class="uil uil-key-skeleton"></i> Billing</a>
                         </li>
-                        <li>
-                          <a href=""> <i class="uil uil-users-alt"></i> Activity</a>
-                        </li>
-                        <li>
-                          <a href=""> <i class="uil uil-bell"></i> Help</a>
-                        </li>
                       </ul>
-                      <a href="" class="nav-author__signout"> <i class="uil uil-sign-out-alt"></i> Sign Out</a>
+                      <!-- <a class="nav-author__signout"> -->
+                      <button
+                        id="logoutBtn"
+                        class="btn btn-light btn-default btn-squared"
+                        style="width: 100%; height: 20%"
+                      >
+                        <i class="uil uil-sign-out-alt"> 로그아웃</i>
+                      </button>
                     </div>
                   </div>
                   <!-- ends: .dropdown-wrapper -->
