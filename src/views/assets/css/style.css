@@ -11588,7 +11588,7 @@ body.top-menu .navbar-left .customizer-trigger + .top-menu {
 }
 
 #imageUpload {
-  margin-left: 25%;
+  margin-left: 23%;
 }
 
 .user-social-profile .input-group,
@@ -27052,7 +27052,7 @@ body:after {
 
 /* login page */
 .admin {
-  background-image: url('img/admin-bg-light.png');
+  background-image: url('../img/admin-bg-light.png');
   background-repeat: no-repeat;
   background-position: top;
   min-height: 630px;

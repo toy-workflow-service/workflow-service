@@ -32,7 +32,7 @@ export class MailService {
       .then(() => {})
       .catch((err: any) => {
         console.log(err);
-        throw new HttpException('메일 전송에 실패했습니다.', HttpStatus.CONFLICT);
+        throw new HttpException(['메일 전송에 실패했습니다.'], HttpStatus.CONFLICT);
       });
     return { code, expireTime };
   }
@@ -53,7 +53,7 @@ export class MailService {
       })
       .catch((err: any) => {
         console.log(err);
-        throw new HttpException('메일 전송에 실패했습니다.', HttpStatus.CONFLICT);
+        throw new HttpException(['메일 전송에 실패했습니다.'], HttpStatus.CONFLICT);
       });
     return true;
   }
