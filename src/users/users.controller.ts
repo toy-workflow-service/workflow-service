@@ -41,7 +41,7 @@ export class UsersController {
     res.setHeader('authorization', `Bearer ${accessToken}`);
     res.cookie('refreshToken', refreshToken);
 
-    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
+    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. `, accessToken });
   }
 
   @Get('userInfo')

@@ -12,6 +12,8 @@ function login() {
     },
     data: { email, password },
     success: (data) => {
+      const { accessToken } = data;
+      localStorage.setItem('accessToken', accessToken);
       Swal.fire({
         icon: 'success',
         title: 'Success',
