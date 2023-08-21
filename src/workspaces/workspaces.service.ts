@@ -29,7 +29,7 @@ export class WorkspacesService {
           ...body,
           user: { id: userId },
         });
-
+        console.log(newWorkspace);
         await transactionEntityManager.save(Workspace, newWorkspace);
 
         const newMember = this.workspaceMemberRepository.create({
