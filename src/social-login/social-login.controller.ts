@@ -2,7 +2,6 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { SocialLoginService } from './social-login.service';
-import { RedisCacheService } from 'src/_common/cache/redis.service';
 import { SocialRequest } from 'src/_common/interfaces/social-request.interface';
 import { SocialUser } from 'src/_common/interfaces/social-user.interface';
 
