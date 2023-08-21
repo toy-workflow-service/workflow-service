@@ -117,9 +117,12 @@ export class UsersService {
     });
   }
 
-  // userId로만 조회
-  async findUserById(userId: number) {
-    return await this.usersRepository.findOneBy({ id: userId });
+  async findUserById(id: number): Promise<User> {
+    const existUser = await this.usersRepository.findOne({ where: { id } });
+
+    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    return existUser;
   }
 
   // name으로만 조회
