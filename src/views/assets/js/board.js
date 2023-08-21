@@ -72,7 +72,8 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 // -----------------여기서부터 작업함--------------------
 const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
-boardId = Number(boardId);
+// boardId = Number(boardId);
+boardId = 1;
 
 // $(init);
 $(BoardColumnsGet);
@@ -100,7 +101,7 @@ function init() {
       },
       stop: function (e, i) {
         // console.log('stop : ', e, i);
-        KanbanListReorder();
+        ColumnListReorder();
       },
     })
     .disableSelection();
@@ -111,7 +112,7 @@ function init() {
 }
 
 // 바뀐 순서 출력 (여기서 순서 update api 사용할듯)
-function KanbanListReorder() {
+function ColumnListReorder() {
   const columns = document.querySelectorAll('.kanban-list');
   Object.values(columns).forEach(async (column, index) => {
     // console.log('testest: ', column, index + 1);
@@ -138,7 +139,7 @@ function CardListReorder() {
 async function BoardColumnSequenceUpdate(columnId, sequence) {
   $.ajax({
     type: 'PUT',
-    url: `/board-columns/${columnId}/sequence?boardId=` + 1,
+    url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
     data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
@@ -158,7 +159,7 @@ async function BoardColumnsGet() {
   // data: {boardId: boardId}
   await $.ajax({
     type: 'GET',
-    url: `/board-columns?boardId=` + 1,
+    url: `/board-columns?boardId=` + boardId,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
@@ -191,7 +192,7 @@ function BoardColumns(data) {
                                     </button>
                                     <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
                                         <a class="dropdown-item" href="#">Edit Column Title</a>
-                                        <a class="dropdown-item" href="#">Delete Column</a>
+                                        <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
                                     </div>
                                   </div>
                               </div>
@@ -264,13 +265,20 @@ function BoardColumns(data) {
     console.log(a, Number(i) + 1, columnTitle);
     BoardColumnsCreate(columnTitle, Number(i) + 1);
   });
+
+  document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
+    data.addEventListener('click', async () => {
+      const columnId = data.getAttribute('value');
+      await BoardColumnDelete(columnId);
+    });
+  });
 }
 
 // column create api
 async function BoardColumnsCreate(name, sequence) {
   await $.ajax({
     type: 'POST',
-    url: `/board-columns?boardId=` + 1,
+    url: `/board-columns?boardId=` + boardId,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
@@ -278,6 +286,27 @@ async function BoardColumnsCreate(name, sequence) {
     data: JSON.stringify({ name, sequence }),
     success: function (data) {
       console.log(data.message);
+      // window.location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// column delete api
+async function BoardColumnDelete(columnId) {
+  console.log(columnId);
+  $.ajax({
+    type: 'DELETE',
+    url: `/board-columns/${columnId}?boardId=` + boardId,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+      ColumnListReorder();
       window.location.reload();
     },
     error: (error) => {
