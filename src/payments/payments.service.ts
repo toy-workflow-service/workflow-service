@@ -81,19 +81,19 @@ export class PaymentsService {
 
     const targetMembership = await this.membershipService.getMyMembership(workspaceId);
 
+    const milliSecondPerDay = 24 * 60 * 60 * 1000;
     const refundRequestDate = new Date();
 
-    // 사용기간 계산
-    const caculateDate = new Date(refundRequestDate.getTime() - targetMembership.created_at.getTime());
-
     // 남은기간 계산
-    const remaingDate = new Date((targetMembership.end_date.getTime() - caculateDate.getTime()) / 1000);
-    console.log(remaingDate);
+    const remainingTime = targetMembership.end_date.getTime() - refundRequestDate.getTime();
+    const remainingDays = Math.floor(remainingTime / milliSecondPerDay);
+
     // 멤버십 금액의 일할 계산
-    const membershipPeriod = new Date(targetMembership.end_date.getTime() - targetMembership.created_at.getTime());
-    const dailyPrice = Math.floor(targetMembership.package_price / Math.floor(+membershipPeriod / 1000));
-    const refundPrice = Math.floor(+remaingDate / 1000) * dailyPrice;
-    console.log(refundPrice);
+    const membershipPeriod = targetMembership.end_date.getTime() - targetMembership.created_at.getTime();
+    const daysInMembership = Math.floor(membershipPeriod / milliSecondPerDay);
+
+    const dailyPrice = Math.floor(targetMembership.package_price / daysInMembership);
+    const refundPrice = Math.floor(remainingDays) * dailyPrice;
 
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
@@ -107,7 +107,7 @@ export class PaymentsService {
         const remainPoint = (user.points += refundPoint);
         await transactionEntityManager.save(User, { ...user, points: remainPoint });
       });
-      return { remaingDate, refundPrice };
+      return { remainingDays, refundPrice };
     } catch (err) {
       console.error(err);
     }
