@@ -31,6 +31,14 @@ export class ViewController {
     return { title: 'Work Flow', subtitle: '마이 페이지', header };
   }
 
+  @Get('board')
+  @Render('board.ejs')
+  async board(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work Flow', subtitle: 'board', header };
+  }
+
   /**No header & footer */
 
   @Get('signup')
@@ -49,11 +57,5 @@ export class ViewController {
   @Render('find-password.ejs')
   async findPassword() {
     return { title: 'Work Flow', subtitle: '비밀번호 찾기' };
-  }
-
-  @Get('kanban')
-  @Render('kanban.ejs')
-  async kanban() {
-    return { title: 'Work Flow', subtitle: 'board' };
   }
 }
