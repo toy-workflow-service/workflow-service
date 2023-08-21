@@ -15,7 +15,7 @@ function dragOver(e) {
   }
   this.classList.add('over');
 
-  e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+  e.dataTransfer.dropEffect = 'move'; // See the section on the DataTransfer object.
 
   return false;
 }
@@ -25,7 +25,7 @@ function dragEnter(e) {
 }
 
 function dragLeave(e) {
-  this.classList.remove('over');  // this / e.target is previous target element.
+  this.classList.remove('over'); // this / e.target is previous target element.
 }
 
 function elementDrop(e) {
@@ -43,10 +43,9 @@ function elementDrop(e) {
     //this.innerHTML = e.dataTransfer.getData('text/html');
     this.parentNode.removeChild(srcElement);
     var dropHTML = e.dataTransfer.getData('text/html');
-    this.insertAdjacentHTML('beforebegin',dropHTML);
+    this.insertAdjacentHTML('beforebegin', dropHTML);
     var dropElem = this.previousSibling;
     addDnDHandlers(dropElem);
-    
   }
   this.classList.remove('over');
   return false;
@@ -55,12 +54,11 @@ function elementDrop(e) {
 function dragEnd(e) {
   // this/e.target is the source node.
   this.classList.remove('over');
-
 }
 
 function addDnDHandlers(elem) {
   elem.addEventListener('dragstart', dragStart, false);
-  elem.addEventListener('dragenter', dragEnter, false)
+  elem.addEventListener('dragenter', dragEnter, false);
   elem.addEventListener('dragover', dragOver, false);
   elem.addEventListener('dragleave', dragLeave, false);
   elem.addEventListener('drop', elementDrop, false);
@@ -70,16 +68,19 @@ function addDnDHandlers(elem) {
 var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
-
-$( init );
+$(init);
 
 function init() {
-  $( ".kanban-items,.todo-task1 tbody" ).sortable({
-      connectWith: ".kanban-items,.todo-task1 tbody",
-      stack: '.kanban-items  ul,.todo-task1 tbody'
-    }).disableSelection();
-    $( ".kanban-container,.todo-task2 tbody" ).sortable({
-      connectWith: ".kanban-container,.todo-task2 tbody ",
-      stack: '.kanban-container,.todo-task2 tbody'
-    }).disableSelection();
+  $('.kanban-items,.todo-task1 tbody')
+    .sortable({
+      connectWith: '.kanban-items,.todo-task1 tbody',
+      stack: '.kanban-items  ul,.todo-task1 tbody',
+    })
+    .disableSelection();
+  $('.kanban-container,.todo-task2 tbody')
+    .sortable({
+      connectWith: '.kanban-container,.todo-task2 tbody ',
+      stack: '.kanban-container,.todo-task2 tbody',
+    })
+    .disableSelection();
 }
