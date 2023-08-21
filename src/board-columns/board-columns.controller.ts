@@ -35,7 +35,7 @@ export class BoardColumnsController {
     @Query('boardId') boardId: number,
     @Param('columnId') columnId: number,
     @Body() data: UpdateBoardColumnNameDto,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardColumnsService.UpdateBoardColumnName(boardId, columnId, data.name);
     return res.status(HttpStatus.OK).json({ message: '칼럼 이름을 수정하였습니다.' });
@@ -48,7 +48,7 @@ export class BoardColumnsController {
     @Query('boardId') boardId: number,
     @Param('columnId') columnId: number,
     @Body() data: UpdateBoardColumnSequenceDto,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardColumnsService.UpdateBoardColumnSequence(boardId, columnId, data.sequence);
     return res.status(HttpStatus.OK).json({ message: '칼럼 순서를 수정하였습니다.' });
@@ -60,7 +60,7 @@ export class BoardColumnsController {
   async DeleteBoardColumn(
     @Query('boardId') boardId: number,
     @Param('columnId') columnId: number,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardColumnsService.DeleteBoardColumn(boardId, columnId);
     return res.status(HttpStatus.OK).json({ message: '칼럼을 삭제하였습니다.' });

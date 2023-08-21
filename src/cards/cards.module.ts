@@ -2,16 +2,33 @@ import { Module } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CardsController } from './cards.controller';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Card } from 'src/_common/entities/card.entity';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
+import { BoardsService } from 'src/boards/boards.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { Workspace } from 'src/_common/entities/workspace.entity';
+import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/_common/entities/user.entitiy';
+import { MailService } from 'src/_common/mail/mail.service';
+import { JwtService } from 'src/_common/security/jwt/jwt.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Card } from 'src/_common/entities/card.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Card, Board_Column, Board]), // Card 엔티티 등록
+    TypeOrmModule.forFeature([Card, Board_Column, Board, Workspace, Workspace_Member, User]), // Card 엔티티 등록
   ],
+  exports: [TypeOrmModule],
   controllers: [CardsController],
-  providers: [CardsService, BoardColumnsService],
+  providers: [
+    CardsService,
+    BoardColumnsService,
+    BoardsService,
+    WorkspacesService,
+    UsersService,
+    MailService,
+    JwtService,
+  ],
 })
 export class CardsModule {}
