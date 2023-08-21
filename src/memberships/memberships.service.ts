@@ -58,10 +58,11 @@ export class MembershipsService {
     const targetMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
     const servicePeriod = body.servicePeriod * 24 * 60 * 60 * 1000;
     const newEndDate = new Date(targetMembership.end_date.getTime() + servicePeriod);
+    const updatePrice = (targetMembership.package_price += body.packagePrice);
 
     if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
 
-    await this.membershipRepository.save({ ...targetMembership, end_date: newEndDate });
+    await this.membershipRepository.save({ ...targetMembership, package_price: updatePrice, end_date: newEndDate });
     return { result: true };
   }
 
