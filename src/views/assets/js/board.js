@@ -191,7 +191,7 @@ function BoardColumns(data) {
                                         <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                     </button>
                                     <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                        <a class="dropdown-item" href="#">Edit Column Title</a>
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
                                         <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
                                     </div>
                                   </div>
@@ -272,6 +272,24 @@ function BoardColumns(data) {
       await BoardColumnDelete(columnId);
     });
   });
+
+  //모달창이 열리면 해당 모달창에 value값으로 columnId값을 보내거나 받아와야함
+  let columnId;
+  document.querySelectorAll('#updateColumnTitle').forEach((data) => {
+    data.addEventListener('click', () => {
+      const id = data.getAttribute('data-value');
+      const title = data.getAttribute('data-title');
+      document.getElementById('columnTitleUpdate').value = title;
+      columnId = id;
+      console.log(id, title);
+    });
+  });
+
+  document.getElementById('ColumnUpdateNameBtn').addEventListener('click', async () => {
+    const columnTitle = document.getElementById('columnTitleUpdate').value;
+    console.log(columnId, columnTitle);
+    await BoardColumnNameUpdate(columnId, columnTitle);
+  });
 }
 
 // column create api
@@ -286,7 +304,7 @@ async function BoardColumnsCreate(name, sequence) {
     data: JSON.stringify({ name, sequence }),
     success: function (data) {
       console.log(data.message);
-      // window.location.reload();
+      location.reload();
     },
     error: (error) => {
       console.log(error);
@@ -307,7 +325,27 @@ async function BoardColumnDelete(columnId) {
     success: (data) => {
       console.log(data.message);
       ColumnListReorder();
-      window.location.reload();
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// column name update api
+async function BoardColumnNameUpdate(columnId, name) {
+  $.ajax({
+    type: 'PUT',
+    url: `/board-columns/${columnId}?boardId=` + boardId,
+    data: JSON.stringify({ name }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+      location.reload();
     },
     error: (error) => {
       console.log(error);
