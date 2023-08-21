@@ -14,6 +14,14 @@ export class ViewController {
     return { title: 'Work Flow', subtitle: '메인페이지', header };
   }
 
+  @Get('workspace')
+  @Render('workspace.ejs')
+  async workspace(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work Flow', subtitle: '워크스페이스', header };
+  }
+
   /**No header & footer */
 
   @Get('signup')
