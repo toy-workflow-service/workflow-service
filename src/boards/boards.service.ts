@@ -15,7 +15,7 @@ export class BoardsService {
   // 보드 조회
   async GetBoards(workspaceId: number) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const findBoards = await this.boardRepository.find({ relations: ['workspace'] });
+    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members'] });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
     const boards = findBoards.filter((board) => {
@@ -26,6 +26,8 @@ export class BoardsService {
         workspaceId: board.workspace.id,
         boardId: board.id,
         boardName: board.name,
+        description: board.description,
+        boardMembers: board.board_members,
         createdAt: board.created_at,
         updatedAt: board.updated_at,
       };

@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { CreateBoardMemberDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 
-@Controller('board-members')
+@Controller('')
 export class BoardMembersController {
   constructor(private readonly boardMembersService: BoardMembersService) {}
 
