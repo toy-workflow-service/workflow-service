@@ -24,6 +24,8 @@ import { JwtModule } from './_common/security/jwt/jwt.module';
 import { PassportModule } from '@nestjs/passport';
 import { SMSModule } from './_common/sms/sms.module';
 import { SocialLoginModule } from './social-login/social-login.module';
+import { PaymentsModule } from './payments/payments.module';
+import { MembershipsModule } from './memberships/memberships.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { SocialLoginModule } from './social-login/social-login.module';
     DirectMessagesModule,
     RemindersModule,
     SocialLoginModule,
+    PaymentsModule,
+    MembershipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

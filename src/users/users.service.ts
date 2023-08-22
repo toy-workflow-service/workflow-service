@@ -26,7 +26,7 @@ export class UsersService {
     const existUser: UserDAO = await this.usersRepository.findOne({
       where: { email: newUser.email },
     });
-    if (existUser) throw new HttpException('이미 존재하는 이메일입니다.', HttpStatus.CONFLICT);
+    if (existUser) throw new HttpException(['이미 존재하는 이메일입니다.'], HttpStatus.CONFLICT);
 
     password = await bcryptPassword(password);
     newUser.password = password;
@@ -39,11 +39,11 @@ export class UsersService {
   ): Promise<{ accessToken: string; refreshToken: string; userName: string } | undefined> {
     const existUser: User = await this.usersRepository.findOne({ where: { email: userInfo.email } });
     if (!existUser)
-      throw new HttpException('존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.', HttpStatus.PRECONDITION_FAILED);
+      throw new HttpException(['존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.'], HttpStatus.PRECONDITION_FAILED);
     const validatePassword = await comparePassword(userInfo.password, existUser.password);
 
     if (!validatePassword)
-      throw new HttpException('존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.', HttpStatus.PRECONDITION_FAILED);
+      throw new HttpException(['존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.'], HttpStatus.PRECONDITION_FAILED);
 
     const accessToken = this.jwtService.sign(
       { id: existUser.id },
@@ -67,11 +67,11 @@ export class UsersService {
     const existUser = await this.usersRepository.findOne({ where: { id } });
 
     const validPassword = await comparePassword(passwordDTO.currentPassword, existUser.password);
-    if (!validPassword) throw new HttpException('현재 비밀번호가 일치하지 않습니다.', HttpStatus.FORBIDDEN);
+    if (!validPassword) throw new HttpException(['현재 비밀번호가 일치하지 않습니다.'], HttpStatus.FORBIDDEN);
 
     const validNewPassword = await comparePassword(passwordDTO.newPassword, existUser.password);
     if (validNewPassword)
-      throw new HttpException('바꾸려는 비밀번호가 현재 비밀번호와 일치합니다.', HttpStatus.FORBIDDEN);
+      throw new HttpException(['바꾸려는 비밀번호가 현재 비밀번호와 일치합니다.'], HttpStatus.FORBIDDEN);
 
     const password = await bcryptPassword(passwordDTO.newPassword);
     await this.usersRepository.update({ id }, { password });
@@ -80,12 +80,18 @@ export class UsersService {
   async findPassword(email: string): Promise<any> {
     const existUser = await this.usersRepository.findOne({ where: { email } });
     if (!existUser)
-      throw new HttpException('가입되지 않은 이메일입니다. 이메일을 확인해 주세요.', HttpStatus.NOT_FOUND);
+      throw new HttpException(['가입되지 않은 이메일입니다. 이메일을 확인해 주세요.'], HttpStatus.NOT_FOUND);
 
     return await this.mailService.sendEmail(email);
   }
 
   async changePassword(changePasswordDTO: ChangePasswordDTO): Promise<void> {
+    const existUser = await this.usersRepository.findOne({ where: { email: changePasswordDTO.email } });
+
+    const validNewPassword = await comparePassword(changePasswordDTO.password, existUser.password);
+    if (validNewPassword)
+      throw new HttpException(['바꾸려는 비밀번호가 기존 비밀번호와 일치합니다.'], HttpStatus.FORBIDDEN);
+
     let { password } = changePasswordDTO;
     password = await bcryptPassword(password);
 
@@ -99,7 +105,7 @@ export class UsersService {
   async findUserByEmail(email: string): Promise<User> {
     const existUser = await this.usersRepository.findOne({ where: { email } });
 
-    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+    if (!existUser) throw new HttpException(['해당 유저를 찾을 수 없습니다'], HttpStatus.NOT_FOUND);
 
     return existUser;
   }
@@ -111,9 +117,12 @@ export class UsersService {
     });
   }
 
-  // userId로만 조회
-  async findUserById(userId: number) {
-    return await this.usersRepository.findOneBy({ id: userId });
+  async findUserById(id: number): Promise<User> {
+    const existUser = await this.usersRepository.findOne({ where: { id } });
+
+    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    return existUser;
   }
 
   // name으로만 조회

@@ -1,0 +1,60 @@
+<%- include('includes/header') %>
+<main id="main" class="main">
+  <div class="contents">
+    <div class="container-fluid">
+      <div class="profile-content mb-50">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="breadcrumb-main">
+              <h4 class="text-capitalize breadcrumb-title">My profile</h4>
+              <div class="breadcrumb-action justify-content-center flex-wrap">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="/"><i class="uil uil-estate"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">My profile</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-md-4">
+            <aside class="profile-sider">
+              <!-- Profile Acoount -->
+              <div class="card mb-25">
+                <div class="card-body text-center pt-sm-30 pb-sm-0 px-25 pb-0" style="height: 120%">
+                  <div class="account-profile">
+                    <div class="ap-img w-100 d-flex justify-content-center">
+                      <!-- Profile picture image-->
+                      <img
+                        class="ap-img__main rounded-circle mb-3 wh-120 d-flex bg-opacity-primary"
+                        src="<%= header.profileUrl %>"
+                        alt="profile"
+                      />
+                    </div>
+                    <div class="ap-nameAddress pb-3 pt-1">
+                      <h5 class="ap-nameAddress__title"><%= header.name %></h5>
+                      <p class="ap-nameAddress__subTitle fs-14 m-0"><%= header.email %></p>
+                    </div>
+                    <div class="ap-button button-group d-flex justify-content-center flex-wrap">
+                      <button type="button" class="border text-capitalize px-25 color-gray transparent radius-md">
+                        <img class="svg" src="./assets/img/svg/mail.svg" alt="mail" />내 메시지
+                      </button>
+
+                      <button class="btn btn-primary btn-default btn-squared text-capitalize px-25">
+                        <img src="./assets/img/svg/user-plus.svg" alt="user-plus" class="svg" />
+                        팔로워
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<%- include('includes/footer') %>

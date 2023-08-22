@@ -21,8 +21,6 @@ async function sendMail() {
     return;
   }
 
-  verifyCodeDiv.style = 'display: block';
-
   await $.ajax({
     type: 'POST',
     url: '/mail',
@@ -37,15 +35,25 @@ async function sendMail() {
         title: 'Success',
         text: data.message,
       });
+
+      verifyCodeDiv.style = 'display: block';
       return;
     },
     error: (error) => {
-      console.error(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+      console.log(error);
+      if (error.responseJSON.message) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON,
+        });
+      }
       verifyCodeDiv.style = 'display: none';
       return;
     },
@@ -126,16 +134,24 @@ function signup() {
         title: 'Success',
         text: data.message,
       }).then(() => {
-        window.location.href = '/';
+        window.location.href = '/login';
       });
     },
     error: (error) => {
       console.log(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message[0],
-      });
+      if (error.responseJSON.message) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON,
+        });
+      }
       return;
     },
   });

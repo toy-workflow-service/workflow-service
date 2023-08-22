@@ -10,13 +10,14 @@ import {
 import { User } from './user.entitiy';
 import { Workspace_Member } from './workspace-member.entity';
 import { Board } from './board.entity';
+import { Membership } from './membership.entity';
 
 @Entity('workspaces')
 export class Workspace {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ nullable: false, length: 20 })
+  @Column({ nullable: false })
   name: string;
 
   @Column({ nullable: false })
@@ -46,4 +47,10 @@ export class Workspace {
     cascade: true,
   })
   boards: Board[];
+
+  @OneToMany(() => Membership, (membership) => membership.workspace, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  memberships: Membership[];
 }

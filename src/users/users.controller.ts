@@ -25,7 +25,7 @@ export class UsersController {
   @Post('signup')
   async signup(@Body() userDTO: SignUpDTO, @Req() req: MulterRequest, @Res() res: Response): Promise<Object> {
     if (!userDTO.emailAuth)
-      throw new HttpException('이메일이 인증되지 않았습니다. 이메일 인증을 해주세요. ', HttpStatus.BAD_REQUEST);
+      throw new HttpException(['이메일이 인증되지 않았습니다. 이메일 인증을 해주세요. '], HttpStatus.BAD_REQUEST);
 
     const profileUrl = req.file ? req.file.location : null;
     userDTO.profile_url = profileUrl;
@@ -41,7 +41,7 @@ export class UsersController {
     res.setHeader('authorization', `Bearer ${accessToken}`);
     res.cookie('refreshToken', refreshToken);
 
-    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
+    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. `, accessToken });
   }
 
   @Get('userInfo')
@@ -101,15 +101,16 @@ export class UsersController {
   @Post('password/findPassword')
   async findPassword(@Body() email: EmailDTO, @Res() res: Response): Promise<Object> {
     const { code, expireTime } = await this.usersService.findPassword(email.email);
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: '해당 이메일로 인증 번호를 보내드렸습니다. 확인해 주세요.', code, expireTime });
+    return res.status(HttpStatus.OK).json({ message: '해당 이메일로 인증 번호를 보내드렸습니다. ', code, expireTime });
   }
 
   // 비밀번호 찾기 후 이메일 인증에 성공했을 때 호출되는 API
   @Post('password/changePassword')
   async changePassword(@Body() changePasswordDTO: ChangePasswordDTO, @Res() res: Response): Promise<Object> {
+    if (!changePasswordDTO.emailAuth)
+      throw new HttpException(['이메일이 인증되지 않았습니다. 이메일 인증을 해주세요. '], HttpStatus.BAD_REQUEST);
+
     await this.usersService.changePassword(changePasswordDTO);
-    return res.status(HttpStatus.OK).json({ message: '비밀번호가 변경 되었습니다. ' });
+    return res.status(HttpStatus.OK).json({ message: '비밀번호가 변경 되었습니다. 로그인 창으로 이동합니다. ' });
   }
 }
