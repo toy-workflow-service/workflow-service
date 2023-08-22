@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
 import { Request } from 'express';
@@ -10,6 +22,7 @@ import { Workspace } from 'src/_common/entities/workspace.entity';
 import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-interceptors';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
+import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 
 @Controller('workspaces')
 export class WorkspacesController {
@@ -83,5 +96,15 @@ export class WorkspacesController {
   async acceptInvitaion(@Param('workspaceId') workspaceId: number, @Req() req: Request): Promise<IResult> {
     const { email } = req.query;
     return await this.workspaceService.acceptInvitaion(workspaceId, email);
+  }
+
+  @Get(':workspaceId/members/search')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
+  async searchMemberByName(
+    @Param('workspaceId') workspaceId: number,
+    @Query('name') name: string,
+  ): Promise<Workspace_Member> {
+    return await this.workspaceService.searchMemberByName(workspaceId, name);
   }
 }

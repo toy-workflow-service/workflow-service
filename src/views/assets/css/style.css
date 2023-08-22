@@ -15086,6 +15086,7 @@ input[type='checkbox']:checked + label.strikethrough {
     font-size: 18px;
   }
 }
+
 .new-member .modal-header .close:hover {
   color: var(--color-white);
   background-color: var(--color-primary);

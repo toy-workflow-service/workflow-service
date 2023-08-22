@@ -51,7 +51,7 @@ export class BoardsService {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
-    await this.boardRepository.insert({ name, description, workspace });
+    return await this.boardRepository.insert({ name, description, workspace });
   }
 
   //보드 수정
