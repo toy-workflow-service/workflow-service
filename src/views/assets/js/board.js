@@ -130,7 +130,7 @@ function ColumnListReorder() {
 function CardListReorder() {
   Object.values($('.list-items').children('li')).forEach(async (card, index) => {
     console.log('card list : ', card, index + 1);
-    await CardSequenceUpdate(columnId, cardId, sequence);
+    // await CardSequenceUpdate(columnId, cardId, sequence);
   });
   // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
