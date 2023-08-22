@@ -73,7 +73,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
-boardId = 1;
+boardId = 8;
 
 // $(init);
 $(BoardColumnsGet);
@@ -128,8 +128,9 @@ function ColumnListReorder() {
 }
 
 function CardListReorder() {
-  Object.values($('.list-items').children('li')).forEach(async (column, index) => {
-    // console.log('card list : ', column, index + 1);
+  Object.values($('.list-items').children('li')).forEach(async (card, index) => {
+    console.log('card list : ', card, index + 1);
+    await CardSequenceUpdate(columnId, cardId, sequence);
   });
   // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
@@ -182,6 +183,8 @@ function BoardColumns(data) {
   kanbanList.innerHTML = '';
   let i = 0;
   for (i in data) {
+    // const {cardHtml, index} = CardGet(data[i].columnId);
+    // console.log('BoardColumns in :', cardHtml);
     kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
                             <div class="kanban-tops list-tops">
                               <div class="d-flex justify-content-between align-items-center py-10">
@@ -243,7 +246,7 @@ function BoardColumns(data) {
 
                             </ul>
 
-                            <button class="add-card-btn"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
+                            <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-cardId="cardId넣어주세요" data-columnId="columnId 넣어주세요" data-index="변수index를 넣어주세요"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
                               card</button>
 
                           </div>`;
@@ -259,13 +262,15 @@ function BoardColumns(data) {
                             </div>
                           </div>`;
 
+  // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
-    console.log(a, Number(i) + 1, columnTitle);
+    console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
     BoardColumnsCreate(columnTitle, Number(i) + 1);
   });
 
+  //column delete button click
   document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
     data.addEventListener('click', async () => {
       const columnId = data.getAttribute('value');
@@ -281,14 +286,52 @@ function BoardColumns(data) {
       const title = data.getAttribute('data-title');
       document.getElementById('columnTitleUpdate').value = title;
       columnId = id;
-      console.log(id, title);
     });
   });
 
   document.getElementById('ColumnUpdateNameBtn').addEventListener('click', async () => {
     const columnTitle = document.getElementById('columnTitleUpdate').value;
-    console.log(columnId, columnTitle);
     await BoardColumnNameUpdate(columnId, columnTitle);
+  });
+
+  // card create button click
+  //모달 창이 열리면 해당 columnId값을 보내줘야함
+  let cardSequence;
+  document.querySelectorAll('createCard').forEach((data) => {
+    data.addEventListener('click', () => {
+      const id = data.getAttribute('data-columnId');
+      columnId = id;
+      cardSequence = Number(data.getAttribute('data-index')) + 1;
+    });
+  });
+
+  document.getElementById('CardCreateBtn').addEventListener('click', () => {
+    const cardTitle = document.getElementById('cardTitleCreate').value;
+    const cardColor = document.getElementById('cardColorCreate').value;
+    const cardContent = document.getElementById('cardContentCreate').value;
+    const cardFile = document.getElementById('cardfileCreate').value;
+    // const members = 로그인한 멤버 이름
+    const card = {
+      name: cardTitle,
+      color: cardColor,
+      content: cardContent,
+      fileUrl: cardFile,
+      members,
+      sequence: cardSequence,
+    };
+
+    // CardCreate(columnId,card);
+  });
+
+  // card detail box click
+  // 모달창이 열리면 해당하는 card 값들을 뿌려주기, member초대란 만들기, 댓글란 만들기
+  document.querySelectorAll('#card-list-item').forEach((data) => {
+    data.addEventListener('click', () => {
+      const cardId = data.getAttribute('data-cardId');
+      columnId = data.getAttribute('data-columnId');
+
+      DetailCardGet(columnId, cardId);
+    });
   });
 }
 
@@ -314,7 +357,6 @@ async function BoardColumnsCreate(name, sequence) {
 
 // column delete api
 async function BoardColumnDelete(columnId) {
-  console.log(columnId);
   $.ajax({
     type: 'DELETE',
     url: `/board-columns/${columnId}?boardId=` + boardId,
@@ -346,6 +388,150 @@ async function BoardColumnNameUpdate(columnId, name) {
     success: (data) => {
       console.log(data.message);
       location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// card get api
+async function CardGet(columnId) {
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
+  console.log(columnId);
+  await $.ajax({
+    type: 'GET',
+    url: ``,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log('get card data : ', data);
+      Cards(data, columnId);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// card get html
+function Cards(data, columnId) {
+  const cardHtml = document.querySelector('.drag-drop');
+  cardHtml = '';
+
+  // card data 입력
+  let i = 0;
+  for (i in data) {
+    console.log(`Cards in card ${i} : `, data[i]);
+    cardHtml += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${columnId} data-cardId=cardId를 넣어주세요>
+                    <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+                      File Manager Design
+                    </div>
+                    <button class="open-popup-modal" type="button">
+                      <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                    </button>
+                    <div class="popup-overlay">
+                      <!--Creates the popup content-->
+                      <div class="popup-content">
+                          <div class="mb-10 popup-textarea">
+                            <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                          </div>
+                          <div class="d-flex align-items-center popup-button">
+                            <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                          </div>
+                          <div class="overlay-close"></div>
+                      </div>
+                    </div>
+                </li>`;
+  }
+  return { cardHtml, index: i };
+}
+
+// card create api
+async function CardCreate(columnId, data) {
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
+  console.log(columnId, data);
+  await $.ajax({
+    type: 'POST',
+    url: ``,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({}),
+    success: function (data) {
+      console.log(data.message);
+      // location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// card detail get api
+async function DetailCardGet(columnId, cardId) {
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
+  console.log(columnId, cardId);
+  await $.ajax({
+    type: 'GET',
+    url: ``,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log('get card data : ', data);
+      DetailCard(data);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// detail card get html
+function DetailCard(data) {
+  // detail card 모달 수정해야하고, id값을 정해서 value에 값을 넣어줘야함...(오후에 하자..)
+}
+
+// card sequence update api
+async function CardSequenceUpdate(columnId, cardId, sequence) {
+  console.log('CardSequenceUpdate : ', columnId, cardId, sequence);
+  // 쿼리를 사용하려면 -> 예시 : url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
+  $.ajax({
+    type: 'PUT',
+    url: ``,
+    data: JSON.stringify({ sequence }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// card update api / detail modal -> update btn click -> submit btn click
+function CardAllUpdate(columnId, cardId, data) {
+  console.log('CardSequenceUpdate : ', columnId, cardId, data);
+  // 쿼리를 사용하려면 -> 예시 : url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
+  $.ajax({
+    type: 'PUT',
+    url: ``,
+    data: JSON.stringify({}),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
     },
     error: (error) => {
       console.log(error);
