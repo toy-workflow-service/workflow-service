@@ -11,7 +11,7 @@ export class BoardMessagesService {
     @InjectRepository(Board_Message)
     private boardMessageRepository: Repository<Board_Message>,
     private boardsService: BoardsService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {}
 
   //보드 메세지 조회
