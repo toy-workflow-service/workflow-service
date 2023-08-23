@@ -89,7 +89,7 @@ async function getMyBoards() {
         for (const board of boards) {
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
-                        <div class="border-bottom px-30" boardId="${board.boardId}">
+                        <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
                               <a href="application-ui.html">
@@ -110,7 +110,9 @@ async function getMyBoards() {
                                   <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
                                 </button>
                                 <div class="dropdown-menu">
-                                  <a class="dropdown-item">edit</a>
+                                  <a class="dropdown-item" boardId="${
+                                    board.boardId
+                                  }" onclick="openEditBoardModal(this)">edit</a>
                                   <a class="dropdown-item">delete</a>
                                 </div>
                               </div>
@@ -219,7 +221,6 @@ createBoardBtn.addEventListener('click', async (event) => {
           title: 'Success!',
           text: data.message,
         }).then(() => {
-          $('.new-member-modal').modal('hide');
           window.location.reload();
         });
       },
@@ -274,7 +275,75 @@ async function searchMembers(searchText) {
 // 선택한 멤버 UI 출력
 function updateSelectedMembersUI() {
   const selectedMemberList = document.querySelector('#selected-members');
-  selectedMemberList.innerHTML = selectedMembers.map((member) => `<li>${member}</li>`).join('');
+  selectedMemberList.innerHTML = selectedMembers
+    .map(
+      (member) => `
+    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+  `,
+    )
+    .join('');
+
+  // 재선택 시 삭제
+  const removeIcons = selectedMemberList.querySelectorAll('.remove-member');
+  removeIcons.forEach((icon) => {
+    icon.addEventListener('click', (e) => {
+      const memberRemove = e.target.getAttribute('data-member');
+      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      updateSelectedMembersUI();
+    });
+  });
+}
+
+// 보드 수정 모달
+async function openEditBoardModal(element) {
+  const boardId = element.getAttribute('boardId');
+  try {
+    const response = await $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}?workspaceId=${workspaceId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    const board = response.board;
+    const editModal = document.querySelector('#new-member2');
+
+    const titleInput = editModal.querySelector('input[type="text"]');
+    const descriptionInput = editModal.querySelector('textarea');
+
+    titleInput.value = board.name;
+    descriptionInput.value = board.description;
+
+    const data = await getBoardMembers(boardId);
+    const selectedMembersList = editModal.querySelector('.user-group-people__parent');
+
+    selectedMembersList.innerHTML = '';
+    for (const member of data.boardMembers) {
+      const memberImage = member.profileUrl ? member.profileUrl : './assets/img/favicon.png';
+      selectedMembersList.innerHTML += `
+        <li>
+          <a>
+            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${memberImage}" alt="${member.name}" />
+            <span class="remove-member" data-member="${member.name}" data-member-id="${member.userId}">x</span>
+          </a>
+        </li>`;
+    }
+
+    const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
+    removeIcons.forEach((icon) => {
+      icon.addEventListener('click', (e) => {
+        const memberRemove = e.target.getAttribute('data-member');
+        selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+        updateSelectedMembersUI();
+      });
+    });
+
+    $(editModal).modal('show');
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 // async function updateBoard(element) {
