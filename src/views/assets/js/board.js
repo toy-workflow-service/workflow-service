@@ -343,6 +343,15 @@ function BoardColumns(data) {
     });
   });
 
+  // 댓글 모달창이 열리면 해당하는 대댓글과 댓글 값 뿌려주기
+  document.querySelectorAll('#commentDetail').forEach((data) => {
+    data.addEventListener('click', () => {
+      const cardId = data.getAttribute('data-cardId');
+      const commentId = data.getAttribute('data-commentId');
+      columnId = data.getAttribute('data-columnId');
+    });
+  });
+
   // CardUpdateBtn 버튼 클릭 시
   document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
     // 수정 된값이 db로 넘어가야함.
