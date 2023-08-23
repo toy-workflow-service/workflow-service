@@ -50,8 +50,9 @@ export class ViewController {
   @Render('workspace-detail.ejs')
   async workspaceDetail(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
+    const workspaceId = req.query.workspaceId;
     const header = await this.viewService.header(user);
-    return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header };
+    return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header, workspaceId };
   }
 
   /**No header & footer */
