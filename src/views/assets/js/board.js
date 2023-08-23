@@ -73,7 +73,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
-boardId = 8;
+boardId = 20;
 
 // $(init);
 $(BoardColumnsGet);
@@ -305,6 +305,15 @@ function BoardColumns(data) {
     });
   });
 
+  // 카드 생성 멤버 추가 버튼 클릭 시
+  document.getElementById('cardCreateAddMemberBtn').addEventListener('click', () => {
+    if ($('#cardCreateAddMemberBox').css('display') == 'none') {
+      $('#cardCreateAddMemberBox').show();
+    } else {
+      $('#cardCreateAddMemberBox').hide();
+    }
+  });
+
   document.getElementById('CardCreateBtn').addEventListener('click', () => {
     const cardTitle = document.getElementById('cardTitleCreate').value;
     const cardColor = document.getElementById('cardColorCreate').value;
@@ -330,8 +339,21 @@ function BoardColumns(data) {
       const cardId = data.getAttribute('data-cardId');
       columnId = data.getAttribute('data-columnId');
 
-      DetailCardGet(columnId, cardId);
+      // DetailCardGet(columnId, cardId);
     });
+  });
+
+  // CardUpdateBtn 버튼 클릭 시
+  document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
+    // 수정 된값이 db로 넘어가야함.
+    console.log('update btn check');
+    // await CardAllUpdate(columnId, cardId, data)
+  });
+
+  // cardDeleteBtn 클릭 시
+  document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
+    console.log('delete btn check');
+    // await CardDelete(columnId, cardId);
   });
 }
 
@@ -495,7 +517,88 @@ async function DetailCardGet(columnId, cardId) {
 // detail card get html
 function DetailCard(data) {
   // detail card 모달 수정해야하고, id값을 정해서 value에 값을 넣어줘야함...(오후에 하자..)
+  document.getElementById('exampleModalLabel').value = data.name;
+  document.getElementById('cardDetailDescription').value = data.content;
+  document.getElementById(
+    'cardDetailImgFile',
+  ).innerHTML = `<a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a> `;
+  const members = document.getElementById('cardDetailMembers');
+  members.innerHTML = '';
+
+  // card update 모달에도 기본적으로 값이 들어가있어야함
+  document.getElementById('cardTitleUdpate').value = data.name;
+  document.getElementById('cardContentUpdate').value = data.content;
+  document.getElementById('cardfileUpdate').value = data.fileUrl;
+  const updateMembers = document.getElementById('cardUpdateMembers');
+  document.getElementById('cardColorUpdate').value = data.color;
+  updateMembers.innerHTML = '';
+  for (let i in data.members) {
+    members.innerHTML += `<li>
+                            <div class="checkbox-group d-flex">
+                              <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                  <img src="기본 이미지(유저 이미지면 더 좋음)" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
+                                  <label for="check-grp-${5 + i}" class=" strikethrough">
+                                    ${data[i].members}
+                                  </label>
+                              </div>
+                              <div class="dropdown dropdown-click">
+                                  <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                  </button>
+                                  <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                    <a class="dropdown-item" href="#">Delete list</a>
+                                  </div>
+                              </div>
+                            </div>
+                        </li>`;
+
+    updateMembers.innerHTML += `<li>
+                                  <div class="checkbox-group d-flex">
+                                    <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                        <img src="기본 이미지(유저 이미지면 더 좋음)" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
+                                        <label for="check-grp-${5 + i}" class=" strikethrough">
+                                          ${data[i].members}
+                                        </label>
+                                    </div>
+                                    <div class="dropdown dropdown-click">
+                                        <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                        </button>
+                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                          <a class="dropdown-item" href="#">Delete list</a>
+                                        </div>
+                                    </div>
+                                  </div>
+                              </li>`;
+  }
 }
+
+// 카드 디테일에서 comment + 버튼 클릭 시
+document.getElementById('commentBoxBtn').addEventListener('click', () => {
+  if ($('#commentBox').css('display') == 'none') {
+    $('#commentBox').show();
+  } else {
+    $('#commentBox').hide();
+  }
+});
+
+// 댓글 클릭시
+document.getElementById('commentViewBoxBtn').addEventListener('click', () => {
+  if ($('#commentViewBox').css('display') == 'none') {
+    $('#commentViewBox').show();
+  } else {
+    $('#commentViewBox').hide();
+  }
+});
+
+// 카드 수정 멤버 추가 버튼 클릭 시
+document.getElementById('cardUpdateAddMembers').addEventListener('click', () => {
+  if ($('#cardUpdateAddMemberBox').css('display') == 'none') {
+    $('#cardUpdateAddMemberBox').show();
+  } else {
+    $('#cardUpdateAddMemberBox').hide();
+  }
+});
 
 // card sequence update api
 async function CardSequenceUpdate(columnId, cardId, sequence) {
@@ -519,13 +622,31 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
 }
 
 // card update api / detail modal -> update btn click -> submit btn click
-function CardAllUpdate(columnId, cardId, data) {
-  console.log('CardSequenceUpdate : ', columnId, cardId, data);
+async function CardAllUpdate(columnId, cardId, data) {
+  console.log('CardAllUpdate : ', columnId, cardId, data);
   // 쿼리를 사용하려면 -> 예시 : url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
   $.ajax({
     type: 'PUT',
     url: ``,
     data: JSON.stringify({}),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// card delete api
+async function CardDelete(columnId, cardId) {
+  $.ajax({
+    type: 'DELETE',
+    url: ``,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);

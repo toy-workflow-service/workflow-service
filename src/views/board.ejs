@@ -34,7 +34,7 @@
                                   <span>in list Active Project</span>
                                </div>
                                <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
-                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary ">delete</button>
+                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " id="cardDeleteBtn">delete</button>
                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                   <img src="./assets/img/svg/x.svg" alt="x" class="svg">
                                </button>
@@ -43,17 +43,17 @@
                                <div class="kanban-modal__form ">
                                   <div class="mb-30">
                                      <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
-                                     <textarea class="form-control" readonly id="exampleFormControlTextarea1111" rows="3" placeholder="Add a more detailed description…"></textarea>
+                                     <textarea class="form-control" readonly rows="3" id="cardDetailDescription"></textarea>
                                   </div>
                                   <div class="row">
                                     <label> image file</label>
-                                    <div>
+                                    <div id="cardDetailImgFile">
                                        <!-- 파일이 이미지일 경우 아래 사용 -->
                                        <a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a> 
                                        <a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a>     
                                     </div>
                                     <label  style="margin-top: 3%;">Files other than image files</label>
-                                    <div>
+                                    <div id="cardDetailNotImgFile">
                                        <!-- 파일이 이미지가 아닐 경우 -->
                                        <a href="./assets/img/american-express.png" download=""> 파일명 </a>
                                        <a href="./assets/img/american-express.png" download=""> 파일명 </a>
@@ -66,7 +66,7 @@
                                  <h6>Members </h6>
                               </div>
                               <div class="kanban-modal__list">
-                                 <ul>
+                                 <ul  id="cardDetailMembers">
                                     <li>
                                        <div class="checkbox-group d-flex">
                                           <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
@@ -74,14 +74,6 @@
                                              <label for="check-grp-5" class=" strikethrough">
                                                 File Manager Design
                                              </label>
-                                          </div>
-                                          <div class="dropdown dropdown-click">
-                                             <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                             </button>
-                                             <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                                <a class="dropdown-item" href="#">Delete list</a>
-                                             </div>
                                           </div>
                                        </div>
                                     </li>
@@ -93,14 +85,6 @@
                                                 Wireframe for design
                                              </label>
                                           </div>
-                                          <div class="dropdown dropdown-click">
-                                             <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                             </button>
-                                             <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                                <a class="dropdown-item" href="#">Delete list</a>
-                                             </div>
-                                          </div>
                                        </div>
                                     </li>
                                     <li>
@@ -110,14 +94,6 @@
                                              <label for="check-grp-7" class=" strikethrough">
                                                 Make prototypes
                                              </label>
-                                          </div>
-                                          <div class="dropdown dropdown-click">
-                                             <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                             </button>
-                                             <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                                <a class="dropdown-item" href="#">Delete list</a>
-                                             </div>
                                           </div>
                                        </div>
                                     </li>
@@ -129,18 +105,10 @@
                                                 Add images to the product gallery
                                              </label>
                                           </div>
-                                          <div class="dropdown dropdown-click">
-                                             <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                             </button>
-                                             <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                                <a class="dropdown-item" href="#">Delete list</a>
-                                             </div>
-                                          </div>
                                        </div>
                                     </li>
                                  </ul>
-                                 <button class="btn btn-primary btn-sm btn-squared">member to invite</button>
+                                 <!-- <button class="btn btn-primary btn-sm btn-squared" id="cardDetailAddMember">member to invite</button> -->
                               </div>
                               
                               <!-- <div class="kanban-modal__research mt-30">
@@ -227,13 +195,17 @@
 
                                <div class="kanban-modal__research mt-30">
                                   <h6>Comment </h6>
-                                  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary ">comment +</button>
+                                  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " id="commentBoxBtn">comment +</button>
+                               </div>
+                               <div id="commentBox" style="margin: 3% auto 3% auto; display: none;">
+                                 <input id="cardCreateAddMemberName" placeholder="댓글 입력.." style="margin-bottom: 2%;"/>
+                                 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="">submit</button>
                                </div>
                                <div class="kanban-modal__list">
                                   <ul>
                                      <li>
                                         <div class="checkbox-group d-flex">
-                                           <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                           <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
                                               <label class=" strikethrough" style="color: black;">
                                                  comment name1
                                               </label>
@@ -244,11 +216,19 @@
                                                  <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                               </button>
                                               <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                                <a class="dropdown-item" href="#">Update Comment</a>
-                                                <a class="dropdown-item" href="#">add Comment</a>
-                                                <a class="dropdown-item" href="#">Delete Comment</a>
+                                                <a class="dropdown-item" href="" id="">Update Comment</a>
+                                                <a class="dropdown-item" href="" id="">add Comment</a>
+                                                <a class="dropdown-item" href="" id="">Delete Comment</a>
                                               </div>
                                            </div>
+                                        </div>                                      
+                                        <div class="checkbox-theme-default custom-checkbox " id="commentViewBox" style="margin: 3% auto 3% auto; display: none;">
+                                          <div>
+                                             &nbsp;&nbsp;&nbsp;<label class=" strikethrough" style="color: gray;">
+                                                comment name111?
+                                             </label>
+                                             <p>&nbsp;&nbsp;&nbsp;- comment aaaaaaaaaasdf </p>
+                                          </div>
                                         </div>
                                      </li>
                                      <li>
@@ -398,7 +378,7 @@
                                    <h6>Members </h6>
                                 </div>
                                 <div class="kanban-modal__list">
-                                   <ul>
+                                   <ul id="cardCreateMemberView">
                                       <li>
                                          <div class="checkbox-group d-flex">
                                             <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
@@ -436,7 +416,11 @@
                                          </div>
                                       </li>
                                    </ul>
-                                   <button class="btn btn-primary btn-sm btn-squared">member to invite</button>
+                                   <button class="btn btn-primary btn-sm btn-squared" id="cardCreateAddMemberBtn">member to invite</button>
+                                   <div id="cardCreateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
+                                    <input id="cardCreateAddMemberName" placeholder="이름 입력.." style="margin-bottom: 2%;"/>
+                                    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="">멤버 추가</button>
+                                   </div>
                                 </div>
                                 
                                  <div class="kanban-modal__research mt-30">
@@ -486,7 +470,7 @@
                                    <h6>Members </h6>
                                 </div>
                                 <div class="kanban-modal__list">
-                                   <ul>
+                                   <ul  id="cardUpdateMembers">
                                       <li>
                                          <div class="checkbox-group d-flex">
                                             <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
@@ -524,7 +508,11 @@
                                          </div>
                                       </li>
                                    </ul>
-                                   <button class="btn btn-primary btn-sm btn-squared">member to invite</button>
+                                   <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">member to invite</button>
+                                   <div id="cardUpdateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
+                                    <input id="cardUpdateAddMemberName" placeholder="이름 입력.." style="margin-bottom: 2%;"/>
+                                    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="">멤버 추가</button>
+                                   </div>
                                 </div>
                                 
                                  <div class="kanban-modal__research mt-30">
