@@ -28,8 +28,8 @@ export class BoardsController {
   @Post()
   @UseGuards(AuthGuard)
   async CreateBoard(@Query('workspaceId') workspaceId: number, @Body() data: CreateBoardDto, @Res() res: Response) {
-    await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
-    return res.status(HttpStatus.CREATED).json({ message: '보드를 생성하였습니다.' });
+    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+    return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }
 
   //보드 수정
