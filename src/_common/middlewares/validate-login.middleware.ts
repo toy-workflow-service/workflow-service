@@ -28,7 +28,13 @@ export class validateLoginMiddleware implements NestMiddleware {
       const refreshPayload = this.jwtService.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
       const findByUser = await this.usersService.tokenValidateUser(refreshPayload.id);
       const accessToken = this.jwtService.sign(
-        { id: findByUser.id, name: findByUser.name, email: findByUser.email, profile_url: findByUser.profile_url },
+        {
+          id: findByUser.id,
+          name: findByUser.name,
+          email: findByUser.email,
+          profile_url: findByUser.profile_url,
+          phone_number: findByUser.phone_number,
+        },
         process.env.ACCESS_SECRET_KEY,
         process.env.ACCESS_EXPIRE_TIME,
       );

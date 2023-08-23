@@ -2,55 +2,655 @@
 <main id="main" class="main">
   <div class="contents">
     <div class="container-fluid">
-      <div class="profile-content mb-50">
+      <div class="profile-content mb-50" style="display: inline">
         <div class="row">
           <div class="col-lg-12">
             <div class="breadcrumb-main">
-              <h4 class="text-capitalize breadcrumb-title">My profile</h4>
+              <h4 class="text-capitalize breadcrumb-title">내 프로필</h4>
               <div class="breadcrumb-action justify-content-center flex-wrap">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                      <a href="/"><i class="uil uil-estate"></i>Home</a>
+                      <a href="/"><i class="uil uil-estate"></i>Work Flow</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">My profile</li>
+                    <li class="breadcrumb-item active" aria-current="page">내 프로필</li>
                   </ol>
                 </nav>
               </div>
             </div>
           </div>
-          <div class="col-xxl-3 col-md-4">
-            <aside class="profile-sider">
-              <!-- Profile Acoount -->
-              <div class="card mb-25">
-                <div class="card-body text-center pt-sm-30 pb-sm-0 px-25 pb-0" style="height: 120%">
-                  <div class="account-profile">
-                    <div class="ap-img w-100 d-flex justify-content-center">
-                      <!-- Profile picture image-->
-                      <img
-                        class="ap-img__main rounded-circle mb-3 wh-120 d-flex bg-opacity-primary"
-                        src="<%= header.profileUrl %>"
-                        alt="profile"
-                      />
-                    </div>
-                    <div class="ap-nameAddress pb-3 pt-1">
-                      <h5 class="ap-nameAddress__title"><%= header.name %></h5>
-                      <p class="ap-nameAddress__subTitle fs-14 m-0"><%= header.email %></p>
-                    </div>
-                    <div class="ap-button button-group d-flex justify-content-center flex-wrap">
-                      <button type="button" class="border text-capitalize px-25 color-gray transparent radius-md">
-                        <img class="svg" src="./assets/img/svg/mail.svg" alt="mail" />내 메시지
-                      </button>
 
-                      <button class="btn btn-primary btn-default btn-squared text-capitalize px-25">
-                        <img src="./assets/img/svg/user-plus.svg" alt="user-plus" class="svg" />
-                        팔로워
-                      </button>
+          <div class="col-xxl-3 col-lg-4 col-sm-5">
+            <!-- Profile Acoount -->
+            <div class="card mb-25">
+              <div class="card-body text-center p-0">
+                <div class="account-profile border-bottom pt-25 px-25 pb-0 flex-column d-flex align-items-center">
+                  <div class="ap-img mb-20 pro_img_wrapper">
+                    <!-- <label for="file-upload"> -->
+                    <!-- Profile picture image-->
+                    <img class="ap-img__main rounded-circle wh-120" src="<%= header.profileUrl %>" alt="profile" />
+                    <!-- </label> -->
+                  </div>
+                  <div class="ap-nameAddress pb-3">
+                    <h5 class="ap-nameAddress__title"><%= header.name %></h5>
+                    <p class="ap-nameAddress__subTitle fs-14 m-0"><%= header.email %></p>
+                  </div>
+                </div>
+                <div class="ps-tab p-20 pb-25">
+                  <div class="nav flex-column text-start" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a
+                      class="nav-link active"
+                      id="v-pills-home-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-home"
+                      role="tab"
+                      aria-selected="true"
+                    >
+                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />Edit profile</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-profile-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-profile"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/settings.svg" alt="setting" class="svg" />Account setting</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-messages-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-messages"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/key.svg" alt="key" class="svg" />change password</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-settings-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-settings"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img class="svg" src="./assets/img/svg/users.svg" alt="users" />social profiles</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-notification-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-notification"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/bell.svg" alt="bell" class="svg" />notification</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Profile Acoount End -->
+          </div>
+          <div class="col-xxl-9 col-lg-8 col-sm-7">
+            <div class="as-cover">
+              <div class="card card-default card-md mb-4" style="width: 70%; margin-left: 2%">
+                <div class="card-header py-20">
+                  <h6>내 프로필 정보</h6>
+                </div>
+                <div class="card-body">
+                  <div class="tab-wrapper">
+                    <div class="dm-tab tab-horizontal">
+                      <div class="tab-content">
+                        <div
+                          class="tab-pane fade show active"
+                          id="tab-v-1"
+                          role="tabpanel"
+                          aria-labelledby="tab-v-1-tab"
+                        >
+                          <p>이름 : <%= header.name %></p>
+                          <p>이메일 : <%= header.email %></p>
+                          <p>휴대폰 번호 : <%= header.phoneNumber %></p>
+                        </div>
+                        <div class="tab-pane fade" id="tab-v-2" role="tabpanel" aria-labelledby="tab-v-2-tab">
+                          <p>Content of Tab Pane 2</p>
+                        </div>
+                        <div class="tab-pane fade" id="tab-v-3" role="tabpanel" aria-labelledby="tab-v-3-tab">
+                          <p>Content of Tab Pane 3</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </aside>
+            </div>
+            <div class="mb-50">
+              <div class="tab-content" id="v-pills-tabContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="v-pills-home"
+                  role="tabpanel"
+                  aria-labelledby="v-pills-home-tab"
+                >
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>Edit Profile</h6>
+                          <span class="fs-13 color-light fw-400">Set up your personal information</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <form>
+                                <div class="form-group mb-20">
+                                  <label for="names">name</label>
+                                  <input type="text" class="form-control" id="names" placeholder="Duran Clayton" />
+                                </div>
+                                <div class="form-group mb-20">
+                                  <label for="phoneNumber1">phone number</label>
+                                  <input
+                                    type="tel"
+                                    class="form-control"
+                                    id="phoneNumber1"
+                                    placeholder="+440 2546 5236"
+                                  />
+                                </div>
+                                <div class="form-group mb-20">
+                                  <div class="countryOption">
+                                    <label for="countryOption"> country </label>
+                                    <select class="js-example-basic-single js-states form-control" id="countryOption">
+                                      <option value="JAN">event</option>
+                                      <option value="FBR">Venues</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="form-group mb-20">
+                                  <div class="cityOption">
+                                    <label for="cityOption"> city </label>
+                                    <select class="js-example-basic-single js-states form-control" id="cityOption">
+                                      <option value="JAN">event</option>
+                                      <option value="FBR">Venues</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="form-group mb-20">
+                                  <label for="company1">company name</label>
+                                  <input type="text" class="form-control" id="company1" placeholder="Example" />
+                                </div>
+                                <div class="form-group mb-20">
+                                  <label for="website">website</label>
+                                  <input type="email" class="form-control" id="website" placeholder="www.example.com" />
+                                </div>
+                                <div class="form-group mb-20">
+                                  <label for="userBio">user bio</label>
+                                  <textarea class="form-control" id="userBio" rows="5"></textarea>
+                                </div>
+                                <div class="form-group mb-20">
+                                  <div class="skillsOption">
+                                    <label for="skillsOption"> skils </label>
+                                    <select
+                                      class="js-example-basic-single js-states form-control"
+                                      id="skillsOption"
+                                      multiple="multiple"
+                                    >
+                                      <option value="JAN">event</option>
+                                      <option value="FBR">Venues</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="button-group d-flex flex-wrap pt-30 mb-15">
+                                  <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm">
+                                    update profile
+                                  </button>
+
+                                  <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm">
+                                    cancel
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>Account setting</h6>
+                          <span class="fs-13 color-light fw-400">Update your username and manage your account</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <form>
+                                <div class="form-group mb-20">
+                                  <label for="name1">username</label>
+                                  <input type="text" class="form-control" id="name1" placeholder="Duran Clayton" />
+                                  <small id="passwordHelpInline2" class="text-light fs-13"
+                                    >Your Dashboard URL: https://dashboard.com/<span class="color-dark">clayton</span>
+                                  </small>
+                                </div>
+                                <div class="form-group mb-1">
+                                  <label for="email45">email</label>
+                                  <input
+                                    type="email"
+                                    class="form-control"
+                                    id="email45"
+                                    placeholder="Contact@example.com"
+                                  />
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card-footer bg-transparent">
+                        <div class="row justify-content-center align-items-center">
+                          <div class="col-xxl-6">
+                            <div class="d-flex justify-content-between mt-1 align-items-center flex-wrap">
+                              <div class="text-capitalize py-10">
+                                <h6>close account</h6>
+                                <span class="fs-13 color-light fw-400">Delete your account and account data</span>
+                              </div>
+                              <div class="my-sm-0 my-10 py-10">
+                                <button class="btn btn-danger btn-default btn-squared fw-400 text-capitalize">
+                                  close account
+                                </button>
+                              </div>
+                            </div>
+                            <div class="button-group d-flex flex-wrap pt-35 mb-35">
+                              <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
+                                Save Changes
+                              </button>
+
+                              <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
+                                cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>change password</h6>
+                          <span class="fs-13 color-light fw-400">Change or reset your account password</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <form>
+                                <div class="form-group mb-20">
+                                  <label for="name">old passowrd</label>
+                                  <input type="text" class="form-control" id="name" />
+                                </div>
+                                <div class="form-group mb-1">
+                                  <label for="password-field">new password</label>
+                                  <div class="position-relative">
+                                    <input
+                                      id="password-field"
+                                      type="password"
+                                      class="form-control"
+                                      name="password"
+                                      placeholder="Password"
+                                    />
+                                    <span
+                                      class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password2"
+                                    ></span>
+                                  </div>
+                                  <small id="passwordHelpInline" class="text-light fs-13">Minimum 6 characters </small>
+                                  <div class="button-group d-flex flex-wrap pt-45 mb-35">
+                                    <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
+                                      Save Changes
+                                    </button>
+
+                                    <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
+                                      cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile edit-social mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>social profiles</h6>
+                          <span class="fs-13 color-light fw-400">Add elsewhere links to your profile</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <form>
+                                <div class="mb-30">
+                                  <label for="socialUrl">facebook</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-facebook bg-facebook text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping1"
+                                      >
+                                        <i class="lab la-facebook-f fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      placeholder="Url"
+                                      aria-label="Username"
+                                      aria-describedby="addon-wrapping1"
+                                      id="socialUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="mb-30">
+                                  <label for="twitterUrl">twitter</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-twitter bg-twitter text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping2"
+                                      >
+                                        <i class="lab la-twitter fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      placeholder="@Username"
+                                      aria-label="Username"
+                                      aria-describedby="addon-wrapping2"
+                                      id="twitterUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="mb-30">
+                                  <label for="webUrl">Website</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-ruby bg-ruby text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping3"
+                                      >
+                                        <i class="las la-basketball-ball fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      placeholder="Url"
+                                      aria-label="Username"
+                                      aria-describedby="addon-wrapping3"
+                                      id="webUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="mb-30">
+                                  <label for="instagramUrl">instagram</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-instagram bg-instagram text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping4"
+                                      >
+                                        <i class="lab la-instagram fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      aria-describedby="addon-wrapping4"
+                                      placeholder="Url"
+                                      id="instagramUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="mb-30">
+                                  <label for="githubUrl">github</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-dark bg-dark text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping5"
+                                      >
+                                        <i class="lab la-github fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      placeholder="Username"
+                                      aria-label="Username"
+                                      aria-describedby="addon-wrapping5"
+                                      id="githubUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="mb-0">
+                                  <label for="mediumUrl">medium</label>
+                                  <div class="input-group flex-nowrap">
+                                    <div class="input-group-prepend">
+                                      <span
+                                        class="input-group-text border-dark bg-dark text-white wh-44 radius-xs justify-content-center"
+                                        id="addon-wrapping6"
+                                      >
+                                        <i class="lab la-medium fs-18"></i>
+                                      </span>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      class="form-control form-control--social"
+                                      placeholder="Username"
+                                      aria-label="medium"
+                                      aria-describedby="addon-wrapping6"
+                                      id="mediumUrl"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="button-group d-flex flex-wrap pt-50 mb-15">
+                                  <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
+                                    Update Social Profiles
+                                  </button>
+
+                                  <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
+                                    cancel
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div
+                  class="tab-pane fade"
+                  id="v-pills-notification"
+                  role="tabpanel"
+                  aria-labelledby="v-pills-notification-tab"
+                >
+                  <!-- Edit Profile -->
+                  <div class="edit-profile edit-social mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>Notifications</h6>
+                          <span class="fs-13 color-light fw-400">Add elsewhere links to your profile</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="notification-content p-25 border mb-25">
+                          <div
+                            class="notification-content__title d-flex justify-content-between flex-wrap pb-20 text-capitalize"
+                          >
+                            <h6 class="fs-15 text-light fw-500 lh-normal">Notifications</h6>
+                            <a class="text-primary fs-13" href="#">toggle all</a>
+                          </div>
+                          <div class="global-shadow radius-xl notification-content__body-wrapper">
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Company News</h6>
+                                  <span>Get company news, announcements, and product updates</span>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc1" />
+                                  <label class="form-check-label" for="nc1"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Meetups Near You</h6>
+                                  <span>Get company news, announcements, and product updates</span>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc2" />
+                                  <label class="form-check-label" for="nc2"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Opportunities</h6>
+                                  <span>Get company news, announcements, and product updates</span>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc3" />
+                                  <label class="form-check-label" for="nc3"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Weekly Newsletters</h6>
+                                  <span>Get company news, announcements, and product updates</span>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc4" />
+                                  <label class="form-check-label" for="nc4"></label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="notification-content p-25 border mb-25">
+                          <div
+                            class="notification-content__title d-flex justify-content-between flex-wrap pb-20 text-capitalize"
+                          >
+                            <h6 class="fs-15 text-light fw-500 lh-normal">Account Activity</h6>
+                            <a class="text-primary fs-13" href="#">toggle all</a>
+                          </div>
+                          <div class="global-shadow radius-xl notification-content__body-wrapper">
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Anyone seeing my profile page</h6>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc5" />
+                                  <label class="form-check-label" for="nc5"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Anyone follow me</h6>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc6" />
+                                  <label class="form-check-label" for="nc6"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Someone mentions me</h6>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc7" />
+                                  <label class="form-check-label" for="nc7"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25 border-bottom">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Someone accepts my invitation</h6>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc8" />
+                                  <label class="form-check-label" for="nc8"></label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="notification-content__body p-25">
+                              <div class="d-flex justify-content-between flex-wrap align-items-center">
+                                <div class="div">
+                                  <h6>Anyone send me a message</h6>
+                                </div>
+                                <div class="custom-control form-check form-switch my-lg-0 my-10">
+                                  <input type="checkbox" class="form-check-input" id="nc9" />
+                                  <label class="form-check-label" for="nc9"></label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="button-group d-flex flex-wrap pt-25 mb-25">
+                          <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
+                            Update notification Profiles
+                          </button>
+                          <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

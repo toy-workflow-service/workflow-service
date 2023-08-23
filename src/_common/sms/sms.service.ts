@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 const ACCESS_KEY = process.env.NAVER_ACCESS_KEY;
 const SECRET_KEY = process.env.NAVER_SECRET_KEY;
 const SERVICE_ID = process.env.NAVER_SMS_SERVICE_ID;
+const SEND_NUMBER = process.env.NAVER_SMS_SEND_NUMBER;
 
 @Injectable()
 export class SMSService {
@@ -47,7 +48,7 @@ export class SMSService {
       type: 'SMS',
       contentType: 'COMM',
       countryCode: '82',
-      from: '01065800728',
+      from: SEND_NUMBER,
       subject: 'Work Flow service 인증문자',
       content: `인증번호는 [${code}] 입니다. `,
       messages: [
