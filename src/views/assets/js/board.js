@@ -70,10 +70,10 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
 // -----------------여기서부터 작업함--------------------
-const accessToken = localStorage.getItem('accessToken');
+// const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
-boardId = 20;
+// boardId = 65;
 
 // $(init);
 $(BoardColumnsGet);
@@ -183,8 +183,8 @@ function BoardColumns(data) {
   kanbanList.innerHTML = '';
   let i = 0;
   for (i in data) {
-    // const {cardHtml, index} = CardGet(data[i].columnId);
-    // console.log('BoardColumns in :', cardHtml);
+    const { cardHtml, index } = CardGet(data[i].columnId);
+    console.log('BoardColumns in :', cardHtml);
     kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
                             <div class="kanban-tops list-tops">
                               <div class="d-flex justify-content-between align-items-center py-10">
@@ -423,14 +423,14 @@ async function CardGet(columnId) {
   console.log(columnId);
   await $.ajax({
     type: 'GET',
-    url: ``,
+    url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
       console.log('get card data : ', data);
-      Cards(data, columnId);
+      return Cards(data, columnId);
     },
     error: (error) => {
       console.log(error);
@@ -477,7 +477,7 @@ async function CardCreate(columnId, data) {
   console.log(columnId, data);
   await $.ajax({
     type: 'POST',
-    url: ``,
+    url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
@@ -519,7 +519,7 @@ async function DetailCard(data) {
   document.getElementById('exampleModalLabel').value = data.name;
   document.getElementById('cardDetailDescription').value = data.content;
   document.getElementById(
-    'cardDetailImgFile',
+    'cardDetailImgFile'
   ).innerHTML = `<a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a> `;
   const members = document.getElementById('cardDetailMembers');
   members.innerHTML = '';
@@ -642,7 +642,7 @@ function updateSelectedMembersUI() {
     .map(
       (member) => `
     <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-  `,
+  `
     )
     .join('');
 
@@ -721,7 +721,7 @@ async function CardAllUpdate(columnId, cardId, data) {
 async function CardDelete(columnId, cardId) {
   $.ajax({
     type: 'DELETE',
-    url: ``,
+    url: `/cards/${cardId}?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
