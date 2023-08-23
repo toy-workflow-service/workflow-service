@@ -6,7 +6,6 @@ let typingTimer;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
-  await getWorkspaces();
   await getMyBoards();
 
   const memberInput = document.querySelector('#name47');
@@ -43,34 +42,8 @@ $(document).ready(async () => {
   });
 });
 
-const accessToken = localStorage.getItem('accessToken');
-const workspaceList = document.querySelector('.workspace-list');
 const printBoard = document.querySelector('#board-box');
 const printButton = document.querySelector('.nav-item');
-
-// 워크스페이스 조회
-async function getWorkspaces() {
-  try {
-    await $.ajax({
-      method: 'GET',
-      url: `/workspaces`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      success: (data) => {
-        data.forEach((workspace) => {
-          const result = `<li class="">
-                            <a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
-                          </li>`;
-          workspaceList.innerHTML += result;
-        });
-      },
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 // 보드 전체 조회
 async function getMyBoards() {
@@ -249,7 +222,7 @@ function updateSelectedMembersUI() {
     .map(
       (member) => `
     <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-  `,
+  `
     )
     .join('');
 
