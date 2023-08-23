@@ -21,7 +21,7 @@ export class MentionsController {
     @Param('commentId') commentId: number,
     @Res() res: Response,
     @Body() data: CreateCommentMentionDto,
-    @GetUser() user: AccessPayload,
+    @GetUser() user: AccessPayload
   ) {
     await this.mentionsService.CreateCommentMention(commentId, data, user.id);
     return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
@@ -34,24 +34,24 @@ export class MentionsController {
     @Param('boardMessageId') boardMessageId: number,
     @Res() res: Response,
     @Body() data: CreateBoardMessageMentionDto,
-    @GetUser() user: AccessPayload,
+    @GetUser() user: AccessPayload
   ) {
     await this.mentionsService.CreateBoardMessageMention(boardMessageId, data, user.id);
     return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
   }
 
-  // direct message mention post
-  @Post('direct-messages/:directMessageId')
-  @UseGuards(AuthGuard)
-  async DirectMessageMention(
-    @Param('directMessageId') directMessageId: number,
-    @Res() res: Response,
-    @Body() data: CreateDirectMessageMentionDto,
-    @GetUser() user: AccessPayload,
-  ) {
-    await this.mentionsService.CreateDirectMessageMention(directMessageId, data, user.id);
-    return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
-  }
+  // // direct message mention post
+  // @Post('direct-messages/:directMessageId')
+  // @UseGuards(AuthGuard)
+  // async DirectMessageMention(
+  //   @Param('directMessageId') directMessageId: number,
+  //   @Res() res: Response,
+  //   @Body() data: CreateDirectMessageMentionDto,
+  //   @GetUser() user: AccessPayload
+  // ) {
+  //   await this.mentionsService.CreateDirectMessageMention(directMessageId, data, user.id);
+  //   return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
+  // }
 
   // mention all get
   @Get()
@@ -75,7 +75,7 @@ export class MentionsController {
   async BoardMentionGet(
     @Param('boardMessageId') boardMessageId: number,
     @GetUser() user: AccessPayload,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     const BoardMentions = await this.mentionsService.GetBoardMessageMentions(boardMessageId, user.id);
     return res.status(HttpStatus.OK).json({ BoardMentions });
@@ -87,7 +87,7 @@ export class MentionsController {
   async DirectMessageMentionGet(
     @Param('directMessageId') directMessageId: number,
     @GetUser() user: AccessPayload,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     const DirectMessageMentions = await this.mentionsService.GetDirectMessageMentions(directMessageId, user.id);
     return res.status(HttpStatus.OK).json({ DirectMessageMentions });
