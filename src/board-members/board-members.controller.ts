@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards, Query } from '@nestjs/common';
 import { BoardMembersService } from './board-members.service';
 import { Response } from 'express';
 import { CreateBoardMemberDto } from 'src/_common/dtos/board.dto';
@@ -30,5 +30,18 @@ export class BoardMembersController {
   async DeleteBoardMember(@Param('boardId') boardId: number, @Param('userId') userId: number, @Res() res: Response) {
     await this.boardMembersService.DeleteBoardMember(boardId, userId);
     return res.status(HttpStatus.OK).json({ message: '보드에서 해당 멤버를 제외하였습니다.' });
+  }
+
+  //보드 멤버 업데이트
+  @Put('/boards/:boardId/members/:userId')
+  @UseGuards(AuthGuard)
+  async UpdateBoardMember(
+    @Param('boardId') boardId: number,
+    @Param('userId') userId: number,
+    @Query('deleteId') deleteId: number,
+    @Res() res: Response,
+  ) {
+    await this.boardMembersService.UpdateBoardMember(boardId, userId, deleteId);
+    return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });
   }
 }
