@@ -70,19 +70,17 @@ export class BoardMembersService {
   }
 
   //보드 멤버 업데이트
-  async UpdateBoardMember(boardId: number, userId: number, deleteUserId: number) {
+  async UpdateBoardMember(boardId: number, userId: number) {
     const user = await this.usersService.findUserById(userId);
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
-    boardMembers.filter((member) => {
+    const boardMember = boardMembers.filter((member) => {
       return boardId == member.board.id;
     });
-    const undefindUser = boardMembers.find((member) => {
+    const undefindUser = boardMember.find((member) => {
       return userId != member.user.id;
     });
-    const findUser = boardMembers.find((member) => {
-      return deleteUserId == member.user.id;
-    });
+
     if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
@@ -93,11 +91,10 @@ export class BoardMembersService {
           const newBoardMembers = this.boardMemberRepository.create({ board, user });
           console.log(newBoardMembers);
           await transactionEntityManager.save(Board_Member, newBoardMembers);
-
-          const deleteBoardMember = this.boardMemberRepository.delete({ id: findUser.id });
-          console.log(deleteBoardMember);
-          await transactionEntityManager.remove(deleteBoardMember);
         }
+        // const deleteBoardMember = this.boardMemberRepository.delete({ id: findUser.id });
+        // console.log(deleteBoardMember);
+        // await transactionEntityManager.remove(deleteBoardMember);
       });
       return { result: true };
     } catch (err) {
