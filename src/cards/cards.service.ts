@@ -14,16 +14,33 @@ export class CardsService {
 
   //카드 조회
   async GetCards(board_column_Id: number) {
+    const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_Id);
     const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+    if (!boardColumn) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
 
-    return findCards.filter((card) => {
+    const cards = findCards.filter((card) => {
       return card.board_column.id == board_column_Id;
+    });
+
+    cards.sort((a, b) => {
+      return a.sequence - b.sequence;
+    });
+
+    return cards.map((card) => {
+      return {
+        board_column_Id: card.board_column.id,
+        cardId: card.id,
+        cardName: card.name,
+        sequence: card.sequence,
+        createdAt: card.created_at,
+        updatedAt: card.updated_at,
+      };
     });
   }
 
   //카드 상세 조회
-  async GetCardById(board_column_Id: number, id: number) {
-    return await this.cardRepository.findOneBy({ id });
+  async GetCardById(board_column_id: number, id: number) {
+    return await this.cardRepository.findOne({ where: { board_column: { id: board_column_id }, id } });
   }
 
   //카드 생성
@@ -68,5 +85,14 @@ export class CardsService {
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {
     await this.cardRepository.delete(id);
+  }
+
+  //카드 시퀀스 수정
+  async UpdateCardSequence(board_column_Id: number, cardId: number, sequence: number) {
+    const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_Id);
+    const card = await this.cardRepository.findOneBy({ id: cardId });
+    if (!boardColumn) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (!card) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
+    await this.cardRepository.update({ id: cardId }, { sequence });
   }
 }

@@ -25,20 +25,26 @@ export class CommentsController {
   //코멘트 생성
   @Post()
   @UseGuards(AuthGuard)
-  async CreateComment(@Query('cardId') cardId: number, @Body() data: CreateCommentDto, @GetUser() user: AccessPayload) {
-    return await this.commentsService.CreateComment(cardId, user.id, data.reply_id, data.comment);
+  async CreateComment(
+    @Query('boardColumnId') board_column_id: number,
+    @Query('cardId') cardId: number,
+    @Body() data: CreateCommentDto,
+    @GetUser() user: AccessPayload
+  ) {
+    return await this.commentsService.CreateComment(board_column_id, cardId, user.id, data.reply_id, data.comment);
   }
 
   //코멘트 수정
   @Patch('/:commentId')
   @UseGuards(AuthGuard)
   async UpdateCard(
+    @Query('boardColumnId') board_column_id: number,
     @Query('cardId') cardId: number,
     @Param('commentId') id: number,
     @Body() data: UpdateCommentDto,
     @GetUser() user: AccessPayload
   ) {
-    return await this.commentsService.UpdateComment(cardId, id, user.id, data.reply_id, data.comment);
+    return await this.commentsService.UpdateComment(board_column_id, cardId, id, user.id, data.reply_id, data.comment);
   }
 
   //코멘트 삭제

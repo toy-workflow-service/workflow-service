@@ -28,14 +28,23 @@ export class CommentsService {
   }
 
   // 코멘트 생성
-  async CreateComment(cardId: number, userId: number, reply_id: number, comment: string) {
-    const card = await this.cardsService.GetCards(cardId);
+  async CreateComment(board_column_Id: number, cardId: number, userId: number, reply_id: number, comment: string) {
+    const card = await this.cardsService.GetCardById(board_column_Id, cardId);
     if (!card) {
-      throw new NotFoundException('컬럼을 찾을 수 없습니다.');
+      throw new NotFoundException('카드을 찾을 수 없습니다.');
     }
 
     if (!comment) {
       throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
+    }
+
+    let parentComment: Comment | null = null;
+    if (reply_id) {
+      // reply_id와 동일한 코멘트 id를 가진 댓글을 찾습니다.
+      parentComment = await this.commentRepository.findOneBy({ id: reply_id });
+      if (!parentComment) {
+        throw new NotFoundException('대댓글을 생성할 댓글을 찾을 수 없습니다.');
+      }
     }
 
     const newComment = this.commentRepository.create({
@@ -49,10 +58,17 @@ export class CommentsService {
     return newComment;
   }
 
-  async UpdateComment(cardId: number, id: number, userId: number, reply_id: number, comment: string) {
-    const card = await this.cardsService.GetCards(cardId);
+  async UpdateComment(
+    board_column_Id: number,
+    cardId: number,
+    id: number,
+    userId: number,
+    reply_id: number,
+    comment: string
+  ) {
+    const card = await this.cardsService.GetCardById(board_column_Id, cardId);
     if (!card) {
-      throw new NotFoundException('컬럼을 찾을 수 없습니다.');
+      throw new NotFoundException('카드를 찾을 수 없습니다.');
     }
 
     if (!comment) {
