@@ -9,7 +9,7 @@ export class BoardColumnsService {
   constructor(
     @InjectRepository(Board_Column)
     private boardColumnRepository: Repository<Board_Column>,
-    private boardsService: BoardsService,
+    private boardsService: BoardsService
   ) {}
 
   //보드 칼럼 조회

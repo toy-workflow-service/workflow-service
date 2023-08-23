@@ -214,4 +214,8 @@ export class WorkspacesService {
 
     return { result: true };
   }
+
+  // 워크스페이스가 보유한 보드개수 조회
+
+  // 워크스페이스가 보유한 카드개수 조회
 }

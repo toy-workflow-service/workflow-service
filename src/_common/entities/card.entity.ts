@@ -49,4 +49,5 @@ export class Card {
     nullable: false,
   })
   board_column: Board_Column;
+  column: any;
 }

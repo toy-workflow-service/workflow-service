@@ -9,7 +9,7 @@ export class BoardsService {
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
-    private readonly workspaceService: WorkspacesService,
+    private readonly workspaceService: WorkspacesService
   ) {}
 
   // 보드 조회
