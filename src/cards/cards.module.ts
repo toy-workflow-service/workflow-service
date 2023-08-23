@@ -14,9 +14,11 @@ import { MailService } from 'src/_common/mail/mail.service';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Card } from 'src/_common/entities/card.entity';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
 
 @Module({
   imports: [
+    RedisCacheModule,
     TypeOrmModule.forFeature([Card, Board_Column, Board, Workspace, Workspace_Member, User]), // Card 엔티티 등록
   ],
   exports: [TypeOrmModule],

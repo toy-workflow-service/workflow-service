@@ -11,7 +11,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   constructor(
     private redisCacheService: RedisCacheService,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {
     super({});
   }
@@ -63,7 +63,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
       const accessToken = this.jwtService.sign(
         { id: userInfo.id },
         process.env.ACCESS_SECRET_KEY,
-        process.env.ACCESS_EXPIRE_TIME,
+        process.env.ACCESS_EXPIRE_TIME
       );
 
       res.setHeader('authorization', accessToken);

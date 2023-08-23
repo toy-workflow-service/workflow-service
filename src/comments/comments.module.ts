@@ -16,8 +16,10 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entitiy';
 import { MailService } from 'src/_common/mail/mail.service';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
+import { RedisCacheModule } from 'src/_common/cache/redis.module';
 @Module({
   imports: [
+    RedisCacheModule,
     TypeOrmModule.forFeature([Card, Comment, Board_Column, Board, Workspace, Workspace_Member, User]), // Card 엔티티 등록
   ],
   controllers: [CommentsController],
