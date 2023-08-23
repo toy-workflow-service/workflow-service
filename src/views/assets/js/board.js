@@ -515,8 +515,7 @@ async function DetailCardGet(columnId, cardId) {
 }
 
 // detail card get html
-function DetailCard(data) {
-  // detail card 모달 수정해야하고, id값을 정해서 value에 값을 넣어줘야함...(오후에 하자..)
+async function DetailCard(data) {
   document.getElementById('exampleModalLabel').value = data.name;
   document.getElementById('cardDetailDescription').value = data.content;
   document.getElementById(
@@ -524,14 +523,6 @@ function DetailCard(data) {
   ).innerHTML = `<a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a> `;
   const members = document.getElementById('cardDetailMembers');
   members.innerHTML = '';
-
-  // card update 모달에도 기본적으로 값이 들어가있어야함
-  document.getElementById('cardTitleUdpate').value = data.name;
-  document.getElementById('cardContentUpdate').value = data.content;
-  document.getElementById('cardfileUpdate').value = data.fileUrl;
-  const updateMembers = document.getElementById('cardUpdateMembers');
-  document.getElementById('cardColorUpdate').value = data.color;
-  updateMembers.innerHTML = '';
   for (let i in data.members) {
     members.innerHTML += `<li>
                             <div class="checkbox-group d-flex">
@@ -551,26 +542,119 @@ function DetailCard(data) {
                               </div>
                             </div>
                         </li>`;
-
-    updateMembers.innerHTML += `<li>
-                                  <div class="checkbox-group d-flex">
-                                    <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                        <img src="기본 이미지(유저 이미지면 더 좋음)" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
-                                        <label for="check-grp-${5 + i}" class=" strikethrough">
-                                          ${data[i].members}
-                                        </label>
-                                    </div>
-                                    <div class="dropdown dropdown-click">
-                                        <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                        </button>
-                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                          <a class="dropdown-item" href="#">Delete list</a>
-                                        </div>
-                                    </div>
-                                  </div>
-                              </li>`;
   }
+
+  // card update 모달에도 기본적으로 값이 들어가있어야함
+  document.getElementById('cardTitleUdpate').value = data.name;
+  document.getElementById('cardContentUpdate').value = data.content;
+  document.getElementById('cardfileUpdate').value = data.fileUrl;
+  document.getElementById('cardColorUpdate').value = data.color;
+  // 멤버 리스트 추가
+  // cardMember조회
+  const cardMemberData = await getCardMembers(data.id);
+  const selectedMembersList = document.querySelector('#cardUpdateMembers');
+
+  selectedMembersList.innerHTML = '';
+  for (const member of cardMemberData.members) {
+    const memberImage = member.profileUrl ? member.profileUrl : './assets/img/favicon.png';
+    selectedMembersList.innerHTML += `
+        <li>
+          <a>
+            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${memberImage}" alt="${member.name}" />
+            <span class="remove-member" data-member="${member.name}" data-member-id="${member.userId}">x</span>
+          </a>
+        </li>`;
+  }
+
+  const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
+  removeIcons.forEach((icon) => {
+    icon.addEventListener('click', (e) => {
+      const memberRemove = e.target.getAttribute('data-member');
+      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      updateSelectedMembersUI();
+    });
+  });
+
+  $('#updateCardModal').modal('show');
+}
+
+// 멤버 찾기 workspace에서 붙여옴
+let typingTimer;
+let selectedMembers = [];
+$(document).ready(async () => {
+  const memberInput = document.querySelector('#cardCreateMmeberName');
+  const selectedMemberList = document.querySelector('#cardCreateMemberView');
+
+  memberInput.addEventListener('keyup', (e) => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(async () => {
+      const searchText = e.target.value;
+      const encodedSearchText = encodeURIComponent(searchText);
+
+      const results = await searchMembers(encodedSearchText);
+      console.log(results);
+      if (results) {
+        selectedMemberList.innerHTML = '';
+        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+        let data = `<li>
+                        <a href="#">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                        </a>
+                        <span>${results.user.name}</span>
+                      </li>`;
+        const li = document.createElement('li');
+        li.innerHTML = data;
+        selectedMemberList.appendChild(li);
+
+        li.addEventListener('click', () => {
+          if (!selectedMembers.includes(results.user.name)) {
+            selectedMembers.push(results.user.name);
+            updateSelectedMembersUI();
+          }
+        });
+      }
+    });
+  });
+});
+
+// 유저검색
+async function searchMembers(searchText) {
+  console.log(decodeURI(searchText));
+  try {
+    // const response = await $.ajax({
+    //   method: 'GET',
+    //   url: ``,
+    //   beforeSend: function (xhr) {
+    //     xhr.setRequestHeader('Content-type', 'application/json');
+    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    //   },
+    // });
+    // return response;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 선택한 멤버 UI 출력
+function updateSelectedMembersUI() {
+  const selectedMemberList = document.querySelector('#selected-members');
+  selectedMemberList.innerHTML = selectedMembers
+    .map(
+      (member) => `
+    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+  `,
+    )
+    .join('');
+
+  // 재선택 시 삭제
+  const removeIcons = selectedMemberList.querySelectorAll('.remove-member');
+  removeIcons.forEach((icon) => {
+    icon.addEventListener('click', (e) => {
+      const memberRemove = e.target.getAttribute('data-member');
+      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      updateSelectedMembersUI();
+    });
+  });
 }
 
 // 카드 디테일에서 comment + 버튼 클릭 시
@@ -579,15 +663,6 @@ document.getElementById('commentBoxBtn').addEventListener('click', () => {
     $('#commentBox').show();
   } else {
     $('#commentBox').hide();
-  }
-});
-
-// 댓글 클릭시
-document.getElementById('commentViewBoxBtn').addEventListener('click', () => {
-  if ($('#commentViewBox').css('display') == 'none') {
-    $('#commentViewBox').show();
-  } else {
-    $('#commentViewBox').hide();
   }
 });
 
