@@ -6,7 +6,6 @@ let typingTimer;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
-  await getWorkspaces();
   await getMyBoards();
 
   const memberInput = document.querySelector('#name47');
@@ -19,7 +18,6 @@ $(document).ready(async () => {
       const encodedSearchText = encodeURIComponent(searchText);
 
       const results = await searchMembers(encodedSearchText);
-      console.log(results);
       if (results) {
         selectedMemberList.innerHTML = '';
         let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
@@ -44,33 +42,8 @@ $(document).ready(async () => {
   });
 });
 
-const accessToken = localStorage.getItem('accessToken');
-const workspaceList = document.querySelector('.workspace-list');
 const printBoard = document.querySelector('#board-box');
-
-// 워크스페이스 조회
-async function getWorkspaces() {
-  try {
-    await $.ajax({
-      method: 'GET',
-      url: `/workspaces`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      success: (data) => {
-        data.forEach((workspace) => {
-          const result = `<li class="">
-                            <a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
-                          </li>`;
-          workspaceList.innerHTML += result;
-        });
-      },
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
+const printButton = document.querySelector('.nav-item');
 
 // 보드 전체 조회
 async function getMyBoards() {
@@ -85,6 +58,7 @@ async function getMyBoards() {
       success: async (data) => {
         const boards = data.boards;
         let result = '';
+        let button = '';
 
         for (const board of boards) {
           result += `<div class="col-xl-4 mb-25 col-md-6">
@@ -166,7 +140,18 @@ async function getMyBoards() {
           result += `</ul></div>`;
           result += `</div></div></div>`;
         }
+        button += `<li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      id="ap-overview-tab"
+                      href="/workspaceDetail?workspaceId=${workspaceId}"
+                      role="tab"
+                      aria-selected="true"
+                      >워크스페이스 디테일</a
+                    >
+                  </li>`;
         printBoard.innerHTML = result;
+        printButton.innerHTML = button;
       },
     });
   } catch (err) {
@@ -191,48 +176,6 @@ async function getBoardMembers(boardId) {
     console.error(err);
   }
 }
-
-// 보드 생성
-const createBoardBtn = document.querySelector('#create-button');
-
-createBoardBtn.addEventListener('click', async (event) => {
-  event.preventDefault();
-  try {
-    const createTitle = document.querySelector('#create-board-title').value;
-    const createDescription = document.querySelector('#create-description').value;
-
-    await $.ajax({
-      method: 'POST',
-      url: `/boards?workspaceId=${workspaceId}`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify({ name: createTitle, description: createDescription }),
-      success: async (data) => {
-        const boardId = data.newBoard.identifiers[0].id;
-
-        for (const member of selectedMembers) {
-          await createBoardMember(boardId, member);
-        }
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
-      },
-    });
-  } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.responseJSON.message,
-    });
-  }
-});
 
 // 보드멤버 생성
 async function createBoardMember(boardId, name) {
@@ -279,7 +222,7 @@ function updateSelectedMembersUI() {
     .map(
       (member) => `
     <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-  `,
+  `
     )
     .join('');
 

@@ -7,8 +7,8 @@
           <div class="breadcrumb-main user-member justify-content-sm-between">
             <div class="d-flex flex-wrap justify-content-center breadcrumb-main__wrapper">
               <div class="d-flex align-items-center user-member__title justify-content-center me-sm-25">
-                <h4 class="text-capitalize fw-500 breadcrumb-title">projects</h4>
-                <span class="sub-title ms-sm-25 ps-sm-25">12 Running projects</span>
+                <h4 class="text-capitalize fw-500 breadcrumb-title">Boards</h4>
+                <span class="sub-title ms-sm-25 ps-sm-25">12 Running boards</span>
               </div>
             </div>
             <div class="action-btn">
@@ -239,49 +239,10 @@
                   <a
                     class="nav-link active"
                     id="ap-overview-tab"
-                    data-bs-toggle="pill"
-                    href="#ap-overview"
+                    href="/workspaceDetail"
                     role="tab"
                     aria-selected="true"
-                    >all projects</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="nav-link"
-                    id="timeline-tab"
-                    data-bs-toggle="pill"
-                    href="#timeline"
-                    role="tab"
-                    aria-selected="false"
-                    >in progress</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="nav-link"
-                    id="activity-tab"
-                    data-bs-toggle="pill"
-                    href="#activity"
-                    role="tab"
-                    aria-selected="false"
-                    >completed</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="late-tab" data-bs-toggle="pill" href="#late" role="tab" aria-selected="false"
-                    >late</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="nav-link"
-                    id="early-tab"
-                    data-bs-toggle="pill"
-                    href="#early"
-                    role="tab"
-                    aria-selected="false"
-                    >early</a
+                    >워크스페이스 디테일</a
                   >
                 </li>
               </ul>
@@ -343,4 +304,5 @@
     </div>
   </div>
 </div>
+<script src="../assets/js/workspace.js" defer></script>
 <%- include('includes/footer') %>

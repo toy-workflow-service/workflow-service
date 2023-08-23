@@ -11,7 +11,7 @@ export class BoardMessagesService {
     @InjectRepository(Board_Message)
     private boardMessageRepository: Repository<Board_Message>,
     private boardsService: BoardsService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {}
 
   //보드 메세지 조회
@@ -40,13 +40,13 @@ export class BoardMessagesService {
     const board = await this.boardsService.GetBoardById(boardId);
     const user = await this.usersService.findUserById(userId);
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-    const mention = await this.boardMessageMentions(message, boardId);
+    const mention = await this.boardMessageMentions(message);
     console.log(mention);
     await this.boardMessageRepository.insert({ message, file_url, user, board });
   }
 
   //보드 메세지 멘션 추출
-  async boardMessageMentions(message: string, boardId: number) {
+  async boardMessageMentions(message: string) {
     const messages: any = message.split(' ');
     const mentionMessages: any = [];
     for (let i: number = 0; i < messages.length; i++) {
@@ -63,6 +63,13 @@ export class BoardMessagesService {
         mentionMessages.splice(i);
       }
     }
-    return { mentions: mentionMessages, boardId };
+    return { mentions: mentionMessages };
+  }
+
+  // 보드 메세지 id로 조회
+  async boardMessageById(boardMessageId: number) {
+    const boardMessages = await this.boardMessageRepository.findOneBy({ id: boardMessageId });
+
+    return boardMessages;
   }
 }

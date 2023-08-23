@@ -6,6 +6,9 @@ import { CardsService } from 'src/cards/cards.service';
 
 @Injectable()
 export class CommentsService {
+  commentMentions(comment: any): { mentions: any } | PromiseLike<{ mentions: any }> {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,

@@ -16,7 +16,7 @@ export class WorkspacesService {
     @InjectRepository(Workspace_Member)
     private workspaceMemberRepository: Repository<Workspace_Member>,
     private readonly userService: UsersService,
-    private readonly mailService: MailService,
+    private readonly mailService: MailService
   ) {}
 
   // 워크스페이스 생성
@@ -96,7 +96,7 @@ export class WorkspacesService {
 
     await this.workspaceRepository.update(
       { id: workspaceId },
-      { name: body.name, type: body.type, description: body.description },
+      { name: body.name, type: body.type, description: body.description }
     );
 
     return { result: true };
@@ -163,7 +163,7 @@ export class WorkspacesService {
 
     await this.workspaceMemberRepository.update(
       { user: { id: userId }, workspace: { id: workspaceId } },
-      { role: body.role },
+      { role: body.role }
     );
 
     return { result: true };
@@ -175,7 +175,7 @@ export class WorkspacesService {
 
     await this.workspaceMemberRepository.update(
       { workspace: { id: workspaceId }, user: { id } },
-      { participation: true },
+      { participation: true }
     );
 
     return { result: true };
@@ -214,4 +214,8 @@ export class WorkspacesService {
 
     return { result: true };
   }
+
+  // 워크스페이스가 보유한 보드개수 조회
+
+  // 워크스페이스가 보유한 카드개수 조회
 }
