@@ -425,6 +425,78 @@
                         </div>
                      </div>
 
+                     <!-- comment detail modal -->
+                     <div class="modal fade kanban-modal__card kanban__modal" id="commentDetailModal" tabindex="-1" aria-labelledby="commentDetailModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                           <div class="modal-content">
+                              <div class=" kanban-modal__header-wrapper">
+                                 <div class="kanban-modal__header">
+                                    <h5 class="modal-title" id="commentDetailModalLabel">Comment</h5>
+                                 </div>
+                                 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " data-bs-toggle="modal" data-bs-target="#updateCommentModal">update</button>
+                                 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " id="commentDeleteBtn">delete</button>
+                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                                 </button>
+                              </div>
+                              <div class="modal-body kanban-modal__body">
+                                 <div class="kanban-modal__form ">
+                                    <div class="mb-30">
+                                       <label for="exampleFormControlTextarea1111" class="form-label">작성자1</label>
+                                       <textarea class="form-control" id="cardContentUpdate" rows="3" readonly> 댓글1 </textarea>
+                                    </div>
+                                    <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
+                                 </div>
+                                <div class="kanban-modal__list">
+                                 <ul>
+                                    <li>
+                                       <div class="checkbox-group d-flex">
+                                          <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
+                                             <label class=" strikethrough" style="color: black;">
+                                                comment name1
+                                             </label>
+                                             <p> comment aaaaaaaaa </p>
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li>
+                                       <div class="checkbox-group d-flex">
+                                          <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                            <label class=" strikethrough" style="color: black;">
+                                               comment name2
+                                            </label>
+                                            <p> comment aaaaaaaaa </p>
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li>
+                                       <div class="checkbox-group d-flex">
+                                          <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                            <label class=" strikethrough" style="color: black;">
+                                               comment name3
+                                            </label>
+                                            <p> comment aaaaaaaaa </p>
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li>
+                                       <div class="checkbox-group d-flex">
+                                          <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                            <label class=" strikethrough" style="color: black;">
+                                               comment name4
+                                            </label>
+                                            <p> comment aaaaaaaaa </p>
+                                          </div>
+                                       </div>
+                                    </li>
+                                 </ul>
+                                </div>
+                                 <!-- <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="CardUpdateBtn">submit</button> -->
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
                    <div class="kanban-board__card mb-50">
                       <div class="kanban-header">
                          <h4>Basic Kanban Board</h4>
