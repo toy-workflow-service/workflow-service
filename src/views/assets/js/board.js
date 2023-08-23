@@ -355,6 +355,15 @@ function BoardColumns(data) {
     console.log('delete btn check');
     // await CardDelete(columnId, cardId);
   });
+
+  // 대댓글 작성 버튼
+  document.getElementById('replayCommentBtn').addEventListener('click', () => {
+    if ($('#commentAddBox').css('display') == 'none') {
+      $('#commentAddBox').show();
+    } else {
+      $('#commentAddBox').hide();
+    }
+  });
 }
 
 // column create api
@@ -506,6 +515,7 @@ async function DetailCardGet(columnId, cardId) {
     },
     success: (data) => {
       console.log('get card data : ', data);
+      //comment api 추가
       DetailCard(data);
     },
     error: (error) => {
