@@ -39,7 +39,7 @@ export class BoardsController {
     @Query('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
     @Body() data: UpdateBoardDto,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
     return res.status(HttpStatus.OK).json({ message: '보드를 수정하였습니다.' });
