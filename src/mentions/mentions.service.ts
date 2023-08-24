@@ -20,26 +20,27 @@ export class MentionsService {
 
   // comment mention 생성
   async CreateCommentMention(commentId: number, data: any, userId: number) {
-    // const { mentions } = await this.commentsService.commentMentions(data.comment);
-    // const comment = await this.commentsService.commentById(commentId);
-    // const sendUser = await this.usersService.findUserById(userId);
-    // if (!comment) {
-    //   throw new NotFoundException('존재하지 않는 댓글 입니다.');
-    // } else if (!mentions) {
-    //   throw new NotFoundException('이름이 존재하지 않습니다.');
-    // }
-    // for (let i: number = 0; i < mentions.length; i++) {
-    //   const reseiveUser = await this.usersService.findUserByName(mentions[i]);
-    //   if (reseiveUser) {
-    //     this.mentionRepository.insert({
-    //       send_id: sendUser,
-    //       receive_id: reseiveUser,
-    //       board_message: null,
-    //       comment: comment,
-    //       direct_message: null,
-    //     });
-    //   }
-    // }
+    const { mentions } = await this.commentsService.commentMentions(data.comment);
+    const comment = await this.commentsService.GetCommentById(commentId);
+    const sendUser = await this.usersService.findUserById(userId);
+    if (!comment) {
+      throw new NotFoundException('존재하지 않는 댓글 입니다.');
+    } else if (!mentions) {
+      throw new NotFoundException('이름이 존재하지 않습니다.');
+    }
+
+    for (let i: number = 0; i < mentions.length; i++) {
+      const reseiveUser = await this.usersService.findUserByName(mentions[i]);
+      if (reseiveUser) {
+        this.mentionRepository.insert({
+          send_id: sendUser,
+          receive_id: reseiveUser,
+          board_message: null,
+          comment: comment,
+          direct_message: null,
+        });
+      }
+    }
   }
 
   // board message mention 생성
@@ -67,30 +68,30 @@ export class MentionsService {
     }
   }
 
-  // direct message mention 생성
-  async CreateDirectMessageMention(directMessageId: number, data: any, userId: number) {
-    // // const { mentions } = await this.commentsService.directMessageMentions(data.comment);
-    // // const directMessage = await this.directMessagesService.directMessageById(directMessageId);
-    // const sendUser = await this.usersService.findUserById(userId);
-    // if (!directMessage) {
-    //   throw new NotFoundException('존재하지 않는 메세지 입니다.');
-    // } else if (!mentions) {
-    //   throw new NotFoundException('이름이 존재하지 않습니다.');
-    // }
-    // for (let i: number = 0; i < mentions.length; i++) {
-    //   const reseiveUser = await this.usersService.findUserByName(mentions[i]);
-    //   if (reseiveUser) {
-    //     this.mentionRepository.insert({
-    //       send_id: sendUser,
-    //       receive_id: reseiveUser,
-    //       board_message: null,
-    //       comment: null,
-    //       direct_message: directMessage,
-    //     });
-    //   }
-    // }
-  }
+  // async CreateDirectMessageMention(directMessageId: number, data: any, userId: number) {
+  //   const { mentions } = await this.commentsService.directMessageMentions(data.comment);
+  //   const directMessage = await this.directMessagesService.directMessageById(directMessageId);
+  //   const sendUser = await this.usersService.findUserById(userId);
+  //   if (!directMessage) {
+  //     throw new NotFoundException('존재하지 않는 메세지 입니다.');
+  //   } else if (!mentions) {
+  //     throw new NotFoundException('이름이 존재하지 않습니다.');
+  //   }
 
+  //   for (let i: number = 0; i < mentions.length; i++) {
+  //     const reseiveUser = await this.usersService.findUserByName(mentions[i]);
+  //     if (reseiveUser) {
+  //       this.mentionRepository.insert({
+  //         send_id: sendUser,
+  //         receive_id: reseiveUser,
+  //         board_message: null,
+  //         comment: null,
+  //         direct_message: directMessage,
+  //       });
+  //     }
+  //   }
+  // }
+  
   // mention all get
   async GetMentions(userId: number) {
     const mentions = await this.mentionRepository.find({
