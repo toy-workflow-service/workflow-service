@@ -1,6 +1,7 @@
-import { Controller, Get, Render, Req } from '@nestjs/common';
+import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { ViewAuthGuard } from 'src/_common/security/view-auth.guard';
 
 @Controller()
 export class ViewController {
@@ -23,6 +24,7 @@ export class ViewController {
   }
 
   @Get('workspace')
+  @UseGuards(ViewAuthGuard)
   @Render('workspace.ejs')
   async workspace(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -31,6 +33,7 @@ export class ViewController {
   }
 
   @Get('userInfo')
+  @UseGuards(ViewAuthGuard)
   @Render('user-info.ejs')
   async userInfo(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -51,6 +54,7 @@ export class ViewController {
   }
 
   @Get('board')
+  @UseGuards(ViewAuthGuard)
   @Render('board.ejs')
   async board(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -59,6 +63,7 @@ export class ViewController {
   }
 
   @Get('workspaceDetail')
+  @UseGuards(ViewAuthGuard)
   @Render('workspace-detail.ejs')
   async workspaceDetail(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
