@@ -128,9 +128,12 @@ function ColumnListReorder() {
 }
 
 function CardListReorder() {
-  Object.values($('.list-items').children('li')).forEach(async (card, index) => {
-    console.log('card list : ', card, index + 1);
-    // await CardSequenceUpdate(columnId, cardId, sequence);
+  const cards = document.querySelectorAll('#card-list-item');
+  Object.values(cards).forEach(async (card, index) => {
+    const columnId = card.getAttribute('data-columnid');
+    const cardId = card.getAttribute('data-cardid');
+    console.log('card list : ', card, index + 1, columnId, cardId);
+    await CardSequenceUpdate(columnId, cardId, index + 1);
   });
   // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
@@ -167,7 +170,6 @@ async function BoardColumnsGet() {
     },
     success: (data) => {
       BoardColumns(data);
-      init();
     },
     error: (error) => {
       console.log(error);
@@ -258,6 +260,7 @@ async function BoardColumns(data) {
                             </div>
                           </div>`;
 
+  init();
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
@@ -443,7 +446,6 @@ async function CardGet(columnId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log('get card data : ', data);
       Cards(data, columnId);
     },
     error: (error) => {
@@ -455,17 +457,15 @@ async function CardGet(columnId) {
 // card get html
 function Cards(data, columnId) {
   const cardHtml = document.querySelector('#cardListItems');
-  console.dir(cardHtml);
   const ulHtml = cardHtml.children[0];
-  // cardHtml.innerHTML = '';
+  console.dir(cardHtml);
   ulHtml.innerHTML = '';
 
   // card data 입력
   let i = 0;
   for (i = 0; i < data.length; i++) {
-    console.log(`Cards in card ${i} : `, data[i]);
-    ulHtml.innerHTML += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${columnId} data-cardId=${data[i].id}>
-                    <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+    ulHtml.innerHTML += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${columnId} data-cardId=${data[i].id}>
+                    <div class="lists-items-title" style="background-color: ${data[i].color}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
                       ${data[i].name}
                     </div>
                     <button class="open-popup-modal" type="button">
@@ -487,14 +487,13 @@ function Cards(data, columnId) {
   }
   cardHtml.innerHTML += `  <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-cardId="cardId넣어주세요" data-columnId="${columnId}" data-index="${i}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
     card</button>`;
-  console.log('cards html :', cardHtml);
   return { cardHtml, index: i + 1 };
 }
 
 // card create api
 async function CardCreate(columnId, data) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  console.log(columnId, data);
+  // console.log(columnId, data);
   await $.ajax({
     type: 'POST',
     url: `/cards?board_column_Id=${columnId}`,
@@ -708,22 +707,21 @@ document.getElementById('cardUpdateAddMembers').addEventListener('click', () => 
 // card sequence update api
 async function CardSequenceUpdate(columnId, cardId, sequence) {
   console.log('CardSequenceUpdate : ', columnId, cardId, sequence);
-  // 쿼리를 사용하려면 -> 예시 : url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
-  // $.ajax({
-  //   type: 'PUT',
-  //   url: ``,
-  //   data: JSON.stringify({ sequence }),
-  //   beforeSend: function (xhr) {
-  //     xhr.setRequestHeader('Content-type', 'application/json');
-  //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-  //   },
-  //   success: (data) => {
-  //     console.log(data.message);
-  //   },
-  //   error: (error) => {
-  //     console.log(error);
-  //   },
-  // });
+  $.ajax({
+    type: 'PUT',
+    url: `cards/${cardId}/sequence?board_column_Id=${columnId}`,
+    data: JSON.stringify({ sequence }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
 }
 
 // card update api / detail modal -> update btn click -> submit btn click
