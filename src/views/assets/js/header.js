@@ -1,10 +1,11 @@
-$(document).ready(async () => {
-  await getWorkspaces();
-});
-
 const logoutBtn = document.querySelector('#logoutBtn');
 const accessToken = localStorage.getItem('accessToken');
 const workspaceList = document.querySelector('.workspace-list');
+
+$(document).ready(async () => {
+  if (getCookie('accessToken')) setAccessToken();
+  await getWorkspaces();
+});
 
 function logout() {
   $.ajax({
@@ -34,7 +35,26 @@ function logout() {
   });
 }
 
-logoutBtn.addEventListener('click', logout);
+function getCookie(name) {
+  let matches = document.cookie.match(
+    new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
+  );
+
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function deleteCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1900 00:00:00 UTC; path=/;';
+}
+
+function setAccessToken() {
+  const result = getCookie('accessToken').split(' ')[1];
+  localStorage.setItem('accessToken', result);
+  deleteCookie('accessToken');
+  window.location.reload();
+}
+
+if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
 // 워크스페이스 조회
 async function getWorkspaces() {

@@ -68,7 +68,6 @@ export class MentionsService {
     }
   }
 
-  // direct message mention 생성
   // async CreateDirectMessageMention(directMessageId: number, data: any, userId: number) {
   //   const { mentions } = await this.commentsService.directMessageMentions(data.comment);
   //   const directMessage = await this.directMessagesService.directMessageById(directMessageId);
@@ -92,7 +91,7 @@ export class MentionsService {
   //     }
   //   }
   // }
-
+  
   // mention all get
   async GetMentions(userId: number) {
     const mentions = await this.mentionRepository.find({
