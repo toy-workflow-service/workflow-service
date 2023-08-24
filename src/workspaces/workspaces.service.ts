@@ -29,7 +29,7 @@ export class WorkspacesService {
           ...body,
           user: { id: userId },
         });
-
+        console.log(newWorkspace);
         await transactionEntityManager.save(Workspace, newWorkspace);
 
         const newMember = this.workspaceMemberRepository.create({
@@ -62,6 +62,30 @@ export class WorkspacesService {
     });
 
     return existWorkspace;
+  }
+
+  // 워크스페이스 멤버조회
+  async searchMemberByName(workspaceId: number, name: string): Promise<Workspace_Member> {
+    const user = await this.userService.findUserByName(name);
+    if (!user) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
+    const workspaceMember = await this.workspaceMemberRepository
+      .createQueryBuilder('workspace_member')
+      .innerJoinAndSelect('workspace_member.user', 'user')
+      .where('workspace_member.workspace = :workspaceId', { workspaceId })
+      .andWhere('workspace_member.user = :userId', { userId: user.id })
+      .select([
+        'workspace_member.id',
+        'workspace_member.role',
+        'workspace_member.participation',
+        'user.id',
+        'user.name',
+        'user.email',
+        'user.profile_url',
+      ])
+      .getOne();
+
+    return workspaceMember;
   }
 
   // 워크스페이스 수정
@@ -190,4 +214,8 @@ export class WorkspacesService {
 
     return { result: true };
   }
+
+  // 워크스페이스가 보유한 보드개수 조회
+
+  // 워크스페이스가 보유한 카드개수 조회
 }

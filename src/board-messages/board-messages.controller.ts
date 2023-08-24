@@ -29,7 +29,7 @@ export class BoardMessagesController {
     @Body() data: CreateBoardMessageDto,
     @Req() req: MulterRequest,
     @GetUser() user: AccessPayload,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     const fileUrl = req.file ? req.file.location : null;
     await this.boardMessagesService.PostBoardMessage(boardId, data.message, fileUrl, user.id);

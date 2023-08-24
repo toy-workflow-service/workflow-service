@@ -138,7 +138,7 @@
         // Replace image with new SVG
         $img.replaceWith($svg);
       },
-      'xml',
+      'xml'
     );
   });
 
@@ -650,8 +650,8 @@
           '<span class="number">%d<span class="text">days</span></span> ' +
           '<span class="number">%H<span class="text">hours</span></span> ' +
           '<span class="number">%M<span class="text">minutes</span></span> ' +
-          '<span class="number">%S<span class="text">seconds</span></span> ',
-      ),
+          '<span class="number">%S<span class="text">seconds</span></span> '
+      )
     );
   });
 
@@ -691,7 +691,7 @@
     node.addEventListener('click', function () {
       simpleFilters.forEach((filter) => filter.classList.remove('active'));
       node.classList.add('active');
-    }),
+    })
   );
 
   /* Tab Multiple Trigger */
@@ -700,7 +700,7 @@
     for (i = 0; i < otherTabs.length; i++) {
       nav = $('<ul class="nav d-none" id="tmpNav"></ul>');
       nav.append(
-        '<li class="nav-item"><a href="#" data-bs-toggle="tab" data-bs-target="' + otherTabs[i] + '">nav</a></li>"',
+        '<li class="nav-item"><a href="#" data-bs-toggle="tab" data-bs-target="' + otherTabs[i] + '">nav</a></li>"'
       );
       nav.find('a').tab('show');
     }
@@ -767,9 +767,9 @@
       $(this).html(
         '<ul>' +
           e.strftime(
-            '<li><span class="statistics-countdown__time">%H</span>:</li><li><span class="statistics-countdown__time">%M</span>:</li><li><span class="statistics-countdown__time">%S</span></li>',
+            '<li><span class="statistics-countdown__time">%H</span>:</li><li><span class="statistics-countdown__time">%M</span>:</li><li><span class="statistics-countdown__time">%S</span></li>'
           ) +
-          '</ul>',
+          '</ul>'
       );
     });
   });
@@ -1132,9 +1132,9 @@
 
   /* Input password toggle */
   function eye_pass() {
-    $('.toggle-password2').click(function () {
+    $('.toggle-password').click(function () {
       $(this).toggleClass('uil-eye');
-      input = $(this).parent().find('#password-field');
+      input = $(this).parent().find('#passwordInput');
       if (input.attr('type') == 'password') {
         input.attr('type', 'text');
       } else {
@@ -1143,6 +1143,34 @@
     });
   }
   eye_pass();
+
+  /* Input password toggle */
+  function eye_pass2() {
+    $('.toggle-password1').click(function () {
+      $(this).toggleClass('uil-eye');
+      input = $(this).parent().find('#passwordInput2');
+      if (input.attr('type') == 'password') {
+        input.attr('type', 'text');
+      } else {
+        input.attr('type', 'password');
+      }
+    });
+  }
+  eye_pass2();
+
+  /* Input confirmPassword toggle */
+  function eye_confirm_pass() {
+    $('.toggle-password2').click(function () {
+      $(this).toggleClass('uil-eye');
+      input = $(this).parent().find('#confirmPasswordInput');
+      if (input.attr('type') == 'password') {
+        input.attr('type', 'text');
+      } else {
+        input.attr('type', 'password');
+      }
+    });
+  }
+  eye_confirm_pass();
 
   $('#mail-to,#reply-to,#reply-to2').select2({
     placeholder: '',
@@ -1184,7 +1212,7 @@
     },
   });
   $('.price-value').text(
-    '$' + $('.price-slider').slider('values', 0) + ' - $' + $('.price-slider').slider('values', 1),
+    '$' + $('.price-slider').slider('values', 0) + ' - $' + $('.price-slider').slider('values', 1)
   );
 
   $('.job-value').text($('.price-slider').slider('values', 0) + ' miles');
@@ -1251,7 +1279,7 @@
         $('body').fadeIn('slow').removeClass('is-open');
       }
     },
-    true,
+    true
   );
 
   /* Indeterminate */
@@ -1283,7 +1311,7 @@
       {
         scrollTop: activeLinkOffset - 120,
       },
-      'slow',
+      'slow'
     );
   }
 
@@ -1338,7 +1366,7 @@
   /* Custom Input Number */
   function customQuantity() {
     jQuery(
-      '<div class="pt_QuantityNav"><div class="pt_QuantityButton pt_QuantityUp"><i class="las la-angle-up"></i></div><div class="pt_QuantityButton pt_QuantityDown"><i class="las la-angle-down"></i></div></div>',
+      '<div class="pt_QuantityNav"><div class="pt_QuantityButton pt_QuantityUp"><i class="las la-angle-up"></i></div><div class="pt_QuantityButton pt_QuantityDown"><i class="las la-angle-down"></i></div></div>'
     ).insertAfter('.pt_Quantity input');
     jQuery('.pt_Quantity').each(function () {
       var spinner = jQuery(this),
@@ -1504,7 +1532,7 @@
         rangeSeparator: ' - ',
         useHiddenAltFields: false,
       },
-      options || {},
+      options || {}
     );
 
     var myDateRangeTarget = $(this);

@@ -1,8 +1,22 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Response } from 'express';
 import { CreateBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
+import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 
 @Controller('boards')
 export class BoardsController {
@@ -27,19 +41,21 @@ export class BoardsController {
   //보드 생성
   @Post()
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckAuthInterceptor)
   async CreateBoard(@Query('workspaceId') workspaceId: number, @Body() data: CreateBoardDto, @Res() res: Response) {
-    await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
-    return res.status(HttpStatus.CREATED).json({ message: '보드를 생성하였습니다.' });
+    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+    return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }
 
   //보드 수정
   @Put('/:boardId')
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckAuthInterceptor)
   async UpdateBoard(
     @Query('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
     @Body() data: UpdateBoardDto,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
     return res.status(HttpStatus.OK).json({ message: '보드를 수정하였습니다.' });
@@ -48,6 +64,7 @@ export class BoardsController {
   //보드 삭제
   @Delete('/:boardId')
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckAuthInterceptor)
   async DeleteBoard(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
     await this.boardsService.DeleteBoard(workspaceId, id);
     return res.status(HttpStatus.OK).json({ message: '보드를 삭제하였습니다.' });

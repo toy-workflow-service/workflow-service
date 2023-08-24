@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
 import { Request, Response } from 'express';
@@ -13,13 +25,15 @@ import { UpdateInfoDTO } from 'src/_common/dtos/update-info.dto';
 import { PasswordDTO } from 'src/_common/dtos/password.dto';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
+import { deletePasswordDTO } from 'src/_common/dtos/delete-password.dto';
+import { PhoneNumberDTO } from 'src/_common/dtos/phone.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private cacheManager: RedisCacheService,
+    private cacheManager: RedisCacheService
   ) {}
 
   @Post('signup')
@@ -64,15 +78,19 @@ export class UsersController {
     return res.status(HttpStatus.OK).json({ message: '로그아웃 하셨습니다.' });
   }
 
-  //이름은 정보수정 시, 프론트에서 자동으로 이름을 불러오는 것으로 구현 해야 함
   @Patch()
   @UseGuards(AuthGuard)
   async updateUserInfo(
     @GetUser() user: AccessPayload,
     @Req() req: MulterRequest,
     @Body() updateInfo: UpdateInfoDTO,
-    @Res() res: Response,
+    @Res() res: Response
   ): Promise<Object> {
+    if (user.email !== updateInfo.email)
+      throw new HttpException(
+        ['이메일이 일치하지 않습니다. 현재 로그인된 이메일을 입력해 주세요. '],
+        HttpStatus.BAD_REQUEST
+      );
     const profileUrl = req.file ? req.file.location : user.profile_url;
 
     await this.usersService.updateUserInfo(user.id, updateInfo.name, profileUrl);
@@ -85,7 +103,7 @@ export class UsersController {
     @GetUser() user: AccessPayload,
     @Req() req: Request,
     @Body() passwordDTO: PasswordDTO,
-    @Res() res: Response,
+    @Res() res: Response
   ): Promise<Object> {
     await this.usersService.updatePassword(user.id, passwordDTO);
     const token = req.header('authorization').split(' ')[1];
@@ -112,5 +130,24 @@ export class UsersController {
 
     await this.usersService.changePassword(changePasswordDTO);
     return res.status(HttpStatus.OK).json({ message: '비밀번호가 변경 되었습니다. 로그인 창으로 이동합니다. ' });
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard)
+  async deleteAccount(
+    @GetUser() user: AccessPayload,
+    @Body() passwordDTO: deletePasswordDTO,
+    @Res() res: Response
+  ): Promise<Object> {
+    await this.usersService.deleteAccount(user.id, passwordDTO.password);
+    res.clearCookie('refreshToken');
+    return res.status(HttpStatus.OK).json({ message: '계정이 삭제되었습니다. 홈 화면으로 이동합니다. ' });
+  }
+
+  @Post('phoneAuthentication')
+  @UseGuards(AuthGuard)
+  async updateUserPhoneAuth(@Body() PhoneNumberDTO: PhoneNumberDTO, @GetUser() user: AccessPayload): Promise<any> {
+    await this.usersService.updateUserPhoneAuth(user.id, PhoneNumberDTO.phoneNumber);
+    return true;
   }
 }

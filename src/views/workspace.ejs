@@ -1,0 +1,307 @@
+<%- include('includes/header') %>
+<div class="contents">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="project-progree-breadcrumb">
+          <div class="breadcrumb-main user-member justify-content-sm-between">
+            <div class="d-flex flex-wrap justify-content-center breadcrumb-main__wrapper">
+              <div class="d-flex align-items-center user-member__title justify-content-center me-sm-25">
+                <h4 class="text-capitalize fw-500 breadcrumb-title">Boards</h4>
+                <span class="sub-title ms-sm-25 ps-sm-25">12 Running boards</span>
+              </div>
+            </div>
+            <div class="action-btn">
+              <a class="btn px-15 btn-primary" data-bs-toggle="modal" data-bs-target="#new-member">
+                <i class="las la-plus fs-16"></i>보드 생성</a
+              >
+              <!-- Create Board Modal -->
+              <div
+                class="modal fade new-member"
+                id="new-member"
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="staticBackdropLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content radius-xl">
+                    <div class="modal-header">
+                      <h6 class="modal-title fw-500" id="staticBackdropLabel">보드 생성</h6>
+                      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="new-member-modal">
+                        <form>
+                          <div class="form-group mb-20">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="create-board-title"
+                              placeholder="보드명을 입력하세요."
+                            />
+                          </div>
+                          <div class="form-group mb-20">
+                            <textarea
+                              class="form-control"
+                              id="create-description"
+                              rows="3"
+                              placeholder="보드내용을 입력하세요."
+                            ></textarea>
+                          </div>
+                          <div class="form-group textarea-group">
+                            <label class="mb-15">status</label>
+                            <div class="d-flex">
+                              <div class="project-task-list__left d-flex align-items-center">
+                                <div class="checkbox-group d-flex me-50 pe-10">
+                                  <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                    <input class="checkbox" type="checkbox" id="check-grp-1" checked />
+                                    <label for="check-grp-1" class="fs-14 color-light strikethrough"> 진행중 </label>
+                                  </div>
+                                </div>
+                                <div class="checkbox-group d-flex me-50 pe-10">
+                                  <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                    <input class="checkbox" type="checkbox" id="check-grp-2" />
+                                    <label for="check-grp-2" class="fs-14 color-light strikethrough"> 마감 </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="mb-25">
+                            <div class="form-group mb-10">
+                              <label for="name47">멤버 선택</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="name47"
+                                placeholder="멤버의 이름을 입력해주세요."
+                              />
+                            </div>
+                            <ul class="d-flex flex-wrap mb-20 user-group-people__parent" id="selected-members">
+                              <!-- 검색한 멤버를 선택하면 붙는곳 -->
+                            </ul>
+                          </div>
+                          <div class="d-flex new-member-calendar">
+                            <div class="form-group w-100 me-sm-15 form-group-calender">
+                              <label for="datepicker">시작일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
+                                <a>
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
+                            <div class="form-group w-100 form-group-calender">
+                              <label for="datepicker2">마감일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker2" placeholder="mm/dd/yyyy" />
+                                <a>
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="button-group d-flex pt-25">
+                            <button class="btn btn-primary btn-default btn-squared text-capitalize" id="create-button">
+                              보드 생성
+                            </button>
+
+                            <button
+                              type="button"
+                              class="btn btn-light btn-default btn-squared fw-400 text-capitalize b-light color-light"
+                              data-bs-dismiss="modal"
+                            >
+                              취소
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--Create Board Modal -->
+              <!-- Edit Board Modal -->
+              <div
+                class="modal fade new-member"
+                id="new-member2"
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="staticBackdropLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered" id="edit-board-modal">
+                  <div class="modal-content radius-xl">
+                    <div class="modal-header">
+                      <h6 class="modal-title fw-500" id="staticBackdropLabel">보드 수정</h6>
+                      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="new-member-modal">
+                        <form>
+                          <div class="form-group mb-20">
+                            <input type="text" class="form-control" placeholder="보드명을 입력하세요." />
+                          </div>
+                          <div class="form-group mb-20">
+                            <textarea
+                              class="form-control"
+                              id="exampleFormControlTextarea1"
+                              rows="3"
+                              placeholder="보드내용을 입력하세요."
+                            ></textarea>
+                          </div>
+                          <div class="form-group textarea-group">
+                            <label class="mb-15">status</label>
+                            <div class="d-flex">
+                              <div class="project-task-list__left d-flex align-items-center">
+                                <div class="checkbox-group d-flex me-50 pe-10">
+                                  <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                    <input class="checkbox" type="checkbox" id="check-grp-1" checked />
+                                    <label for="check-grp-1" class="fs-14 color-light strikethrough"> 진행중 </label>
+                                  </div>
+                                </div>
+                                <div class="checkbox-group d-flex me-50 pe-10">
+                                  <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                    <input class="checkbox" type="checkbox" id="check-grp-2" />
+                                    <label for="check-grp-2" class="fs-14 color-light strikethrough"> 마감 </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="mb-25">
+                            <div class="form-group mb-10">
+                              <label for="name47">멤버 선택</label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="name47"
+                                placeholder="멤버의 이름을 입력해주세요."
+                              />
+                            </div>
+                            <ul class="d-flex flex-wrap mb-20 user-group-people__parent"></ul>
+                          </div>
+                          <div class="d-flex new-member-calendar">
+                            <div class="form-group w-100 me-sm-15 form-group-calender">
+                              <label for="datepicker">시작일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
+                                <a href="#">
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
+                            <div class="form-group w-100 form-group-calender">
+                              <label for="datepicker2">마감일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker2" placeholder="mm/dd/yyyy" />
+                                <a href="#">
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="button-group d-flex pt-25">
+                            <button class="btn btn-primary btn-default btn-squared text-capitalize">보드 수정</button>
+
+                            <button
+                              type="button"
+                              class="btn btn-light btn-default btn-squared fw-400 text-capitalize b-light color-light"
+                              data-bs-dismiss="modal"
+                            >
+                              취소
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--Edit Board Modal -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="project-top-wrapper project-top-progress d-flex justify-content-between flex-wrap">
+          <div class="project-top-left d-flex flex-wrap justify-content-lg-between justify-content-center mt-n10">
+            <div class="project-tap global-shadow order-lg-1 order-2 my-10">
+              <ul class="nav px-1" id="ap-tab" role="tablist">
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    id="ap-overview-tab"
+                    href="/workspaceDetail"
+                    role="tab"
+                    aria-selected="true"
+                    >워크스페이스 디테일</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="project-search project-search--height global-shadow ms-md-20 my-10 order-md-2 order-1">
+              <form action="/" class="d-flex align-items-center user-member__form">
+                <img src="./assets/img/svg/search.svg" alt="search" class="svg" />
+                <input
+                  class="form-control me-sm-2 border-0 box-shadow-none"
+                  type="search"
+                  placeholder="Search by Name"
+                  aria-label="Search"
+                />
+              </form>
+            </div>
+          </div>
+          <div class="project-top-right d-flex flex-wrap">
+            <div class="project-category">
+              <div class="d-flex align-items-center">
+                <p class="mb-0 me-10 fs-14 color-light">sort by:</p>
+                <div class="project-category__select">
+                  <select class="js-example-basic-single js-states form-control" id="event-category">
+                    <option value="all" selected>project category</option>
+                    <option value="JAN">event</option>
+                    <option value="FBR">Venues</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="project-icon-selected">
+              <div class="listing-social-link pb-lg-0 pb-xs-2">
+                <div class="icon-list-social d-flex">
+                  <a
+                    class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center ms-xl-20 me-20 active"
+                    href="#"
+                  >
+                    <img class="svg" src="./assets/img/svg/grid.svg" alt="grid"
+                  /></a>
+                  <a
+                    class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center"
+                    href="project-table.html"
+                  >
+                    <img class="svg" src="./assets/img/svg/list.svg" alt="list"
+                  /></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Tab Menu End -->
+    <div class="projects-tab-content projects-tab-content--progress">
+      <div class="tab-content mt-25" id="ap-tabContent">
+        <div class="tab-pane fade show active" id="ap-overview" role="tabpanel" aria-labelledby="ap-overview-tab">
+          <div class="row" id="board-box"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('includes/footer') %>

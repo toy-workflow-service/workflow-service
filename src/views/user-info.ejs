@@ -44,9 +44,9 @@
                       data-bs-toggle="pill"
                       href="#v-pills-home"
                       role="tab"
-                      aria-selected="true"
+                      aria-selected="false"
                     >
-                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />Edit profile</a
+                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />내 프로필 정보</a
                     >
                     <a
                       class="nav-link"
@@ -56,17 +56,7 @@
                       role="tab"
                       aria-selected="false"
                     >
-                      <img src="./assets/img/svg/settings.svg" alt="setting" class="svg" />Account setting</a
-                    >
-                    <a
-                      class="nav-link"
-                      id="v-pills-messages-tab"
-                      data-bs-toggle="pill"
-                      href="#v-pills-messages"
-                      role="tab"
-                      aria-selected="false"
-                    >
-                      <img src="./assets/img/svg/key.svg" alt="key" class="svg" />change password</a
+                      <img src="./assets/img/svg/settings.svg" alt="setting" class="svg" />내 계정 관리</a
                     >
                     <a
                       class="nav-link"
@@ -76,17 +66,18 @@
                       role="tab"
                       aria-selected="false"
                     >
-                      <img class="svg" src="./assets/img/svg/users.svg" alt="users" />social profiles</a
+                      <img class="svg" src="./assets/img/svg/phone.svg" alt="users" />휴대폰 인증</a
                     >
+
                     <a
                       class="nav-link"
-                      id="v-pills-notification-tab"
+                      id="v-pills-messages-tab"
                       data-bs-toggle="pill"
-                      href="#v-pills-notification"
+                      href="#v-pills-messages"
                       role="tab"
                       aria-selected="false"
                     >
-                      <img src="./assets/img/svg/bell.svg" alt="bell" class="svg" />notification</a
+                      <img src="./assets/img/svg/key.svg" alt="key" class="svg" />비밀번호 변경</a
                     >
                   </div>
                 </div>
@@ -96,31 +87,33 @@
           </div>
           <div class="col-xxl-9 col-lg-8 col-sm-7">
             <div class="as-cover">
-              <div class="card card-default card-md mb-4" style="width: 70%; margin-left: 2%">
+              <div class="card card-default card-md mb-4">
                 <div class="card-header py-20">
                   <h6>내 프로필 정보</h6>
                 </div>
                 <div class="card-body">
-                  <div class="tab-wrapper">
-                    <div class="dm-tab tab-horizontal">
-                      <div class="tab-content">
-                        <div
-                          class="tab-pane fade show active"
-                          id="tab-v-1"
-                          role="tabpanel"
-                          aria-labelledby="tab-v-1-tab"
-                        >
-                          <p>이름 : <%= header.name %></p>
-                          <p>이메일 : <%= header.email %></p>
-                          <p>휴대폰 번호 : <%= header.phoneNumber %></p>
-                        </div>
-                        <div class="tab-pane fade" id="tab-v-2" role="tabpanel" aria-labelledby="tab-v-2-tab">
-                          <p>Content of Tab Pane 2</p>
-                        </div>
-                        <div class="tab-pane fade" id="tab-v-3" role="tabpanel" aria-labelledby="tab-v-3-tab">
-                          <p>Content of Tab Pane 3</p>
-                        </div>
+                  <div class="tab-content">
+                    <div
+                      class="tab-pane fade show active"
+                      id="v-pills-home"
+                      role="tabpanel"
+                      aria-labelledby="v-pills-home-tab"
+                    >
+                      <p>이름 : <%= header.name %></p>
+                      <p style="margin-top: 3%">이메일 : <%= header.email %></p>
+                      <% if(header.phoneAuthentication) { %>
+                      <div style="display: inline-flex; width: 100%">
+                        <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
+                        <button class="btn btn-success btn-sm btn-squared" style="margin-left: 2%">인증 완료</button>
                       </div>
+                      <% } else { %>
+                      <div style="display: inline-flex; width: 100%">
+                        <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
+                        <button class="btn btn-warning btn-sm btn-squared" style="margin-left: 2%">
+                          인증 되지 않음
+                        </button>
+                      </div>
+                      <% } %>
                     </div>
                   </div>
                 </div>
@@ -128,132 +121,45 @@
             </div>
             <div class="mb-50">
               <div class="tab-content" id="v-pills-tabContent">
-                <div
-                  class="tab-pane fade show active"
-                  id="v-pills-home"
-                  role="tabpanel"
-                  aria-labelledby="v-pills-home-tab"
-                >
-                  <!-- Edit Profile -->
-                  <div class="edit-profile mt-25">
-                    <div class="card">
-                      <div class="card-header px-sm-25 px-3">
-                        <div class="edit-profile__title">
-                          <h6>Edit Profile</h6>
-                          <span class="fs-13 color-light fw-400">Set up your personal information</span>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <div class="row justify-content-center">
-                          <div class="col-xxl-6">
-                            <div class="edit-profile__body mx-xl-20">
-                              <form>
-                                <div class="form-group mb-20">
-                                  <label for="names">name</label>
-                                  <input type="text" class="form-control" id="names" placeholder="Duran Clayton" />
-                                </div>
-                                <div class="form-group mb-20">
-                                  <label for="phoneNumber1">phone number</label>
-                                  <input
-                                    type="tel"
-                                    class="form-control"
-                                    id="phoneNumber1"
-                                    placeholder="+440 2546 5236"
-                                  />
-                                </div>
-                                <div class="form-group mb-20">
-                                  <div class="countryOption">
-                                    <label for="countryOption"> country </label>
-                                    <select class="js-example-basic-single js-states form-control" id="countryOption">
-                                      <option value="JAN">event</option>
-                                      <option value="FBR">Venues</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="form-group mb-20">
-                                  <div class="cityOption">
-                                    <label for="cityOption"> city </label>
-                                    <select class="js-example-basic-single js-states form-control" id="cityOption">
-                                      <option value="JAN">event</option>
-                                      <option value="FBR">Venues</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="form-group mb-20">
-                                  <label for="company1">company name</label>
-                                  <input type="text" class="form-control" id="company1" placeholder="Example" />
-                                </div>
-                                <div class="form-group mb-20">
-                                  <label for="website">website</label>
-                                  <input type="email" class="form-control" id="website" placeholder="www.example.com" />
-                                </div>
-                                <div class="form-group mb-20">
-                                  <label for="userBio">user bio</label>
-                                  <textarea class="form-control" id="userBio" rows="5"></textarea>
-                                </div>
-                                <div class="form-group mb-20">
-                                  <div class="skillsOption">
-                                    <label for="skillsOption"> skils </label>
-                                    <select
-                                      class="js-example-basic-single js-states form-control"
-                                      id="skillsOption"
-                                      multiple="multiple"
-                                    >
-                                      <option value="JAN">event</option>
-                                      <option value="FBR">Venues</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="button-group d-flex flex-wrap pt-30 mb-15">
-                                  <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm">
-                                    update profile
-                                  </button>
-
-                                  <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm">
-                                    cancel
-                                  </button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Edit Profile End -->
-                </div>
                 <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                   <!-- Edit Profile -->
                   <div class="edit-profile mt-25">
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
                         <div class="edit-profile__title">
-                          <h6>Account setting</h6>
-                          <span class="fs-13 color-light fw-400">Update your username and manage your account</span>
+                          <h6>계정 관리</h6>
+                          <span class="fs-13 color-light fw-400"
+                            >유저 이름을 변경하거나 계정을 삭제 하실 수 있습니다.
+                          </span>
                         </div>
                       </div>
                       <div class="card-body">
                         <div class="row justify-content-center">
                           <div class="col-xxl-6">
                             <div class="edit-profile__body mx-xl-20">
-                              <form>
-                                <div class="form-group mb-20">
-                                  <label for="name1">username</label>
-                                  <input type="text" class="form-control" id="name1" placeholder="Duran Clayton" />
-                                  <small id="passwordHelpInline2" class="text-light fs-13"
-                                    >Your Dashboard URL: https://dashboard.com/<span class="color-dark">clayton</span>
-                                  </small>
-                                </div>
-                                <div class="form-group mb-1">
-                                  <label for="email45">email</label>
-                                  <input
-                                    type="email"
-                                    class="form-control"
-                                    id="email45"
-                                    placeholder="Contact@example.com"
-                                  />
-                                </div>
-                              </form>
+                              <div class="form-group mb-20">
+                                <label for="name1">변경할 이름</label>
+                                <input type="text" class="form-control" id="name1" />
+                                <small id="passwordHelpInline2" class="text-light fs-13"
+                                  >이름은 한글이나 영어만 입력이 가능합니다.
+                                </small>
+                              </div>
+                              <div class="form-group mb-1">
+                                <label for="email45">이메일</label>
+                                <input
+                                  type="email"
+                                  class="form-control"
+                                  id="email45"
+                                  placeholder="현재 이메일을 입력해 주세요."
+                                />
+                              </div>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                style="margin-top: 4%; margin-bottom: 1%"
+                                id="updateUserBtn"
+                              >
+                                변경하기
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -262,24 +168,53 @@
                         <div class="row justify-content-center align-items-center">
                           <div class="col-xxl-6">
                             <div class="d-flex justify-content-between mt-1 align-items-center flex-wrap">
-                              <div class="text-capitalize py-10">
-                                <h6>close account</h6>
-                                <span class="fs-13 color-light fw-400">Delete your account and account data</span>
+                              <div style="display: inline-flex; width: 100%" id="deleteDiv">
+                                <div class="text-capitalize py-10">
+                                  <h6>회원 탈퇴</h6>
+                                  <span class="fs-13 color-light fw-400"
+                                    >계정을 삭제하신다면 저장된 모든 정보가 삭제되며 복구 하실 수 없습니다.
+                                  </span>
+                                </div>
+                                <div class="my-sm-0 my-10 py-10" style="margin-left: 5%">
+                                  <button
+                                    class="btn btn-danger btn-default btn-squared fw-400 text-capitalize"
+                                    id="deleteBtn"
+                                  >
+                                    삭제하기
+                                  </button>
+                                </div>
                               </div>
-                              <div class="my-sm-0 my-10 py-10">
-                                <button class="btn btn-danger btn-default btn-squared fw-400 text-capitalize">
-                                  close account
+                              <div style="display: inline-flex; width: 100%; display: none" id="deleteUserDiv">
+                                <div class="card-body" style="margin-bottom: 3%">
+                                  <div class="position-relative">
+                                    <label for="email45" style="margin-bottom: 2%">비밀번호</label>
+                                    <input
+                                      type="password"
+                                      class="form-control"
+                                      id="passwordInput"
+                                      placeholder="현재 비밀번호를 입력해 주세요."
+                                    />
+                                    <div
+                                      class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password"
+                                      style="padding-top: 11%"
+                                    ></div>
+                                  </div>
+                                </div>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 2%; margin-bottom: 1%"
+                                  id="deleteUserBtn"
+                                >
+                                  삭제하기
+                                </button>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 2%; margin-bottom: 1%"
+                                  id="cancelBtn"
+                                >
+                                  돌아가기
                                 </button>
                               </div>
-                            </div>
-                            <div class="button-group d-flex flex-wrap pt-35 mb-35">
-                              <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
-                                Save Changes
-                              </button>
-
-                              <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
-                                cancel
-                              </button>
                             </div>
                           </div>
                         </div>
@@ -294,45 +229,49 @@
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
                         <div class="edit-profile__title">
-                          <h6>change password</h6>
-                          <span class="fs-13 color-light fw-400">Change or reset your account password</span>
+                          <h6>비밀번호 변경</h6>
                         </div>
                       </div>
                       <div class="card-body">
                         <div class="row justify-content-center">
                           <div class="col-xxl-6">
                             <div class="edit-profile__body mx-xl-20">
-                              <form>
-                                <div class="form-group mb-20">
-                                  <label for="name">old passowrd</label>
-                                  <input type="text" class="form-control" id="name" />
+                              <div class="form-group mb-15">
+                                <label for="password-field">현재 비밀번호</label>
+                                <div class="position-relative">
+                                  <input
+                                    id="passwordInput2"
+                                    type="password"
+                                    class="form-control"
+                                    name="password"
+                                    placeholder="비밀번호"
+                                  />
+                                  <div class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password1"></div>
                                 </div>
-                                <div class="form-group mb-1">
-                                  <label for="password-field">new password</label>
-                                  <div class="position-relative">
-                                    <input
-                                      id="password-field"
-                                      type="password"
-                                      class="form-control"
-                                      name="password"
-                                      placeholder="Password"
-                                    />
-                                    <span
-                                      class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password2"
-                                    ></span>
-                                  </div>
-                                  <small id="passwordHelpInline" class="text-light fs-13">Minimum 6 characters </small>
-                                  <div class="button-group d-flex flex-wrap pt-45 mb-35">
-                                    <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
-                                      Save Changes
-                                    </button>
-
-                                    <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
-                                      cancel
-                                    </button>
-                                  </div>
+                              </div>
+                              <div class="form-group mb-1">
+                                <label for="password-field">새 비밀번호</label>
+                                <div class="position-relative">
+                                  <input
+                                    id="confirmPasswordInput"
+                                    type="password"
+                                    class="form-control"
+                                    name="password"
+                                    placeholder="비밀번호 확인"
+                                  />
+                                  <div class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password2"></div>
                                 </div>
-                              </form>
+                                <small id="passwordHelpInline" class="text-light fs-13"
+                                  >비밀번호는 8~20자내로 입력해 주세요.
+                                </small>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 4%; margin-bottom: 1%"
+                                  id="changePasswordBtn"
+                                >
+                                  변경하기
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -343,309 +282,137 @@
                 </div>
                 <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
                   <!-- Edit Profile -->
-                  <div class="edit-profile edit-social mt-25">
+                  <div class="edit-profile mt-25">
+                    <% if(!header.phoneAuthentication) { %>
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
                         <div class="edit-profile__title">
-                          <h6>social profiles</h6>
-                          <span class="fs-13 color-light fw-400">Add elsewhere links to your profile</span>
+                          <h6>휴대폰 본인 인증</h6>
+                          <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있지 않습니다.</span>
                         </div>
                       </div>
                       <div class="card-body">
                         <div class="row justify-content-center">
                           <div class="col-xxl-6">
                             <div class="edit-profile__body mx-xl-20">
-                              <form>
-                                <div class="mb-30">
-                                  <label for="socialUrl">facebook</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-facebook bg-facebook text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping1"
-                                      >
-                                        <i class="lab la-facebook-f fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      placeholder="Url"
-                                      aria-label="Username"
-                                      aria-describedby="addon-wrapping1"
-                                      id="socialUrl"
-                                    />
-                                  </div>
+                              <div class="form-group mb-20">
+                                <label for="names">휴대폰 번호</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="phoneNumberInput"
+                                  value="<%= header.phoneNumber %>"
+                                />
+                              </div>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                style="margin-top: 4%; margin-bottom: 1%"
+                                id="sendBtn"
+                              >
+                                전송
+                              </button>
+                              <div id="phoneAuthDiv" style="display: none">
+                                <div class="form-group mb-20">
+                                  <label for="names">인증 번호</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="phoneAuthInput"
+                                    placeholder="인증번호를 입력해 주세요."
+                                  />
                                 </div>
-                                <div class="mb-30">
-                                  <label for="twitterUrl">twitter</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-twitter bg-twitter text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping2"
-                                      >
-                                        <i class="lab la-twitter fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      placeholder="@Username"
-                                      aria-label="Username"
-                                      aria-describedby="addon-wrapping2"
-                                      id="twitterUrl"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="mb-30">
-                                  <label for="webUrl">Website</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-ruby bg-ruby text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping3"
-                                      >
-                                        <i class="las la-basketball-ball fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      placeholder="Url"
-                                      aria-label="Username"
-                                      aria-describedby="addon-wrapping3"
-                                      id="webUrl"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="mb-30">
-                                  <label for="instagramUrl">instagram</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-instagram bg-instagram text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping4"
-                                      >
-                                        <i class="lab la-instagram fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      aria-describedby="addon-wrapping4"
-                                      placeholder="Url"
-                                      id="instagramUrl"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="mb-30">
-                                  <label for="githubUrl">github</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-dark bg-dark text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping5"
-                                      >
-                                        <i class="lab la-github fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      placeholder="Username"
-                                      aria-label="Username"
-                                      aria-describedby="addon-wrapping5"
-                                      id="githubUrl"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="mb-0">
-                                  <label for="mediumUrl">medium</label>
-                                  <div class="input-group flex-nowrap">
-                                    <div class="input-group-prepend">
-                                      <span
-                                        class="input-group-text border-dark bg-dark text-white wh-44 radius-xs justify-content-center"
-                                        id="addon-wrapping6"
-                                      >
-                                        <i class="lab la-medium fs-18"></i>
-                                      </span>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      class="form-control form-control--social"
-                                      placeholder="Username"
-                                      aria-label="medium"
-                                      aria-describedby="addon-wrapping6"
-                                      id="mediumUrl"
-                                    />
-                                  </div>
-                                </div>
-                                <div class="button-group d-flex flex-wrap pt-50 mb-15">
-                                  <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
-                                    Update Social Profiles
+                                <div class="button-group d-flex flex-wrap pt-10 mb-15">
+                                  <button
+                                    class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                    id="phoneAuthBtn"
+                                  >
+                                    인증하기
                                   </button>
-
-                                  <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">
-                                    cancel
+                                  <button
+                                    class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm"
+                                    id="cancelAuthBtn"
+                                  >
+                                    취소
                                   </button>
                                 </div>
-                              </form>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- Edit Profile End -->
-                </div>
-                <div
-                  class="tab-pane fade"
-                  id="v-pills-notification"
-                  role="tabpanel"
-                  aria-labelledby="v-pills-notification-tab"
-                >
-                  <!-- Edit Profile -->
-                  <div class="edit-profile edit-social mt-25">
+                    <% } else { %>
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
                         <div class="edit-profile__title">
-                          <h6>Notifications</h6>
-                          <span class="fs-13 color-light fw-400">Add elsewhere links to your profile</span>
+                          <h6>휴대폰 본인 인증</h6>
+                          <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있습니다.</span>
                         </div>
                       </div>
                       <div class="card-body">
-                        <div class="notification-content p-25 border mb-25">
-                          <div
-                            class="notification-content__title d-flex justify-content-between flex-wrap pb-20 text-capitalize"
-                          >
-                            <h6 class="fs-15 text-light fw-500 lh-normal">Notifications</h6>
-                            <a class="text-primary fs-13" href="#">toggle all</a>
-                          </div>
-                          <div class="global-shadow radius-xl notification-content__body-wrapper">
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Company News</h6>
-                                  <span>Get company news, announcements, and product updates</span>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc1" />
-                                  <label class="form-check-label" for="nc1"></label>
-                                </div>
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <div class="form-group mb-20">
+                                <label for="names">휴대폰 번호</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="phoneNumberInput"
+                                  value="<%= header.phoneNumber %>"
+                                  readonly
+                                />
                               </div>
-                            </div>
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Meetups Near You</h6>
-                                  <span>Get company news, announcements, and product updates</span>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc2" />
-                                  <label class="form-check-label" for="nc2"></label>
-                                </div>
+                              <div id="editBtnDiv">
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                  style="margin-top: 4%; margin-bottom: 1%"
+                                  id="editBtn"
+                                >
+                                  변경하기
+                                </button>
+                                <small id="changePhoneNumber" class="text-light fs-13"
+                                  >휴대폰 번호를 변경하시려면 본인 인증이 가능한 휴대폰 번호로만 변경이 가능합니다.
+                                </small>
                               </div>
-                            </div>
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Opportunities</h6>
-                                  <span>Get company news, announcements, and product updates</span>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                style="margin-top: 4%; margin-bottom: 1%; display: none"
+                                id="sendBtn"
+                              >
+                                전송
+                              </button>
+                              <div id="phoneAuthDiv" style="display: none; margin-top: 3%">
+                                <div class="form-group mb-20">
+                                  <label for="names">인증 번호</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="phoneAuthInput"
+                                    placeholder="인증번호를 입력해 주세요."
+                                  />
                                 </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc3" />
-                                  <label class="form-check-label" for="nc3"></label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="notification-content__body p-25">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Weekly Newsletters</h6>
-                                  <span>Get company news, announcements, and product updates</span>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc4" />
-                                  <label class="form-check-label" for="nc4"></label>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="notification-content p-25 border mb-25">
-                          <div
-                            class="notification-content__title d-flex justify-content-between flex-wrap pb-20 text-capitalize"
-                          >
-                            <h6 class="fs-15 text-light fw-500 lh-normal">Account Activity</h6>
-                            <a class="text-primary fs-13" href="#">toggle all</a>
-                          </div>
-                          <div class="global-shadow radius-xl notification-content__body-wrapper">
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Anyone seeing my profile page</h6>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc5" />
-                                  <label class="form-check-label" for="nc5"></label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Anyone follow me</h6>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc6" />
-                                  <label class="form-check-label" for="nc6"></label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Someone mentions me</h6>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc7" />
-                                  <label class="form-check-label" for="nc7"></label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="notification-content__body p-25 border-bottom">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Someone accepts my invitation</h6>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc8" />
-                                  <label class="form-check-label" for="nc8"></label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="notification-content__body p-25">
-                              <div class="d-flex justify-content-between flex-wrap align-items-center">
-                                <div class="div">
-                                  <h6>Anyone send me a message</h6>
-                                </div>
-                                <div class="custom-control form-check form-switch my-lg-0 my-10">
-                                  <input type="checkbox" class="form-check-input" id="nc9" />
-                                  <label class="form-check-label" for="nc9"></label>
+                                <div class="button-group d-flex flex-wrap pt-10 mb-15">
+                                  <button
+                                    class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                    id="phoneAuthBtn"
+                                  >
+                                    인증하기
+                                  </button>
+                                  <button
+                                    class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm"
+                                    id="cancelAuthBtn2"
+                                  >
+                                    취소
+                                  </button>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="button-group d-flex flex-wrap pt-25 mb-25">
-                          <button class="btn btn-primary btn-default btn-squared me-15 text-capitalize">
-                            Update notification Profiles
-                          </button>
-                          <button class="btn btn-light btn-default btn-squared fw-400 text-capitalize">cancel</button>
                         </div>
                       </div>
                     </div>
+                    <% } %>
                   </div>
                   <!-- Edit Profile End -->
                 </div>
@@ -657,4 +424,5 @@
     </div>
   </div>
 </main>
+<script src="./assets/js/user-info.js"></script>
 <%- include('includes/footer') %>

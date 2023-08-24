@@ -11,6 +11,7 @@ export class ViewService {
         name: user.name,
         profileUrl: user.profile_url,
         phoneNumber: user.phone_number,
+        phoneAuthentication: user.phone_authentication,
       };
 
     return { isLogin: false };

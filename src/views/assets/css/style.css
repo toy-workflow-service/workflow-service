@@ -15086,6 +15086,7 @@ input[type='checkbox']:checked + label.strikethrough {
     font-size: 18px;
   }
 }
+
 .new-member .modal-header .close:hover {
   color: var(--color-white);
   background-color: var(--color-primary);
@@ -31263,5 +31264,11 @@ body:after {
   .chat-box {
     padding: 19px 0;
   }
+}
+
+.remove-member {
+  color: red;
+  cursor: pointer;
+  margin-left: 5px;
 }
 /*# sourceMappingURL=maps/style.css.map */

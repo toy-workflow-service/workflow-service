@@ -7,7 +7,7 @@ import { JwtService } from '../security/jwt/jwt.service';
 export class validateLoginMiddleware implements NestMiddleware {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const accessToken = req.headers.authorization;
@@ -22,7 +22,7 @@ export class validateLoginMiddleware implements NestMiddleware {
 
     const refreshTokenVerifyErrorHandle = this.jwtService.verifyErrorHandle(
       refreshToken,
-      process.env.REFRESH_SECRET_KEY,
+      process.env.REFRESH_SECRET_KEY
     );
     if (refreshTokenVerifyErrorHandle == 'verify success') {
       const refreshPayload = this.jwtService.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
@@ -34,9 +34,10 @@ export class validateLoginMiddleware implements NestMiddleware {
           email: findByUser.email,
           profile_url: findByUser.profile_url,
           phone_number: findByUser.phone_number,
+          phone_authentication: findByUser.phone_authentication,
         },
         process.env.ACCESS_SECRET_KEY,
-        process.env.ACCESS_EXPIRE_TIME,
+        process.env.ACCESS_EXPIRE_TIME
       );
 
       const accessTokenVerify = this.jwtService.verify(accessToken, process.env.ACCESS_SECRET_KEY);

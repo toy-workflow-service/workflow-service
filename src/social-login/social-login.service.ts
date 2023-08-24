@@ -8,7 +8,7 @@ import { uuid } from 'uuidv4';
 export class SocialLoginService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async socialLogin(req: SocialUser): Promise<any> {
@@ -19,12 +19,12 @@ export class SocialLoginService {
       const accessToken = this.jwtService.sign(
         { id: existUser.id },
         process.env.ACCESS_SECRET_KEY,
-        process.env.ACCESS_EXPIRE_TIME,
+        process.env.ACCESS_EXPIRE_TIME
       );
       const refreshToken = this.jwtService.sign(
         { id: existUser.id },
         process.env.REFRESH_SECRET_KEY,
-        process.env.REFRESH_EXPIRE_TIME,
+        process.env.REFRESH_EXPIRE_TIME
       );
       return { accessToken, refreshToken };
     }
@@ -39,12 +39,12 @@ export class SocialLoginService {
     const accessToken = this.jwtService.sign(
       { id: signupUser.id },
       process.env.ACCESS_SECRET_KEY,
-      process.env.ACCESS_EXPIRE_TIME,
+      process.env.ACCESS_EXPIRE_TIME
     );
     const refreshToken = this.jwtService.sign(
       { id: signupUser.id },
       process.env.REFRESH_SECRET_KEY,
-      process.env.REFRESH_EXPIRE_TIME,
+      process.env.REFRESH_EXPIRE_TIME
     );
     return { accessToken, refreshToken };
   }

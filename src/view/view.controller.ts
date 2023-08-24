@@ -1,7 +1,6 @@
 import { Controller, Get, Render, Req } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
-import { request } from 'express';
 
 @Controller()
 export class ViewController {
@@ -12,7 +11,7 @@ export class ViewController {
   async index(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'Work Flow', subtitle: '메인 페이지', header };
+    return { title: 'Work-Flow', subtitle: '메인 페이지', header };
   }
 
   @Get('maintenance')
@@ -20,7 +19,15 @@ export class ViewController {
   async maintenance(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'Work Flow', subtitle: '유지보수 페이지', header };
+    return { title: 'Work-Flow', subtitle: '유지보수 페이지', header };
+  }
+
+  @Get('workspace')
+  @Render('workspace.ejs')
+  async workspace(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '워크스페이스', header };
   }
 
   @Get('userInfo')
@@ -31,16 +38,33 @@ export class ViewController {
     if (header.phoneNumber.length === 11) {
       header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
         3,
-        7,
+        7
       )}-${header.phoneNumber.substring(7, 11)}`;
     } else {
       header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
         3,
-        6,
+        6
       )}-${header.phoneNumber.substring(6, 10)}`;
     }
 
-    return { title: 'Work Flow', subtitle: '마이 페이지', header };
+    return { title: 'Work-Flow', subtitle: '마이 페이지', header };
+  }
+
+  @Get('board')
+  @Render('board.ejs')
+  async board(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '보드', header };
+  }
+
+  @Get('workspaceDetail')
+  @Render('workspace-detail.ejs')
+  async workspaceDetail(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const workspaceId = req.query.workspaceId;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header, workspaceId };
   }
 
   /**No header & footer */

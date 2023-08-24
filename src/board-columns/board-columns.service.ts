@@ -9,7 +9,7 @@ export class BoardColumnsService {
   constructor(
     @InjectRepository(Board_Column)
     private boardColumnRepository: Repository<Board_Column>,
-    private boardsService: BoardsService,
+    private boardsService: BoardsService
   ) {}
 
   //보드 칼럼 조회
@@ -22,11 +22,15 @@ export class BoardColumnsService {
       return boardColumn.board.id == boardId;
     });
 
+    columns.sort((a, b) => {
+      return a.sequence - b.sequence;
+    });
+
     return columns.map((column) => {
       return {
         boardId: column.board.id,
         columnId: column.id,
-        coumnName: column.name,
+        columnName: column.name,
         sequence: column.sequence,
         createdAt: column.created_at,
         updatedAt: column.updated_at,
