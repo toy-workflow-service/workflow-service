@@ -97,8 +97,8 @@ async function sendMail() {
 function signup() {
   const form = new FormData();
   const email = document.querySelector('#email').value;
-  const password = document.querySelector('#password').value;
-  const confirmPassword = document.querySelector('#confirmPassword').value;
+  const password = document.querySelector('#passwordInput').value;
+  const confirmPassword = document.querySelector('#confirmPasswordInput').value;
   const name = document.querySelector('#name').value;
   const phoneNumber = document.querySelector('#phoneNumber').value;
   const newFile = document.querySelector('#upload-1').files[0];
