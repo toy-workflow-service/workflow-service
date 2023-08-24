@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
 import { Response } from 'express';
 import {
@@ -7,6 +20,7 @@ import {
   UpdateBoardColumnSequenceDto,
 } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
+import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 
 @Controller('board-columns')
 export class BoardColumnsController {
@@ -64,5 +78,12 @@ export class BoardColumnsController {
   ) {
     await this.boardColumnsService.DeleteBoardColumn(boardId, columnId);
     return res.status(HttpStatus.OK).json({ message: '칼럼을 삭제하였습니다.' });
+  }
+
+  @Get('/cards/count')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
+  async countWorkspaceCards(@Query('workspaceId') workspaceId: number): Promise<Object> {
+    return await this.boardColumnsService.countWorkspaceCards(workspaceId);
   }
 }

@@ -6,30 +6,23 @@
         <div class="breadcrumb-main application-ui mb-30">
           <div class="breadcrumb-action d-flex">
             <div class="d-flex align-items-center user-member__title me-sm-25 me-0">
-              <h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">Application UI Design</h4>
-            </div>
-            <div class="action-btn me-10 my-sm-0">
-              <a href="#" class="btn btn-primary bg-primary fs-12 fw-500"
-                ><img src="./assets/img/svg/plus.svg" alt="plus" class="svg" /> Add task</a
-              >
-            </div>
-            <div class="btn-group-toggle" data-bs-toggle="buttons">
-              <input type="checkbox" class="btn-check" id="btn-check-2-outlined" />
-              <label class="btn btn-outline-secondary" for="btn-check-2-outlined">
-                <img src="./assets/img/svg/check.svg" alt="check" class="svg" /> Mark as Complete</label
-              >
+              <h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title"></h4>
             </div>
           </div>
           <div class="d-flex text-capitalize">
             <button
               type="button"
               class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md"
+              id="edit-button"
+              onclick="openEditWorkspaceModal()"
             >
               <img src="./assets/img/svg/edit-3.svg" alt="edit-3" class="svg" />edit
             </button>
             <button
               type="button"
               class="breadcrumb-remove border-0 color-danger content-center bg-white fs-12 fw-500 ms-10 radius-md"
+              id="remove-button"
+              onclick="deleteWorkspace()"
             >
               <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash-2" />remove
             </button>
@@ -37,6 +30,64 @@
         </div>
       </div>
     </div>
+    <!-- 워크스페이스 수정모달 -->
+    <div class="modal-basic modal fade show" id="modal-basic" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content modal-bg-white">
+          <div class="modal-header">
+            <h6 class="modal-title">워크스페이스 수정</h6>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-basic">
+                <div class="form-group mb-25">
+                  <label>워크스페이스 타이틀</label>
+                  <input
+                    class="form-control form-control-lg"
+                    type="text"
+                    id="edit-title"
+                    placeholder="내용을 입력하세요."
+                  />
+                </div>
+                <div class="card card-default card-md mb-4">
+                  <label>워크스페이스 타입</label>
+                  <div class="dm-select-list d-flex">
+                    <div class="dm-select">
+                      <select name="select-search" id="select-search" class="form-control">
+                        <option>개발</option>
+                        <option>연구</option>
+                        <option>마케팅</option>
+                        <option>교육</option>
+                        <option>HRD</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mb-25">
+                  <label for="description">워크스페이스 소개</label>
+                  <div class="position-relative">
+                    <textarea
+                      class="form-control form-control-lg"
+                      id="edit-description"
+                      placeholder="내용을 입력하세요."
+                      style="resize: none"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" onclick="updateWorkspace()">수정</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 워크스페이스 수정모달 끝 -->
     <!-- Tab Menu End -->
     <div class="projects-tab-content mb-30">
       <div class="row">
@@ -60,129 +111,115 @@
               </div>
             </div>
           </div>
-          <div class="card mt-25">
-            <div class="card-body">
-              <div class="application-task d-flex align-items-center mb-25">
-                <div class="application-task-icon wh-60 bg-opacity-secondary content-center">
-                  <img class="svg wh-25 text-secondary" src="./assets/img/svg/at.svg" alt="img" />
-                </div>
-                <div class="application-task-content">
-                  <h4>47</h4>
-                  <span class="text-light fs-14 mt-1 text-capitalize">total task</span>
-                </div>
-              </div>
-              <div class="application-task d-flex align-items-center mb-25">
-                <div class="application-task-icon wh-60 bg-opacity-primary content-center">
-                  <img class="svg wh-25 text-primary" src="./assets/img/svg/at2.svg" alt="img" />
-                </div>
-                <div class="application-task-content">
-                  <h4>34</h4>
-                  <span class="text-light fs-14 mt-1 text-capitalize">task completed</span>
-                </div>
-              </div>
-              <div class="application-task d-flex align-items-center mb-25">
-                <div class="application-task-icon wh-60 bg-opacity-success content-center">
-                  <img class="svg wh-25 text-success" src="./assets/img/svg/at4.svg" alt="img" />
-                </div>
-                <div class="application-task-content">
-                  <h4>$27,500</h4>
-                  <span class="text-light fs-14 mt-1 text-capitalize">Spendings</span>
-                </div>
-              </div>
-              <div class="application-task d-flex align-items-center">
-                <div class="application-task-icon wh-60 bg-opacity-warning content-center">
-                  <img class="svg wh-25 text-warning" src="./assets/img/svg/at3.svg" alt="img" />
-                </div>
-                <div class="application-task-content">
-                  <h4>250</h4>
-                  <span class="text-light fs-14 mt-1 text-capitalize">hours spent</span>
-                </div>
-              </div>
-            </div>
+          <div class="card mt-25" id="workspace-total">
+            <!-- 토탈데이터 붙는 곳 -->
           </div>
           <!-- ends: .card -->
         </div>
         <div class="col-xxl-6 col-lg-8 mb-25" id="workspace-info">
-          <div class="card border-0 pb-md-50 pb-15">
-            <div class="card-header py-sm-20 py-3 px-sm-25 px-3">
-              <h6>About Project</h6>
-            </div>
-            <div class="card-body">
-              <div class="about-projects">
-                <div class="about-projects__details" id="workspace-desc">
-                  <p class="fs-15 mb-25">
-                    Many support queries and technical questions will already be answered in supporting documentation
-                    such as FAQ's and comments from previous buyers. Anim pariatur cliche reprehenderit, enim eiusmod
-                    high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard
-                    dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put
-                    a bird on it squid single-origin coffee nulla assumenda shoreditch.
-                  </p>
-                </div>
-                <ul class="d-flex text-capitalize">
-                  <li>
-                    <span class="color-light fs-13">워크스페이스생성자</span>
-                    <p class="color-dark fs-14 mt-1 mb-0 fw-500" id="workspace-owner">유저아이디</p>
-                  </li>
-                  <li>
-                    <span class="color-light fs-13">Start Date</span>
-                    <p class="color-primary fs-14 mt-1 mb-0 fw-500">26 Dec 2019</p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <div class="card border-0 pb-md-50 pb-15" id="workspace-card"></div>
           <!-- ends: col -->
         </div>
         <!-- ends: .card -->
         <div class="col-xxl-3 col-lg-6 col-12 mb-25 order-xxl-0 order-lg-1">
           <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center py-10 px-sm-25 px-3">
-              <h6 class="fw-500">users</h6>
-              <button type="button" class="border radius-lg color-primary fw-500 fs-12 bg-transparent acButton">
-                <img class="svg" src="./assets/img/svg/user-plus.svg" alt="" /> add user
+              <h6 class="fw-500">멤버</h6>
+              <button
+                type="button"
+                class="border radius-lg color-primary fw-500 fs-12 bg-transparent acButton"
+                onclick="openInviteWorkspaceModal()"
+              >
+                <img class="svg" src="./assets/img/svg/user-plus.svg" alt="" /> 멤버초대
               </button>
             </div>
-            <div class="card-body">
-              <div class="d-flex align-items-center mb-25">
-                <img src="./assets/img/tm1.png" class="wh-46 me-15" alt="img" />
-                <div>
-                  <p class="fs-14 fw-600 color-dark mb-0">Meyri Carles</p>
-                  <span class="mt-1 fs-14 color-light">UI Designer</span>
-                </div>
+            <div class="card-body" id="workspace-member">
+              <div class="d-flex align-items-center mb-25"></div>
+            </div>
+          </div>
+        </div>
+        <!-- ends: .card -->
+        <!-- 멤버 초대 모달 -->
+        <div class="modal-basic modal fade show" id="modal-basic2" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white">
+              <div class="modal-header">
+                <h6 class="modal-title">멤버 초대</h6>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                </button>
               </div>
-              <div class="d-flex align-items-center mb-25">
-                <img src="./assets/img/tm2.png" class="wh-46 me-15" alt="img" />
-                <div>
-                  <p class="fs-14 fw-600 color-dark mb-0">Shreyu Neu</p>
-                  <span class="mt-1 fs-14 color-light">Web Developer</span>
-                </div>
+              <div class="modal-body">
+                <form>
+                  <div class="form-basic">
+                    <div class="form-group mb-25">
+                      <label>이메일</label>
+                      <input
+                        class="form-control form-control-lg"
+                        type="text"
+                        id="email-input"
+                        placeholder="이메일을 입력하세요."
+                      />
+                    </div>
+                  </div>
+                  <div class="card card-default card-md mb-4">
+                    <label>역할</label>
+                    <div class="dm-select-list d-flex">
+                      <div class="dm-select">
+                        <select name="select-search" id="select-search" class="form-control">
+                          <option value="2">Manager</option>
+                          <option value="3">Member</option>
+                          <option value="4">OutSourcing</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </form>
               </div>
-              <div class="d-flex align-items-center mb-25">
-                <img src="./assets/img/tm3.png" class="wh-46 me-15" alt="img" />
-                <div>
-                  <p class="fs-14 fw-600 color-dark mb-0">Tuhin Molla</p>
-                  <span class="mt-1 fs-14 color-light">Project Manager</span>
-                </div>
-              </div>
-              <div class="d-flex align-items-center mb-25">
-                <img src="./assets/img/tm4.png" class="wh-46 me-15" alt="img" />
-                <div>
-                  <p class="fs-14 fw-600 color-dark mb-0">Billal Hossain</p>
-                  <span class="mt-1 fs-14 color-light">App Developer</span>
-                </div>
-              </div>
-              <div class="d-flex align-items-center">
-                <img src="./assets/img/tm5.png" class="wh-46 me-15" alt="img" />
-                <div>
-                  <p class="fs-14 fw-600 color-dark mb-0">Khalid Hasan</p>
-                  <span class="mt-1 fs-14 color-light">App Developer</span>
-                </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" onclick="inviteMember()">초대메일 전송</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
               </div>
             </div>
           </div>
-          <!-- ends: .card -->
         </div>
-
+        <!-- 멤버초대 모달 끝 -->
+        <!-- 멤버권한 수정 모달 -->
+        <div class="modal-basic modal fade show" id="modal-basic3" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white">
+              <div class="modal-header">
+                <h6 class="modal-title">멤버역할 수정</h6>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                </button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="card card-default card-md mb-4">
+                    <label>역할</label>
+                    <div class="dm-select-list d-flex">
+                      <div class="dm-select">
+                        <select name="select-search" id="select-search" class="form-control">
+                          <option value="2">Manager</option>
+                          <option value="3">Member</option>
+                          <option value="4">OutSourcing</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="edit-member-btn" onclick="setMemberRole()">
+                  수정
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 멤버권한 수정 모달 끝 -->
         <!-- ends: col -->
         <div class="col-xxl-8 mb-25">
           <div class="card">
@@ -841,7 +878,6 @@
                       <div class="dropdown-menu dropdown-menu--dynamic">
                         <a class="dropdown-item" href="#">view</a>
                         <a class="dropdown-item" href="#">edit</a>
-                        <a class="dropdown-item" href="#">leave</a>
                         <a class="dropdown-item" href="#">delete</a>
                       </div>
                     </div>
@@ -883,120 +919,30 @@
                   </div>
                 </div>
               </div>
-              <div class="mb-20">
-                <div class="files-area d-flex justify-content-between align-items-center">
-                  <div class="files-area__left d-flex align-items-center">
-                    <div class="files-area__img">
-                      <img src="./assets/img/psd@2x.png" alt="img" class="wh-42" />
-                    </div>
-                    <div class="files-area__title">
-                      <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">admin-wireframe.psd</p>
-                      <span class="color-light fs-12 d-flex">2.05 MB</span>
-                      <div class="d-flex text-capitalize">
-                        <a href="#" class="fs-12 fw-500 color-primary">download</a>
-                        <a href="#" class="fs-12 fw-500 color-primary ms-10"></a>
-                      </div>
-                    </div>
+              <div class="files-area d-flex justify-content-between align-items-center">
+                <div class="files-area__left d-flex align-items-center">
+                  <div class="files-area__img">
+                    <img src="./assets/img/png@2x.png" alt="img" class="wh-42" />
                   </div>
-                  <div class="files-area__right">
-                    <div class="dropdown dropleft">
-                      <button
-                        class="btn-link border-0 bg-transparent p-0"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                      </button>
-                      <div class="dropdown-menu dropdown-menu--dynamic">
-                        <a class="dropdown-item" href="#">view</a>
-                        <a class="dropdown-item" href="#">edit</a>
-                        <a class="dropdown-item" href="#">leave</a>
-                        <a class="dropdown-item" href="#">delete</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mb-20">
-                <div class="files-area d-flex justify-content-between align-items-center">
-                  <div class="files-area__left d-flex align-items-center">
-                    <div class="files-area__img">
-                      <img src="./assets/img/jpg@2x.png" alt="img" class="wh-42" />
-                    </div>
-                    <div class="files-area__title">
-                      <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">Wirefram-escreenshots.jpg</p>
-                      <span class="color-light fs-12 d-flex">522 KB</span>
-                      <div class="d-flex text-capitalize">
-                        <a href="#" class="fs-12 fw-500 color-primary">view</a>
-                        <a href="#" class="fs-12 fw-500 color-primary ms-10">download</a>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="files-area__right">
-                    <div class="dropdown dropleft">
-                      <button
-                        class="btn-link border-0 bg-transparent p-0"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                      </button>
-                      <div class="dropdown-menu dropdown-menu--dynamic">
-                        <a class="dropdown-item" href="#">view</a>
-                        <a class="dropdown-item" href="#">edit</a>
-                        <a class="dropdown-item" href="#">leave</a>
-                        <a class="dropdown-item" href="#">delete</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div class="files-area d-flex justify-content-between align-items-center">
-                  <div class="files-area__left d-flex align-items-center">
-                    <div class="files-area__img">
-                      <img src="./assets/img/png@2x.png" alt="img" class="wh-42" />
-                    </div>
-                    <div class="files-area__title">
-                      <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">Logo.png</p>
-                      <span class="color-light fs-12 d-flex">522 KB</span>
-                      <div class="d-flex text-capitalize">
-                        <a href="#" class="fs-12 fw-500 color-primary">view</a>
-                        <a href="#" class="fs-12 fw-500 color-primary ms-10">download</a>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="files-area__right">
-                    <div class="dropdown dropleft">
-                      <button
-                        class="btn-link border-0 bg-transparent p-0"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                      </button>
-                      <div class="dropdown-menu dropdown-menu--dynamic">
-                        <a class="dropdown-item" href="#">view</a>
-                        <a class="dropdown-item" href="#">edit</a>
-                        <a class="dropdown-item" href="#">leave</a>
-                        <a class="dropdown-item" href="#">delete</a>
-                      </div>
+                  <div class="files-area__title">
+                    <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">Logo.png</p>
+                    <span class="color-light fs-12 d-flex">522 KB</span>
+                    <div class="d-flex text-capitalize">
+                      <a href="#" class="fs-12 fw-500 color-primary">view</a>
+                      <a href="#" class="fs-12 fw-500 color-primary ms-10">download</a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <!-- ends: .card -->
         </div>
-        <!-- ends: col -->
+        <!-- ends: .card -->
       </div>
+      <!-- ends: col -->
     </div>
-    <!-- ends: project tab -->
   </div>
+  <!-- ends: project tab -->
 </div>
 <script src="../assets/js/workspace-detail.js" defer></script>
 <%- include('includes/footer') %>

@@ -10,6 +10,7 @@ import { MailService } from 'src/_common/mail/mail.service';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 import { comparePassword } from 'src/_common/utils/password.compare';
 import { bcryptPassword } from 'src/_common/utils/bcrypt-password';
+import { IResult } from 'src/_common/interfaces/result.interface';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-    private mailService: MailService,
+    private mailService: MailService
   ) {}
 
   async signup(newUser: UserDAO): Promise<User> {
@@ -35,7 +36,7 @@ export class UsersService {
   }
 
   async login(
-    userInfo: LoginDTO,
+    userInfo: LoginDTO
   ): Promise<{ accessToken: string; refreshToken: string; userName: string } | undefined> {
     const existUser: User = await this.usersRepository.findOne({ where: { email: userInfo.email } });
     if (!existUser)
@@ -48,12 +49,12 @@ export class UsersService {
     const accessToken = this.jwtService.sign(
       { id: existUser.id },
       process.env.ACCESS_SECRET_KEY,
-      process.env.ACCESS_EXPIRE_TIME,
+      process.env.ACCESS_EXPIRE_TIME
     );
     const refreshToken = this.jwtService.sign(
       { id: existUser.id },
       process.env.REFRESH_SECRET_KEY,
-      process.env.REFRESH_EXPIRE_TIME,
+      process.env.REFRESH_EXPIRE_TIME
     );
 
     return { accessToken, refreshToken, userName: existUser.name };
@@ -118,7 +119,10 @@ export class UsersService {
   }
 
   async findUserById(id: number): Promise<User> {
-    const existUser = await this.usersRepository.findOne({ where: { id } });
+    const existUser = await this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'name', 'profile_url'],
+    });
 
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
 
@@ -128,5 +132,14 @@ export class UsersService {
   // name으로만 조회
   async findUserByName(name: string) {
     return await this.usersRepository.findOneBy({ name });
+  }
+
+  async checkPhoneAuth(userId: number): Promise<IResult> {
+    const checkAuth = await this.usersRepository.findOne({ where: { id: userId } });
+
+    if (checkAuth.phone_authentication === false)
+      throw new HttpException('핸드폰 인증이 필요한 서비스입니다. ', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
   }
 }

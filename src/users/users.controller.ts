@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
 import { Request, Response } from 'express';
@@ -13,6 +25,7 @@ import { UpdateInfoDTO } from 'src/_common/dtos/update-info.dto';
 import { PasswordDTO } from 'src/_common/dtos/password.dto';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
+import { User } from 'src/_common/entities/user.entitiy';
 
 @Controller('users')
 export class UsersController {

@@ -23,6 +23,7 @@ import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-in
 import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-interceptors';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
+import { CheckPhoneAuthInterceptor } from 'src/_common/interceptors/check-phone-auth-interceptors';
 
 @Controller('workspaces')
 export class WorkspacesController {
@@ -31,16 +32,17 @@ export class WorkspacesController {
   // 워크스페이스 생성
   @Post()
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckPhoneAuthInterceptor)
   async createWorkspace(@Body() body: CreateWorkspaceDto, @GetUser() user: AccessPayload): Promise<IResult> {
     return await this.workspaceService.createWorkspace(body, user.id);
   }
 
   // 워크스페이스 전체 조회
   @Get()
-  @UseInterceptors(CheckMemberInterceptor)
   @UseGuards(AuthGuard)
-  async getAllWorkspaces(): Promise<Workspace[]> {
-    return await this.workspaceService.getAllWorkspaces();
+  @UseInterceptors(CheckMemberInterceptor)
+  async getMyWorkspaces(@GetUser() user: AccessPayload): Promise<Workspace[]> {
+    return await this.workspaceService.getMyWorkspaces(user.id);
   }
 
   // 워크스페이스 상세 조회
@@ -74,9 +76,20 @@ export class WorkspacesController {
   async inviteWorkspaceMember(
     @Body() body: InvitationDto,
     @Param('workspaceId') workspaceId: number,
-    @GetUser() user: AccessPayload,
+    @GetUser() user: AccessPayload
   ): Promise<IResult> {
     return await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name);
+  }
+
+  // 워크스페이스 멤버 삭제
+  @Delete(':workspaceId/member/:userId')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CheckAuthInterceptor)
+  async deleteWorkspaceMember(
+    @Param('workspaceId') workspaceId: number,
+    @Param('userId') userId: number
+  ): Promise<IResult> {
+    return await this.workspaceService.deleteWorkspaceMember(workspaceId, userId);
   }
 
   // 워크스페이스 멤버역할 변경
@@ -86,7 +99,7 @@ export class WorkspacesController {
   async setMemberRole(
     @Body() body: SetRoleDto,
     @Param('workspaceId') workspaceId: number,
-    @Param('userId') userId: number,
+    @Param('userId') userId: number
   ): Promise<IResult> {
     return await this.workspaceService.setMemberRole(body, workspaceId, userId);
   }
@@ -103,8 +116,16 @@ export class WorkspacesController {
   @UseInterceptors(CheckMemberInterceptor)
   async searchMemberByName(
     @Param('workspaceId') workspaceId: number,
-    @Query('name') name: string,
+    @Query('name') name: string
   ): Promise<Workspace_Member> {
     return await this.workspaceService.searchMemberByName(workspaceId, name);
+  }
+
+  // 워크스페이스가 보유한 전체 보드 개수 조회
+  @Get(':workspaceId/boards/count')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
+  async countWorkspaceBoards(@Param('workspaceId') workspaceId: number): Promise<Object> {
+    return await this.workspaceService.countWorkspaceBoards(workspaceId);
   }
 }
