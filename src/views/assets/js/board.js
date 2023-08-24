@@ -168,8 +168,11 @@ async function BoardColumnsGet() {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    success: (data) => {
+    success: async (data) => {
       BoardColumns(data);
+      for (let i in data) {
+        await CardGet(data[i].columnId);
+      }
     },
     error: (error) => {
       console.log(error);
@@ -201,7 +204,7 @@ async function BoardColumns(data) {
                                   </div>
                                 </div>
 
-                                <div id="cardListItems">
+                                <div id="cardListItems${data[i].columnId}">
                                   <ul class="kanban-items list-items  drag-drop ">
                                     <li class="d-flex justify-content-between align-items-center " data-cardId=>
                                         <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
@@ -247,8 +250,6 @@ async function BoardColumns(data) {
                                 </div>
 
                               </div>`;
-
-    await CardGet(data[i].columnId);
   }
   kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
@@ -260,7 +261,6 @@ async function BoardColumns(data) {
                             </div>
                           </div>`;
 
-  init();
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
@@ -291,35 +291,6 @@ async function BoardColumns(data) {
   document.getElementById('ColumnUpdateNameBtn').addEventListener('click', async () => {
     const columnTitle = document.getElementById('columnTitleUpdate').value;
     await BoardColumnNameUpdate(columnId, columnTitle);
-  });
-
-  // card create button click
-  //모달 창이 열리면 해당 columnId값을 보내줘야함
-  let cardSequence;
-  document.querySelectorAll('#createCard').forEach((data) => {
-    data.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-columnId');
-      columnId = id;
-      cardSequence = Number(e.target.getAttribute('data-index')) + 1;
-      console.log('tt', cardSequence, columnId);
-    });
-  });
-
-  document.getElementById('CardCreateBtn').addEventListener('click', () => {
-    const cardTitle = document.getElementById('cardTitleCreate').value;
-    const cardColor = document.getElementById('cardColorCreate').value;
-    const cardContent = document.getElementById('cardContentCreate').value;
-    const cardFile = document.getElementById('cardfileCreate').value;
-    const card = {
-      name: cardTitle,
-      color: cardColor,
-      content: cardContent,
-      fileUrl: cardFile,
-      members: selectedMemberNumber,
-      sequence: cardSequence,
-    };
-    console.log('cardSequence', cardSequence);
-    CardCreate(columnId, card);
   });
 
   // 카드 생성 멤버 추가 버튼 클릭 시
@@ -438,7 +409,7 @@ async function BoardColumnNameUpdate(columnId, name) {
 async function CardGet(columnId) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
   // console.log(columnId);
-  await $.ajax({
+  $.ajax({
     type: 'GET',
     url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
@@ -447,6 +418,36 @@ async function CardGet(columnId) {
     },
     success: (data) => {
       Cards(data, columnId);
+
+      // card create button click
+      //모달 창이 열리면 해당 columnId값을 보내줘야함
+      let cardSequence;
+      let cardColumnId;
+      document.querySelectorAll('#createCard').forEach((data) => {
+        data.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-columnId');
+          cardColumnId = id;
+          const sequence = e.target.getAttribute('data-index');
+          cardSequence = Number(sequence) + 1;
+          console.log('tt', sequence, cardSequence, cardColumnId);
+        });
+      });
+      document.getElementById('CardCreateBtn').addEventListener('click', () => {
+        const cardTitle = document.getElementById('cardTitleCreate').value;
+        const cardColor = document.getElementById('cardColorCreate').value;
+        const cardContent = document.getElementById('cardContentCreate').value;
+        const cardFile = document.getElementById('cardfileCreate').value;
+        const card = {
+          name: cardTitle,
+          color: cardColor,
+          content: cardContent,
+          fileUrl: cardFile,
+          members: selectedMemberNumber,
+          sequence: cardSequence,
+        };
+        console.log('create 보내기 전 :', cardColumnId, cardSequence);
+        CardCreate(cardColumnId, card);
+      });
     },
     error: (error) => {
       console.log(error);
@@ -455,10 +456,12 @@ async function CardGet(columnId) {
 }
 
 // card get html
+let cardIndex = 0;
 function Cards(data, columnId) {
-  const cardHtml = document.querySelector('#cardListItems');
+  const cardHtml = document.querySelector(`#cardListItems${columnId}`);
+
   const ulHtml = cardHtml.children[0];
-  console.dir(cardHtml);
+  // console.log(ulHtml);
   ulHtml.innerHTML = '';
 
   // card data 입력
@@ -485,8 +488,10 @@ function Cards(data, columnId) {
                     </div>
                 </li>`;
   }
-  cardHtml.innerHTML += `  <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-cardId="cardId넣어주세요" data-columnId="${columnId}" data-index="${i}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
+  cardIndex += i;
+  cardHtml.innerHTML += `  <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
     card</button>`;
+  init();
   return { cardHtml, index: i + 1 };
 }
 
