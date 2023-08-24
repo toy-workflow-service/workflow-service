@@ -14,7 +14,7 @@ export class SocialLoginService {
   async socialLogin(req: SocialUser): Promise<any> {
     const { email, name, photo } = req;
 
-    const existUser = await this.usersService.findEmail(email, name);
+    const existUser = await this.usersService.findEmail(email);
     if (existUser) {
       const accessToken = this.jwtService.sign(
         { id: existUser.id },

@@ -98,8 +98,8 @@ export class UsersService {
     await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
   }
 
-  async findEmail(email: string, name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { email, name } });
+  async findEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { email } });
   }
 
   async findUserByEmail(email: string): Promise<User> {

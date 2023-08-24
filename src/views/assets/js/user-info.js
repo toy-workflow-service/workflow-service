@@ -2,7 +2,6 @@ const updateUserInfoBtn = document.querySelector('#updateUserBtn');
 const deleteUserBtn = document.querySelector('#deleteUserBtn');
 const deleteBtn = document.querySelector('#deleteBtn');
 const cancelBtn = document.querySelector('#cancelBtn');
-const accessToken = localStorage.getItem('accessToken');
 const deleteDiv = document.querySelector('#deleteDiv');
 const deleteUserDiv = document.querySelector('#deleteUserDiv');
 const changePasswordBtn = document.querySelector('#changePasswordBtn');
