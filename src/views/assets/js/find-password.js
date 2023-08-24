@@ -97,8 +97,8 @@ async function sendMail() {
 
 async function changePassword() {
   const mail = document.querySelector('#mail').value;
-  const password = document.querySelector('#password').value;
-  const confirmPassword = document.querySelector('#confirmPassword').value;
+  const password = document.querySelector('#passwordInput').value;
+  const confirmPassword = document.querySelector('#confirmPasswordInput').value;
 
   $.ajax({
     method: 'POST',
