@@ -130,9 +130,10 @@ function ColumnListReorder() {
 function CardListReorder() {
   const cards = document.querySelectorAll('#card-list-item');
   Object.values(cards).forEach(async (card, index) => {
-    const columnId = card.getAttribute('data-columnid');
+    const columnId = card.parentElement.getAttribute('data-columnId');
     const cardId = card.getAttribute('data-cardid');
     console.log('card list : ', card, index + 1, columnId, cardId);
+    console.log(card.parentElement.getAttribute('data-columnId'));
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
   // console.log($('.list-items').children('li'));
@@ -205,7 +206,7 @@ async function BoardColumns(data) {
                                 </div>
 
                                 <div id="cardListItems${data[i].columnId}">
-                                  <ul class="kanban-items list-items  drag-drop ">
+                                  <ul class="kanban-items list-items  drag-drop " data-columnId="${data[i].columnId}">
                                     <li class="d-flex justify-content-between align-items-center " data-cardId=>
                                         <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
                                           File Manager Design
