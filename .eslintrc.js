@@ -14,11 +14,11 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    "prettier/prettier": [
-      "error",
+    'prettier/prettier': [
+      'error',
       {
-        "endOfLine": "auto"
-      }
+        endOfLine: 'auto',
+      },
     ],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
