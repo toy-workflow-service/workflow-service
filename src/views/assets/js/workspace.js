@@ -160,9 +160,9 @@ async function getMyBoards() {
 }
 
 // 보드 멤버 조회
-async function getBoardMembers(boardId) {
+function getBoardMembers(boardId) {
   try {
-    const response = await $.ajax({
+    const response = $.ajax({
       method: 'GET',
       url: `/boards/${boardId}/members`,
       beforeSend: function (xhr) {
