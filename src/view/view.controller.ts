@@ -1,6 +1,8 @@
-import { Controller, Get, Render, Req } from '@nestjs/common';
+import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { ViewAuthGuard } from 'src/_common/security/view-auth.guard';
+import { Request, Response } from 'express';
 
 @Controller()
 export class ViewController {
@@ -23,6 +25,7 @@ export class ViewController {
   }
 
   @Get('workspace')
+  @UseGuards(ViewAuthGuard)
   @Render('workspace.ejs')
   async workspace(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -31,14 +34,28 @@ export class ViewController {
   }
 
   @Get('userInfo')
+  @UseGuards(ViewAuthGuard)
   @Render('user-info.ejs')
   async userInfo(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
+    if (header.phoneNumber.length === 11) {
+      header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
+        3,
+        7
+      )}-${header.phoneNumber.substring(7, 11)}`;
+    } else {
+      header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
+        3,
+        6
+      )}-${header.phoneNumber.substring(6, 10)}`;
+    }
+
     return { title: 'Work-Flow', subtitle: '마이 페이지', header };
   }
 
   @Get('board')
+  @UseGuards(ViewAuthGuard)
   @Render('board.ejs')
   async board(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -47,6 +64,7 @@ export class ViewController {
   }
 
   @Get('workspaceDetail')
+  @UseGuards(ViewAuthGuard)
   @Render('workspace-detail.ejs')
   async workspaceDetail(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;

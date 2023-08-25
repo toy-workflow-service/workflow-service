@@ -17,7 +17,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-    private mailService: MailService,
+    private mailService: MailService
   ) {}
 
   async signup(newUser: UserDAO): Promise<User> {
@@ -35,7 +35,7 @@ export class UsersService {
   }
 
   async login(
-    userInfo: LoginDTO,
+    userInfo: LoginDTO
   ): Promise<{ accessToken: string; refreshToken: string; userName: string } | undefined> {
     const existUser: User = await this.usersRepository.findOne({ where: { email: userInfo.email } });
     if (!existUser)
@@ -48,12 +48,12 @@ export class UsersService {
     const accessToken = this.jwtService.sign(
       { id: existUser.id },
       process.env.ACCESS_SECRET_KEY,
-      process.env.ACCESS_EXPIRE_TIME,
+      process.env.ACCESS_EXPIRE_TIME
     );
     const refreshToken = this.jwtService.sign(
       { id: existUser.id },
       process.env.REFRESH_SECRET_KEY,
-      process.env.REFRESH_EXPIRE_TIME,
+      process.env.REFRESH_EXPIRE_TIME
     );
 
     return { accessToken, refreshToken, userName: existUser.name };
@@ -98,8 +98,8 @@ export class UsersService {
     await this.usersRepository.update({ email: changePasswordDTO.email }, { password });
   }
 
-  async findEmail(email: string, name: string): Promise<User> {
-    return await this.usersRepository.findOne({ where: { email, name } });
+  async findEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { email } });
   }
 
   async findUserByEmail(email: string): Promise<User> {
@@ -113,7 +113,7 @@ export class UsersService {
   async tokenValidateUser(userId: number) {
     return await this.usersRepository.findOne({
       where: { id: userId },
-      select: ['id', 'email', 'name', 'phone_number', 'profile_url'],
+      select: ['id', 'email', 'name', 'phone_number', 'profile_url', 'phone_authentication'],
     });
   }
 
@@ -128,5 +128,30 @@ export class UsersService {
   // name으로만 조회
   async findUserByName(name: string) {
     return await this.usersRepository.findOneBy({ name });
+  }
+
+  async deleteAccount(id: number, password: string): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    const validPassword = await comparePassword(password, user.password);
+    if (!validPassword) throw new HttpException(['비밀번호가 일치하지 않습니다.'], HttpStatus.FORBIDDEN);
+
+    await this.usersRepository.delete({ id });
+  }
+
+  async updateUserPhoneAuth(id: number, phoneNumber: string): Promise<void> {
+    await this.usersRepository.update({ id }, { phone_authentication: true, phone_number: phoneNumber });
+  }
+
+  async searchPhoneNumber(id: number, phoneNumber: string): Promise<void> {
+    const userAuthentication = await this.usersRepository.findOne({
+      where: { id, phone_number: phoneNumber, phone_authentication: true },
+    });
+    if (userAuthentication)
+      throw new HttpException(['이미 회원님께서 인증한 휴대폰 번호입니다.'], HttpStatus.FORBIDDEN);
+    const existAuthentication = await this.usersRepository.findOne({
+      where: { phone_number: phoneNumber, phone_authentication: true },
+    });
+    if (existAuthentication)
+      throw new HttpException(['이미 다른 회원님께서 인증한 휴대폰 번호입니다.'], HttpStatus.FORBIDDEN);
   }
 }
