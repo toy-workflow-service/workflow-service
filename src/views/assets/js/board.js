@@ -105,10 +105,6 @@ function init() {
       },
     })
     .disableSelection();
-
-  // Object.values($('.kanban-container,.todo-task2 tbody')).forEach(async (column, index) => {
-  //   console.log('testest: ', column, index);
-  // });
 }
 
 // 바뀐 순서 출력 (여기서 순서 update api 사용할듯)
@@ -184,6 +180,10 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 async function BoardColumns(data) {
+  document.querySelector(
+    '.breadcrumb-main'
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>`;
+  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName} project</h4>`;
   // console.log(data);
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';

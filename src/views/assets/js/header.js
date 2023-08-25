@@ -82,12 +82,12 @@ async function getWorkspaces() {
 
 // 워크스페이스 생성 모달열기
 async function openCreateWorkspaceModal() {
-  $('#modal-basic').modal('show');
+  $('#modal-basic4').modal('show');
 }
 
 // 워크스페이스 생성
 async function createWorkspace() {
-  const editModal = document.querySelector('#modal-basic');
+  const editModal = document.querySelector('#modal-basic4');
   const titleInput = editModal.querySelector('#create-title').value;
   const descriptionInput = editModal.querySelector('#create-description').value;
   const typeInput = editModal.querySelector('#select-search').value;
@@ -107,7 +107,7 @@ async function createWorkspace() {
           title: 'success!',
           text: '워크스페이스 생성 완료',
         }).then(() => {
-          $('#modal-basic').modal('hide');
+          $('#modal-basic4').modal('hide');
           window.location.reload();
         });
       },

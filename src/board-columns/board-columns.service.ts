@@ -29,6 +29,7 @@ export class BoardColumnsService {
     return columns.map((column) => {
       return {
         boardId: column.board.id,
+        boardName: column.board.name,
         columnId: column.id,
         columnName: column.name,
         sequence: column.sequence,
