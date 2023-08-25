@@ -66,7 +66,15 @@ export class WorkspacesService {
     const existWorkspace = await this.workspaceRepository
       .createQueryBuilder('workspace')
       .leftJoinAndSelect('workspace.workspace_members', 'workspace_members')
-      .select(['workspace', 'workspace_members', 'user.id', 'user.name', 'user.profile_url', 'user.email'])
+      .select([
+        'workspace',
+        'workspace_members',
+        'user.id',
+        'user.name',
+        'user.profile_url',
+        'user.email',
+        'user.phone_number',
+      ])
       .leftJoin('workspace_members.user', 'user')
       .where('workspace.id = :id', { id: workspaceId })
       .getOne();
