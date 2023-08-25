@@ -11,7 +11,7 @@ export class CheckMemberInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
     const { id } = req.user;
-    const { workspaceId } = req.param;
+    const { workspaceId } = req.query;
 
     await this.workspaceService.checkMember(workspaceId, id);
 

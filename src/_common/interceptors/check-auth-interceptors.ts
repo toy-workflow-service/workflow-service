@@ -12,7 +12,7 @@ export class CheckAuthInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const { id } = req.user;
     const { workspaceId } = req.query;
-    console.log(workspaceId);
+
     await this.workspaceService.checkAuth(workspaceId, id);
 
     return next.handle().pipe(tap((data: IResult) => ({ data })));

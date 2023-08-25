@@ -127,28 +127,33 @@ async function getWorkspaceDetail() {
           let Img = '';
           user.profile_url ? (Img = `${user.profile_url}`) : (Img = `/assets/img/favicon.png`);
           memberHtml += `<div class="d-flex align-items-center mb-25">
-                      <img src="${Img}" class="wh-46 me-15" alt="img" />
-                        <div >
-                          <p class="fs-14 fw-600 color-dark mb-0">${memberRole} ${user.name}</p>
-                          <span class="mt-1 fs-14 color-light">${user.email}</span>
-                        </div>
-                        <div class="files-area__right">
-                          <div class="dropdown dropleft">
-                            <button
-                              class="btn-link border-0 bg-transparent p-0"
-                              data-bs-toggle="dropdown"
-                              aria-haspopup="true"
-                              aria-expanded="false"
-                            >
-                              <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                            </button>
-                            <div class="dropdown-menu dropdown-menu--dynamic">
-                              <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
-                              <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
+                          <img src="${Img}" class="wh-46 me-15" alt="img" />
+                          <div class="d-flex flex-column flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                              <div>
+                                <p class="fs-14 fw-600 color-dark mb-0">${memberRole} ${user.name}</p>
+                                <span class="mt-1 fs-14 color-light">${user.email}</span>
+                              </div>
+                              <div class="files-area__right">
+                                <div class="dropdown dropleft">
+                                  <button
+                                    class="btn-link border-0 bg-transparent p-0"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                  >
+                                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
+                                  </button>
+                                  <div class="dropdown-menu dropdown-menu--dynamic">
+                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
+                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>`;
+        `;
         });
         printDetail.innerHTML = result;
         printTitle.innerHTML = title;
@@ -272,6 +277,10 @@ async function inviteMember() {
   const inviteModal = document.querySelector('#modal-basic2');
   const emailInput = inviteModal.querySelector('#email-input').value;
   const roleInput = inviteModal.querySelector('#select-search').value;
+
+  const sendingMessage = document.querySelector('#sending-message');
+  sendingMessage.style.display = 'block';
+
   try {
     await $.ajax({
       method: 'POST',
@@ -282,6 +291,7 @@ async function inviteMember() {
       },
       data: JSON.stringify({ email: emailInput, role: roleInput }),
       success: () => {
+        sendingMessage.style.display = 'none';
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -292,10 +302,11 @@ async function inviteMember() {
       },
     });
   } catch (err) {
+    sendingMessage.style.display = 'none';
     Swal.fire({
       icon: 'error',
       title: 'error',
-      text: err.responseJSON.messagee,
+      text: err.responseJSON.message,
     });
   }
 }
