@@ -14,27 +14,10 @@ export class CardsService {
 
   //카드 조회
   async GetCards(board_column_Id: number) {
-    const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_Id);
     const findCards = await this.cardRepository.find({ relations: ['board_column'] });
-    if (!boardColumn) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
 
-    const cards = findCards.filter((card) => {
+    return findCards.filter((card) => {
       return card.board_column.id == board_column_Id;
-    });
-
-    cards.sort((a, b) => {
-      return a.sequence - b.sequence;
-    });
-
-    return cards.map((card) => {
-      return {
-        board_column_Id: card.board_column.id,
-        cardId: card.id,
-        cardName: card.name,
-        sequence: card.sequence,
-        createdAt: card.created_at,
-        updatedAt: card.updated_at,
-      };
     });
   }
 

@@ -1,4 +1,5 @@
 <%- include('includes/header') %>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
    <script src="./assets/js/board.js" defer></script>
    <div class="contents">
 
@@ -23,7 +24,30 @@
          <div class="row">
             <div class="col-lg-12">
                <!-- Lists container -->
-
+               <div class="modal fade" id="cardDetailModal" tabindex="-1" role="dialog"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <h5 class="modal-title" id="exampleModalLabel">카드 세부 정보</h5>
+                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
+                              data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
+                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
+                              id="cardDeleteBtn">delete</button>
+                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                              <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                           </button>
+                        </div>
+                        <div class="modal-body">
+                           <!-- 이곳에 카드 세부 정보를 표시합니다 (필요한 경우 JavaScript를 사용하여 이 부분을 채웁니다) -->
+                        </div>
+                        <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                           <!-- 필요한 경우 추가 버튼이나 작업을 이곳에 추가합니다 -->
+                        </div>
+                     </div>
+                  </div>
+               </div>
                <!-- card detail modal -->
                <div class="modal fade kanban-modal__card kanban__modal" id="exampleModal" tabindex="-1"
                   aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -211,16 +235,20 @@
                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
                                  id="commentBoxBtn">comment +</button>
                            </div>
-                           <div id="commentBox" style="margin: 3% auto 3% auto; display: none;">
-                              <input id="cardCreateAddMemberName" placeholder="댓글 입력.." style="margin-bottom: 2%;" />
+                           <div class="kanban-modal__form " id="commentBox"
+                              style="margin: 3% auto 3% auto; display: none;">
+                              <textarea class="form-control" id="cardCreateAddMemberName" rows="3" placeholder="댓글 입력.."
+                                 style="margin-bottom: 2%;"></textarea>
                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
                                  id="">submit</button>
                            </div>
                            <div class="kanban-modal__list">
                               <ul>
                                  <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
+                                    <div class="checkbox-group d-flex" data-bs-toggle="modal"
+                                       data-bs-target="#commentDetailModal" id="commentDetail" data-columnId=${columnId}
+                                       data-cardId="cardId를 넣어주세요" data-commentId="">
+                                       <div class="checkbox-group__single d-flex row">
                                           <label class=" strikethrough" style="color: black;">
                                              comment name1
                                           </label>
@@ -229,33 +257,24 @@
                                     </div>
                                  </li>
                                  <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                    <div class="checkbox-group d-flex" data-bs-toggle="modal"
+                                       data-bs-target="#commentDetailModal" id="commentDetail" data-columnId=${columnId}
+                                       data-cardId="cardId를 넣어주세요" data-commentId="">
+                                       <div class="checkbox-group__single d-flex row">
                                           <label class=" strikethrough" style="color: black;">
-                                             comment name2
+                                             comment name1
                                           </label>
                                           <p> comment aaaaaaaaa </p>
                                        </div>
                                     </div>
                                  </li>
                                  <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                    <div class="checkbox-group d-flex" data-bs-toggle="modal"
+                                       data-bs-target="#commentDetailModal" id="commentDetail" data-columnId=${columnId}
+                                       data-cardId="cardId를 넣어주세요" data-commentId="">
+                                       <div class="checkbox-group__single d-flex row">
                                           <label class=" strikethrough" style="color: black;">
-                                             comment name3
-                                          </label>
-                                          <p> comment aaaaaaaaa </p>
-                                       </div>
-                                    </div>
-                                 </li>
-                                 <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
-                                          <label class=" strikethrough" style="color: black;">
-                                             comment name4
+                                             comment name1
                                           </label>
                                           <p> comment aaaaaaaaa </p>
                                        </div>
@@ -474,48 +493,78 @@
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
                            </div>
+                           <div class="kanban-modal__research mt-30">
+                              <h6>댓글 ...</h6>
+                           </div>
+                           <div class="kanban-modal__list">
+                              <button class="btn btn-primary btn-sm btn-squared" id="replayCommentBtn">답글 달기</button>
+                           </div>
+                           <div class="kanban-modal__form " id="commentAddBox"
+                              style="margin: 3% auto 3% auto; display: none;">
+                              <textarea class="form-control" id="replayComment" rows="3" placeholder="입력.."
+                                 style="margin-bottom: 3%;"></textarea>
+                              <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="">답글
+                                 추가</button>
+                           </div>
                            <div class="kanban-modal__list">
                               <ul>
                                  <li>
                                     <div class="checkbox-group d-flex">
                                        <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
                                           <label class=" strikethrough" style="color: black;">
-                                             comment name1
+                                             test 1
                                           </label>
-                                          <p> comment aaaaaaaaa </p>
+                                          <p> comment 1 </p>
+                                       </div>
+                                       <div class="dropdown dropdown-click">
+                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
+                                             aria-haspopup="true" aria-expanded="false">
+                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
+                                                class="svg">
+                                          </button>
+                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
+                                          </div>
                                        </div>
                                     </div>
                                  </li>
                                  <li>
                                     <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
                                           <label class=" strikethrough" style="color: black;">
-                                             comment name2
+                                             test 2
                                           </label>
-                                          <p> comment aaaaaaaaa </p>
+                                          <p> comment2 </p>
+                                       </div>
+                                       <div class="dropdown dropdown-click">
+                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
+                                             aria-haspopup="true" aria-expanded="false">
+                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
+                                                class="svg">
+                                          </button>
+                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
+                                          </div>
                                        </div>
                                     </div>
                                  </li>
                                  <li>
                                     <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
+                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
                                           <label class=" strikethrough" style="color: black;">
-                                             comment name3
+                                             test3
                                           </label>
-                                          <p> comment aaaaaaaaa </p>
+                                          <p> comment 3</p>
                                        </div>
-                                    </div>
-                                 </li>
-                                 <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div
-                                          class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex row">
-                                          <label class=" strikethrough" style="color: black;">
-                                             comment name4
-                                          </label>
-                                          <p> comment aaaaaaaaa </p>
+                                       <div class="dropdown dropdown-click">
+                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
+                                             aria-haspopup="true" aria-expanded="false">
+                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
+                                                class="svg">
+                                          </button>
+                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
+                                          </div>
                                        </div>
                                     </div>
                                  </li>
