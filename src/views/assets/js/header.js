@@ -48,8 +48,8 @@ function deleteCookie(name) {
 }
 
 function setAccessToken() {
-  const result = getCookie('accessToken').split(' ')[1];
-  localStorage.setItem('accessToken', result);
+  const token = getCookie('accessToken');
+  localStorage.setItem('accessToken', token);
   deleteCookie('accessToken');
   window.location.reload();
 }
@@ -116,7 +116,7 @@ async function createWorkspace() {
     Swal.fire({
       icon: 'error',
       title: 'error',
-      text: err.responseJSON.messagee,
+      text: err.responseJSON.message,
     });
   }
 }

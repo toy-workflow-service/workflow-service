@@ -49,8 +49,9 @@ export class WorkspacesController {
   @Get(':workspaceId')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckMemberInterceptor)
-  async getWorkspaceDetail(@Param('workspaceId') workspaceId: number): Promise<Workspace> {
-    return await this.workspaceService.getWorkspaceDetail(workspaceId);
+  async getWorkspaceDetail(@GetUser() user: AccessPayload, @Param('workspaceId') workspaceId: number): Promise<Object> {
+    const data = await this.workspaceService.getWorkspaceDetail(workspaceId);
+    return { data, userId: user.id };
   }
 
   // 워크스페이스 수정
