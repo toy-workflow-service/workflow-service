@@ -23,11 +23,7 @@ async function getWorkspaceDetail() {
       },
       success: async (results) => {
         const { data } = results;
-        let result = '';
-        let title = '';
-        let totalData = '';
-        let memberHtml = '';
-        let remaingMemory = '';
+        let [result, title, totalData, memberHtml, remaingMemory] = ['', '', '', '', ''];
 
         const countBoards = await countWorkspaceBoards(data.id);
         const countCards = await countWorkspaceCards(data.id);
@@ -373,7 +369,7 @@ async function updateWorkspace() {
     Swal.fire({
       icon: 'error',
       title: 'error',
-      text: err.responseJSON.messagee,
+      text: err.responseJSON.message,
     });
   }
 }
@@ -406,7 +402,7 @@ async function deleteWorkspace() {
     Swal.fire({
       icon: 'error',
       title: 'error',
-      text: err.responseJSON.messagee,
+      text: err.responseJSON.message,
     });
   }
 }
