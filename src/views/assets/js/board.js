@@ -580,20 +580,15 @@ function createCardDetailModal(data) {
       <div class="row">
         <label> image file</label>
         <div id="cardDetailImgFile"></div>
-        <a href="./assets/img/american-express.png" download=""> <img
-                                          src="./assets/img/american-express.png"> </a>
-                                    <a href="./assets/img/american-express.png" download=""> <img
-                                          src="./assets/img/american-express.png"> </a>
+    
         <label style="margin-top: 3%;">Files other than image files</label>
         <div id="cardDetailNotImgFile"></div>
-        <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-        <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+
      </div>
-      </div>
     </div>
 
     <div class="kanban-modal__research mt-30">
-      <h6>Members </h6>
+      <h6>Members</h6>
     </div>
     <div class="kanban-modal__list">
       <ul id="cardDetailMembers">
@@ -629,6 +624,87 @@ function createCardDetailModal(data) {
 function openCardDetailModal(columnId, cardId) {
   // 카드 세부 정보를 서버에서 가져오는 API 호출
   DetailCardGet(columnId, cardId);
+}
+
+// 멤버 찾기 workspace에서 붙여옴
+let typingTimer;
+let selectedMembers = [];
+let selectedMemberNumber = [];
+$(document).ready(async () => {
+  const memberInput = document.querySelector('#cardCreateMmeberName');
+  const selectedMemberList = document.querySelector('#cardCreateMemberView');
+
+  memberInput.addEventListener('keyup', (e) => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(async () => {
+      const searchText = e.target.value;
+      const encodedSearchText = encodeURIComponent(searchText);
+
+      const results = await searchMembers(encodedSearchText);
+      console.log(results);
+      if (results) {
+        selectedMemberList.innerHTML = '';
+        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+        let data = `<li>
+                        <a href="#">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                        </a>
+                        <span>${results.user.name}</span>
+                      </li>`;
+        const li = document.createElement('li');
+        li.innerHTML = data;
+        selectedMemberList.appendChild(li);
+
+        li.addEventListener('click', () => {
+          if (!selectedMembers.includes(results.user.name)) {
+            selectedMembers.push(results.user.name);
+            selectedMemberNumber.push(results.user.id);
+            updateSelectedMembersUI();
+          }
+        });
+      }
+    });
+  });
+});
+
+// 유저검색
+async function searchMembers(searchText) {
+  console.log(decodeURI(searchText));
+  try {
+    // const response = await $.ajax({
+    //   method: 'GET',
+    //   url: ``,
+    //   beforeSend: function (xhr) {
+    //     xhr.setRequestHeader('Content-type', 'application/json');
+    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    //   },
+    // });
+    // return response;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 선택한 멤버 UI 출력
+function updateSelectedMembersUI() {
+  const selectedMemberList = document.querySelector('#selected-members');
+  selectedMemberList.innerHTML = selectedMembers
+    .map(
+      (member) => `
+    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+  `
+    )
+    .join('');
+
+  // 재선택 시 삭제
+  const removeIcons = selectedMemberList.querySelectorAll('.remove-member');
+  removeIcons.forEach((icon) => {
+    icon.addEventListener('click', (e) => {
+      const memberRemove = e.target.getAttribute('data-member');
+      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      updateSelectedMembersUI();
+    });
+  });
 }
 
 // card detail get api
