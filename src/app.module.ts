@@ -26,6 +26,7 @@ import { SMSModule } from './_common/sms/sms.module';
 import { SocialLoginModule } from './social-login/social-login.module';
 import { PaymentsModule } from './payments/payments.module';
 import { MembershipsModule } from './memberships/memberships.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { MembershipsModule } from './memberships/memberships.module';
     SocialLoginModule,
     PaymentsModule,
     MembershipsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

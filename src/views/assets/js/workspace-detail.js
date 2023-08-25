@@ -21,7 +21,8 @@ async function getWorkspaceDetail() {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: async (data) => {
+      success: async (results) => {
+        const { data } = results;
         let result = '';
         let title = '';
         let totalData = '';
@@ -116,7 +117,7 @@ async function getWorkspaceDetail() {
                                         </div>
                                       </div>
                                     </div>`;
-
+        //유저 이름, 사진, 이메일, 휴대폰 번호, 메세지, 전화, 영상통화
         data.workspace_members.forEach(async (member) => {
           let memberRole = '';
           if (member.role === 1) memberRole = 'Admin';
@@ -125,9 +126,70 @@ async function getWorkspaceDetail() {
           if (member.role === 4) memberRole = 'OutSourcing';
           const user = member.user;
           let Img = '';
-          user.profile_url ? (Img = `${user.profile_url}`) : (Img = `/assets/img/favicon.png`);
-          memberHtml += `<div class="d-flex align-items-center mb-25">
-                          <img src="${Img}" class="wh-46 me-15" alt="img" />
+          user.profile_url ? (Img = `${user.profile_url}`) : (Img = `./assets/img/favicon.png`);
+          user.phone_number;
+          if (user.phone_number.length === 11) {
+            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+              3,
+              7
+            )} - ${user.phone_number.substring(7, 11)}`;
+          } else {
+            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+              3,
+              6
+            )} - ${user.phone_number.substring(6, 10)}`;
+          }
+          if (results.userId === user.id) {
+            memberHtml += `
+                        <div class="d-flex align-items-center mb-25">
+                          <div class="action-btn">
+                            <img src="${Img}" class="wh-46 me-15" alt="img" data-bs-toggle="modal" data-bs-target="#new-member${user.id}"/>
+                            <!-- Modal -->
+                            <div class="modal fade new-member new-member__2" id="new-member${user.id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content  radius-xl">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title fw-500" id="staticBackdropLabel" style="font-weight:bold">프로필 정보</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                      <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="new-member-modal">
+                                      <div class="card position-relative user-member-card">
+                                        <div class="card-body text-center p-30">
+                                          <div class="ap-img d-flex justify-content-center">
+                                            <!-- Profile picture image-->
+                                            <img class="ap-img__main rounded-circle mb-20 bg-opacity-primary wh-150" src="${Img}" alt="profile">
+                                          </div>
+                                          <div class="ap-nameAddress pb-3" >                                                                                     
+                                            <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
+                                            <div style="display: inline-flex; margin-top:5%">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                                <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
+                                                <br/>
+                                                <p class="c-info-item-text">
+                                                ${user.phone_number}
+                                                </p>
+                                              </div>  
+                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                                <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
+                                                <br/>
+                                                <p class="c-info-item-text" >
+                                                  ${user.email}
+                                                </p>
+                                              </div>                                     
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Modal -->
+                          </div>
                           <div class="d-flex flex-column flex-grow-1">
                             <div class="d-flex align-items-center justify-content-between">
                               <div>
@@ -154,6 +216,89 @@ async function getWorkspaceDetail() {
                           </div>
                         </div>
         `;
+          } else {
+            memberHtml += `
+                        <div class="d-flex align-items-center mb-25">
+                          <div class="action-btn">
+                            <img src="${Img}" class="wh-46 me-15" alt="img" data-bs-toggle="modal" data-bs-target="#new-member${user.id}"/>
+                            <!-- Modal -->
+                            <div class="modal fade new-member new-member__2" id="new-member${user.id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content  radius-xl">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title fw-500" id="staticBackdropLabel" style="font-weight:bold">프로필 정보</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                      <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="new-member-modal">
+                                      <div class="card position-relative user-member-card">
+                                        <div class="card-body text-center p-30">
+                                          <div class="ap-img d-flex justify-content-center">
+                                            <!-- Profile picture image-->
+                                            <img class="ap-img__main rounded-circle mb-20 bg-opacity-primary wh-150" src="${Img}" alt="profile">
+                                          </div>
+                                          <div class="ap-nameAddress pb-3" >                                                                                     
+                                            <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
+                                            <div style="display: inline-flex; margin-top:5%">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                                <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
+                                                <br/>
+                                                <p class="c-info-item-text">
+                                                ${user.phone_number}
+                                                </p>
+                                              </div>  
+                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                                <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
+                                                <br/>
+                                                <p class="c-info-item-text" >
+                                                  ${user.email}
+                                                </p>
+                                              </div>                                     
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize">메시지 전송</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px">음성 통화</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px">영상 통화</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Modal -->
+                          </div>
+                          <div class="d-flex flex-column flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between">
+                              <div>
+                                <p class="fs-14 fw-600 color-dark mb-0">${memberRole} ${user.name}</p>
+                                <span class="mt-1 fs-14 color-light">${user.email}</span>
+                              </div>
+                              <div class="files-area__right">
+                                <div class="dropdown dropleft">
+                                  <button
+                                    class="btn-link border-0 bg-transparent p-0"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                  >
+                                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
+                                  </button>
+                                  <div class="dropdown-menu dropdown-menu--dynamic">
+                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
+                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+        `;
+          }
         });
         printDetail.innerHTML = result;
         printTitle.innerHTML = title;
