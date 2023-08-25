@@ -206,7 +206,7 @@ async function BoardColumns(data) {
                                 </div>
 
                                 <div id="cardListItems${data[i].columnId}">
-                                  <ul class="kanban-items list-items  drag-drop " data-columnId="${data[i].columnId}">
+                                  <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
                                     <li class="d-flex justify-content-between align-items-center " data-cardId=>
                                         <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
                                           File Manager Design
