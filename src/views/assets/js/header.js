@@ -79,3 +79,44 @@ async function getWorkspaces() {
     console.error(err);
   }
 }
+
+// 워크스페이스 생성 모달열기
+async function openCreateWorkspaceModal() {
+  $('#modal-basic').modal('show');
+}
+
+// 워크스페이스 생성
+async function createWorkspace() {
+  const editModal = document.querySelector('#modal-basic');
+  const titleInput = editModal.querySelector('#create-title').value;
+  const descriptionInput = editModal.querySelector('#create-description').value;
+  const typeInput = editModal.querySelector('#select-search').value;
+
+  try {
+    await $.ajax({
+      method: 'POST',
+      url: `/workspaces`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ name: titleInput, type: typeInput, description: descriptionInput }),
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'success!',
+          text: '워크스페이스 생성 완료',
+        }).then(() => {
+          $('#modal-basic').modal('hide');
+          window.location.reload();
+        });
+      },
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'error',
+      text: err.responseJSON.messagee,
+    });
+  }
+}

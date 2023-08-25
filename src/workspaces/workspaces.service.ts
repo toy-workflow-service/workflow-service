@@ -50,16 +50,26 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 전체조회
-  async getAllWorkspaces(): Promise<Workspace[]> {
-    return await this.workspaceRepository.find();
+  async getMyWorkspaces(userId: number): Promise<Workspace[]> {
+    const myWorkspaces = await this.workspaceMemberRepository
+      .createQueryBuilder('workspace_members')
+      .innerJoinAndSelect('workspace_members.workspace', 'workspaces')
+      .select(['workspaces.id as id', 'workspaces.name as name'])
+      .where('workspace_members.user = :userId and participation = true', { userId })
+      .getRawMany();
+
+    return myWorkspaces;
   }
 
   // 워크스페이스 상세조회
   async getWorkspaceDetail(workspaceId: number): Promise<Workspace> {
-    const existWorkspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId },
-      relations: ['workspace_members'],
-    });
+    const existWorkspace = await this.workspaceRepository
+      .createQueryBuilder('workspace')
+      .leftJoinAndSelect('workspace.workspace_members', 'workspace_members')
+      .select(['workspace', 'workspace_members', 'user.id', 'user.name', 'user.profile_url', 'user.email'])
+      .leftJoin('workspace_members.user', 'user')
+      .where('workspace.id = :id', { id: workspaceId })
+      .getOne();
 
     return existWorkspace;
   }
@@ -153,6 +163,19 @@ export class WorkspacesService {
     }
   }
 
+  // 워크스페이스 멤버삭제
+  async deleteWorkspaceMember(workspaceId: number, userId: number): Promise<IResult> {
+    const existMember = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
+    await this.workspaceMemberRepository.remove(existMember);
+
+    return { result: true };
+  }
+
   // 멤버 권한 변경
   async setMemberRole(body: SetRoleDto, workspaceId: number, userId: number): Promise<IResult> {
     const existMember = await this.workspaceMemberRepository.findOne({
@@ -160,6 +183,8 @@ export class WorkspacesService {
     });
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
+    if (existMember.role === 1) throw new HttpException('Admin계정은 역할 변경이 불가합니다.', HttpStatus.BAD_REQUEST);
 
     await this.workspaceMemberRepository.update(
       { user: { id: userId }, workspace: { id: workspaceId } },
@@ -216,6 +241,12 @@ export class WorkspacesService {
   }
 
   // 워크스페이스가 보유한 보드개수 조회
+  async countWorkspaceBoards(workspaceId: number): Promise<Object> {
+    const countWorkspaceBoards = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+      relations: ['boards'],
+    });
 
-  // 워크스페이스가 보유한 카드개수 조회
+    return countWorkspaceBoards.boards.length;
+  }
 }

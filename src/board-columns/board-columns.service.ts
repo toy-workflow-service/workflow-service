@@ -76,4 +76,17 @@ export class BoardColumnsService {
     if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     await this.boardColumnRepository.delete({ id: columnId });
   }
+
+  // 워크스페이스가 보유한 카드개수 조회
+  async countWorkspaceCards(workspaceId: number): Promise<Number> {
+    const totalCardCount = await this.boardColumnRepository
+      .createQueryBuilder('column')
+      .innerJoin('column.board', 'board')
+      .leftJoin('column.cards', 'card')
+      .where('board.workspace = :workspaceId', { workspaceId })
+      .select('SUM(card.board_column IS NOT NULL) as totalCount')
+      .getRawOne();
+
+    return totalCardCount;
+  }
 }
