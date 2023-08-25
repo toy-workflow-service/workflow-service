@@ -22,11 +22,6 @@ async function getWorkspaceDetail() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: async (data) => {
-        // let result = '';
-        // let title = '';
-        // let totalData = '';
-        // let memberHtml = '';
-        // let remaingMemory = '';
         let [result, title, totalData, memberHtml, remaingMemory] = ['', '', '', '', ''];
 
         const countBoards = await countWorkspaceBoards(data.id);

@@ -116,7 +116,7 @@ async function createWorkspace() {
     Swal.fire({
       icon: 'error',
       title: 'error',
-      text: err.responseJSON.messagee,
+      text: err.responseJSON.message,
     });
   }
 }
