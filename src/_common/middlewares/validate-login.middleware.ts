@@ -10,7 +10,7 @@ export class validateLoginMiddleware implements NestMiddleware {
     private usersService: UsersService
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const accessToken = req.headers.authorization;
+    const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
 
     const accessTokenVerifyErrorHandle = this.jwtService.verifyErrorHandle(accessToken, process.env.ACCESS_SECRET_KEY);

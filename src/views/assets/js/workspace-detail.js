@@ -426,11 +426,11 @@ async function inviteMember() {
     await $.ajax({
       method: 'POST',
       url: `/workspaces/${workspaceId}/members`,
+      data: JSON.stringify({ email: emailInput, role: roleInput }),
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ email: emailInput, role: roleInput }),
       success: () => {
         sendingMessage.style.display = 'none';
         Swal.fire({
