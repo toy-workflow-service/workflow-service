@@ -70,7 +70,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
 // -----------------여기서부터 작업함--------------------
-const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
 boardId = 20;
@@ -141,11 +140,11 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
   $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
-    data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ sequence }),
     success: (data) => {
       console.log(data.message);
     },
@@ -402,11 +401,11 @@ async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}?boardId=` + boardId,
-    data: JSON.stringify({ name }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ name }),
     success: (data) => {
       console.log(data.message);
       location.reload();
@@ -519,7 +518,7 @@ async function DetailCard(data) {
   document.getElementById('exampleModalLabel').value = data.name;
   document.getElementById('cardDetailDescription').value = data.content;
   document.getElementById(
-    'cardDetailImgFile',
+    'cardDetailImgFile'
   ).innerHTML = `<a href="./assets/img/american-express.png" download=""> <img src="./assets/img/american-express.png"> </a> `;
   const members = document.getElementById('cardDetailMembers');
   members.innerHTML = '';
@@ -624,10 +623,6 @@ async function searchMembers(searchText) {
     // const response = await $.ajax({
     //   method: 'GET',
     //   url: ``,
-    //   beforeSend: function (xhr) {
-    //     xhr.setRequestHeader('Content-type', 'application/json');
-    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    //   },
     // });
     // return response;
   } catch (err) {
@@ -642,7 +637,7 @@ function updateSelectedMembersUI() {
     .map(
       (member) => `
     <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-  `,
+  `
     )
     .join('');
 
@@ -683,10 +678,6 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
     type: 'PUT',
     url: ``,
     data: JSON.stringify({ sequence }),
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
       console.log(data.message);
     },
@@ -704,10 +695,6 @@ async function CardAllUpdate(columnId, cardId, data) {
     type: 'PUT',
     url: ``,
     data: JSON.stringify({}),
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
       console.log(data.message);
     },
@@ -722,10 +709,6 @@ async function CardDelete(columnId, cardId) {
   $.ajax({
     type: 'DELETE',
     url: ``,
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
       console.log(data.message);
     },

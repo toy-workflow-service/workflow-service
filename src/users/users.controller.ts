@@ -27,7 +27,6 @@ import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 import { deletePasswordDTO } from 'src/_common/dtos/delete-password.dto';
 import { PhoneNumberDTO } from 'src/_common/dtos/phone.dto';
-import { User } from 'src/_common/entities/user.entitiy';
 
 @Controller('users')
 export class UsersController {
@@ -53,10 +52,10 @@ export class UsersController {
   async loginAccount(@Body() LoginDTO: LoginDTO, @Res() res: Response): Promise<Object> {
     const { accessToken, refreshToken, userName } = await this.usersService.login(LoginDTO);
 
-    res.setHeader('authorization', `Bearer ${accessToken}`);
+    res.cookie('accessToken', accessToken);
     res.cookie('refreshToken', refreshToken);
 
-    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. `, accessToken });
+    return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
   }
 
   @Get('userInfo')
@@ -74,6 +73,7 @@ export class UsersController {
     const expireTime = Math.ceil(exp - newDate);
 
     await this.cacheManager.set(token, 'blackList', expireTime);
+    res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
 
     return res.status(HttpStatus.OK).json({ message: '로그아웃 하셨습니다.' });
@@ -112,6 +112,7 @@ export class UsersController {
     const { exp } = this.jwtService.verify(token, process.env.ACCESS_SECRET_KEY);
     const expireTime = Math.ceil(exp - newDate);
     await this.cacheManager.set(token, 'blackList', expireTime);
+    res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
 
     return res.status(HttpStatus.OK).json({ message: '비밀번호가 변경 되었습니다. 다시 로그인해 주세요. ' });
@@ -141,6 +142,7 @@ export class UsersController {
     @Res() res: Response
   ): Promise<Object> {
     await this.usersService.deleteAccount(user.id, passwordDTO.password);
+    res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
     return res.status(HttpStatus.OK).json({ message: '계정이 삭제되었습니다. 홈 화면으로 이동합니다. ' });
   }

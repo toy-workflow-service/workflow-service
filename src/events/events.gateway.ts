@@ -21,11 +21,16 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
     const authorization = client.request.headers.cookie;
-
     if (!authorization) return;
-    const token = authorization.split('=')[1];
 
-    const decode = this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
+    let token = authorization.split(' ')[0].split('=')[1];
+    token = token.replace(';', '');
+
+    const decode = this.jwtService.verify(token, process.env.ACCESS_SECRET_KEY);
+    // if (decode === 'jwt expired') {
+    //   const refreshToken =  authorization.split(' ')[1].split('=')[1];
+
+    // }
     this.connectedClients[client.id] = Number(decode.id);
     console.log(this.connectedClients);
   }

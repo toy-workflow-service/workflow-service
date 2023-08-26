@@ -1,22 +1,17 @@
 const logoutBtn = document.querySelector('#logoutBtn');
-const accessToken = localStorage.getItem('accessToken');
 const workspaceList = document.querySelector('.workspace-list');
+const accessToken = document.cookie.split(';')[0].split('=')[1];
 
 $(document).ready(async () => {
-  if (getCookie('accessToken')) setAccessToken();
   await getWorkspaces();
+  // await getMyBoardMessage();
 });
 
 function logout() {
   $.ajax({
     method: 'POST',
     url: '/users/logout',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
-      localStorage.removeItem('accessToken');
       Swal.fire({
         icon: 'success',
         title: 'Success!',
@@ -33,25 +28,6 @@ function logout() {
       });
     },
   });
-}
-
-function getCookie(name) {
-  let matches = document.cookie.match(
-    new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
-  );
-
-  return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
-function deleteCookie(name) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1900 00:00:00 UTC; path=/;';
-}
-
-function setAccessToken() {
-  const token = getCookie('accessToken');
-  localStorage.setItem('accessToken', token);
-  deleteCookie('accessToken');
-  window.location.reload();
 }
 
 if (logoutBtn) logoutBtn.addEventListener('click', logout);
@@ -119,4 +95,46 @@ async function createWorkspace() {
       text: err.responseJSON.messagee,
     });
   }
+}
+
+async function getMyBoardMessage() {
+  const messageList = document.getElementById('recentMessageList');
+  const recentMessageContainer = document.getElementById('recentMessageContainer');
+  let room = [];
+  let name;
+  await $.ajax({
+    method: 'GET',
+    url: '/boards/getJoinBoards',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+{
+  /* <li class="author-online has-new-message">
+                        <div class="user-avater">
+                          <img src="../assets/img/team-1.png" alt="" />
+                        </div>
+                        <div class="user-message">
+                          <p>
+                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px"
+                              >Web Design</a
+                            >
+                            <span class="time-posted">3 hrs ago</span>
+                          </p>
+                          <p>
+                            <span class="desc text-truncate" style="max-width: 215px"
+                              >Lorem ipsum dolor amet cosec Lorem ipsum</span
+                            >
+                            <span class="msg-count badge-circle badge-success badge-sm">1</span>
+                          </p>
+                        </div>
+                      </li> */
 }

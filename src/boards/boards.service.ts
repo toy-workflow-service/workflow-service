@@ -71,4 +71,14 @@ export class BoardsService {
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardRepository.delete(id);
   }
+
+  async getJoinBoards(userId: number) {
+    const joinBoards = await this.boardRepository
+      .createQueryBuilder('board')
+      .innerJoinAndSelect('board.board_members', 'member')
+      .select(['board.id', 'board.name'])
+      .where('member.user_id = :userId ', { userId })
+      .getRawMany();
+    return joinBoards;
+  }
 }
