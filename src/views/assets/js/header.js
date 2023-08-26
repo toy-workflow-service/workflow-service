@@ -4,13 +4,17 @@ const accessToken = document.cookie.split(';')[0].split('=')[1];
 
 $(document).ready(async () => {
   await getWorkspaces();
-  // await getMyBoardMessage();
+  await getMyBoardMessage();
 });
 
 function logout() {
   $.ajax({
     method: 'POST',
     url: '/users/logout',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
     success: (data) => {
       Swal.fire({
         icon: 'success',
