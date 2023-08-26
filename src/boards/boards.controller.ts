@@ -73,7 +73,7 @@ export class BoardsController {
     return res.status(HttpStatus.OK).json({ message: '보드를 삭제하였습니다.' });
   }
 
-  @Get('getJoinBoards')
+  @Get('getBoards/joinBoards')
   @UseGuards(AuthGuard)
   async getJoinBoards(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
     const joinBoards = await this.boardsService.getJoinBoards(user.id);

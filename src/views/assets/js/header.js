@@ -104,7 +104,7 @@ async function getMyBoardMessage() {
   let name;
   await $.ajax({
     method: 'GET',
-    url: '/boards/getJoinBoards',
+    url: '/boards/getBoards/joinBoards',
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
