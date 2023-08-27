@@ -1,20 +1,12 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { BoardMembersService } from './board-members.service';
 import { Response } from 'express';
-import { CreateBoardMemberDto } from 'src/_common/dtos/board.dto';
+import { BoardMemberUpdateDto, CreateBoardMemberDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 
 @Controller('')
 export class BoardMembersController {
   constructor(private readonly boardMembersService: BoardMembersService) {}
-
-  //보드 멤버 조회
-  @Get('/boards/:boardId/members')
-  @UseGuards(AuthGuard)
-  async GetBoardMembers(@Param('boardId') boardId: number, @Res() res: Response) {
-    const members = await this.boardMembersService.GetBoardMembers(boardId);
-    return res.status(HttpStatus.OK).json({ boardMembers: members });
-  }
 
   //보드 멤버 초대
   @Post('/boards/:boardId/members')
@@ -35,8 +27,13 @@ export class BoardMembersController {
   //보드 멤버 업데이트
   @Put('/boards/:boardId/members/:userId')
   @UseGuards(AuthGuard)
-  async UpdateBoardMember(@Param('boardId') boardId: number, @Param('userId') userId: number, @Res() res: Response) {
-    await this.boardMembersService.UpdateBoardMember(boardId, userId);
+  async UpdateBoardMember(
+    @Param('boardId') boardId: number,
+    @Param('userId') userId: number,
+    @Body() data: BoardMemberUpdateDto,
+    @Res() res: Response
+  ) {
+    await this.boardMembersService.UpdateBoardMember(boardId, userId, data.names);
     return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });
   }
 }
