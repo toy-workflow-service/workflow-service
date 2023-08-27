@@ -31271,4 +31271,12 @@ body:after {
   cursor: pointer;
   margin-left: 5px;
 }
+
+#sending-message {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  display: none;
+}
 /*# sourceMappingURL=maps/style.css.map */

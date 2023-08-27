@@ -10,6 +10,7 @@ import { MailService } from 'src/_common/mail/mail.service';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 import { comparePassword } from 'src/_common/utils/password.compare';
 import { bcryptPassword } from 'src/_common/utils/bcrypt-password';
+import { IResult } from 'src/_common/interfaces/result.interface';
 
 @Injectable()
 export class UsersService {
@@ -118,7 +119,10 @@ export class UsersService {
   }
 
   async findUserById(id: number): Promise<User> {
-    const existUser = await this.usersRepository.findOne({ where: { id } });
+    const existUser = await this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'name', 'profile_url'],
+    });
 
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
 
@@ -153,5 +157,14 @@ export class UsersService {
     });
     if (existAuthentication)
       throw new HttpException(['이미 다른 회원님께서 인증한 휴대폰 번호입니다.'], HttpStatus.FORBIDDEN);
+  }
+
+  async checkPhoneAuth(userId: number): Promise<IResult> {
+    const checkAuth = await this.usersRepository.findOne({ where: { id: userId } });
+
+    if (checkAuth.phone_authentication === false)
+      throw new HttpException('핸드폰 인증이 필요한 서비스입니다. ', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
   }
 }

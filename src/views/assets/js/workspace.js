@@ -160,9 +160,9 @@ async function getMyBoards() {
 }
 
 // 보드 멤버 조회
-async function getBoardMembers(boardId) {
+function getBoardMembers(boardId) {
   try {
-    const response = await $.ajax({
+    const response = $.ajax({
       method: 'GET',
       url: `/boards/${boardId}/members`,
       beforeSend: function (xhr) {
@@ -176,6 +176,49 @@ async function getBoardMembers(boardId) {
     console.error(err);
   }
 }
+
+// 보드 생성
+const createBoardBtn = document.querySelector('#create-button');
+
+createBoardBtn.addEventListener('click', async (event) => {
+  event.preventDefault();
+  try {
+    const createTitle = document.querySelector('#create-board-title').value;
+    const createDescription = document.querySelector('#create-board-desc').value;
+    console.log(createTitle);
+    console.log(createDescription);
+    await $.ajax({
+      method: 'POST',
+      url: `/boards?workspaceId=${workspaceId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ name: createTitle, description: createDescription }),
+      success: async (data) => {
+        const boardId = data.newBoard.identifiers[0].id;
+
+        for (const member of selectedMembers) {
+          await createBoardMember(boardId, member);
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: data.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: err.responseJSON.message,
+    });
+  }
+});
 
 // 보드멤버 생성
 async function createBoardMember(boardId, name) {

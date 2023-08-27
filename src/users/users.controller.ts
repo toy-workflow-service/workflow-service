@@ -27,6 +27,7 @@ import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 import { deletePasswordDTO } from 'src/_common/dtos/delete-password.dto';
 import { PhoneNumberDTO } from 'src/_common/dtos/phone.dto';
+import { User } from 'src/_common/entities/user.entitiy';
 
 @Controller('users')
 export class UsersController {

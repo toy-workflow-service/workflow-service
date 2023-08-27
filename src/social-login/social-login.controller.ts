@@ -15,7 +15,7 @@ export class SocailLoginController {
     const userDTO: SocialUser = { ...req.user };
     const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    res.cookie('accessToken', `Bearer ${accessToken}`);
+    res.cookie('accessToken', accessToken);
     res.cookie('refreshToken', refreshToken);
 
     return res.redirect('/');
@@ -31,7 +31,7 @@ export class SocailLoginController {
     };
     const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    res.cookie('accessToken', `Bearer ${accessToken}`);
+    res.cookie('accessToken', accessToken);
     res.cookie('refreshToken', refreshToken);
 
     return res.redirect('/');
@@ -47,7 +47,7 @@ export class SocailLoginController {
     };
     const { accessToken, refreshToken } = await this.socialLoginService.socialLogin(userDTO);
 
-    res.cookie('accessToken', `Bearer ${accessToken}`);
+    res.cookie('accessToken', accessToken);
     res.cookie('refreshToken', refreshToken);
 
     return res.redirect('/');
