@@ -70,7 +70,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
 // -----------------여기서부터 작업함--------------------
-// const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
 // boardId = 65;
