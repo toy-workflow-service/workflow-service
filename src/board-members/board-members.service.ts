@@ -49,7 +49,7 @@ export class BoardMembersService {
   }
 
   //보드 멤버 업데이트
-  async UpdateBoardMember(boardId: number, userId: number, users: string[]) {
+  async UpdateBoardMember(boardId: number, users: string[]) {
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.filter((member) => {
