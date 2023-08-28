@@ -61,7 +61,7 @@ export class BoardMembersService {
     }
     const deleteUsers = boardMember.filter((x) => !users.includes(x.user.name));
     const updateUsers = users.filter((x) => !userArray.includes(x));
-    console.log('board-member: ', users);
+
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
 
     const entityManager = this.boardMemberRepository.manager;
@@ -72,14 +72,13 @@ export class BoardMembersService {
             const user = await this.usersService.findUserByName(updateUsers[i]);
             if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
             const newBoardMembers = this.boardMemberRepository.create({ board, user });
-            console.log(newBoardMembers);
+
             await transactionEntityManager.save(Board_Member, newBoardMembers);
           }
         }
         if (deleteUsers.length > 0) {
           for (const i in deleteUsers) {
-            const deleteBoardMember = await transactionEntityManager.delete(Board_Member, { id: deleteUsers[i].id });
-            console.log(deleteBoardMember);
+            await transactionEntityManager.delete(Board_Member, { id: deleteUsers[i].id });
           }
         }
       });
