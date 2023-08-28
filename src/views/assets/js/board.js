@@ -179,12 +179,17 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 async function BoardColumns(data) {
-  console.log(data);
-  document.querySelector(
-    '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${boardName}</h4>`;
+  document.querySelector('.breadcrumb-main').innerHTML = `<h4 class="text-capitalize breadcrumb-title">${boardName}</h4>
+                <div class="breadcrumb-action justify-content-center flex-wrap">
+                  <nav aria-label="breadcrumb">
+                      <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
+                      </ol>
+                  </nav>
+                </div>`;
   document.querySelector('.kanban-header').innerHTML = `<h4>${boardName} project</h4>`;
-  console.log(data);
+
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
