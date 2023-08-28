@@ -42,7 +42,7 @@ export class BoardMembersController {
 
   //보드 멤버 업데이트
   @Put('/boards/:boardId/members')
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   async UpdateBoardMember(@Param('boardId') boardId: number, @Body() data: BoardMemberUpdateDto, @Res() res: Response) {
     await this.boardMembersService.UpdateBoardMember(boardId, data.userIdArray);
     return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });
