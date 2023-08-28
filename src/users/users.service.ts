@@ -47,7 +47,14 @@ export class UsersService {
       throw new HttpException(['존재하지 않은 이메일이거나 비밀번호가 틀렸습니다.'], HttpStatus.PRECONDITION_FAILED);
 
     const accessToken = this.jwtService.sign(
-      { id: existUser.id },
+      {
+        id: existUser.id,
+        email: existUser.email,
+        name: existUser.name,
+        profile_url: existUser.profile_url,
+        phone_number: existUser.phone_number,
+        phone_authentication: existUser.phone_authentication,
+      },
       process.env.ACCESS_SECRET_KEY,
       process.env.ACCESS_EXPIRE_TIME
     );

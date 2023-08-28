@@ -140,11 +140,11 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
   $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
-    data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ sequence }),
     success: (data) => {
       console.log(data.message);
     },
@@ -390,11 +390,11 @@ async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}?boardId=` + boardId,
-    data: JSON.stringify({ name }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ name }),
     success: (data) => {
       console.log(data.message);
       location.reload();
@@ -658,10 +658,6 @@ async function searchMembers(searchText) {
     // const response = await $.ajax({
     //   method: 'GET',
     //   url: ``,
-    //   beforeSend: function (xhr) {
-    //     xhr.setRequestHeader('Content-type', 'application/json');
-    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    //   },
     // });
     // return response;
   } catch (err) {
@@ -716,10 +712,6 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
     type: 'PUT',
     url: `cards/${cardId}/sequence?board_column_Id=${columnId}`,
     data: JSON.stringify({ sequence }),
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
       console.log(data.message);
     },
@@ -737,10 +729,6 @@ async function CardAllUpdate(columnId, cardId, data) {
     type: 'PUT',
     url: ``,
     data: JSON.stringify({}),
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
     success: (data) => {
       console.log(data.message);
     },

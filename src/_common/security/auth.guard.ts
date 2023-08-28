@@ -19,12 +19,13 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   //@ts-ignore
   async canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    if (!request.headers.authorization) throw new UnauthorizedException('토큰이 존재하지 않습니다.');
+    if (!request.cookies.accessToken) throw new UnauthorizedException('토큰이 존재하지 않습니다.');
 
-    const token = request.headers.authorization.split(' ')[1];
+    const token = request.cookies.accessToken;
+
     const result = await this.tokenValidation(token);
-
     if (!result) throw new UnauthorizedException('이미 로그아웃한 계정입니다.');
+
     return super.canActivate(context);
   }
 
@@ -46,15 +47,15 @@ export class AuthGuard extends NestAuthGuard('jwt') {
 
         if (user) return user;
         else {
-          response.clearCookie();
+          await response.clearCookie('accessToken');
+          await response.clearCookie('refreshToken');
           throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
         }
       }
       const response = context.switchToHttp().getResponse();
-      await response.clearCookie('refreshToken');
-      //임시로 소셜로그인 때 저장하기 때문에 혹시 남아 있을 가능성으로 인해 삭제
       await response.clearCookie('accessToken');
-
+      await response.clearCookie('refreshToken');
+      console.log('왜 여기로 들어오지?');
       throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
     }
     return user;
