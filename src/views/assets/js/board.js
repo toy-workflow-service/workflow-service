@@ -767,6 +767,10 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
   $.ajax({
     type: 'PUT',
     url: `cards/${cardId}/sequence?board_column_Id=${columnId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
     data: JSON.stringify({ sequence }),
     success: (data) => {
       console.log(data.message);
