@@ -189,68 +189,123 @@ async function BoardColumns(data) {
   kanbanList.innerHTML = '';
   let i = 0;
   for (i in data) {
-    kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
-                                <div class="kanban-tops list-tops">
-                                  <div class="d-flex justify-content-between align-items-center py-10">
-                                      <h3 class="list-title">${data[i].columnName}</h3>
-                                      <div class="dropdown dropdown-click">
-                                        <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                        </button>
-                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
-                                            <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
-                                        </div>
-                                      </div>
+    if (data[i].columnName == 'Done') {
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+                                  <div class="kanban-tops list-tops">
+                                    <div class="d-flex justify-content-between align-items-center py-10">
+                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                    </div>
+                                  </div>  
+                                  <div id="cardListItems${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                      <li class="d-flex justify-content-between align-items-center " data-cardId=>
+                                          <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+                                            File Manager Design
+                                          </div>
+                                          <button class="open-popup-modal" type="button">
+                                            <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                          </button>
+                                          <div class="popup-overlay">
+                                            <!--Creates the popup content-->
+                                            <div class="popup-content">
+                                                <div class="mb-10 popup-textarea">
+                                                  <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                                </div>
+                                                <div class="d-flex align-items-center popup-button">
+                                                  <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                                </div>
+                                                <div class="overlay-close"></div>
+                                            </div>
+                                          </div>
+                                      </li>
+                                      <li class="d-flex justify-content-between align-items-center ">
+                                          <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo6">
+                                            Knowledgebase
+                                          </div>
+                                          <button class="open-popup-modal" type="button">
+                                            <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                          </button>
+                                          <div class="popup-overlay">
+                                            <!--Creates the popup content-->
+                                            <div class="popup-content">
+                                                <div class="mb-10 popup-textarea">
+                                                  <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                                </div>
+                                                <div class="d-flex align-items-center popup-button">
+                                                  <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                                </div>
+                                                <div class="overlay-close"></div>
+                                            </div>
+                                          </div>
+                                      </li>
+                                    </ul>
                                   </div>
-                                </div>
-
-                                <div id="cardListItems${data[i].columnId}">
-                                  <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
-                                    <li class="d-flex justify-content-between align-items-center " data-cardId=>
-                                        <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
-                                          File Manager Design
-                                        </div>
-                                        <button class="open-popup-modal" type="button">
-                                          <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-                                        </button>
-                                        <div class="popup-overlay">
-                                          <!--Creates the popup content-->
-                                          <div class="popup-content">
-                                              <div class="mb-10 popup-textarea">
-                                                <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-                                              </div>
-                                              <div class="d-flex align-items-center popup-button">
-                                                <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-                                              </div>
-                                              <div class="overlay-close"></div>
+  
+                                </div>`;
+    } else {
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+                                  <div class="kanban-tops list-tops">
+                                    <div class="d-flex justify-content-between align-items-center py-10">
+                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <div class="dropdown dropdown-click">
+                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                          </button>
+                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
+                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
                                           </div>
                                         </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between align-items-center ">
-                                        <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo6">
-                                          Knowledgebase
-                                        </div>
-                                        <button class="open-popup-modal" type="button">
-                                          <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-                                        </button>
-                                        <div class="popup-overlay">
-                                          <!--Creates the popup content-->
-                                          <div class="popup-content">
-                                              <div class="mb-10 popup-textarea">
-                                                <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-                                              </div>
-                                              <div class="d-flex align-items-center popup-button">
-                                                <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-                                              </div>
-                                              <div class="overlay-close"></div>
+                                    </div>
+                                  </div>
+  
+                                  <div id="cardListItems${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                      <li class="d-flex justify-content-between align-items-center " data-cardId=>
+                                          <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+                                            File Manager Design
                                           </div>
-                                        </div>
-                                    </li>
-                                  </ul>
-                                </div>
-
-                              </div>`;
+                                          <button class="open-popup-modal" type="button">
+                                            <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                          </button>
+                                          <div class="popup-overlay">
+                                            <!--Creates the popup content-->
+                                            <div class="popup-content">
+                                                <div class="mb-10 popup-textarea">
+                                                  <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                                </div>
+                                                <div class="d-flex align-items-center popup-button">
+                                                  <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                                </div>
+                                                <div class="overlay-close"></div>
+                                            </div>
+                                          </div>
+                                      </li>
+                                      <li class="d-flex justify-content-between align-items-center ">
+                                          <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo6">
+                                            Knowledgebase
+                                          </div>
+                                          <button class="open-popup-modal" type="button">
+                                            <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                          </button>
+                                          <div class="popup-overlay">
+                                            <!--Creates the popup content-->
+                                            <div class="popup-content">
+                                                <div class="mb-10 popup-textarea">
+                                                  <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                                </div>
+                                                <div class="d-flex align-items-center popup-button">
+                                                  <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                                </div>
+                                                <div class="overlay-close"></div>
+                                            </div>
+                                          </div>
+                                      </li>
+                                    </ul>
+                                  </div>
+  
+                                </div>`;
+    }
   }
   kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
