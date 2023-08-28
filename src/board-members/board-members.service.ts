@@ -59,7 +59,7 @@ export class BoardMembersService {
     for (const i in boardMember) {
       userArray.push(boardMember[i].user.name);
     }
-    const deleteUsers = userArray.filter((x) => !users.includes(x));
+    const deleteUsers = boardMember.filter((x) => !users.includes(x.user.name));
     const updateUsers = users.filter((x) => !userArray.includes(x));
 
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
