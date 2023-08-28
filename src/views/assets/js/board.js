@@ -71,6 +71,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
+let boardName = new URLSearchParams(window.location.search).get('boardName');
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -156,10 +157,9 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
 
 // get column API
 async function BoardColumnsGet() {
-  // data: {boardId: boardId}
   await $.ajax({
     type: 'GET',
-    url: `/board-columns?boardId=` + boardId,
+    url: `/board-columns?boardId=${boardId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
@@ -179,11 +179,12 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 async function BoardColumns(data) {
+  console.log(data);
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>`;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName} project</h4>`;
-  // console.log(data);
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${boardName}</h4>`;
+  document.querySelector('.kanban-header').innerHTML = `<h4>${boardName} project</h4>`;
+  console.log(data);
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;

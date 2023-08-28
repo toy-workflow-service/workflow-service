@@ -66,7 +66,7 @@ async function getMyBoards() {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="application-ui.html">
+                              <a href="/board?boardName=${board.boardName}&boardId=${board.boardId}">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
