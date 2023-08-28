@@ -14,6 +14,46 @@ export class BoardMembersService {
     private boardsService: BoardsService
   ) {}
 
+  //보드 멤버 조회
+  async GetBoardMembers(boardId: number) {
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const board = await this.boardsService.GetBoardById(boardId);
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+
+    const members = boardMembers.filter((boardMember) => {
+      return boardMember.board.id == boardId;
+    });
+
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
+    });
+  }
+
+  //보드 멤버 이름 조회
+  async GetBoardMemberName(boardId: number, name: string) {
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const members = boardMembers.filter((boardMember) => {
+      if (boardMember.board.id == boardId && boardMember.user.name == name) {
+        return boardMember;
+      }
+    });
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
+    });
+  }
+
   //보드 멤버 초대
   async CreateBoardMember(boardId: number, name: string) {
     const user = await this.usersService.findUserByName(name);
@@ -49,7 +89,7 @@ export class BoardMembersService {
   }
 
   //보드 멤버 업데이트
-  async UpdateBoardMember(boardId: number, users: string[]) {
+  async UpdateBoardMember(boardId: number, users: number[]) {
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.filter((member) => {
@@ -57,9 +97,9 @@ export class BoardMembersService {
     });
     const userArray = [];
     for (const i in boardMember) {
-      userArray.push(boardMember[i].user.name);
+      userArray.push(boardMember[i].user.id);
     }
-    const deleteUsers = boardMember.filter((x) => !users.includes(x.user.name));
+    const deleteUsers = boardMember.filter((x) => !users.includes(x.user.id));
     const updateUsers = users.filter((x) => !userArray.includes(x));
 
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
@@ -69,7 +109,7 @@ export class BoardMembersService {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
         if (updateUsers.length > 0) {
           for (const i in updateUsers) {
-            const user = await this.usersService.findUserByName(updateUsers[i]);
+            const user = await this.usersService.findUserById(updateUsers[i]);
             if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
             const newBoardMembers = this.boardMemberRepository.create({ board, user });
 

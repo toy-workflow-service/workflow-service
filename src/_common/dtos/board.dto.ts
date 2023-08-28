@@ -57,5 +57,5 @@ export class CreateBoardMessageDto {
 export class BoardMemberUpdateDto {
   @IsNotEmpty()
   @IsArray()
-  names: string[];
+  userIdArray: number[];
 }
