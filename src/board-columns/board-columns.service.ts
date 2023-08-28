@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { BoardsService } from 'src/boards/boards.service';
@@ -46,8 +46,14 @@ export class BoardColumnsService {
 
   //보드 칼럼 생성
   async PostBoardColumn(boardId: number, name: string, sequence: number) {
+    const column = await this.boardColumnRepository.find({ relations: ['board'] });
+    const isDone = column.find((b) => {
+      if (b.board.id == boardId && 'Done' == name) {
+        return b;
+      }
+    });
+    if (isDone) throw new BadRequestException('Done은 더이상 추가할 수 없습니다.');
     const board = await this.boardsService.GetBoardById(boardId);
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardColumnRepository.insert({ name, sequence, board });
   }
 
