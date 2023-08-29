@@ -1,10 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
-import { IResult } from 'src/_common/interfaces/result.interface';
-import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BoardsService {
@@ -12,7 +11,8 @@ export class BoardsService {
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
     private readonly workspaceService: WorkspacesService,
-    private readonly boardColumnService: BoardColumnsService
+    @InjectRepository(Board_Column)
+    private boardColumnRepository: Repository<Board_Column>
   ) {}
 
   // 보드 조회
@@ -50,9 +50,6 @@ export class BoardsService {
 
   //보드 상세 조회
   async GetBoard(workspaceId: number, id: number) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-
     return await this.boardRepository.findOne({ where: { id }, relations: ['workspace'] });
   }
 
@@ -61,47 +58,20 @@ export class BoardsService {
   }
 
   //보드 생성
-  async CreateBoard(workspaceId: number, name: string, description: string): Promise<IResult> {
+  async CreateBoard(workspaceId: number, name: string, description: string) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    const entityManager = this.boardRepository.manager;
-
-    try {
-      await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        const newBoard = this.boardRepository.create({
-          name,
-          description,
-          workspace,
-        });
-        await transactionEntityManager.save(newBoard);
-
-        const boardId = newBoard.id;
-
-        const columnName = '완료';
-        const columnSequence = 1;
-        await this.boardColumnService.PostBoardColumn(boardId, columnName, columnSequence);
-      });
-      return { result: true };
-    } catch (err) {
-      console.error(err);
-    }
+    const board = await this.boardRepository.insert({ name, description, workspace });
+    const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
+    await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
   }
 
   //보드 수정
   async UpdateBoard(workspaceId: number, id: number, name: string, description: string) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const board = await this.boardRepository.findOneBy({ id });
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardRepository.update({ id }, { name, description });
   }
 
   //보드 삭제
   async DeleteBoard(workspaceId: number, id: number) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const board = await this.boardRepository.findOneBy({ id });
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardRepository.delete(id);
   }
 
