@@ -1,37 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from 'src/_common/entities/board.entity';
+import { IResult } from 'src/_common/interfaces/result.interface';
+import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
-    private readonly workspaceService: WorkspacesService
+    private readonly workspaceService: WorkspacesService,
+    private readonly boardColumnService: BoardColumnsService
   ) {}
 
   // 보드 조회
   async GetBoards(workspaceId: number) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members'] });
+    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members.user'] });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
     const boards = findBoards.filter((board) => {
       return board.workspace.id == workspaceId;
     });
-    return boards.map((board) => {
+
+    const boardInfos = boards.map((board) => {
+      const boardMembers = board.board_members.map((boardMember) => ({
+        id: boardMember.user.id,
+        name: boardMember.user.name,
+        email: boardMember.user.email,
+        profile_url: boardMember.user.profile_url,
+        phone_number: boardMember.user.phone_number,
+      }));
+
       return {
         workspaceId: board.workspace.id,
         boardId: board.id,
         boardName: board.name,
         description: board.description,
-        boardMembers: board.board_members,
+        boardMembers: boardMembers,
         createdAt: board.created_at,
         updatedAt: board.updated_at,
       };
     });
+
+    return boardInfos;
   }
 
   //보드 상세 조회
@@ -47,11 +61,30 @@ export class BoardsService {
   }
 
   //보드 생성
-  async CreateBoard(workspaceId: number, name: string, description: string) {
+  async CreateBoard(workspaceId: number, name: string, description: string): Promise<IResult> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
+    const entityManager = this.boardRepository.manager;
 
-    return await this.boardRepository.insert({ name, description, workspace });
+    try {
+      await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+        const newBoard = this.boardRepository.create({
+          name,
+          description,
+          workspace,
+        });
+        await transactionEntityManager.save(newBoard);
+
+        const boardId = newBoard.id;
+
+        const columnName = '완료';
+        const columnSequence = 1;
+        await this.boardColumnService.PostBoardColumn(boardId, columnName, columnSequence);
+      });
+      return { result: true };
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   //보드 수정

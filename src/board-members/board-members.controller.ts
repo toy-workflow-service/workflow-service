@@ -39,7 +39,7 @@ export class BoardMembersController {
     @Param('boardId') boardId: number,
     @Param('userId') userId: number,
     @Query('deleteId') deleteId: number,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardMembersService.UpdateBoardMember(boardId, userId, deleteId);
     return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });

@@ -2,6 +2,7 @@ import {
   ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -17,13 +18,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   connectedClients: { [socketId: string]: number } = {};
   clientName: { [socketId: string]: string } = {};
+  callClientName: { [socketId: string]: string } = {};
   roomUsers: { [key: string]: string[] } = {};
 
   handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
     const authorization = client.request.headers.cookie;
-
     if (!authorization) return;
-    const token = authorization.split('=')[1];
+
+    let token = authorization.split(' ')[1].split('=')[1];
 
     const decode = this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
     this.connectedClients[client.id] = Number(decode.id);
@@ -53,4 +55,23 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //연결된 클라이언트 목록을 업데이트해 emit
     this.server.emit('userList', { room: null, userLiset: Object.keys(this.connectedClients) });
   }
+
+  @SubscribeMessage('join')
+  handleJoin(client: Socket, data: any): void {
+    const room = data.room;
+    const name = data.name;
+    this.clientName[client.id] = name;
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+
+    this.roomUsers[room].push(this.clientName[client.id]);
+    this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
+
+    this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(client: Socket, data: any): void {}
 }

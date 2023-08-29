@@ -17,7 +17,6 @@ import { Response } from 'express';
 import { CreateBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
-import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 
 @Controller('boards')
 export class BoardsController {

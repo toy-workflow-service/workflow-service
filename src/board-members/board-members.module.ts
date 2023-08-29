@@ -13,11 +13,23 @@ import { Board } from 'src/_common/entities/board.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
+import { BoardColumnsService } from 'src/board-columns/board-columns.service';
+import { Board_Column } from 'src/_common/entities/board-column.entity';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board_Member, Board, Workspace, Workspace_Member, User])],
-  exports: [TypeOrmModule],
+  imports: [
+    RedisCacheModule,
+    TypeOrmModule.forFeature([Board_Member, Board, Workspace, Workspace_Member, User, Board_Column]),
+  ],
   controllers: [BoardMembersController],
-  providers: [BoardMembersService, BoardsService, WorkspacesService, JwtService, UsersService, MailService],
+  providers: [
+    BoardMembersService,
+    BoardsService,
+    WorkspacesService,
+    JwtService,
+    UsersService,
+    MailService,
+    BoardColumnsService,
+  ],
 })
 export class BoardMembersModule {}

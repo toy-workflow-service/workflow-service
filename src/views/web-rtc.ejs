@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회의</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css" />
+    <script
+      src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+      integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <main>
+      <div id="call-room">
+        <div class="user-screen">
+          <div id="my-stream">
+            <h2>나의socket에서 뽑아온 이름:</h2>
+            <video id="my-video" autoplay playinline width="400" height="400"></video>
+          </div>
+          <div id="peer-stream">
+            <h2>상대방의 socket에서 뽑아온 이름:</h2>
+            <video id="peer-video" autoplay playinline width="400" height="400"></video>
+          </div>
+        </div>
+        <button id="audio">음소거</button>
+        <button id="camera">카메라 끄기</button>
+        <button id="screen-share">화면 공유</button>
+        <div id="screen-stream" style="display: none">
+          <h2>화면 공유</h2>
+          <video id="screen-video" autoplay playinline width="800" height="600"></video>
+        </div>
+        <button id="leave-room">통화 종료</button>
+        <select id="camera-select"></select>
+        <div id="chat-container">
+          <h2>Chat 💬</h2>
+          <ul id="messages"></ul>
+          <form id="chat">
+            <input type="text" placeholder="메세지를 입력하세요" />
+            <button>Send</button>
+          </form>
+        </div>
+      </div>
+    </main>
+    <script src="./assets/js/socket.js" defer></script>
+    <script src="./assets/js/web-rtc.js" defer></script>
+  </body>
+</html>

@@ -11,11 +11,12 @@ import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
+import { Board_Column } from 'src/_common/entities/board-column.entity';
+import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board, Workspace, Workspace_Member, User])],
-  exports: [TypeOrmModule],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board, Workspace, Workspace_Member, User, Board_Column])],
   controllers: [BoardsController],
-  providers: [BoardsService, WorkspacesService, JwtService, UsersService, MailService],
+  providers: [BoardsService, WorkspacesService, JwtService, UsersService, MailService, BoardColumnsService],
 })
 export class BoardsModule {}
