@@ -260,6 +260,7 @@ async function BoardColumns(data) {
   
                                 </div>`;
     }
+    console.log(cardIndex);
   }
   kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
@@ -364,7 +365,7 @@ async function BoardColumns(data) {
       cardColumnId = id;
       const sequence = e.target.getAttribute('data-index');
       cardSequence = Number(sequence) + 1;
-      console.log('tt', sequence, cardSequence, cardColumnId);
+      console.log('sequence, columnId', cardSequence, cardColumnId);
     });
   });
   document.getElementById('CardCreateBtn').addEventListener('click', () => {
@@ -470,7 +471,7 @@ async function CardGet(columnId) {
 // card create api
 async function CardCreate(columnId, data) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  // console.log(columnId, data);
+  console.log(columnId, data);
   await $.ajax({
     type: 'POST',
     url: `/cards?board_column_Id=${columnId}`,
