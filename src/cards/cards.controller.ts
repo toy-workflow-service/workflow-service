@@ -4,6 +4,8 @@ import { CreateCardDto } from '../_common/dtos/create-card.dto';
 import { UpdateCardDto } from '../_common/dtos/update-card.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UpdateCardSequenceDto } from 'src/_common/dtos/update-card-sequence.dto';
+import { GetUser } from 'src/_common/decorators/get-user.decorator';
+import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
 @Controller('cards')
 export class CardsController {
@@ -24,7 +26,11 @@ export class CardsController {
   //카드 생성
   @Post()
   @UseGuards(AuthGuard)
-  async CreateCard(@Query('board_column_Id') board_column_Id: number, @Body() data: CreateCardDto) {
+  async CreateCard(
+    @GetUser() user: AccessPayload,
+    @Query('board_column_Id') board_column_Id: number,
+    @Body() data: CreateCardDto
+  ) {
     await this.cardsService.CreateCard(
       board_column_Id,
       data.name,
@@ -32,7 +38,8 @@ export class CardsController {
       data.file_url,
       data.sequence,
       data.color,
-      data.members
+      data.members,
+      user.id
     );
   }
 
