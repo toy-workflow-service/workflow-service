@@ -614,7 +614,7 @@ $(document).ready(async () => {
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMembers.includes(result.name)) {
+          if (!selectedMemberNumber.includes(result.userId)) {
             selectedMembers.push({ name: result.name, id: result.userId });
             console.log('click함', selectedMembers);
             selectedMemberNumber.push(result.userId);
