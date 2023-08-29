@@ -588,34 +588,36 @@ let typingTimer;
 let selectedMembers = [];
 let selectedMemberNumber = [];
 $(document).ready(async () => {
-  const memberInput = document.querySelector('#cardCreateMmeberName');
+  const memberInput = document.querySelector('#cardCreateAddMemberBtn');
   const selectedMemberList = document.querySelector('#cardCreateMemberView');
 
-  memberInput.addEventListener('keyup', (e) => {
+  memberInput.addEventListener('click', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
-      const searchText = e.target.value;
-      const encodedSearchText = encodeURIComponent(searchText);
-
-      const results = await searchMembers(encodedSearchText);
+      const results = await searchMembers();
       console.log(results);
-      if (results) {
-        selectedMemberList.innerHTML = '';
-        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+
+      document.getElementById(e.target.id).addEventListener('click', () => {
+        console.log('id 확인 : ', e.target.id);
+      });
+      selectedMemberList.innerHTML = '';
+      for (let result of results) {
+        let Img = result.profileUrl ? result.profileUrl : '/assets/img/favicon.png';
         let data = `<li>
-                        <a href="#">
-                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
-                        </a>
-                        <span>${results.user.name}</span>
-                      </li>`;
+                          <a href="#">
+                            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${result.name}">
+                          </a>
+                          <span>${result.name}</span>
+                        </li>`;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMembers.includes(results.user.name)) {
-            selectedMembers.push(results.user.name);
-            selectedMemberNumber.push(results.user.id);
+          if (!selectedMembers.includes(result.name)) {
+            selectedMembers.push({ name: result.name, id: result.userId });
+            console.log('click함', selectedMembers);
+            selectedMemberNumber.push(result.userId);
             updateSelectedMembersUI();
           }
         });
@@ -625,14 +627,17 @@ $(document).ready(async () => {
 });
 
 // 유저검색
-async function searchMembers(searchText) {
-  console.log(decodeURI(searchText));
+async function searchMembers() {
   try {
-    // const response = await $.ajax({
-    //   method: 'GET',
-    //   url: ``,
-    // });
-    // return response;
+    const { boardMembers } = await $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+    return boardMembers;
   } catch (err) {
     console.error(err);
   }
@@ -644,7 +649,7 @@ function updateSelectedMembersUI() {
   selectedMemberList.innerHTML = selectedMembers
     .map(
       (member) => `
-    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+    <li>${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
   `
     )
     .join('');
@@ -654,7 +659,8 @@ function updateSelectedMembersUI() {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      selectedMembers = selectedMembers.filter((name) => name.id !== memberRemove);
+      selectedMemberNumber = selectedMemberNumber.filter((id) => id !== memberRemove);
       updateSelectedMembersUI();
     });
   });
