@@ -6,8 +6,7 @@ let boardNames = [];
 
 $(document).ready(async () => {
   await getWorkspaces();
-  await getRecentMessage();
-  getMyBoardMessage();
+  await getMyBoardMessage();
 });
 
 function logout() {
@@ -104,13 +103,11 @@ async function createWorkspace() {
   }
 }
 
-async function getRecentMessage() {
+async function getMyBoardMessage() {
   const messageList = document.getElementById('recentMessageList');
   const recentMessageContainer = document.getElementById('recentMessageContainer');
-
   let room = [];
   let name;
-
   await $.ajax({
     method: 'GET',
     url: '/boards/getBoards/joinBoards',
@@ -119,80 +116,31 @@ async function getRecentMessage() {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      const results = data.joinBoards;
-      name = data.userName;
-      results.forEach((array) => {
-        if (localStorage.getItem(`recentMessageroom${array.board_id}`)) {
-          const recentMessage = localStorage.getItem(`recentMessageroom${array.board_id}`);
-          const messageHtml = `
-<li class="author-online has-new-message">
-<div class="user-message">
-<p>
-<a href="" class="subject stretched-link text-truncate" style="max-width: 180px"
->${array.board_name}</a
->
-<span class="time-posted">3 hrs ago</span>
-</p>
-<p>
-<span class="desc text-truncate" style="max-width: 215px"
->${recentMessage}</span
->
-<span class="msg-count badge-circle badge-success badge-sm">1</span>
-</p>
-</div>
-</li>`;
-          messageList.innerHTML += messageHtml;
-        }
-        boardIds.push(array.board_id);
-        boardNames.push(array.board_name);
-        room.push(array.board_id);
-      });
+      console.log(data);
     },
     error: (error) => {
       console.log(error);
     },
   });
-
-  recentMessageContainer.scrollTop = recentMessageContainer.scrollHeight;
-  joinRoom(room, name);
-}
-
-function joinRoom(rooms, name) {
-  rooms.forEach((roomId) => {
-    socket.emit('join', { room: 'room' + roomId, name });
-  });
-}
-
-function getMyBoardMessage() {
-  const groupChat = document.querySelector('.groupChat');
-  const groupChat2 = document.querySelector('.groupChattingRoom');
-
-  boardNames.forEach((array, idx) => {
-    const groupChatRoom = `<li>
-<a href="/chat?boardId=${boardIds[idx]}" ><i nav-icon uil uil-comment-dots></i>${array}</a>
-</li>`;
-    groupChat.innerHTML += groupChatRoom;
-    groupChat2.innerHTML += groupChatRoom;
-  });
 }
 {
   /* <li class="author-online has-new-message">
-<div class="user-avater">
-<img src="../assets/img/team-1.png" alt="" />
-</div>
-<div class="user-message">
-<p>
-<a href="" class="subject stretched-link text-truncate" style="max-width: 180px"
->Web Design</a
->
-<span class="time-posted">3 hrs ago</span>
-</p>
-<p>
-<span class="desc text-truncate" style="max-width: 215px"
->Lorem ipsum dolor amet cosec Lorem ipsum</span
->
-<span class="msg-count badge-circle badge-success badge-sm">1</span>
-</p>
-</div>
-</li> */
+                        <div class="user-avater">
+                          <img src="../assets/img/team-1.png" alt="" />
+                        </div>
+                        <div class="user-message">
+                          <p>
+                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px"
+                              >Web Design</a
+                            >
+                            <span class="time-posted">3 hrs ago</span>
+                          </p>
+                          <p>
+                            <span class="desc text-truncate" style="max-width: 215px"
+                              >Lorem ipsum dolor amet cosec Lorem ipsum</span
+                            >
+                            <span class="msg-count badge-circle badge-success badge-sm">1</span>
+                          </p>
+                        </div>
+                      </li> */
 }

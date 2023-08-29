@@ -67,7 +67,6 @@ function deleteUser() {
       },
       data: JSON.stringify(payload),
       success: (data) => {
-        localStorage.removeItem('accessToken');
         Swal.fire({
           icon: 'success',
           title: 'Success',
@@ -118,7 +117,6 @@ function changePassword() {
         title: 'Success',
         text: data.message,
       }).then(() => {
-        localStorage.removeItem('accessToken');
         window.location.href = '/';
       });
       return;

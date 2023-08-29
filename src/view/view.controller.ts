@@ -2,7 +2,6 @@ import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { ViewAuthGuard } from 'src/_common/security/view-auth.guard';
-import { Request, Response } from 'express';
 
 @Controller()
 export class ViewController {
