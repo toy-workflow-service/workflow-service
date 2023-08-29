@@ -24,7 +24,11 @@ export class CardsController {
   //카드 생성
   @Post()
   @UseGuards(AuthGuard)
-  async CreateCard(@Query('board_column_Id') board_column_Id: number, @Body() data: CreateCardDto) {
+  async CreateCard(
+    @Query('boardId') boardId: number,
+    @Query('board_column_Id') board_column_Id: number,
+    @Body() data: CreateCardDto
+  ) {
     await this.cardsService.CreateCard(
       board_column_Id,
       data.name,

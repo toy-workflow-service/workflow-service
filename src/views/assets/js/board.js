@@ -179,7 +179,9 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 async function BoardColumns(data) {
-  document.querySelector('.breadcrumb-main').innerHTML = `<h4 class="text-capitalize breadcrumb-title">${boardName}</h4>
+  document.querySelector(
+    '.breadcrumb-main'
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -562,7 +564,7 @@ async function CardCreate(columnId, data) {
   // console.log(columnId, data);
   await $.ajax({
     type: 'POST',
-    url: `/cards?board_column_Id=${columnId}`,
+    url: `/cards?boardId=${boardId}&board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
