@@ -36,10 +36,10 @@ export class BoardMembersService {
   }
 
   //보드 멤버 이름 조회
-  async GetBoardMemberName(boardId: number, name: string) {
+  async GetBoardMemberName(boardId: number, userId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
     const members = boardMembers.filter((boardMember) => {
-      if (boardMember.board.id == boardId && boardMember.user.name == name) {
+      if (boardMember.board.id == boardId && boardMember.user.id == userId) {
         return boardMember;
       }
     });

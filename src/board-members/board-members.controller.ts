@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { BoardMembersService } from './board-members.service';
 import { Response } from 'express';
 import { BoardMemberUpdateDto, CreateBoardMemberDto } from 'src/_common/dtos/board.dto';
@@ -16,11 +16,14 @@ export class BoardMembersController {
   }
 
   // 보드 멤버 찾기
-  @Get('/boards/:boardId/members/name')
+  @Get('/boards/:boardId/members/:userId')
   @UseGuards(AuthGuard)
-  async GetBoardMemberNameSearch(@Query('name') name: string, @Param('boardId') boardId: number, @Res() res: Response) {
-    const memberName = encodeURI(name);
-    const members = await this.boardMembersService.GetBoardMemberName(boardId, memberName);
+  async GetBoardMemberNameSearch(
+    @Param('userId') userId: number,
+    @Param('boardId') boardId: number,
+    @Res() res: Response
+  ) {
+    const members = await this.boardMembersService.GetBoardMemberName(boardId, userId);
     return res.status(HttpStatus.OK).json({ boardMembers: members });
   }
 
