@@ -66,7 +66,7 @@ async function getMyBoards() {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardName=${board.boardName}&boardId=${board.boardId}">
+                              <a href="/board?boardId=${board.boardId}">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -311,7 +311,23 @@ async function openEditBoardModal(element) {
     console.error(err);
   }
 }
+// 보드 멤버 조회
+function getBoardMembers(boardId) {
+  try {
+    const response = $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
 
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
+}
 // async function updateBoard(element) {
 //   const boardId = element.getAttribute('boardId')
 //   const modal =

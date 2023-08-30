@@ -71,7 +71,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
-let boardName = new URLSearchParams(window.location.search).get('boardName');
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -175,7 +174,9 @@ async function BoardColumnsGet() {
 // 아직 card api가 없기 때문에 column만 일단 넣음
 let cardIndex = 0;
 async function BoardColumns(data) {
-  document.querySelector('.breadcrumb-main').innerHTML = `<h4 class="text-capitalize breadcrumb-title">${boardName}</h4>
+  document.querySelector(
+    '.breadcrumb-main'
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -184,7 +185,7 @@ async function BoardColumns(data) {
                       </ol>
                   </nav>
                 </div>`;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${boardName} project</h4>`;
+  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName} project</h4>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
@@ -194,10 +195,8 @@ async function BoardColumns(data) {
     const cardHtml = card
       .map(
         (c) =>
-          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id}>
-                                      <div class="lists-items-title" style="background-color: ${c.color}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+          `<li class="d-flex justify-content-between align-items-center " style="background-color: ${c.color}" draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id}>
                                         ${c.name}
-                                      </div>
                                       <button class="open-popup-modal" type="button">
                                         <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                                       </button>
