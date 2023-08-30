@@ -200,10 +200,9 @@ async function BoardColumns(data) {
     const cardHtml = card
       .map(
         (c) =>
-          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id}>
-                                      <div class="lists-items-title" style="background-color: ${c.color}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="background-color: ${c.color}">
                                         ${c.name}
-                                      </div>
+                                      
                                       <button class="open-popup-modal" type="button">
                                         <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                                       </button>
@@ -435,6 +434,35 @@ async function CardGet(columnId) {
   return result;
 }
 
+// card create api
+async function CardCreate(columnId, data) {
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
+  console.log(columnId, data);
+  await $.ajax({
+    type: 'POST',
+    url: `/cards?board_column_Id=${columnId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({
+      name: data.name,
+      content: data.content,
+      file_url: data.fileUrl,
+      sequence: data.sequence,
+      members: data.members,
+      color: data.color,
+    }),
+    success: function (data) {
+      console.log(data.message);
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
 // 코멘트 생성 함수
 function createComment(columnId, cardId) {
   const commentInput = document.getElementById('commentInput').value;
@@ -447,7 +475,7 @@ function createComment(columnId, cardId) {
 
     $.ajax({
       type: 'POST',
-      url: `/ comments ? boardColumnId = ${columnId}& cardId=${cardId} `,
+      url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
       data: JSON.stringify(comment),
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
@@ -474,21 +502,30 @@ document.addEventListener('click', function (event) {
   }
 });
 
-// 코멘트 디테일 모달을 열기 위한 함수
 function openCommentDetailModal(cardId, commentId) {
   // 코멘트 디테일 정보를 서버에서 가져오는 API 호출
   $.ajax({
     type: 'GET',
-    url: `/ comments / ${commentId}?cardId = ${cardId} `,
+    url: `/comments/${commentId}?cardId=${cardId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: function (commentDetail) {
-      // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
+      // 코멘트의 유저 ID와 현재 로그인한 사용자의 ID 비교
+      if (commentDetail.commentData.user.id === commentDetail.user.id) {
+        // 현재 사용자가 코멘트 작성자와 동일한 경우 버튼을 표시
+        $('#updateCommentModal').show();
+        $('#commentDeleteBtn').show();
+      } else {
+        // 현재 사용자가 코멘트 작성자와 다른 경우 버튼을 숨김
+        $('#updateCommentModal').hide();
+        $('#commentDeleteBtn').hide();
+      }
+
+      // 모달 열기
       createCommentDetailModal(commentDetail);
       $('#commentDetailModal').modal('show');
-      console.log(accessToken);
     },
     error: function (error) {
       console.log(error);
@@ -496,20 +533,19 @@ function openCommentDetailModal(cardId, commentId) {
   });
 }
 
-function createCommentDetailModal(commentDetail) {
+function createCommentDetailModal(commentDetail, cardId, commentId) {
   // 모달 내용을 업데이트
   $('#commentDetailModalLabel').text('Comment');
-  $('#commentAuthor').text(commentDetail.username); // 모달 제목 업데이트
+  $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
 
-  // 'update' 버튼과 'delete' 버튼에 데이터 속성 추가
-  $('#updateCommentModal').data('data-card-id', commentDetail.cardId);
-  $('#updateCommentModal').data('data-comment-id', commentDetail.commentId);
-  $('#commentDeleteBtn').data('cardId', commentDetail.cardId);
-  $('#commentDeleteBtn').data('commentId', commentDetail.commentId);
+  // 카드 ID와 코멘트 ID를 모달의 삭제 버튼에 설정
+  $('#commentDeleteBtn').attr('data-card-id', cardId);
+  $('#commentDeleteBtn').attr('data-comment-id', commentId);
+  $('#commentUpdateBtn').attr('data-card-id', cardId);
+  $('#commentUpdateBtn').attr('data-comment-id', commentId);
 
-  // 모달 내용을 업데이트한 후, 필요한 다른 작업 수행
-  // 예를 들어, 'update' 버튼을 클릭할 때 어떤 동작을 수행하는 이벤트 핸들러 등을 추가할 수 있습니다.
+  // 모달을 표시
   $('#commentDetailModal').modal('show');
 }
 
@@ -526,14 +562,6 @@ document.addEventListener('click', function (event) {
 // 카드 세부 정보 모달을 생성하는 함수
 function createCardDetailModal(cardData, commentsData, columnId, cardId) {
   // 모달 바디의 HTML을 생성
-      <h5 class="modal-title" id="exampleModalLabel">${data.name}</h5>
-      <p id="cardDetailDescription">${data.content}</p>
-      <div id="cardDetailImgFile">
-        <a href="${data.file_url}" download="">
-          <img src="${data.file_url}" alt="${data.name}">
-        </a>
-      </div>
-  `;
 
   // 멤버 리스트의 HTML을 생성
   let membersHTML = '';
@@ -554,6 +582,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId) {
   for (const comment of commentsData) {
     const cardId = cardData.id;
     const commentId = comment.id;
+    console.log(comment.user.name);
 
     commentHTML += `
   <div class="checkbox-group d-flex" id="commentDetail"
@@ -866,7 +895,7 @@ async function CardAllUpdate(columnId, cardId, data) {
   }
 }
 
-/// 함수 내에서 카드 삭제를 처리하는 로직
+// 함수 내에서 카드 삭제를 처리하는 로직
 function deleteCard(button) {
   const columnId = button.getAttribute('data-column-id');
   const cardId = button.getAttribute('data-card-id');
@@ -907,3 +936,59 @@ deleteButtons.forEach((button) => {
     handleDeleteButtonClick(button);
   });
 });
+
+function deleteComment(commentId, cardId) {
+  // 카드 삭제 API 호출
+  $.ajax({
+    type: 'DELETE',
+    url: `/comments/${commentId}?cardId=${cardId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+
+      // 삭제 성공 후, 페이지 새로고침
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+document.addEventListener('click', function (event) {
+  if (event.target && event.target.id === 'commentDeleteBtn') {
+    const commentId = document.getElementById('commentDeleteBtn').getAttribute('data-comment-id');
+    const cardId = document.getElementById('commentDeleteBtn').getAttribute('data-card-id');
+    deleteComment(commentId, cardId);
+    console.log('삭제', commentId, cardId);
+  }
+});
+
+// comment update api
+async function CardAllUpdate(commentId, cardId, data) {
+  try {
+    // PATCH 요청을 보내기 전에 데이터 확인
+    console.log('Updated Data:', data);
+
+    const response = await $.ajax({
+      type: 'PATCH',
+      url: `/comments/${commentId}?cardId=${cardId}`,
+      data: JSON.stringify({
+        comment: commentData.comment,
+      }),
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    // 업데이트 응답 결과 확인
+    console.log('Update Response:', response.message);
+
+  } catch (error) {
+    console.log(error);
+  }
+}
