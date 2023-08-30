@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsNotEmpty } from 'class-validator';
+import { IsNumber, IsString, IsNotEmpty, IsArray } from 'class-validator';
 
 export class CreateBoardDto {
   @IsString()
@@ -52,4 +52,10 @@ export class CreateBoardMessageDto {
   @IsString()
   @IsNotEmpty({ message: '메세지를 입력해주세요.' })
   readonly message: string;
+}
+
+export class BoardMemberUpdateDto {
+  @IsNotEmpty()
+  @IsArray()
+  userIdArray: number[];
 }

@@ -70,7 +70,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 [].forEach.call(cols, addDnDHandlers);
 
 // -----------------여기서부터 작업함--------------------
-// const accessToken = localStorage.getItem('accessToken');
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = Number(boardId);
 // boardId = 65;
@@ -105,10 +104,6 @@ function init() {
       },
     })
     .disableSelection();
-
-  // Object.values($('.kanban-container,.todo-task2 tbody')).forEach(async (column, index) => {
-  //   console.log('testest: ', column, index);
-  // });
 }
 
 // 바뀐 순서 출력 (여기서 순서 update api 사용할듯)
@@ -132,8 +127,6 @@ function CardListReorder() {
   Object.values(cards).forEach(async (card, index) => {
     const columnId = card.parentElement.getAttribute('data-columnId');
     const cardId = card.getAttribute('data-cardid');
-    console.log('card list : ', card, index + 1, columnId, cardId);
-    console.log(card.parentElement.getAttribute('data-columnId'));
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
   // console.log($('.list-items').children('li'));
@@ -145,11 +138,11 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
   $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}/sequence?boardId=` + boardId,
-    data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ sequence }),
     success: (data) => {
       console.log(data.message);
     },
@@ -181,7 +174,9 @@ async function BoardColumnsGet() {
 // 아직 card api가 없기 때문에 column만 일단 넣음
 let cardIndex = 0;
 async function BoardColumns(data) {
-  document.querySelector('.breadcrumb-main').innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
+  document.querySelector(
+    '.breadcrumb-main'
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -392,16 +387,18 @@ async function BoardColumns(data) {
   });
 }
 
+
+
 // column name update api
 async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
     type: 'PUT',
-    url: `/ board - columns / ${columnId}?boardId = ` + boardId,
-    data: JSON.stringify({ name }),
+    url: `/board-columns/${columnId}?boardId=` + boardId,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
+    data: JSON.stringify({ name }),
     success: (data) => {
       console.log(data.message);
       location.reload();
@@ -414,7 +411,7 @@ async function BoardColumnNameUpdate(columnId, name) {
 
 // card get api
 async function CardGet(columnId) {
-  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/ board - columns ? boardId = ` + boardId,
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
   // console.log(columnId);
   const result = await $.ajax({
     type: 'GET',
@@ -707,34 +704,36 @@ let typingTimer;
 let selectedMembers = [];
 let selectedMemberNumber = [];
 $(document).ready(async () => {
-  const memberInput = document.querySelector('#cardCreateMmeberName');
+  const memberInput = document.querySelector('#cardCreateAddMemberBtn');
   const selectedMemberList = document.querySelector('#cardCreateMemberView');
 
-  memberInput.addEventListener('keyup', (e) => {
+  memberInput.addEventListener('click', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
-      const searchText = e.target.value;
-      const encodedSearchText = encodeURIComponent(searchText);
-
-      const results = await searchMembers(encodedSearchText);
+      const results = await searchMembers();
       console.log(results);
-      if (results) {
-        selectedMemberList.innerHTML = '';
-        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+
+      document.getElementById(e.target.id).addEventListener('click', () => {
+        console.log('id 확인 : ', e.target.id);
+      });
+      selectedMemberList.innerHTML = '';
+      for (let result of results) {
+        let Img = result.profileUrl ? result.profileUrl : '/assets/img/favicon.png';
         let data = `<li>
-      <a href="#">
-        <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
-      </a>
-      <span>${results.user.name}</span>
-    </li>`;
+                          <a href="#">
+                            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${result.name}">
+                          </a>
+                          <span>${result.name}</span>
+                        </li>`;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMembers.includes(results.user.name)) {
-            selectedMembers.push(results.user.name);
-            selectedMemberNumber.push(results.user.id);
+          if (!selectedMemberNumber.includes(result.userId)) {
+            selectedMembers.push({ name: result.name, id: result.userId });
+            console.log('click함', selectedMembers);
+            selectedMemberNumber.push(result.userId);
             updateSelectedMembersUI();
           }
         });
@@ -744,18 +743,17 @@ $(document).ready(async () => {
 });
 
 // 유저검색
-async function searchMembers(searchText) {
-  console.log(decodeURI(searchText));
+async function searchMembers() {
   try {
-    // const response = await $.ajax({
-    //   method: 'GET',
-    //   url: ``,
-    //   beforeSend: function (xhr) {
-    //     xhr.setRequestHeader('Content-type', 'application/json');
-    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    //   },
-    // });
-    // return response;
+    const { boardMembers } = await $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+    return boardMembers;
   } catch (err) {
     console.error(err);
   }
@@ -767,8 +765,8 @@ function updateSelectedMembersUI() {
   selectedMemberList.innerHTML = selectedMembers
     .map(
       (member) => `
-    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-    `
+    <li>${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
+  `
     )
     .join('');
 
@@ -777,7 +775,8 @@ function updateSelectedMembersUI() {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
+      selectedMembers = selectedMembers.filter((name) => name.id !== memberRemove);
+      selectedMemberNumber = selectedMemberNumber.filter((id) => id !== memberRemove);
       updateSelectedMembersUI();
     });
   });
@@ -820,15 +819,14 @@ async function DetailCardGet(columnId, cardId) {
 
 // card sequence update api
 async function CardSequenceUpdate(columnId, cardId, sequence) {
-  console.log('CardSequenceUpdate : ', columnId, cardId, sequence);
   $.ajax({
     type: 'PUT',
     url: `cards/${cardId}/sequence?board_column_Id=${columnId}`,
-    data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
+    data: JSON.stringify({ sequence }),
     success: (data) => {
       console.log(data.message);
     },

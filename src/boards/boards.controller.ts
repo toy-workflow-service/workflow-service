@@ -18,6 +18,8 @@ import { CreateBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
+import { GetUser } from 'src/_common/decorators/get-user.decorator';
+import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
 @Controller('boards')
 export class BoardsController {
@@ -69,5 +71,12 @@ export class BoardsController {
   async DeleteBoard(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
     await this.boardsService.DeleteBoard(workspaceId, id);
     return res.status(HttpStatus.OK).json({ message: '보드를 삭제하였습니다.' });
+  }
+
+  @Get('getBoards/joinBoards')
+  @UseGuards(AuthGuard)
+  async getJoinBoards(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
+    const joinBoards = await this.boardsService.getJoinBoards(user.id);
+    return res.status(HttpStatus.OK).json({ joinBoards, userName: user.name });
   }
 }

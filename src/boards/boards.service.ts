@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Repository } from 'typeorm';
@@ -9,7 +10,9 @@ export class BoardsService {
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
-    private readonly workspaceService: WorkspacesService
+    private readonly workspaceService: WorkspacesService,
+    @InjectRepository(Board_Column)
+    private boardColumnRepository: Repository<Board_Column>
   ) {}
 
   // 보드 조회
@@ -47,9 +50,6 @@ export class BoardsService {
 
   //보드 상세 조회
   async GetBoard(workspaceId: number, id: number) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-
     return await this.boardRepository.findOne({ where: { id }, relations: ['workspace'] });
   }
 
@@ -60,26 +60,28 @@ export class BoardsService {
   //보드 생성
   async CreateBoard(workspaceId: number, name: string, description: string) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-
-    return await this.boardRepository.insert({ name, description, workspace });
+    const board = await this.boardRepository.insert({ name, description, workspace });
+    const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
+    await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
   }
 
   //보드 수정
   async UpdateBoard(workspaceId: number, id: number, name: string, description: string) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const board = await this.boardRepository.findOneBy({ id });
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardRepository.update({ id }, { name, description });
   }
 
   //보드 삭제
   async DeleteBoard(workspaceId: number, id: number) {
-    const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const board = await this.boardRepository.findOneBy({ id });
-    if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     await this.boardRepository.delete(id);
+  }
+
+  async getJoinBoards(userId: number) {
+    const joinBoards = await this.boardRepository
+      .createQueryBuilder('board')
+      .innerJoinAndSelect('board.board_members', 'member')
+      .select(['board.id', 'board.name'])
+      .where('member.user_id = :userId ', { userId })
+      .getRawMany();
+    return joinBoards;
   }
 }

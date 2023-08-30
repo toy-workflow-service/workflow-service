@@ -13,6 +13,7 @@ export class CardsService {
   //카드 조회
   async GetCards(board_column_Id: number) {
     const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+
     findCards.sort((a, b) => {
       return a.sequence - b.sequence;
     });
@@ -59,12 +60,14 @@ export class CardsService {
     if (!name || !content) {
       throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     }
+
     await this.cardRepository.update(id, { name, content, file_url });
   }
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {
     await this.cardRepository.delete(id);
   }
+
   //카드 시퀀스 수정
   async UpdateCardSequence(board_column_Id: number, cardId: number, sequence: number) {
     const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_Id);

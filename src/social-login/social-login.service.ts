@@ -17,7 +17,14 @@ export class SocialLoginService {
     const existUser = await this.usersService.findEmail(email);
     if (existUser) {
       const accessToken = this.jwtService.sign(
-        { id: existUser.id },
+        {
+          id: existUser.id,
+          email: existUser.email,
+          name: existUser.name,
+          profile_url: existUser.profile_url,
+          phone_number: existUser.phone_number,
+          phone_authentication: existUser.phone_authentication,
+        },
         process.env.ACCESS_SECRET_KEY,
         process.env.ACCESS_EXPIRE_TIME
       );

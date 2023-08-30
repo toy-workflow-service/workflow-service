@@ -6,6 +6,7 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UpdateCardSequenceDto } from 'src/_common/dtos/update-card-sequence.dto';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+
 @Controller('cards')
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
@@ -54,6 +55,7 @@ export class CardsController {
   async DeleteCard(@Query('board_column_Id') columnId: number, @Param('cardId') id: number) {
     return await this.cardsService.DeleteCard(columnId, id);
   }
+
   //카드 시퀀스 수정
   @Put('/:cardId/sequence')
   @UseGuards(AuthGuard)
