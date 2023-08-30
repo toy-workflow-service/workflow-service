@@ -281,6 +281,26 @@ async function BoardColumns(data) {
     BoardColumnsCreate(columnTitle, Number(i) + 1);
   });
 
+  // column create api
+  async function BoardColumnsCreate(name, sequence) {
+    await $.ajax({
+      type: 'POST',
+      url: `/board-columns?boardId=` + boardId,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ name, sequence }),
+      success: function (data) {
+        console.log(data.message);
+        location.reload();
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
   //column delete button click
   document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
     data.addEventListener('click', async (e) => {
@@ -288,6 +308,26 @@ async function BoardColumns(data) {
       await BoardColumnDelete(columnId);
     });
   });
+
+  // column delete api
+  async function BoardColumnDelete(columnId) {
+    $.ajax({
+      type: 'DELETE',
+      url: `/board-columns/${columnId}?boardId=` + boardId,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: (data) => {
+        console.log(data.message);
+        ColumnListReorder();
+        location.reload();
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
 
   //모달창이 열리면 해당 모달창에 value값으로 columnId값을 보내거나 받아와야함
   let columnId;
@@ -839,8 +879,8 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
 // 업데이트 모달을 열기 위한 함수
 function openUpdateCardModal(columnId, cardId) {
   // 모달 내부의 필드들을 초기화 (빈 값으로)
-  document.getElementById('cardTitleUdpate').value = '';
-  document.getElementById('cardContentUpdate').value = '';
+  document.getElementById('cardTitleUdpate').value = 'data.name';
+  document.getElementById('cardContentUpdate').value = 'data.content';
   document.getElementById('cardfileUpdate').value = '';
   document.getElementById('cardUpdateMembers').innerHTML = '';
   document.getElementById('cardColorUpdate').value = '#000000';
