@@ -513,7 +513,7 @@ function openCommentDetailModal(columnId, cardId, commentId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: function (commentDetail) {
-      console.log(commentDetail.commentData.id);
+      console.log(commentDetail);
       // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
       createCommentDetailModal(commentDetail, columnId, cardId, commentId);
       $('#commentDetailModal').modal('show');
@@ -536,6 +536,30 @@ function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   $('#commentUpdateBtn').attr('data-card-id', cardId);
   $('#commentUpdateBtn').attr('data-comment-id', commentId);
   $('#commentUpdateBtn').attr('data-column-id', columnId);
+}
+
+function createReplyModal(filteredComments) {
+  // 코멘트 목록을 초기화
+  const commentList = $('#commentDetailModal .kanban-modal__list ul');
+  commentList.empty(); // 목록 초기화
+
+  // commentsData를 사용하여 코멘트 목록을 처리
+  for (const comment of filteredComments) {
+    // 필요한 데이터를 추출하여 모달에 추가
+    const commentHTML = `
+      <div class="checkbox-group d-flex">
+        <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
+          <label class="strikethrough" style="color: black;">
+            ${comment.user.name}
+          </label>
+          <p> ${comment.comment} </p>
+        </div>
+      </div>
+    `;
+
+    // 코멘트 목록에 추가
+    commentList.append(commentHTML); // 수정된 부분
+  }
 
   // 모달을 표시
   $('#commentDetailModal').modal('show');
@@ -546,6 +570,7 @@ document.addEventListener('click', function (event) {
     const commentId = event.target.getAttribute('data-commentId');
     const cardId = event.target.getAttribute('data-cardId');
     const columnId = document.getElementById('updateCardButton').getAttribute('data-column-id');
+    Getcomment(cardId, commentId);
     openCommentDetailModal(columnId, cardId, commentId);
     $('#commentDetailModal').modal('show');
     console.log('컬럼아이디', columnId);
@@ -1017,7 +1042,7 @@ document.getElementById('commentConfirmBtn').addEventListener('click', function 
   CommentUpdate(commentId, columnId, cardId, { comment: updatedComment });
 });
 
-// 코멘트 생성 함수
+// 대댓글 생성 함수
 function createreply(columnId, cardId, reply_id, replayComment) {
   const comment = {
     comment: replayComment,
@@ -1060,3 +1085,33 @@ document.getElementById('replayCommentButton').addEventListener('click', functio
   const commentAddBox = document.getElementById('commentAddBox');
   commentAddBox.style.display = 'none';
 });
+
+function Getcomment(cardId, commentId) {
+  // 코멘트 디테일 정보를 서버에서 가져오는 API 호출
+  $.ajax({
+    type: 'GET',
+    url: `/comments?cardId=${cardId} `,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+    },
+    success: function (comments) {
+      const filteredComments = comments.filter(function (comment) {
+        console.log('a', comment.reply_id, commentId);
+        return comment.reply_id === Number(commentId);
+      });
+      console.log('필터', filteredComments);
+      console.log('코멘트', comments);
+      if (filteredComments.length > 0) {
+        // 필터링된 모든 코멘트를 사용하여 모달을 동적으로 생성
+        createReplyModal(filteredComments);
+      } else {
+        console.log("No comments found with the desired reply_id.");
+
+      }
+    },
+    error: function (error) {
+      console.log(error);
+    },
+  });
+}
