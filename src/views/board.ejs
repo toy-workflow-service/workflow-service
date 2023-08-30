@@ -222,8 +222,8 @@
                               <ul>
                                  <li>
                                     <div class="checkbox-group d-flex" data-bs-toggle="modal"
-                                       data-bs-target="#commentDetailModal" id="commentDetail" data-columnId=${columnId}
-                                       data-cardId="cardId를 넣어주세요" data-commentId="">
+                                       data-bs-target="#commentDetailModal" id="commentDetail" data-columnId=""
+                                       data-cardId="" data-commentId="">
                                        <div class="checkbox-group__single d-flex row">
                                           <label class=" strikethrough" style="color: black;">
                                              comment name1
@@ -445,18 +445,19 @@
 
                <!-- comment detail modal -->
                <div class="modal fade kanban-modal__card kanban__modal" id="commentDetailModal" tabindex="-1"
-                  aria-labelledby="commentDetailModalLabel" aria-hidden="true" data-card-id="" data-comment-id="">
+                  aria-labelledby="commentDetailModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-scrollable">
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
                               <h5 class="modal-title" id="commentDetailModalLabel">Comment</h5>
                            </div>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " data-card-id=""
-                              data-comment-id="" data-bs-toggle="modal"
-                              data-bs-target="#updateCommentModal">update</button>
+                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
+                              id="commentUpdateBtn">update</button>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
                               id="commentDeleteBtn">delete</button>
+                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+                              id="commentConfirmBtn" style="display:none;">확인</button>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
                            </button>
@@ -480,7 +481,8 @@
                               style="margin: 3% auto 3% auto; display: none;">
                               <textarea class="form-control" id="replayComment" rows="3" placeholder="입력.."
                                  style="margin-bottom: 3%;"></textarea>
-                              <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="">답글
+                              <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+                                 id="replayCommentButton">답글
                                  추가</button>
                            </div>
                            <div class="kanban-modal__list">

@@ -45,7 +45,7 @@ export class CommentsService {
   async GetCommentById(id: number) {
     const findComment = await this.commentRepository.findOne({
       where: { id },
-      relations: ['user'], // 'user' 관계를 추가하여 작성자 정보를 가져옵니다.
+      relations: ['card', 'user'], // 'user' 관계를 추가하여 작성자 정보를 가져옵니다.
       select: ['id', 'comment'], // 원하는 속성을 여기에 명시합니다.
     });
 

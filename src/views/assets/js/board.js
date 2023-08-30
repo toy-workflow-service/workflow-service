@@ -502,29 +502,20 @@ document.addEventListener('click', function (event) {
   }
 });
 
-function openCommentDetailModal(cardId, commentId) {
+// 코멘트 디테일 모달을 열기 위한 함수
+function openCommentDetailModal(columnId, cardId, commentId) {
   // 코멘트 디테일 정보를 서버에서 가져오는 API 호출
   $.ajax({
     type: 'GET',
-    url: `/comments/${commentId}?cardId=${cardId}`,
+    url: `/comments/${commentId}?cardId=${cardId} `,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: function (commentDetail) {
-      // 코멘트의 유저 ID와 현재 로그인한 사용자의 ID 비교
-      if (commentDetail.commentData.user.id === commentDetail.user.id) {
-        // 현재 사용자가 코멘트 작성자와 동일한 경우 버튼을 표시
-        $('#updateCommentModal').show();
-        $('#commentDeleteBtn').show();
-      } else {
-        // 현재 사용자가 코멘트 작성자와 다른 경우 버튼을 숨김
-        $('#updateCommentModal').hide();
-        $('#commentDeleteBtn').hide();
-      }
-
-      // 모달 열기
-      createCommentDetailModal(commentDetail);
+      console.log(commentDetail.commentData.id);
+      // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
+      createCommentDetailModal(commentDetail, columnId, cardId, commentId);
       $('#commentDetailModal').modal('show');
     },
     error: function (error) {
@@ -533,7 +524,7 @@ function openCommentDetailModal(cardId, commentId) {
   });
 }
 
-function createCommentDetailModal(commentDetail, cardId, commentId) {
+function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
   $('#commentDetailModalLabel').text('Comment');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
@@ -544,6 +535,7 @@ function createCommentDetailModal(commentDetail, cardId, commentId) {
   $('#commentDeleteBtn').attr('data-comment-id', commentId);
   $('#commentUpdateBtn').attr('data-card-id', cardId);
   $('#commentUpdateBtn').attr('data-comment-id', commentId);
+  $('#commentUpdateBtn').attr('data-column-id', columnId);
 
   // 모달을 표시
   $('#commentDetailModal').modal('show');
@@ -553,9 +545,10 @@ document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'commentDetail') {
     const commentId = event.target.getAttribute('data-commentId');
     const cardId = event.target.getAttribute('data-cardId');
-    openCommentDetailModal(cardId, commentId);
+    const columnId = document.getElementById('updateCardButton').getAttribute('data-column-id');
+    openCommentDetailModal(columnId, cardId, commentId);
     $('#commentDetailModal').modal('show');
-    console.log(cardId, commentId);
+    console.log('컬럼아이디', columnId);
   }
 });
 
@@ -580,20 +573,23 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId) {
 
   let commentHTML = '';
   for (const comment of commentsData) {
-    const cardId = cardData.id;
-    const commentId = comment.id;
-    console.log(comment.user.name);
+    // reply_id가 없는 코멘트만 처리
+    if (!comment.reply_id) {
+      const cardId = cardData.id;
+      const commentId = comment.id;
+      console.log(comment.user.name);
 
-    commentHTML += `
-  <div class="checkbox-group d-flex" id="commentDetail"
-    data-cardId="${cardId}" data-commentId="${commentId}">
-    <div class="checkbox-group__single d-flex row">
-      <label class=" strikethrough" style="color: black;">
-        ${comment.user.name}
-      </label>
-      <p> ${comment.comment} </p>
-    </div>
-  </div> `;
+      commentHTML += `
+        <div class="checkbox-group d-flex" id="commentDetail"
+          data-cardId="${cardId}" data-commentId="${commentId}">
+          <div class="checkbox-group__single d-flex row">
+            <label class="strikethrough" style="color: black;">
+              ${comment.user.name}
+            </label>
+            <p> ${comment.comment} </p>
+          </div>
+        </div> `;
+    }
   }
 
   const modalContentHTML = `
@@ -968,16 +964,16 @@ document.addEventListener('click', function (event) {
 });
 
 // comment update api
-async function CardAllUpdate(commentId, cardId, data) {
+async function CommentUpdate(commentId, columnId, cardId, data) {
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('Updated Data:', data);
+    console.log('코멘트 수정:', data);
 
     const response = await $.ajax({
       type: 'PATCH',
-      url: `/comments/${commentId}?cardId=${cardId}`,
+      url: `/comments/${commentId}?board_column_id=${columnId}&cardId=${cardId}`,
       data: JSON.stringify({
-        comment: commentData.comment,
+        comment: data.comment,
       }),
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
@@ -987,8 +983,80 @@ async function CardAllUpdate(commentId, cardId, data) {
 
     // 업데이트 응답 결과 확인
     console.log('Update Response:', response.message);
-
   } catch (error) {
     console.log(error);
   }
 }
+
+// 업데이트 버튼 클릭 시 호출되는 함수
+document.getElementById('commentUpdateBtn').addEventListener('click', function () {
+  // textarea를 편집 가능하게 변경
+  const commentTextarea = document.getElementById('commentUpdate');
+  commentTextarea.removeAttribute('readonly');
+  // 확인 버튼을 보이게 함
+  document.getElementById('commentConfirmBtn').style.display = 'inline-block';
+});
+
+// 확인 버튼 클릭 시 호출되는 함수
+document.getElementById('commentConfirmBtn').addEventListener('click', function () {
+  // textarea를 읽기 전용으로 변경
+  const commentTextarea = document.getElementById('commentUpdate');
+  commentTextarea.setAttribute('readonly', 'readonly');
+  // 확인 버튼을 다시 숨김
+  document.getElementById('commentConfirmBtn').style.display = 'none';
+
+  // 수정된 코멘트 가져오기
+  const updatedComment = commentTextarea.value;
+
+  // commentId와 cardId 가져오기
+  const commentId = document.getElementById('commentUpdateBtn').getAttribute('data-comment-id');
+  const cardId = document.getElementById('commentUpdateBtn').getAttribute('data-card-id');
+  const columnId = document.getElementById('commentUpdateBtn').getAttribute('data-column-id');
+
+  // 수정된 코멘트와 함께 CommentUpdate 함수 호출
+  CommentUpdate(commentId, columnId, cardId, { comment: updatedComment });
+});
+
+// 코멘트 생성 함수
+function createreply(columnId, cardId, reply_id, replayComment) {
+  const comment = {
+    comment: replayComment,
+    reply_id: reply_id,
+  };
+
+  $.ajax({
+    type: 'POST',
+    url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
+    data: JSON.stringify(comment),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+    },
+    success: (data) => {
+      console.log(data.message);
+      // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// "답글 추가" 버튼 클릭 시 호출되는 함수
+document.getElementById('replayCommentButton').addEventListener('click', function () {
+  // "replayComment" textarea의 내용 가져오기
+  const replayComment = document.getElementById('replayComment').value;
+
+  const commentId = document.getElementById('commentUpdateBtn').getAttribute('data-comment-id');
+  const cardId = document.getElementById('commentUpdateBtn').getAttribute('data-card-id');
+  const columnId = document.getElementById('commentUpdateBtn').getAttribute('data-column-id');
+  const reply_id = commentId;
+
+  // 댓글 작성을 원하는 commentId와 replayComment 데이터를 사용하여 댓글을 추가하는 함수 호출
+  createreply(columnId, cardId, reply_id, replayComment);
+
+  // 입력란 비우고 숨김
+  document.getElementById('replayComment').value = '';
+  const commentAddBox = document.getElementById('commentAddBox');
+  commentAddBox.style.display = 'none';
+});
