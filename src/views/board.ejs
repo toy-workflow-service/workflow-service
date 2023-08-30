@@ -24,30 +24,6 @@
          <div class="row">
             <div class="col-lg-12">
                <!-- Lists container -->
-               <div class="modal fade" id="cardDetailModal" tabindex="-1" role="dialog"
-                  aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                     <div class="modal-content">
-                        <div class="modal-header">
-                           <h5 class="modal-title" id="exampleModalLabel">카드 세부 정보</h5>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              id="cardDeleteBtn">delete</button>
-                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                              <img src="./assets/img/svg/x.svg" alt="x" class="svg">
-                           </button>
-                        </div>
-                        <div class="modal-body">
-                           <!-- 이곳에 카드 세부 정보를 표시합니다 (필요한 경우 JavaScript를 사용하여 이 부분을 채웁니다) -->
-                        </div>
-                        <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                           <!-- 필요한 경우 추가 버튼이나 작업을 이곳에 추가합니다 -->
-                        </div>
-                     </div>
-                  </div>
-               </div>
                <!-- card detail modal -->
                <div class="modal fade kanban-modal__card kanban__modal" id="exampleModal" tabindex="-1"
                   aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -403,7 +379,7 @@
 
                <!-- card update modal -->
                <div class="modal fade kanban-modal__card kanban__modal" id="updateCardModal" tabindex="-1"
-                  aria-labelledby="updateCardModalLabel" aria-hidden="true">
+                  aria-labelledby="updateCardModalLabel" aria-hidden="true" data-column-id="" data-card-id="">
                   <div class="modal-dialog modal-dialog-scrollable">
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
@@ -428,9 +404,9 @@
                               <div class="row">
                                  <label> file upload </label>
                                  <!-- <div>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                      </div> -->
+                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+                       </div> -->
                                  <input type="file" id="cardfileUpdate" style="margin-bottom: 3%;" />
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
@@ -469,15 +445,16 @@
 
                <!-- comment detail modal -->
                <div class="modal fade kanban-modal__card kanban__modal" id="commentDetailModal" tabindex="-1"
-                  aria-labelledby="commentDetailModalLabel" aria-hidden="true">
+                  aria-labelledby="commentDetailModalLabel" aria-hidden="true" data-card-id="" data-comment-id="">
                   <div class="modal-dialog modal-dialog-scrollable">
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
                               <h5 class="modal-title" id="commentDetailModalLabel">Comment</h5>
                            </div>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              data-bs-toggle="modal" data-bs-target="#updateCommentModal">update</button>
+                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary " data-card-id=""
+                              data-comment-id="" data-bs-toggle="modal"
+                              data-bs-target="#updateCommentModal">update</button>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
                               id="commentDeleteBtn">delete</button>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -487,9 +464,9 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">작성자1</label>
-                                 <textarea class="form-control" id="cardContentUpdate" rows="3"
-                                    readonly> 댓글1 </textarea>
+                                 <label for="exampleFormControlTextarea1111" class="form-label"
+                                    id="commentAuthor">작성자1</label>
+                                 <textarea class="form-control" id="commentUpdate" rows="3" readonly> 댓글1 </textarea>
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
                            </div>

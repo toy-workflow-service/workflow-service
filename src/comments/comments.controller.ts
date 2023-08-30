@@ -10,18 +10,36 @@ import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  //코멘트 조회
   @Get()
-  async GetComments(@Query('cardId') cardId: number) {
-    return await this.commentsService.GetComments(cardId);
+  @UseGuards(AuthGuard)
+  async GetComments(@Query('cardId') cardId: number, @GetUser() user: AccessPayload) {
+    const comments = await this.commentsService.GetComments(cardId);
+
+    // 모든 코멘트의 사용자 ID 및 사용자 이름을 추출
+    const commentsWithUserDetails = comments.map((comment) => ({
+      ...comment,
+      // 다른 코멘트 관련 데이터를 필요에 따라 추가할 수 있습니다.
+    }));
+
+    return commentsWithUserDetails;
   }
 
   //코멘트 상세 조회
   @Get('/:commentId')
-  async GetCommentById(@Query('cardId') cardId: number, @Param('commentId') id: number) {
-    return await this.commentsService.GetCommentById(id);
-  }
+  @UseGuards(AuthGuard)
+  async GetCommentById(
+    @Query('cardId') cardId: number,
+    @Param('commentId') id: number,
+    @GetUser() user: AccessPayload
+  ) {
+    const comment = await this.commentsService.GetCommentById(id);
 
+    // 코멘트 데이터와 사용자 ID를 함께 반환
+    return {
+      commentData: comment,
+      userId: user.id,
+    };
+  }
   //코멘트 생성
   @Post()
   @UseGuards(AuthGuard)

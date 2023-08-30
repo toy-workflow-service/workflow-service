@@ -161,15 +161,19 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
 
 // get column API
 async function BoardColumnsGet() {
+  // data: {boardId: boardId}
   await $.ajax({
     type: 'GET',
-    url: `/board-columns?boardId=${boardId}`,
+    url: `/board-columns?boardId=` + boardId,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: async (data) => {
       BoardColumns(data);
+      for (let i in data) {
+        await CardGet(data[i].columnId);
+      }
     },
     error: (error) => {
       console.log(error);
@@ -179,94 +183,74 @@ async function BoardColumnsGet() {
 
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
-let cardIndex = 0;
 async function BoardColumns(data) {
-  document.querySelector('.breadcrumb-main').innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
-                <div class="breadcrumb-action justify-content-center flex-wrap">
-                  <nav aria-label="breadcrumb">
-                      <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
-                      </ol>
-                  </nav>
-                </div>`;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>`;
-
+  // console.log(data);
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
   for (i in data) {
-    const card = await CardGet(data[i].columnId);
-    const cardHtml = card
-      .map(
-        (c) =>
-          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id}>
-                                      <div class="lists-items-title" style="background-color: ${c.color}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
-                                        ${c.name}
-                                      </div>
-                                      <button class="open-popup-modal" type="button">
-                                        <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-                                      </button>
-                                      <div class="popup-overlay">
-                                        <!--Creates the popup content-->
-                                        <div class="popup-content">
-                                            <div class="mb-10 popup-textarea">
-                                              <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-                                            </div>
-                                            <div class="d-flex align-items-center popup-button">
-                                              <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-                                            </div>
-                                            <div class="overlay-close"></div>
+    kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+                                <div class="kanban-tops list-tops">
+                                  <div class="d-flex justify-content-between align-items-center py-10">
+                                      <h3 class="list-title">${data[i].columnName}</h3>
+                                      <div class="dropdown dropdown-click">
+                                        <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                        </button>
+                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
+                                            <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
                                         </div>
                                       </div>
-                                  </li>`
-      )
-      .join('');
-    cardIndex += Number(card.length);
-    if (data[i].columnName == 'Done') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
-                                  <div class="kanban-tops list-tops">
-                                    <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
-                                    </div>
-                                  </div>  
-                                  <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
-                                    ${cardHtml}
-                                    </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
                                   </div>
-  
-                                </div>`;
-    } else {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
-                                  <div class="kanban-tops list-tops">
-                                    <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
-                                        <div class="dropdown dropdown-click">
-                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                              <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                          </button>
-                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
-                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
+                                </div>
+
+                                <div id="cardListItems${data[i].columnId}">
+                                  <ul class="kanban-items list-items  drag-drop " data-columnId="${data[i].columnId}">
+                                    <li class="d-flex justify-content-between align-items-center " data-cardId=>
+                                        <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo72">
+                                          File Manager Design
+                                        </div>
+                                        <button class="open-popup-modal" type="button">
+                                          <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                        </button>
+                                        <div class="popup-overlay">
+                                          <!--Creates the popup content-->
+                                          <div class="popup-content">
+                                              <div class="mb-10 popup-textarea">
+                                                <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                              </div>
+                                              <div class="d-flex align-items-center popup-button">
+                                                <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                              </div>
+                                              <div class="overlay-close"></div>
                                           </div>
                                         </div>
-                                    </div>
-                                  </div>
-  
-                                  <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
-                                    ${cardHtml}       
-                                    </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
-                                  </div>
-  
-                                </div>`;
-    }
-    console.log(cardIndex);
+                                    </li>
+                                    <li class="d-flex justify-content-between align-items-center ">
+                                        <div class="lists-items-title" data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo6">
+                                          Knowledgebase
+                                        </div>
+                                        <button class="open-popup-modal" type="button">
+                                          <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                                        </button>
+                                        <div class="popup-overlay">
+                                          <!--Creates the popup content-->
+                                          <div class="popup-content">
+                                              <div class="mb-10 popup-textarea">
+                                                <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                                              </div>
+                                              <div class="d-flex align-items-center popup-button">
+                                                <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                                              </div>
+                                              <div class="overlay-close"></div>
+                                          </div>
+                                        </div>
+                                    </li>
+                                  </ul>
+                                </div>
+
+                              </div>`;
   }
   kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
                             <div class="list__add-card">
@@ -278,7 +262,6 @@ async function BoardColumns(data) {
                             </div>
                           </div>`;
 
-  init();
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
@@ -325,10 +308,9 @@ async function BoardColumns(data) {
   document.querySelectorAll('#card-list-item').forEach((data) => {
     data.addEventListener('click', (e) => {
       const cardId = e.target.getAttribute('data-cardId');
-      const columnId = e.target.getAttribute('data-columnId');
+      columnId = e.target.getAttribute('data-columnId');
 
-      DetailCardGet(columnId, cardId);
-      console.log(columnId, cardId);
+      // DetailCardGet(columnId, cardId);
     });
   });
 
@@ -341,19 +323,6 @@ async function BoardColumns(data) {
     });
   });
 
-  // CardUpdateBtn 버튼 클릭 시
-  document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
-    // 수정 된값이 db로 넘어가야함.
-    console.log('update btn check');
-    // await CardAllUpdate(columnId, cardId, data)
-  });
-
-  // cardDeleteBtn 클릭 시
-  document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
-    console.log('delete btn check');
-    // await CardDelete(columnId, cardId);
-  });
-
   // 대댓글 작성 버튼
   document.getElementById('replayCommentBtn').addEventListener('click', () => {
     if ($('#commentAddBox').css('display') == 'none') {
@@ -362,34 +331,45 @@ async function BoardColumns(data) {
       $('#commentAddBox').hide();
     }
   });
-  // card create button click
-  //모달 창이 열리면 해당 columnId값을 보내줘야함
-  let cardSequence;
-  let cardColumnId;
-  document.querySelectorAll('#createCard').forEach((data) => {
-    data.addEventListener('click', (e) => {
-      const id = e.target.getAttribute('data-columnId');
-      cardColumnId = id;
-      const sequence = e.target.getAttribute('data-index');
-      cardSequence = Number(sequence) + 1;
-      console.log('sequence, columnId', cardSequence, cardColumnId);
-    });
+}
+
+// column create api
+async function BoardColumnsCreate(name, sequence) {
+  await $.ajax({
+    type: 'POST',
+    url: `/board-columns?boardId=` + boardId,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ name, sequence }),
+    success: function (data) {
+      console.log(data.message);
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
   });
-  document.getElementById('CardCreateBtn').addEventListener('click', () => {
-    const cardTitle = document.getElementById('cardTitleCreate').value;
-    const cardColor = document.getElementById('cardColorCreate').value;
-    const cardContent = document.getElementById('cardContentCreate').value;
-    const cardFile = document.getElementById('cardfileCreate').value;
-    const card = {
-      name: cardTitle,
-      color: cardColor,
-      content: cardContent,
-      fileUrl: cardFile,
-      members: selectedMemberNumber,
-      sequence: cardSequence,
-    };
-    console.log('create 보내기 전 :', cardColumnId, cardSequence);
-    CardCreate(cardColumnId, card);
+}
+
+// column delete api
+async function BoardColumnDelete(columnId) {
+  $.ajax({
+    type: 'DELETE',
+    url: `/board-columns/${columnId}?boardId=` + boardId,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+      ColumnListReorder();
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
   });
 }
 
@@ -397,11 +377,11 @@ async function BoardColumns(data) {
 async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
     type: 'PUT',
-    url: `/ board - columns / ${columnId}?boardId = ` + boardId,
+    url: `/board-columns/${columnId}?boardId=` + boardId,
     data: JSON.stringify({ name }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
       console.log(data.message);
@@ -415,213 +395,205 @@ async function BoardColumnNameUpdate(columnId, name) {
 
 // card get api
 async function CardGet(columnId) {
-  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/ board - columns ? boardId = ` + boardId,
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
   // console.log(columnId);
-  const result = await $.ajax({
+  $.ajax({
     type: 'GET',
     url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      return data;
+      Cards(data, columnId);
+
+      // card create button click
+      //모달 창이 열리면 해당 columnId값을 보내줘야함
+      let cardSequence;
+      let cardColumnId;
+      document.querySelectorAll('#createCard').forEach((data) => {
+        data.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-columnId');
+          cardColumnId = id;
+          const sequence = e.target.getAttribute('data-index');
+          cardSequence = Number(sequence) + 1;
+          console.log('tt', sequence, cardSequence, cardColumnId);
+        });
+      });
+      document.getElementById('CardCreateBtn').addEventListener('click', () => {
+        const cardTitle = document.getElementById('cardTitleCreate').value;
+        const cardColor = document.getElementById('cardColorCreate').value;
+        const cardContent = document.getElementById('cardContentCreate').value;
+        const cardFile = document.getElementById('cardfileCreate').value;
+        const card = {
+          name: cardTitle,
+          color: cardColor,
+          content: cardContent,
+          fileUrl: cardFile,
+          members: selectedMemberNumber,
+          sequence: cardSequence,
+        };
+        console.log('create 보내기 전 :', cardColumnId, cardSequence);
+        CardCreate(cardColumnId, card);
+      });
     },
     error: (error) => {
       console.log(error);
     },
   });
-
-  return result;
 }
 
-// 코멘트 생성 함수
-function createComment(columnId, cardId) {
-  const commentInput = document.getElementById('commentInput').value;
+// card get html
+let cardIndex = 0;
+function Cards(data, columnId) {
+  const cardHtml = document.querySelector(`#cardListItems${columnId}`);
 
-  // 코멘트 입력란이 비어있지 않은 경우에만 처리
-  if (commentInput.trim() !== '') {
-    const comment = {
-      comment: commentInput,
-    };
+  const ulHtml = cardHtml.children[0];
+  ulHtml.innerHTML = '';
 
-    $.ajax({
-      type: 'POST',
-      url: `/ comments ? boardColumnId = ${columnId}& cardId=${cardId} `,
-      data: JSON.stringify(comment),
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
-      },
-      success: (data) => {
-        console.log(data.message);
-        // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
-        DetailCardGet(columnId, cardId);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+  // card data 입력
+  let i = 0;
+  for (i = 0; i < data.length; i++) {
+    ulHtml.innerHTML += `
+  <li class="d-flex justify-content-between align-items-center" draggable="true" id="card-list-item" data-columnId="${columnId}" data-cardId="${data[i].id}">
+    <div class="lists-items-title" style="background-color: ${data[i].color}" onclick="openCardDetailModal('${columnId}', '${data[i].id}')">
+      ${data[i].name}
+    </div>
+    <button class="open-popup-modal" type="button">
+      <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+    </button>
+    <div class="popup-overlay">
+      <!-- Creates the popup content -->
+      <div class="popup-content">
+        <div class="mb-10 popup-textarea">
+          <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+        </div>
+        <div class="d-flex align-items-center popup-button">
+          <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+        </div>
+        <div class="overlay-close"></div>
+      </div>
+    </div>
+  </li>`;
   }
+  cardIndex += i;
+  cardHtml.innerHTML += `
+    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${columnId}" data-index="${cardIndex}">
+      <img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a card
+    </button>`;
+  init();
+  return { cardHtml, index: i + 1 };
 }
 
-// "Add Comment" 버튼 클릭 이벤트 처리
-document.addEventListener('click', function (event) {
-  if (event.target && event.target.id === 'addCommentButton') {
-    const columnId = document.getElementById('updateCardButton').getAttribute('data-column-id');
-    const cardId = document.getElementById('updateCardButton').getAttribute('data-card-id');
-    createComment(columnId, cardId);
-  }
-});
-
-// 코멘트 디테일 모달을 열기 위한 함수
-function openCommentDetailModal(cardId, commentId) {
-  // 코멘트 디테일 정보를 서버에서 가져오는 API 호출
-  $.ajax({
-    type: 'GET',
-    url: `/ comments / ${commentId}?cardId = ${cardId} `,
+// card create api
+async function CardCreate(columnId, data) {
+  // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
+  // console.log(columnId, data);
+  await $.ajax({
+    type: 'POST',
+    url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    success: function (commentDetail) {
-      // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
-      createCommentDetailModal(commentDetail);
-      $('#commentDetailModal').modal('show');
-      console.log(accessToken);
+    data: JSON.stringify({
+      name: data.name,
+      content: data.content,
+      file_url: data.fileUrl,
+      sequence: data.sequence,
+      members: data.members,
+      color: data.color,
+    }),
+    success: function (data) {
+      console.log(data.message);
+      location.reload();
     },
-    error: function (error) {
+    error: (error) => {
       console.log(error);
     },
   });
 }
 
-function createCommentDetailModal(commentDetail) {
-  // 모달 내용을 업데이트
-  $('#commentDetailModalLabel').text('Comment');
-  $('#commentAuthor').text(commentDetail.username); // 모달 제목 업데이트
-  $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
-
-  // 'update' 버튼과 'delete' 버튼에 데이터 속성 추가
-  $('#updateCommentModal').data('data-card-id', commentDetail.cardId);
-  $('#updateCommentModal').data('data-comment-id', commentDetail.commentId);
-  $('#commentDeleteBtn').data('cardId', commentDetail.cardId);
-  $('#commentDeleteBtn').data('commentId', commentDetail.commentId);
-
-  // 모달 내용을 업데이트한 후, 필요한 다른 작업 수행
-  // 예를 들어, 'update' 버튼을 클릭할 때 어떤 동작을 수행하는 이벤트 핸들러 등을 추가할 수 있습니다.
-  $('#commentDetailModal').modal('show');
-}
-
-document.addEventListener('click', function (event) {
-  if (event.target && event.target.id === 'commentDetail') {
-    const commentId = event.target.getAttribute('data-commentId');
-    const cardId = event.target.getAttribute('data-cardId');
-    openCommentDetailModal(cardId, commentId);
-    $('#commentDetailModal').modal('show');
-    console.log(cardId, commentId);
-  }
-});
-
 // 카드 세부 정보 모달을 생성하는 함수
 function createCardDetailModal(cardData, commentsData, columnId, cardId) {
-  // 모달 바디의 HTML을 생성
-      <h5 class="modal-title" id="exampleModalLabel">${data.name}</h5>
-      <p id="cardDetailDescription">${data.content}</p>
-      <div id="cardDetailImgFile">
-        <a href="${data.file_url}" download="">
-          <img src="${data.file_url}" alt="${data.name}">
-        </a>
-      </div>
+  // 모달 내용을 생성합니다.
+
+  // 코멘트 목록을 HTML로 생성합니다.
+  let commentsHTML = '';
+  for (const comment of commentsData) {
+    commentsHTML += `
+    <div class="comment">
+      <div class="comment-author">${comment.author}</div>
+      <div class="comment-text">${comment.comment}</div>
+    </div>
   `;
+  }
 
   // 멤버 리스트의 HTML을 생성
   let membersHTML = '';
-  for (const member of cardData.members) {
+  for (const member of data.members) {
     membersHTML += `
-  <div class="checkbox-group d-flex">
-    <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-      <img src="${member.profile_url}" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
-        <label for="check-grp-${member.id}" class="strikethrough">
-          ${member.name}
-        </label>
-    </div>
-  </div>
-  `;
-  }
-
-  let commentHTML = '';
-  for (const comment of commentsData) {
-    const cardId = cardData.id;
-    const commentId = comment.id;
-
-    commentHTML += `
-  <div class="checkbox-group d-flex" id="commentDetail"
-    data-cardId="${cardId}" data-commentId="${commentId}">
-    <div class="checkbox-group__single d-flex row">
-      <label class=" strikethrough" style="color: black;">
-        ${comment.user.name}
-      </label>
-      <p> ${comment.comment} </p>
-    </div>
-  </div> `;
+      <li>
+        <div class="checkbox-group d-flex">
+          <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+            <img src="${member.profile_url}" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
+            <label for="check-grp-${member.id}" class="strikethrough">
+              ${member.name}
+            </label>
+          </div>
+        </div>
+      </li>
+    `;
   }
 
   const modalContentHTML = `
-  <div class=" kanban-modal__header-wrapper">
-  <div class="kanban-modal__header">
-     <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
-     <span>in list Active Project</span>
-  </div>
-   <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}" data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
-<button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">delete</button>
-<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-<img src="./assets/img/svg/x.svg" alt="x" class="svg">
-</button>
-</div>
-<div class="modal-body kanban-modal__body">
-  <div class="kanban-modal__form ">
-     <div class="mb-30">
-        <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
-        <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${cardData.content}</textarea>
-     </div>
-     <div class="row">
-        <label> image file</label>
-        <div id="cardDetailImgFile">
-           ${cardData.file_url}
-        </div>
-        <label style="margin-top: 3%;">Files other than image files</label>
-        <div id="cardDetailNotImgFile">
-           <!-- 파일이 이미지가 아닐 경우 -->
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-        </div>
-     </div>
-     <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
-  </div>
-
-    <div class="kanban-modal__research mt-30">
-      <h6>Members</h6>
-    </div>
-    <div class="kanban-modal__list">
-      <ul id="cardDetailMembers">
-        ${membersHTML}
-      </ul>
-    </div>
-    <div class="kanban-modal__list">
-      <h6>Comment</h6>
-      <div class="comment-input">
-        <textarea class="form-control" rows="3" placeholder="Add a comment..." id="commentInput"></textarea>
-        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">Comment +</button>
+    <div class=" kanban-modal__header-wrapper">
+      <div class="kanban-modal__header">
+        <h5 class="modal-title" id="exampleModalLabel">${data.name}</h5>
+        <span>in list Active Project</span>
       </div>
-      <ul id="commentDetail">
-        <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
-        ${commentHTML}
-      </ul>
+      <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+        id="updateCardButton" data-column-id="${columnId}" data-card-id="${data.id}" data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
+      <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+        id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${data.id}" onclick="deleteCard(this)">delete</button>
+      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+        <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+      </button>
     </div>
-    `;
+    <div class="modal-body kanban-modal__body">
+      <div class="kanban-modal__form ">
+        <div class="mb-30">
+          <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+          <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${data.content}</textarea>
+        </div>
+        <div class="row">
+          <label> image file</label>
+          <div id="cardDetailImgFile"></div>
+          ${data.file_url && isImageFile(data.file_url) ? `<img src="${data.file_url}" alt="카드 이미지">` : ''}
+          <label style="margin-top: 3%;">Files other than image files</label>
+          <div id="cardDetailNotImgFile"></div>
+        </div>
+      </div>
+
+      <div class="kanban-modal__research mt-30">
+        <h6>Members</h6>
+      </div>
+      <div class="kanban-modal__list">
+        <ul id="cardDetailMembers">
+          ${membersHTML}
+        </ul>
+      </div>
+      <!-- 코멘트 부분 추가 -->
+      <div class="kanban-modal__research mt-30">
+        <h6>코멘트</h6>
+      </div>
+      <div class="kanban-modal__list">
+        <div id="commentList">
+          ${commentsHTML}
+        </div>
+      </div>
+    </div>
+  `;
 
   // 새로운 모달을 생성
   const modal = document.createElement('div');
@@ -631,11 +603,11 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   modal.setAttribute('aria-labelledby', 'exampleModalLabel');
   modal.setAttribute('aria-hidden', 'true');
   modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-scrollable">
+    < div class="modal-dialog modal-dialog-scrollable" >
       <div class="modal-content">
         ${modalContentHTML}
       </div>
-    </div>
+    </div >
     `;
 
   // 모달을 body에 추가
@@ -645,11 +617,20 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   $(modal).modal('show');
 }
 
+// URL이 이미지 파일인지 확인하는 헬퍼 함수
+function isImageFile(url) {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']; // 필요한 경우 더 많은 이미지 확장자를 추가하세요.
+  const fileExtension = url.split('.').pop().toLowerCase();
+  return imageExtensions.includes(`.${fileExtension} `);
+}
+
 // 카드 세부 정보 모달을 열기 위한 함수
 function openCardDetailModal(columnId, cardId) {
   // 카드 세부 정보를 서버에서 가져오는 API 호출
   DetailCardGet(columnId, cardId);
-  CardGet(columnId, cardId);
+
+  // #updateCardModal 열 때 컬럼 아이디와 카드 아이디를 전달
+  openUpdateCardModal(columnId, cardId);
 }
 
 // 멤버 찾기 workspace에서 붙여옴
@@ -671,12 +652,12 @@ $(document).ready(async () => {
       if (results) {
         selectedMemberList.innerHTML = '';
         let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
-        let data = `<li>
-      <a href="#">
-        <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
-      </a>
-      <span>${results.user.name}</span>
-    </li>`;
+        let data = `< li >
+                        <a href="#">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                        </a>
+                        <span>${results.user.name}</span>
+                      </li > `;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
@@ -697,15 +678,15 @@ $(document).ready(async () => {
 async function searchMembers(searchText) {
   console.log(decodeURI(searchText));
   try {
-    // const response = await $.ajax({
-    //   method: 'GET',
-    //   url: ``,
-    //   beforeSend: function (xhr) {
-    //     xhr.setRequestHeader('Content-type', 'application/json');
-    //     xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    //   },
-    // });
-    // return response;
+    const response = await $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+      },
+    });
+    return response;
   } catch (err) {
     console.error(err);
   }
@@ -718,7 +699,7 @@ function updateSelectedMembersUI() {
     .map(
       (member) => `
     <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
-    `
+  `
     )
     .join('');
 
@@ -761,7 +742,8 @@ async function DetailCardGet(columnId, cardId) {
 
     // 코멘트 응답
     const commentsData = commentsResponse;
-    console.log(commentsResponse);
+
+    // 모달에서 카드 세부 정보와 코멘트를 표시
     createCardDetailModal(cardData, commentsData, columnId, cardId);
   } catch (error) {
     console.log(error);
@@ -773,7 +755,7 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
   console.log('CardSequenceUpdate : ', columnId, cardId, sequence);
   $.ajax({
     type: 'PUT',
-    url: `cards/${cardId}/sequence?board_column_Id=${columnId}`,
+    url: `cards / ${cardId} /sequence?board_column_Id=${columnId}`,
     data: JSON.stringify({ sequence }),
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
@@ -836,6 +818,8 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
+  console.log('CardAllUpdate : ', columnId, cardId);
+
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
     console.log('Updated Data:', data);

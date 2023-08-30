@@ -42,6 +42,5 @@ export class Direct_Message {
   user_message_room: User_Message_Room;
 
   @OneToOne(() => Mention, (mention) => mention.direct_message)
-  @JoinColumn()
   mention: Mention;
 }

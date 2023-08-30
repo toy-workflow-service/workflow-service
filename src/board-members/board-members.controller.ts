@@ -39,9 +39,21 @@ export class BoardMembersController {
     @Param('boardId') boardId: number,
     @Param('userId') userId: number,
     @Query('deleteId') deleteId: number,
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     await this.boardMembersService.UpdateBoardMember(boardId, userId, deleteId);
     return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });
+  }
+
+  // 보드 멤버 찾기
+  @Get('/boards/:boardId/members/:userId')
+  @UseGuards(AuthGuard)
+  async GetBoardMemberNameSearch(
+    @Param('userId') userId: number,
+    @Param('boardId') boardId: number,
+    @Res() res: Response
+  ) {
+    const members = await this.boardMembersService.GetBoardMemberName(boardId, userId);
+    return res.status(HttpStatus.OK).json({ boardMembers: members });
   }
 }

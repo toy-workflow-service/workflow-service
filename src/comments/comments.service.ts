@@ -15,19 +15,58 @@ export class CommentsService {
     private readonly cardsService: CardsService
   ) {}
 
-  // 코멘트 조회
   async GetComments(cardId: number) {
     const findComments = await this.commentRepository.find({
       where: { card: { id: cardId } },
-      relations: ['card'],
+      relations: ['card', 'user'], // 'user' 관계를 추가하여 사용자 정보를 가져옵니다.
     });
 
-    return findComments;
+    // 선택적으로 사용자 엔터티의 원하는 속성만 추출
+    const commentsWithUser = findComments.map((comment) => ({
+      id: comment.id,
+      reply_id: comment.reply_id,
+      comment: comment.comment,
+      created_at: comment.created_at,
+      updated_at: comment.updated_at,
+      user: {
+        id: comment.user.id,
+        name: comment.user.name,
+      },
+      card: {
+        // 카드 관련 데이터도 필요에 따라 추출
+        id: comment.card.id,
+        // 다른 카드 관련 데이터도 필요에 따라 추가할 수 있습니다.
+      },
+    }));
+
+    return commentsWithUser;
   }
 
-  // 코멘트 상세 조회
   async GetCommentById(id: number) {
-    return await this.commentRepository.findOneBy({ id });
+    const findComment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['user'], // 'user' 관계를 추가하여 작성자 정보를 가져옵니다.
+      select: ['id', 'comment'], // 원하는 속성을 여기에 명시합니다.
+    });
+
+    if (!findComment) {
+      // 코멘트가 없으면 null을 반환하거나 적절한 에러 처리를 수행합니다.
+      throw new Error('Comment not found');
+    }
+
+    const commentDetailWithUser = {
+      id: findComment.id,
+      reply_id: findComment.reply_id,
+      comment: findComment.comment,
+      created_at: findComment.created_at,
+      updated_at: findComment.updated_at,
+      user: {
+        id: findComment.user.id,
+        name: findComment.user.name,
+      },
+    };
+
+    return commentDetailWithUser;
   }
 
   // 코멘트 생성

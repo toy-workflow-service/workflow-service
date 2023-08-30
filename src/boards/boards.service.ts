@@ -15,23 +15,34 @@ export class BoardsService {
   // 보드 조회
   async GetBoards(workspaceId: number) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members'] });
+    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members.user'] });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
     const boards = findBoards.filter((board) => {
       return board.workspace.id == workspaceId;
     });
-    return boards.map((board) => {
+
+    const boardInfos = boards.map((board) => {
+      const boardMembers = board.board_members.map((boardMember) => ({
+        id: boardMember.user.id,
+        name: boardMember.user.name,
+        email: boardMember.user.email,
+        profile_url: boardMember.user.profile_url,
+        phone_number: boardMember.user.phone_number,
+      }));
+
       return {
         workspaceId: board.workspace.id,
         boardId: board.id,
         boardName: board.name,
         description: board.description,
-        boardMembers: board.board_members,
+        boardMembers: boardMembers,
         createdAt: board.created_at,
         updatedAt: board.updated_at,
       };
     });
+
+    return boardInfos;
   }
 
   //보드 상세 조회

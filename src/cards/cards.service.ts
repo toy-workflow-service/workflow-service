@@ -34,13 +34,14 @@ export class CardsService {
     file_url: string,
     sequence: number,
     color: string,
-    members: number[]
+    members: number[],
+    userId: number
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id);
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
-
+    members.push(Number(userId));
     await this.cardRepository.insert({ board_column: column, name, content, file_url, sequence, color, members });
   }
 

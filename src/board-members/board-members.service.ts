@@ -11,7 +11,7 @@ export class BoardMembersService {
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
     private usersService: UsersService,
-    private boardsService: BoardsService,
+    private boardsService: BoardsService
   ) {}
 
   //보드 멤버 조회
@@ -103,5 +103,24 @@ export class BoardMembersService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  //보드 멤버 이름 조회
+  async GetBoardMemberName(boardId: number, userId: number) {
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const members = boardMembers.filter((boardMember) => {
+      if (boardMember.board.id == boardId && boardMember.user.id == userId) {
+        return boardMember;
+      }
+    });
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
+    });
   }
 }
