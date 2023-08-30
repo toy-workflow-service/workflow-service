@@ -427,8 +427,6 @@ async function BoardColumns(data) {
   });
 }
 
-
-
 // column name update api
 async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
@@ -615,18 +613,19 @@ document.addEventListener('click', function (event) {
 });
 
 // 카드 세부 정보 모달을 생성하는 함수
-function createCardDetailModal(cardData, commentsData, columnId, cardId) {
+function createCardDetailModal(cardData, commentsData, columnId, cardId, users) {
   // 모달 바디의 HTML을 생성
 
   // 멤버 리스트의 HTML을 생성
   let membersHTML = '';
-  for (const member of cardData.members) {
+  for (const member of users) {
+    let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
     membersHTML += `
   <div class="checkbox-group d-flex">
     <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-      <img src="${member.profile_url}" style="border-radius: 50%; width: 50px; height: 50px; margin-right: 3%;">
-        <label for="check-grp-${member.id}" class="strikethrough">
-          ${member.name}
+      <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
+        <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
+          ${member[0].name}
         </label>
     </div>
   </div>
@@ -838,6 +837,19 @@ async function DetailCardGet(columnId, cardId) {
     // 카드 세부 정보 응답
     const cardData = cardResponse;
 
+    const users = [];
+    for (let i in cardData.members) {
+      const { boardMembers } = await $.ajax({
+        type: 'GET',
+        url: `/boards/${boardId}/members/${cardData.members[i]}`,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader('Content-type', 'application/json');
+          xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+        },
+      });
+      users.push(boardMembers);
+    }
+
     // 카드에 대한 코멘트를 가져오는 API 호출
     const commentsResponse = await $.ajax({
       type: 'GET',
@@ -851,7 +863,7 @@ async function DetailCardGet(columnId, cardId) {
     // 코멘트 응답
     const commentsData = commentsResponse;
     console.log(commentsResponse);
-    createCardDetailModal(cardData, commentsData, columnId, cardId);
+    createCardDetailModal(cardData, commentsData, columnId, cardId, users);
   } catch (error) {
     console.log(error);
   }
@@ -1144,8 +1156,7 @@ function Getcomment(cardId, commentId) {
         // 필터링된 모든 코멘트를 사용하여 모달을 동적으로 생성
         createReplyModal(filteredComments);
       } else {
-        console.log("No comments found with the desired reply_id.");
-
+        console.log('No comments found with the desired reply_id.');
       }
     },
     error: function (error) {
