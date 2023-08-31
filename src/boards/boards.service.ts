@@ -58,11 +58,12 @@ export class BoardsService {
   }
 
   //보드 생성
-  async CreateBoard(workspaceId: number, name: string, description: string) {
+  async CreateBoard(workspaceId: number, name: string, description: string): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
     const board = await this.boardRepository.insert({ name, description, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
     await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
+    return board;
   }
 
   //보드 수정
