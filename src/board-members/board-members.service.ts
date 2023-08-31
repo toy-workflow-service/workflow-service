@@ -33,6 +33,25 @@ export class BoardMembersService {
     });
   }
 
+  //보드 멤버 조회
+  async GetBoardMembers(boardId: number) {
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const board = await this.boardsService.GetBoardById(boardId);
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    const members = boardMembers.filter((boardMember) => {
+      return boardMember.board.id == boardId;
+    });
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
+    });
+  }
+
   //보드 멤버 초대
   async CreateBoardMember(boardId: number, name: string) {
     const user = await this.usersService.findUserByName(name);
@@ -80,9 +99,7 @@ export class BoardMembersService {
     }
     const deleteUsers = boardMember.filter((x) => !users.includes(x.user.id));
     const updateUsers = users.filter((x) => !userArray.includes(x));
-
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-
     const entityManager = this.boardMemberRepository.manager;
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
@@ -91,7 +108,6 @@ export class BoardMembersService {
             const user = await this.usersService.findUserById(updateUsers[i]);
             if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
             const newBoardMembers = this.boardMemberRepository.create({ board, user });
-
             await transactionEntityManager.save(Board_Member, newBoardMembers);
           }
         }
