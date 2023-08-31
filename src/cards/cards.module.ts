@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod, UseGuards } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CardsController } from './cards.controller';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
@@ -15,6 +15,8 @@ import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Card } from 'src/_common/entities/card.entity';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
+import { UploadMultiMiddleware } from 'src/_common/middlewares/upload-multi-middleware';
+import { AuthGuard } from 'src/_common/security/auth.guard';
 
 @Module({
   imports: [
@@ -33,4 +35,9 @@ import { RedisCacheModule } from 'src/_common/cache/redis.module';
     JwtService,
   ],
 })
-export class CardsModule {}
+export class CardsModule {
+  @UseGuards(AuthGuard)
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UploadMultiMiddleware).forRoutes({ path: '/cards/uploads', method: RequestMethod.POST });
+  }
+}

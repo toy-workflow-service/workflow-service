@@ -72,6 +72,15 @@ export class ViewController {
     return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header, workspaceId };
   }
 
+  @Get('chat')
+  @UseGuards(ViewAuthGuard)
+  @Render('chat.ejs')
+  async chatRoom(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Woer-Flow', subtitle: '내 채팅방', header };
+  }
+
   /**No header & footer */
 
   @Get('signup')

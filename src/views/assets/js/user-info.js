@@ -198,6 +198,15 @@ function send() {
           xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
         },
         data: JSON.stringify(payload),
+        success: (data) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: data.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        },
         error: (error) => {
           Swal.fire({
             icon: 'error',
@@ -206,14 +215,6 @@ function send() {
           });
         },
       });
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: '휴대폰 본인 인증에 성공하셨습니다.',
-      }).then(() => {
-        window.location.reload();
-      });
-      return;
     } else if (verifyCode !== code && Date.now() < expireTime) {
       Swal.fire({
         icon: 'error',
@@ -232,6 +233,47 @@ function send() {
       });
       return;
     }
+  });
+}
+
+async function changeProfileImage() {
+  const form = new FormData();
+  const img = document.querySelector('#file-upload').files[0];
+
+  if (img) {
+    if (img.size > 5 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '5MB이하의 이미지 파일만 업로드 가능합니다.',
+      });
+      return;
+    }
+    form.append('newFile', img);
+  }
+  await $.ajax({
+    method: 'PATCH',
+    url: '/users/updateProfileImage',
+    processData: false,
+    contentType: false,
+    data: form,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: () => {
+      window.location.reload();
+    },
+    error: (error) => {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON,
+      }).then(() => {
+        window.location.reload();
+      });
+      return;
+    },
   });
 }
 

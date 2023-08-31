@@ -10,7 +10,7 @@ export class CreateCardDto {
   content: string;
 
   @IsString()
-  file_url: string;
+  file_url: string[];
 
   @IsNotEmpty()
   @IsNumber()

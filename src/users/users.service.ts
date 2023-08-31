@@ -67,8 +67,12 @@ export class UsersService {
     return { accessToken, refreshToken, userName: existUser.name };
   }
 
-  async updateUserInfo(id: number, name: string, profileUrl: string): Promise<void> {
-    await this.usersRepository.update({ id }, { name, profile_url: profileUrl });
+  async updateProfileImage(id: number, profileUrl: string): Promise<void> {
+    await this.usersRepository.update({ id }, { profile_url: profileUrl });
+  }
+
+  async updateUserInfo(id: number, name: string): Promise<void> {
+    await this.usersRepository.update({ id }, { name });
   }
 
   async updatePassword(id: number, passwordDTO: PasswordDTO): Promise<void> {

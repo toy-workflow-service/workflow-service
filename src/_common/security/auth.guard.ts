@@ -55,7 +55,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
       const response = context.switchToHttp().getResponse();
       await response.clearCookie('accessToken');
       await response.clearCookie('refreshToken');
-      console.log('왜 여기로 들어오지?');
+
       throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
     }
     return user;

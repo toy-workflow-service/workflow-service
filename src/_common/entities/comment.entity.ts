@@ -42,6 +42,5 @@ export class Comment {
   card: Card;
 
   @OneToOne(() => Mention, (mention) => mention.comment)
-  @JoinColumn()
   mention: Mention;
 }
