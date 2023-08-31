@@ -259,13 +259,11 @@ async function BoardColumns(data) {
     }
     console.log(cardIndex);
   }
-  kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
-                            <div class="list__add-card">
-                              <div class="kanban-board__add-card">
-                                  <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                    컬럼 추가</button>
-                              </div>
-                            </div>
+  kanbanList.innerHTML += `<div class="kanban-board__add-card">
+                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                              <h5>
+                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
+                                컬럼 추가</h5></button>
                           </div>`;
 
   init();
