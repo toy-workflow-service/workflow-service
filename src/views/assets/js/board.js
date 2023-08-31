@@ -176,7 +176,7 @@ let cardIndex = 0;
 async function BoardColumns(data) {
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -227,8 +227,7 @@ async function BoardColumns(data) {
                                     <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
+                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
                                   </div>
   
                                 </div>`;
@@ -253,8 +252,7 @@ async function BoardColumns(data) {
                                     <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
+                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
                                   </div>
   
                                 </div>`;
@@ -265,8 +263,7 @@ async function BoardColumns(data) {
                             <div class="list__add-card">
                               <div class="kanban-board__add-card">
                                   <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                    Add
-                                    column</button>
+                                    컬럼 추가</button>
                               </div>
                             </div>
                           </div>`;
@@ -600,16 +597,18 @@ function createReplyModal(filteredComments) {
           <textarea class="form-control" rows="3" readonly="" id="replyUpdate">${comment.comment}</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -673,22 +672,24 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   let membersHTML = '';
   selectedMembers = [];
   selectedMemberNumber = [];
-  for (const member of users) {
-    let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
-    membersHTML += `
-  <div class="checkbox-group d-flex">
-    <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-      <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
-        <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
-          ${member[0].name}
-        </label>
+  if (users.length > 0) {
+    for (const member of users) {
+      let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
+      membersHTML += `
+    <div class="checkbox-group d-flex">
+      <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+        <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
+          <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
+            ${member[0].name}
+          </label>
+      </div>
     </div>
-  </div>
-  `;
+    `;
 
-    selectedMembers.push({ name: member[0].name, id: member[0].userId });
-    console.log('click함', selectedMembers);
-    selectedMemberNumber.push(member[0].userId);
+      selectedMembers.push({ name: member[0].name, id: member[0].userId });
+      console.log('click함', selectedMembers);
+      selectedMemberNumber.push(member[0].userId);
+    }
   }
 
   let commentHTML = '';
@@ -719,9 +720,9 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
      <span>in list Active Project</span>
   </div>
    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">update</button>
+id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">delete</button>
+id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <img src="./assets/img/svg/x.svg" alt="x" class="svg">
 </button>
@@ -729,15 +730,15 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
 <div class="modal-body kanban-modal__body">
   <div class="kanban-modal__form ">
      <div class="mb-30">
-        <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+        <label for="exampleFormControlTextarea1111" class="form-label">카드 설명</label>
         <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${cardData.content}</textarea>
      </div>
      <div class="row">
-        <label> image file</label>
+        <label>이미지 파일</label>
         <div id="cardDetailImgFile">
            ${cardData.file_url}
         </div>
-        <label style="margin-top: 3%;">Files other than image files</label>
+        <label style="margin-top: 3%;">그외 파일</label>
         <div id="cardDetailNotImgFile">
            <!-- 파일이 이미지가 아닐 경우 -->
            <a href="./assets/img/american-express.png" download=""> 파일명 </a>
@@ -748,7 +749,7 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   </div>
 
     <div class="kanban-modal__research mt-30">
-      <h6>Members</h6>
+      <h6>참여자</h6>
     </div>
     <div class="kanban-modal__list">
       <ul id="cardDetailMembers">
@@ -756,10 +757,10 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
       </ul>
     </div>
     <div class="kanban-modal__list">
-      <h6>Comment</h6>
+      <h6>댓글</h6>
       <div class="comment-input">
         <textarea class="form-control" rows="3" placeholder="Add a comment..." id="commentInput"></textarea>
-        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">Comment +</button>
+        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">댓글 추가...</button>
       </div>
       <ul id="commentDetail">
         <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
