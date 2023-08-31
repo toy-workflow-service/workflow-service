@@ -30,7 +30,7 @@ export class UploadMultiMiddleware implements NestMiddleware {
         },
         acl: 'public-read-write',
       }),
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 10 * 1024 * 1024 },
     });
 
     upload.array('newFiles', 5)(req, res, (err: any) => {

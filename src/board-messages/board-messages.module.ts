@@ -17,11 +17,13 @@ import { BoardMembersService } from 'src/board-members/board-members.service';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UploadFileMiddleware } from 'src/_common/middlewares/upload-file-middleware';
+import { Board_Column } from 'src/_common/entities/board-column.entity';
+import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 
 @Module({
   imports: [
     RedisCacheModule,
-    TypeOrmModule.forFeature([Board_Message, Board, Workspace, Workspace_Member, User, Board_Member]),
+    TypeOrmModule.forFeature([Board_Message, Board, Workspace, Workspace_Member, User, Board_Member, Board_Column]),
   ],
   exports: [TypeOrmModule],
   controllers: [BoardMessagesController],
@@ -33,6 +35,7 @@ import { UploadFileMiddleware } from 'src/_common/middlewares/upload-file-middle
     UsersService,
     MailService,
     BoardMembersService,
+    BoardColumnsService,
   ],
 })
 export class BoardMessagesModule {

@@ -70,7 +70,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
   }
-  
+
   @SubscribeMessage('chatMessage')
   handleChatMessage(
     client: Socket,
@@ -118,7 +118,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       profileUrl: data.profileUrl,
     });
   }
-  
+
   /////////////////////////////////////////////////////////////////////////////////////////////
   @SubscribeMessage('invite')
   handleInvite(client: Socket, data: any): void {
@@ -156,4 +156,5 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendIce')
   handleSendIce(client: Socket, data: any): void {
     this.server.to(data.roomName).emit('receiveIce', data);
+  }
 }
