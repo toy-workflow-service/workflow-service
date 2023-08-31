@@ -2,6 +2,7 @@ import {
   ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -52,5 +53,108 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     //연결된 클라이언트 목록을 업데이트해 emit
     this.server.emit('userList', { room: null, userLiset: Object.keys(this.connectedClients) });
+  }
+
+  @SubscribeMessage('join')
+  handleJoin(client: Socket, data: any): void {
+    const room = data.room;
+    const name = data.name;
+    this.clientName[client.id] = name;
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+
+    this.roomUsers[room].push(this.clientName[client.id]);
+    this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
+
+    this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
+  }
+
+  @SubscribeMessage('chatMessage')
+  handleChatMessage(
+    client: Socket,
+    data: {
+      messageId: string;
+      message: string;
+      room: string;
+      boardName: string;
+      date: string;
+      profileUrl: string;
+      fileUpload: boolean;
+      sendUserId: string;
+    }
+  ): void {
+    this.server.to(data.room).emit('chatMessage', {
+      userId: this.connectedClients[client.id],
+      userName: this.clientName[client.id],
+      messageId: data.messageId,
+      message: data.message,
+      room: data.room,
+      boardName: data.boardName,
+      date: data.date,
+      profileUrl: data.profileUrl,
+      fileUpload: data.fileUpload,
+      sendUserId: data.sendUserId,
+    });
+  }
+
+  @SubscribeMessage('newMessage')
+  announceNewMessage(
+    client: Socket,
+    data: {
+      message: string;
+      room: string;
+      boardName: string;
+      date: string;
+      profileUrl: string;
+    }
+  ): void {
+    this.server.to(data.room).emit('newMessage', {
+      message: data.message,
+      room: data.room,
+      boardName: data.boardName,
+      date: data.date,
+      profileUrl: data.profileUrl,
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  @SubscribeMessage('invite')
+  handleInvite(client: Socket, data: any): void {
+    let user = [];
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
+    }
+    user.forEach((sock) => {
+      this.server.to(sock).emit('response', {
+        callerId: client.id,
+        callerName: data.callerName,
+        receiverId: data.receiverId,
+        receiverName: data.receiverName,
+      });
+    });
+  }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(client: Socket, data: any): void {
+    const roomName = data.callerName;
+    client.join(roomName);
+    this.server.to(roomName).emit('welcome', roomName);
+  }
+
+  @SubscribeMessage('sendOffer')
+  handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
+    this.server.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+  }
+
+  @SubscribeMessage('sendAnswer')
+  handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
+    this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
+  }
+
+  @SubscribeMessage('sendIce')
+  handleSendIce(client: Socket, data: any): void {
+    this.server.to(data.roomName).emit('receiveIce', data);
   }
 }

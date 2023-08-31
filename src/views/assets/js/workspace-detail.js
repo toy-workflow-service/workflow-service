@@ -10,6 +10,8 @@ const printDetail = document.querySelector('#workspace-card');
 const printTotal = document.querySelector('#workspace-total');
 const printMemory = document.querySelector('#workspace-memory');
 const printMember = document.querySelector('#workspace-member');
+let userName;
+let callerId;
 
 // 워크스페이스 상세조회
 async function getWorkspaceDetail() {
@@ -23,8 +25,11 @@ async function getWorkspaceDetail() {
       },
       success: async (results) => {
         const { data } = results;
-        let [result, title, totalData, memberHtml, remaingMemory] = ['', '', '', '', ''];
 
+        userName = results.userName;
+        callerId = results.userId;
+
+        let [result, title, totalData, memberHtml, remaingMemory] = ['', '', '', '', ''];
         const countBoards = await countWorkspaceBoards(data.id);
         const countCards = await countWorkspaceCards(data.id);
 
@@ -259,8 +264,8 @@ async function getWorkspaceDetail() {
                                     </div>
                                     <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                       <button class="btn btn-primary btn-default btn-squared text-capitalize">메시지 전송</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px">음성 통화</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px">영상 통화</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVoiceCall(this)">음성 통화</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVideoCall(this)">영상 통화</button>
                                     </div>
                                   </div>
                                 </div>
@@ -319,7 +324,7 @@ async function openEditWorkspaceModal() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
     });
-    const workspace = response;
+    const workspace = response.data;
     const editModal = document.querySelector('#modal-basic');
 
     const titleInput = editModal.querySelector('#edit-title');
@@ -566,4 +571,37 @@ async function countWorkspaceCards(workspaceId) {
   } catch (err) {
     console.error(err);
   }
+}
+
+// 음성 통화 시작
+function startVoiceCall(element) {
+  const receiverId = element.getAttribute('id');
+  const receiverName = element.getAttribute('name');
+  console.log('Starting voice call...');
+  voiceCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '음성 통화', receiverId, receiverName);
+}
+
+async function voiceCall(url, callType, receiverId, receiverName) {
+  const width = 800;
+  const height = 900;
+  const left = (window.screen.width - width) / 2;
+  const top = (window.screen.height - height) / 2;
+  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
+  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
+}
+
+function startVideoCall(element) {
+  const receiverId = element.getAttribute('id');
+  const receiverName = element.getAttribute('name');
+  console.log('Starting video call...');
+  videoCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '영상 통화', receiverId, receiverName);
+}
+
+async function videoCall(url, callType, receiverId, receiverName) {
+  const width = 800;
+  const height = 900;
+  const left = (window.screen.width - width) / 2;
+  const top = (window.screen.height - height) / 2;
+  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
+  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
 }

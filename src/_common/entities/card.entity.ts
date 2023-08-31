@@ -21,8 +21,11 @@ export class Card {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @Column({ nullable: true })
-  file_url: string;
+  @Column({ type: 'json', nullable: true })
+  file_original_name: string[];
+
+  @Column({ type: 'json', nullable: true })
+  file_url: string[];
 
   @Column({ type: 'tinyint', nullable: false })
   sequence: number;

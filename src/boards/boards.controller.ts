@@ -17,7 +17,6 @@ import { Response } from 'express';
 import { CreateBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
-import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
@@ -76,7 +75,7 @@ export class BoardsController {
   @Get('getBoards/joinBoards')
   @UseGuards(AuthGuard)
   async getJoinBoards(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
-    const joinBoards = await this.boardsService.getJoinBoards(user.id);
+    const joinBoards = await this.boardsService.GetJoinBoards(user.id);
     return res.status(HttpStatus.OK).json({ joinBoards, userName: user.name });
   }
 }
