@@ -72,13 +72,13 @@ export class ViewController {
     return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header, workspaceId };
   }
 
-  @Get('call')
+  @Get('chat')
   @UseGuards(ViewAuthGuard)
-  @Render('web-rtc.ejs')
-  async call(@Req() req: AccessPayload) {
+  @Render('chat.ejs')
+  async chatRoom(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'Work-Flow', subtitle: '음성/영상 통화', header };
+    return { title: 'Woer-Flow', subtitle: '내 채팅방', header };
   }
 
   /**No header & footer */
@@ -99,5 +99,11 @@ export class ViewController {
   @Render('find-password.ejs')
   async findPassword() {
     return { title: 'Work-Flow', subtitle: '비밀번호 찾기' };
+  }
+  
+  @Get('call')
+  @Render('web-rtc.ejs')
+  async call() {
+    return { title: 'Work-Flow', subtitle: '음성/영상 통화'};
   }
 }

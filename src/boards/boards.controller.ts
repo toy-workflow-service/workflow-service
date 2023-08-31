@@ -75,7 +75,7 @@ export class BoardsController {
   @Get('getBoards/joinBoards')
   @UseGuards(AuthGuard)
   async getJoinBoards(@GetUser() user: AccessPayload, @Res() res: Response): Promise<Object> {
-    const joinBoards = await this.boardsService.getJoinBoards(user.id);
+    const joinBoards = await this.boardsService.GetJoinBoards(user.id);
     return res.status(HttpStatus.OK).json({ joinBoards, userName: user.name });
   }
 }

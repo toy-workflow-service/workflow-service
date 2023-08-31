@@ -331,7 +331,20 @@ async function openEditBoardModal(element) {
   }
 }
 
-// async function updateBoard(element) {
-//   const boardId = element.getAttribute('boardId')
-//   const modal =
-// }
+// 보드 멤버 조회
+function getBoardMembers(boardId) {
+  try {
+    const response = $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
+}

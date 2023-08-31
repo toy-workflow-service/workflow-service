@@ -1,8 +1,23 @@
-import { Body, Controller, Get, Param, Post, Patch, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  Query,
+  UseGuards,
+  Req,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from '../_common/dtos/create-card.dto';
 import { UpdateCardDto } from '../_common/dtos/update-card.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
+import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
+import { Response } from 'express';
 
 @Controller('cards')
 export class CardsController {
@@ -58,5 +73,15 @@ export class CardsController {
   @UseGuards(AuthGuard)
   async DeleteCard(@Query('board_column_Id') columnId: number, @Param('cardId') id: number) {
     return await this.cardsService.DeleteCard(columnId, id);
+  }
+
+  @Post('uploads')
+  async UploadCard(@Req() req: MulterRequest, @Res() res: Response) {
+    const array: any = req.files;
+    let originalnames = [];
+    array.forEach((fileInfo: any) => {
+      originalnames.push(fileInfo.originalname);
+    });
+    return res.status(HttpStatus.OK).json({ message: '업로드 성공' });
   }
 }

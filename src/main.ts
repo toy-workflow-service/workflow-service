@@ -5,6 +5,8 @@ import { join } from 'path';
 import * as cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { urlencoded } from 'express';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -12,6 +14,7 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use(urlencoded({ extended: true }));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

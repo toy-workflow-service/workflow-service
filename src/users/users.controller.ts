@@ -79,11 +79,19 @@ export class UsersController {
     return res.status(HttpStatus.OK).json({ message: '로그아웃 하셨습니다.' });
   }
 
+  @Patch('updateProfileImage')
+  @UseGuards(AuthGuard)
+  async updateProfileImage(@GetUser() user: AccessPayload, @Req() req: MulterRequest) {
+    const profileUrl = req.file ? req.file.location : user.profile_url;
+
+    await this.usersService.updateProfileImage(user.id, profileUrl);
+    return true;
+  }
+
   @Patch()
   @UseGuards(AuthGuard)
   async updateUserInfo(
     @GetUser() user: AccessPayload,
-    @Req() req: MulterRequest,
     @Body() updateInfo: UpdateInfoDTO,
     @Res() res: Response
   ): Promise<Object> {
@@ -92,9 +100,8 @@ export class UsersController {
         ['이메일이 일치하지 않습니다. 현재 로그인된 이메일을 입력해 주세요. '],
         HttpStatus.BAD_REQUEST
       );
-    const profileUrl = req.file ? req.file.location : user.profile_url;
 
-    await this.usersService.updateUserInfo(user.id, updateInfo.name, profileUrl);
+    await this.usersService.updateUserInfo(user.id, updateInfo.name);
     return res.status(HttpStatus.OK).json({ message: '회원 정보가 수정되었습니다. ' });
   }
 
@@ -149,8 +156,12 @@ export class UsersController {
 
   @Post('phoneAuthentication')
   @UseGuards(AuthGuard)
-  async updateUserPhoneAuth(@Body() PhoneNumberDTO: PhoneNumberDTO, @GetUser() user: AccessPayload): Promise<any> {
+  async updateUserPhoneAuth(
+    @Body() PhoneNumberDTO: PhoneNumberDTO,
+    @GetUser() user: AccessPayload,
+    @Res() res: Response
+  ): Promise<any> {
     await this.usersService.updateUserPhoneAuth(user.id, PhoneNumberDTO.phoneNumber);
-    return true;
+    return res.status(HttpStatus.OK).json({ message: '휴대폰 본인 인증에 성공하셨습니다. ' });
   }
 }

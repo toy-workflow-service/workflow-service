@@ -2,6 +2,16 @@ const sendMailBtn = document.querySelector('#mailBtn');
 const changePasswordBtn = document.querySelector('#changePasswordBtn');
 let emailAuth = false;
 
+$(document).ready(() => {
+  const mailInput = document.querySelector('#mail');
+
+  mailInput.addEventListener('keyup', function (event) {
+    if (event.key === 'Enter') {
+      sendMail();
+    }
+  });
+});
+
 async function sendMail() {
   const mailReg = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w)*(\.\w{2,3})+$/);
   const mail = document.querySelector('#mail').value;

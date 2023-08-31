@@ -70,6 +70,55 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
   }
+  
+  @SubscribeMessage('chatMessage')
+  handleChatMessage(
+    client: Socket,
+    data: {
+      messageId: string;
+      message: string;
+      room: string;
+      boardName: string;
+      date: string;
+      profileUrl: string;
+      fileUpload: boolean;
+      sendUserId: string;
+    }
+  ): void {
+    this.server.to(data.room).emit('chatMessage', {
+      userId: this.connectedClients[client.id],
+      userName: this.clientName[client.id],
+      messageId: data.messageId,
+      message: data.message,
+      room: data.room,
+      boardName: data.boardName,
+      date: data.date,
+      profileUrl: data.profileUrl,
+      fileUpload: data.fileUpload,
+      sendUserId: data.sendUserId,
+    });
+  }
+
+  @SubscribeMessage('newMessage')
+  announceNewMessage(
+    client: Socket,
+    data: {
+      message: string;
+      room: string;
+      boardName: string;
+      date: string;
+      profileUrl: string;
+    }
+  ): void {
+    this.server.to(data.room).emit('newMessage', {
+      message: data.message,
+      room: data.room,
+      boardName: data.boardName,
+      date: data.date,
+      profileUrl: data.profileUrl,
+    });
+  }
+  
   /////////////////////////////////////////////////////////////////////////////////////////////
   @SubscribeMessage('invite')
   handleInvite(client: Socket, data: any): void {
@@ -107,5 +156,4 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendIce')
   handleSendIce(client: Socket, data: any): void {
     this.server.to(data.roomName).emit('receiveIce', data);
-  }
 }

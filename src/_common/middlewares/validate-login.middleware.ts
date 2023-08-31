@@ -16,7 +16,8 @@ export class validateLoginMiddleware implements NestMiddleware {
     const accessTokenVerifyErrorHandle = this.jwtService.verifyErrorHandle(accessToken, process.env.ACCESS_SECRET_KEY);
     if (accessTokenVerifyErrorHandle == 'verify success') {
       const accessTokenVerify = this.jwtService.verify(accessToken, process.env.ACCESS_SECRET_KEY);
-      req.user = accessTokenVerify;
+      const findByUser = await this.usersService.tokenValidateUser(accessTokenVerify.id);
+      req.user = findByUser;
       return next();
     }
 
