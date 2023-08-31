@@ -59,7 +59,7 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
-
+        console.log(boards);
         for (const board of boards) {
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -126,11 +126,9 @@ async function getMyBoards() {
                         <div class="mt-20 px-30">
                           <p class="fs-13 color-light mb-10">참여 멤버</p>
                           <ul class="d-flex flex-wrap user-group-people__parent">`;
-          const data = await getBoardMembers(board.boardId);
-          const boardMembers = data.boardMembers;
-          for (const member of boardMembers) {
+          for (const member of board.boardMembers) {
             let Img = '';
-            member.profileUrl ? (Img = `${member.profileUrl}`) : (Img = `/assets/img/favicon.png`);
+            member.profile_url ? (Img = `${member.profile_url}`) : (Img = `/assets/img/favicon.png`);
             result += `<li>
                         <a href="#"
                           ><img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${member.name}"
@@ -154,24 +152,6 @@ async function getMyBoards() {
         printButton.innerHTML = button;
       },
     });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// 보드 멤버 조회
-function getBoardMembers(boardId) {
-  try {
-    const response = $.ajax({
-      method: 'GET',
-      url: `/boards/${boardId}/members`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-    });
-
-    return response;
   } catch (err) {
     console.error(err);
   }
@@ -332,7 +312,20 @@ async function openEditBoardModal(element) {
   }
 }
 
-// async function updateBoard(element) {
-//   const boardId = element.getAttribute('boardId')
-//   const modal =
-// }
+// 보드 멤버 조회
+function getBoardMembers(boardId) {
+  try {
+    const response = $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
+}

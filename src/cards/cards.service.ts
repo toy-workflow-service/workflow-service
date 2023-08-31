@@ -31,7 +31,7 @@ export class CardsService {
     board_column_id: number,
     name: string,
     content: string,
-    file_url: string,
+    file_url: string[],
     sequence: number,
     color: string,
     members: number[]
@@ -50,7 +50,7 @@ export class CardsService {
     id: number,
     name: string,
     content: string,
-    file_url: string,
+    file_url: string[],
     sequence: number
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_Id); // BoardColumnService에서 컬럼 가져옴

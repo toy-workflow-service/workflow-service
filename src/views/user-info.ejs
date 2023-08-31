@@ -27,9 +27,15 @@
                 <div class="account-profile border-bottom pt-25 px-25 pb-0 flex-column d-flex align-items-center">
                   <div class="ap-img mb-20 pro_img_wrapper">
                     <!-- <label for="file-upload"> -->
-                    <!-- Profile picture image-->
-                    <img class="ap-img__main rounded-circle wh-120" src="<%= header.profileUrl %>" alt="profile" />
-                    <!-- </label> -->
+                    <input id="file-upload" type="file" name="newFile" class="d-none" onchange="changeProfileImage()" />
+                    <label for="file-upload">
+                      <!-- Profile picture image-->
+                      <img class="ap-img__main rounded-circle wh-120" src="<%= header.profileUrl %>" alt="profile" />
+                      <span class="cross" id="remove_pro_pic">
+                        <img src="./assets/img/svg/camera.svg" alt="camera" class="svg" />
+                      </span>
+                      <!-- </label> -->
+                    </label>
                   </div>
                   <div class="ap-nameAddress pb-3">
                     <h5 class="ap-nameAddress__title"><%= header.name %></h5>

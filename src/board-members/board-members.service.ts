@@ -11,8 +11,25 @@ export class BoardMembersService {
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
     private usersService: UsersService,
-    private boardsService: BoardsService,
+    private boardsService: BoardsService
   ) {}
+
+  //보드 멤버 초대
+  async CreateBoardMember(boardId: number, name: string) {
+    const user = await this.usersService.findUserByName(name);
+    const board = await this.boardsService.GetBoardById(boardId);
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
+    const boardMember = boardMembers.find((member) => {
+      if (member.user.id == user.id && member.board.id == boardId) {
+        return member;
+      }
+    });
+    if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
+    if (boardMember) throw new NotAcceptableException('이미 초대된 멤버입니다.');
+
+    await this.boardMemberRepository.insert({ user, board });
+  }
 
   //보드 멤버 조회
   async GetBoardMembers(boardId: number) {
@@ -33,23 +50,6 @@ export class BoardMembersService {
         phoneNumber: member.user.phone_number,
       };
     });
-  }
-
-  //보드 멤버 초대
-  async CreateBoardMember(boardId: number, name: string) {
-    const user = await this.usersService.findUserByName(name);
-    const board = await this.boardsService.GetBoardById(boardId);
-    const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
-    const boardMember = boardMembers.find((member) => {
-      if (member.user.id == user.id && member.board.id == boardId) {
-        return member;
-      }
-    });
-    if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-    if (boardMember) throw new NotAcceptableException('이미 초대된 멤버입니다.');
-
-    await this.boardMemberRepository.insert({ user, board });
   }
 
   //보드 멤버 제외
@@ -103,5 +103,20 @@ export class BoardMembersService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async FindBoardMembers(joinBoards: any) {
+    return Promise.all(
+      joinBoards.map(async (board: any) => {
+        const boardMembers = await this.boardMemberRepository
+          .createQueryBuilder('member')
+          .innerJoinAndSelect('member.user', 'user')
+          .innerJoinAndSelect('member.board', 'board')
+          .select(['user.id', 'user.profile_url', 'board.id', 'board.name'])
+          .where('member.board_id = :boardId ', { boardId: board.board_id })
+          .getRawMany();
+        return boardMembers;
+      })
+    );
   }
 }
