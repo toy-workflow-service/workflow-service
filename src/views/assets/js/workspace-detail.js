@@ -578,7 +578,7 @@ function startVoiceCall(element) {
   const receiverId = element.getAttribute('id');
   const receiverName = element.getAttribute('name');
   console.log('Starting voice call...');
-  voiceCall('/call', '음성 통화', receiverId, receiverName);
+  voiceCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '음성 통화', receiverId, receiverName);
 }
 
 async function voiceCall(url, callType, receiverId, receiverName) {
@@ -587,14 +587,14 @@ async function voiceCall(url, callType, receiverId, receiverName) {
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
   window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('createRoom', { callerName: userName, callerId, receiverId, receiverName });
+  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
 }
 
 function startVideoCall(element) {
   const receiverId = element.getAttribute('id');
   const receiverName = element.getAttribute('name');
   console.log('Starting video call...');
-  videoCall('/call', '영상 통화', receiverId, receiverName);
+  videoCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '영상 통화', receiverId, receiverName);
 }
 
 async function videoCall(url, callType, receiverId, receiverName) {
@@ -603,5 +603,5 @@ async function videoCall(url, callType, receiverId, receiverName) {
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
   window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('createRoom', { callerName: userName, callerId, receiverId, receiverName });
+  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
 }

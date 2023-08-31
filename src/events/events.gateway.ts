@@ -18,7 +18,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   connectedClients: { [socketId: string]: number } = {};
   clientName: { [socketId: string]: string } = {};
-  callClientName: { [socketId: string]: string } = {};
   roomUsers: { [key: string]: string[] } = {};
 
   handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
@@ -72,6 +71,47 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
   }
   /////////////////////////////////////////////////////////////////////////////////////////////
+  @SubscribeMessage('invite')
+  handleInvite(client: Socket, data: any): void {
+    console.log('1');
+    let user = [];
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('response', {
+        callerId: client.id,
+        callerName: data.callerName,
+        receiverId: data.receiverId,
+        receiverName: data.receiverName,
+      });
+    });
+  }
+
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, data: any): void {}
+  handleJoinRoom(client: Socket, data: any): void {
+    console.log('2');
+    const roomName = data.callerName;
+    client.join(roomName);
+    this.server.to(roomName).emit('welcome', roomName);
+  }
+
+  @SubscribeMessage('sendOffer')
+  handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
+    console.log('3');
+    client.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+  }
+
+  @SubscribeMessage('sendAnswer')
+  handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
+    console.log('4');
+    this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
+  }
+
+  @SubscribeMessage('sendIce')
+  handleSendIce(client: Socket, ice: any, roomName: string): void {
+    console.log('5');
+    client.to(roomName).emit('receiveIce', ice);
+  }
 }

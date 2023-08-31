@@ -1,3 +1,13 @@
+const params = new URLSearchParams(window.location.search);
+let callerName = params.get('callerName');
+let receiverName = params.get('receiverId');
+
+socket.on('connect', async () => {
+  await initCall();
+  socket.emit('joinRoom', { callerName, receiverName });
+  console.log('Web-RTC 소켓 연결');
+});
+
 const callRoom = document.getElementById('call-room');
 const myVideo = document.getElementById('my-video');
 const audioBtn = document.getElementById('audio');
@@ -15,6 +25,7 @@ let muted = false;
 let cameraOff = false;
 let roomName;
 let nickname;
+let myPeerConnection;
 let myDataChannel;
 let captureStream;
 
@@ -42,7 +53,7 @@ async function getMedia() {
       audio: true,
       video: true,
     });
-
+    console.log('Media stream retrieved:', myStream);
     myVideo.srcObject = myStream;
     await getCamera();
   } catch (err) {
@@ -130,13 +141,127 @@ function leaveRoom() {
   myStream.getTracks().forEach((track) => track.stop);
 }
 
-// 소켓코드
-// peer A가 통화를 시작하며 room 생성
-socket.on('createRoom', async (data) => {
-  console.log(data);
-  await initCall();
+async function initCall() {
+  await getMedia();
+}
 
-  socket.on('joinRoom');
+socket.on('welcome', async (roomName) => {
+  try {
+    makeConnection(roomName);
+    myDataChannel = myPeerConnection.createDataChannel('chat');
+    myDataChannel.addEventListener('message', addMessage);
+
+    const offer = await myPeerConnection.createOffer();
+    myPeerConnection.setLocalDescription(offer);
+    socket.emit('sendOffer', { offer, roomName });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-// socket.on('acceptCall' async)
+socket.on('receiveOffer', async (offer) => {
+  const remoteOffer = new RTCSessionDescription({
+    type: 'offer',
+    sdp: offer.payload.sdp,
+  });
+  if (myPeerConnection.signalingState === 'stable') {
+    try {
+      await myPeerConnection.setRemoteDescription(remoteOffer);
+
+      const answer = await myPeerConnection.createAnswer();
+      await myPeerConnection.setLocalDescription(answer);
+      socket.emit('sendAnswer', { answer, roomName: offer.roomName });
+    } catch (error) {
+      console.error('SDP 파싱 오류', error);
+    }
+  } else {
+    console.log('stable 상태가 아님');
+  }
+});
+
+socket.on('receiveAnswer', async (answer) => {
+  if (myPeerConnection.signalingState === 'have-local-offer') {
+    try {
+      await myPeerConnection.setRemoteDescription(answer);
+    } catch (error) {
+      console.error('SDP 파싱 오류', error);
+    }
+  } else {
+    console.log('have-local-offer 상태가 아님');
+  }
+});
+
+socket.on('receiveIce', (ice) => {
+  try {
+    myPeerConnection.addIceCandidate(ice);
+    console.log('아이스', myPeerConnection);
+    console.log('receive ice');
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+function handleIce(data, roomName) {
+  socket.emit('sendIce', data.candidate, roomName);
+  console.log('send ice');
+}
+
+function handleAddStream(data) {
+  try {
+    const peerVideo = document.querySelector('#peer-video');
+    // const peerStream = data.streams[0];
+    // peerVideo.srcObject = peerStream;
+    peerVideo.srcObject = data.stream;
+    console.log('peer와 스트림 연결');
+    console.log('peers', data);
+    console.log(peerVideo);
+    console.log('peers', peerVideo.srcObject);
+    console.log('my', myStream);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function makeConnection(roomName) {
+  myPeerConnection = new RTCPeerConnection({
+    iceServers: [
+      {
+        urls: [
+          'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+          'stun:stun3.l.google.com:19302',
+          'stun:stun4.l.google.com:19302',
+        ],
+      },
+    ],
+  });
+  myPeerConnection.addEventListener('icecandidate', (event) => {
+    console.log('아이스 이벤트 발생');
+    if (event.candidate) {
+      handleIce(event.candidate, roomName);
+    }
+  });
+  console.log('커넥션', myPeerConnection);
+  // addstream은 사용하지 말라고 함
+  // addtrack 사용
+  myPeerConnection.addEventListener('addstream', handleAddStream);
+  myStream.getTracks().forEach((track) => myPeerConnection.addTrack(track, myStream));
+}
+
+function addMessage(e) {
+  const li = document.createElement('li');
+  li.innerHTML = e.data;
+  messages.append(li);
+}
+
+function handleChatSubmit(e) {
+  e.preventDefault();
+  const input = chatForm.querySelector('input');
+  console.log(myDataChannel);
+  myDataChannel.send(`${nickname}: ${input.value}`);
+  addMessage({ data: `You: ${input.value}` });
+  input.value = '';
+}
+
+chatForm.addEventListener('submit', handleChatSubmit);

@@ -25,13 +25,34 @@ function responseAlert(callerId, callerName, receiverId, receiverName) {
   const refuseBtn = document.querySelector('.refuse');
 
   acceptBtn.addEventListener('click', () => {
-    socket.emit('createRoom', { callerId, receiverId, callerName, receiverName });
+    acceptCall(callerId, callerName, receiverId, receiverName);
     acceptBtn.style.display = 'none';
     refuseBtn.style.display = 'none';
-    videoCall('/call', '영상 통화');
   });
 
-  // refuseBtn.addEventListener('click', () => {});
+  refuseBtn.addEventListener('click', () => {
+    refuseBtn.style.display = 'none';
+    acceptBtn.style.display = 'none';
+  });
 
-  // setTimeOut(() => {}, 60000);
+  setTimeout(() => {
+    refuseBtn.style.display = 'none';
+    acceptBtn.style.display = 'none';
+  }, 60000);
+}
+
+// 응답 버튼을 누를 때 호출되는 함수
+function acceptCall(callerId, callerName, receiverId, receiverName) {
+  // socket.emit('createRoom', { callerId, callerName });
+  const width = 1200;
+  const height = 800;
+  const left = (window.screen.width - width) / 2;
+  const top = (window.screen.height - height) / 2;
+
+  // 새 창을 열어서 WebRTC 연결을 설정
+  const callWindow = window.open(
+    `/call?callerName=${callerName}&receiverName=${receiverName}`,
+    `width=${width},height=${height},left=${left},top=${top}`
+  );
+  callWindow.onload = () => {};
 }
