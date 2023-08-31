@@ -127,4 +127,19 @@ export class BoardMembersService {
       console.error(err);
     }
   }
+
+  async FindBoardMembers(joinBoards: any) {
+    return Promise.all(
+      joinBoards.map(async (board: any) => {
+        const boardMembers = await this.boardMemberRepository
+          .createQueryBuilder('member')
+          .innerJoinAndSelect('member.user', 'user')
+          .innerJoinAndSelect('member.board', 'board')
+          .select(['user.id', 'user.profile_url', 'board.id', 'board.name'])
+          .where('member.board_id = :boardId ', { boardId: board.board_id })
+          .getRawMany();
+        return boardMembers;
+      })
+    );
+  }
 }

@@ -6,6 +6,8 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UpdateCardSequenceDto } from 'src/_common/dtos/update-card-sequence.dto';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
+import { Response } from 'express';
 
 @Controller('cards')
 export class CardsController {
@@ -73,5 +75,15 @@ export class CardsController {
     @Body() data: UpdateCardSequenceDto
   ) {
     await this.cardsService.UpdateCardSequence(board_column_Id, cardId, data.sequence);
+  }
+
+  @Post('uploads')
+  async UploadCard(@Req() req: MulterRequest, @Res() res: Response) {
+    const array: any = req.files;
+    let originalnames = [];
+    array.forEach((fileInfo: any) => {
+      originalnames.push(fileInfo.originalname);
+    });
+    return res.status(HttpStatus.OK).json({ message: '업로드 성공' });
   }
 }

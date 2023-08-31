@@ -174,6 +174,7 @@ createBoardBtn.addEventListener('click', async (event) => {
       },
       data: JSON.stringify({ name: createTitle, description: createDescription }),
       success: async (data) => {
+        console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
@@ -216,6 +217,24 @@ async function createBoardMember(boardId, name) {
       title: 'Error',
       text: err.responseJSON.message,
     });
+  }
+}
+
+// 보드 멤버 조회
+function getBoardMembers(boardId) {
+  try {
+    const response = $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    return response;
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -321,12 +340,20 @@ function getBoardMembers(boardId) {
       },
     });
 
-    return response;
-  } catch (err) {
-    console.error(err);
-  }
-}
-// async function updateBoard(element) {
-//   const boardId = element.getAttribute('boardId')
-//   const modal =
-// }
+    // 보드 멤버 조회
+    function getBoardMembers(boardId) {
+      try {
+        const response = $.ajax({
+          method: 'GET',
+          url: `/boards/${boardId}/members`,
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+          },
+        });
+
+        return response;
+      } catch (err) {
+        console.error(err);
+      }
+    }

@@ -695,16 +695,16 @@
   );
 
   /* Tab Multiple Trigger */
-  $('#ueberTab a').on('click', function (e) {
-    otherTabs = $(this).attr('data-secondary').split(',');
-    for (i = 0; i < otherTabs.length; i++) {
-      nav = $('<ul class="nav d-none" id="tmpNav"></ul>');
-      nav.append(
-        '<li class="nav-item"><a href="#" data-bs-toggle="tab" data-bs-target="' + otherTabs[i] + '">nav</a></li>"'
-      );
-      nav.find('a').tab('show');
-    }
-  });
+  // $('#ueberTab a').on('click', function (e) {
+  //   otherTabs = $(this).attr('data-secondary').split(',');
+  //   for (i = 0; i < otherTabs.length; i++) {
+  //     nav = $('<ul class="nav d-none" id="tmpNav"></ul>');
+  //     nav.append(
+  //       '<li class="nav-item"><a href="#" data-bs-toggle="tab" data-bs-target="' + otherTabs[i] + '">nav</a></li>"'
+  //     );
+  //     nav.find('a').tab('show');
+  //   }
+  // });
 
   /* Star Rating Basic */
   $('.rating-basic').starRating({
