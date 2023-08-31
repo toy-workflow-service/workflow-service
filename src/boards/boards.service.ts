@@ -75,7 +75,7 @@ export class BoardsService {
     await this.boardRepository.delete(id);
   }
 
-  async getJoinBoards(userId: number) {
+  async GetJoinBoards(userId: number) {
     const joinBoards = await this.boardRepository
       .createQueryBuilder('board')
       .innerJoinAndSelect('board.board_members', 'member')

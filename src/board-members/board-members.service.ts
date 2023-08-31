@@ -14,16 +14,33 @@ export class BoardMembersService {
     private readonly boardsService: BoardsService
   ) {}
 
+  //보드 멤버 이름 조회
+  async GetBoardMemberName(boardId: number, userId: number) {
+    const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const members = boardMembers.filter((boardMember) => {
+      if (boardMember.board.id == boardId && boardMember.user.id == userId) {
+        return boardMember;
+      }
+    });
+    return members.map((member) => {
+      return {
+        boardMemberId: member.id,
+        userId: member.user.id,
+        name: member.user.name,
+        profileUrl: member.user.profile_url,
+        phoneNumber: member.user.phone_number,
+      };
+    });
+  }
+
   //보드 멤버 조회
   async GetBoardMembers(boardId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
     const board = await this.boardsService.GetBoardById(boardId);
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-
     const members = boardMembers.filter((boardMember) => {
       return boardMember.board.id == boardId;
     });
-
     return members.map((member) => {
       return {
         boardMemberId: member.id,
@@ -70,38 +87,54 @@ export class BoardMembersService {
   }
 
   //보드 멤버 업데이트
-  async UpdateBoardMember(boardId: number, userId: number, deleteUserId: number) {
-    const user = await this.usersService.findUserById(userId);
+  async UpdateBoardMember(boardId: number, users: number[]) {
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
-    boardMembers.filter((member) => {
+    const boardMember = boardMembers.filter((member) => {
       return boardId == member.board.id;
     });
-    const undefindUser = boardMembers.find((member) => {
-      return userId != member.user.id;
-    });
-    const findUser = boardMembers.find((member) => {
-      return deleteUserId == member.user.id;
-    });
-    if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
+    const userArray = [];
+    for (const i in boardMember) {
+      userArray.push(boardMember[i].user.id);
+    }
+    const deleteUsers = boardMember.filter((x) => !users.includes(x.user.id));
+    const updateUsers = users.filter((x) => !userArray.includes(x));
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-
     const entityManager = this.boardMemberRepository.manager;
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        if (undefindUser) {
-          const newBoardMembers = this.boardMemberRepository.create({ board, user });
-          console.log(newBoardMembers);
-          await transactionEntityManager.save(Board_Member, newBoardMembers);
-
-          const deleteBoardMember = this.boardMemberRepository.delete({ id: findUser.id });
-          console.log(deleteBoardMember);
-          await transactionEntityManager.remove(deleteBoardMember);
+        if (updateUsers.length > 0) {
+          for (const i in updateUsers) {
+            const user = await this.usersService.findUserById(updateUsers[i]);
+            if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
+            const newBoardMembers = this.boardMemberRepository.create({ board, user });
+            await transactionEntityManager.save(Board_Member, newBoardMembers);
+          }
+        }
+        if (deleteUsers.length > 0) {
+          for (const i in deleteUsers) {
+            await transactionEntityManager.delete(Board_Member, { id: deleteUsers[i].id });
+          }
         }
       });
       return { result: true };
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async FindBoardMembers(joinBoards: any) {
+    return Promise.all(
+      joinBoards.map(async (board: any) => {
+        const boardMembers = await this.boardMemberRepository
+          .createQueryBuilder('member')
+          .innerJoinAndSelect('member.user', 'user')
+          .innerJoinAndSelect('member.board', 'board')
+          .select(['user.id', 'user.profile_url', 'board.id', 'board.name'])
+          .where('member.board_id = :boardId ', { boardId: board.board_id })
+          .getRawMany();
+        return boardMembers;
+      })
+    );
   }
 }
