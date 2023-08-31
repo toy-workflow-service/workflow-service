@@ -52,7 +52,15 @@ export class CardsService {
     await this.cardRepository.insert({ board_column: column, name, content, file_url, sequence, color, members });
   }
   //카드 수정
-  async UpdateCard(board_column_Id: number, id: number, name: string, content: string, file_url: string) {
+  async UpdateCard(
+    board_column_Id: number,
+    id: number,
+    name: string,
+    content: string,
+    file_url: string,
+    color: string,
+    members: number[]
+  ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_Id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
@@ -61,7 +69,7 @@ export class CardsService {
       throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
     }
 
-    await this.cardRepository.update(id, { name, content, file_url });
+    await this.cardRepository.update(id, { name, content, file_url, color, members });
   }
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {

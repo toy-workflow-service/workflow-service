@@ -47,7 +47,15 @@ export class CardsController {
     @Param('cardId') id: number,
     @Body() data: UpdateCardDto
   ) {
-    return await this.cardsService.UpdateCard(board_column_Id, id, data.name, data.content, data.file_url);
+    return await this.cardsService.UpdateCard(
+      board_column_Id,
+      id,
+      data.name,
+      data.content,
+      data.file_url,
+      data.color,
+      data.members
+    );
   }
   //카드 삭제
   @Delete('/:cardId')

@@ -870,6 +870,7 @@ async function DetailCardGet(columnId, cardId) {
         },
       });
       users.push(boardMembers);
+      console.log(boardMembers);
     }
 
     // 카드에 대한 코멘트를 가져오는 API 호출
