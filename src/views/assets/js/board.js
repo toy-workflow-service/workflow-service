@@ -354,6 +354,14 @@ async function BoardColumns(data) {
     }
   });
 
+  // 카드 수정에서 멤버 추가 버튼 클릭 시
+  document.getElementById('cardUpdateAddMembers').addEventListener('click', () => {
+    if ($('#cardUpdateAddMemberBox').css('display') == 'none') {
+      $('#cardUpdateAddMemberBox').show();
+    } else {
+      $('#cardUpdateAddMemberBox').hide();
+    }
+  });
   // card detail box click
   // 모달창이 열리면 해당하는 card 값들을 뿌려주기, member초대란 만들기, 댓글란 만들기
   document.querySelectorAll('#card-list-item').forEach((data) => {
@@ -618,6 +626,8 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
 
   // 멤버 리스트의 HTML을 생성
   let membersHTML = '';
+  selectedMembers = [];
+  selectedMemberNumber = [];
   for (const member of users) {
     let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
     membersHTML += `
@@ -630,6 +640,10 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     </div>
   </div>
   `;
+
+    selectedMembers.push({ name: member[0].name, id: member[0].userId });
+    console.log('click함', selectedMembers);
+    selectedMemberNumber.push(member[0].userId);
   }
 
   let commentHTML = '';
@@ -744,11 +758,11 @@ let selectedMembers = [];
 let selectedMemberNumber = [];
 
 $(document).ready(() => {
-  initializeMemberInput('#cardCreateAddMemberBtn', '#cardCreateMemberView');
-  initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers');
+  initializeMemberInput('#cardCreateAddMemberBtn', '#cardCreateMemberView', '#selected-members');
+  initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers', '#update-selected-members');
 });
 
-function initializeMemberInput(inputSelector, memberListSelector) {
+function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
   const selectedMemberList = document.querySelector(memberListSelector);
 
@@ -775,12 +789,13 @@ function initializeMemberInput(inputSelector, memberListSelector) {
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
+        updateSelectedMembersUI(selected);
         li.addEventListener('click', () => {
           if (!selectedMemberNumber.includes(result.userId)) {
             selectedMembers.push({ name: result.name, id: result.userId });
             console.log('click함', selectedMembers);
             selectedMemberNumber.push(result.userId);
-            updateSelectedMembersUI();
+            updateSelectedMembersUI(selected);
           }
         });
       }
@@ -806,8 +821,8 @@ async function searchMembers() {
 }
 
 // 선택한 멤버 UI 출력
-function updateSelectedMembersUI() {
-  const selectedMemberList = document.querySelector('#selected-members');
+function updateSelectedMembersUI(selected) {
+  const selectedMemberList = document.querySelector(selected);
   selectedMemberList.innerHTML = selectedMembers
     .map(
       (member) => `
@@ -823,47 +838,7 @@ function updateSelectedMembersUI() {
       const memberRemove = e.target.getAttribute('data-member');
       selectedMembers = selectedMembers.filter((name) => name.id !== memberRemove);
       selectedMemberNumber = selectedMemberNumber.filter((id) => id !== memberRemove);
-      updateSelectedMembersUI();
-    });
-  });
-}
-
-// 유저검색
-async function searchMembers() {
-  try {
-    const { boardMembers } = await $.ajax({
-      method: 'GET',
-      url: `/boards/${boardId}/members`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-    });
-    return boardMembers;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// 선택한 멤버 UI 출력
-function updateSelectedMembersUI() {
-  const selectedMemberList = document.querySelector('#selected-members');
-  selectedMemberList.innerHTML = selectedMembers
-    .map(
-      (member) => `
-    <li>${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
-  `
-    )
-    .join('');
-
-  // 재선택 시 삭제
-  const removeIcons = selectedMemberList.querySelectorAll('.remove-member');
-  removeIcons.forEach((icon) => {
-    icon.addEventListener('click', (e) => {
-      const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((name) => name.id !== memberRemove);
-      selectedMemberNumber = selectedMemberNumber.filter((id) => id !== memberRemove);
-      updateSelectedMembersUI();
+      updateSelectedMembersUI(selected);
     });
   });
 }
