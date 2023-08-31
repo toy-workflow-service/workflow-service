@@ -72,23 +72,38 @@ export class ViewController {
     return { title: 'Work-Flow', subtitle: '워크스페이스 상세보기', header, workspaceId };
   }
 
+  @Get('chat')
+  @UseGuards(ViewAuthGuard)
+  @Render('chat.ejs')
+  async chatRoom(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Woer-Flow', subtitle: '내 채팅방', header };
+  }
+
   /**No header & footer */
 
   @Get('signup')
   @Render('signup.ejs')
   async signup() {
-    return { title: 'Work Flow', subtitle: '회원가입' };
+    return { title: 'Work-Flow', subtitle: '회원가입' };
   }
 
   @Get('login')
   @Render('login.ejs')
   async login() {
-    return { title: 'Work Flow', subtitle: '로그인' };
+    return { title: 'Work-Flow', subtitle: '로그인' };
   }
 
   @Get('findPassword')
   @Render('find-password.ejs')
   async findPassword() {
-    return { title: 'Work Flow', subtitle: '비밀번호 찾기' };
+    return { title: 'Work-Flow', subtitle: '비밀번호 찾기' };
+  }
+  
+  @Get('call')
+  @Render('web-rtc.ejs')
+  async call() {
+    return { title: 'Work-Flow', subtitle: '음성/영상 통화'};
   }
 }

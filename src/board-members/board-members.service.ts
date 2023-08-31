@@ -10,20 +10,18 @@ export class BoardMembersService {
   constructor(
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
-    private usersService: UsersService,
-    private boardsService: BoardsService
+    private readonly usersService: UsersService,
+    private readonly boardsService: BoardsService
   ) {}
 
-  //보드 멤버 조회
-  async GetBoardMembers(boardId: number) {
+  //보드 멤버 이름 조회
+  async GetBoardMemberName(boardId: number, userId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
-    const board = await this.boardsService.GetBoardById(boardId);
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-
     const members = boardMembers.filter((boardMember) => {
-      return boardMember.board.id == boardId;
+      if (boardMember.board.id == boardId && boardMember.user.id == userId) {
+        return boardMember;
+      }
     });
-
     return members.map((member) => {
       return {
         boardMemberId: member.id,
@@ -35,13 +33,13 @@ export class BoardMembersService {
     });
   }
 
-  //보드 멤버 이름 조회
-  async GetBoardMemberName(boardId: number, userId: number) {
+  //보드 멤버 조회
+  async GetBoardMembers(boardId: number) {
     const boardMembers = await this.boardMemberRepository.find({ relations: ['board', 'user'] });
+    const board = await this.boardsService.GetBoardById(boardId);
+    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     const members = boardMembers.filter((boardMember) => {
-      if (boardMember.board.id == boardId && boardMember.user.id == userId) {
-        return boardMember;
-      }
+      return boardMember.board.id == boardId;
     });
     return members.map((member) => {
       return {
@@ -101,9 +99,7 @@ export class BoardMembersService {
     }
     const deleteUsers = boardMember.filter((x) => !users.includes(x.user.id));
     const updateUsers = users.filter((x) => !userArray.includes(x));
-
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-
     const entityManager = this.boardMemberRepository.manager;
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
@@ -112,7 +108,6 @@ export class BoardMembersService {
             const user = await this.usersService.findUserById(updateUsers[i]);
             if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
             const newBoardMembers = this.boardMemberRepository.create({ board, user });
-
             await transactionEntityManager.save(Board_Member, newBoardMembers);
           }
         }
@@ -126,5 +121,20 @@ export class BoardMembersService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async FindBoardMembers(joinBoards: any) {
+    return Promise.all(
+      joinBoards.map(async (board: any) => {
+        const boardMembers = await this.boardMemberRepository
+          .createQueryBuilder('member')
+          .innerJoinAndSelect('member.user', 'user')
+          .innerJoinAndSelect('member.board', 'board')
+          .select(['user.id', 'user.profile_url', 'board.id', 'board.name'])
+          .where('member.board_id = :boardId ', { boardId: board.board_id })
+          .getRawMany();
+        return boardMembers;
+      })
+    );
   }
 }

@@ -195,9 +195,8 @@ async function BoardColumns(data) {
     const cardHtml = card
       .map(
         (c) =>
-          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="background-color: ${c.color}">
+          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
                                         ${c.name}
-                                      
                                       <button class="open-popup-modal" type="button">
                                         <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                                       </button>
@@ -589,23 +588,69 @@ function createReplyModal(filteredComments) {
   // commentsData를 사용하여 코멘트 목록을 처리
   for (const comment of filteredComments) {
     // 필요한 데이터를 추출하여 모달에 추가
+    const isCurrentUserComment = comment.user.id === comment.userId;
+    console.log(filteredComments); // 현재 사용자의 댓글 여부 확인
+
     const commentHTML = `
       <div class="checkbox-group d-flex">
-        <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
+        <div class="checkbox-group__single d-flex row">
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <p> ${comment.comment} </p>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate">${comment.comment}</textarea>
+          
+          <!-- 수정 버튼 -->
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+        : ''
+      }
+          
+          <!-- 삭제 버튼 -->
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+        : ''
+      }
+      <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
     `;
 
     // 코멘트 목록에 추가
-    commentList.append(commentHTML); // 수정된 부분
+    commentList.append(commentHTML);
   }
 
   // 모달을 표시
   $('#commentDetailModal').modal('show');
+
+  $('.edit-comment').click(function () {
+    // textarea를 편집 가능하게 변경
+    const replyTextarea = $('#replyUpdate'); // 수정된 부분
+    replyTextarea.removeAttr('readonly');
+    // 확인 버튼을 보이게 함
+    document.getElementById('replyConfirmBtn').style.display = 'inline-block';
+  });
+
+  $('.delete-comment').click(function () {
+    const cardId = $(this).data('card-id');
+    const commentId = $(this).data('comment-id');
+
+    deleteComment(commentId, cardId);
+  });
+
+  // 확인 버튼 클릭 이벤트 처리
+  document.getElementById('replyConfirmBtn').addEventListener('click', function () {
+    const commentId = $(this).prevAll('.edit-comment').data('comment-id');
+    const cardId = $(this).prevAll('.edit-comment').data('card-id');
+    const columnId = document.getElementById('commentUpdateBtn').getAttribute('data-column-id');
+    // textarea를 읽기 전용으로 변경
+    const replyTextarea = $('#replyUpdate'); // 수정된 부분
+    const updatedReply = replyTextarea.val(); // 수정된 부분
+    replyTextarea.attr('readonly', 'readonly'); // 수정된 부분
+    // 확인 버튼을 숨김
+    $('.replyConfirmBtn').hide();
+
+    CommentUpdate(commentId, columnId, cardId, { comment: updatedReply });
+  });
 }
 
 document.addEventListener('click', function (event) {
@@ -870,6 +915,7 @@ async function DetailCardGet(columnId, cardId) {
         },
       });
       users.push(boardMembers);
+      console.log(boardMembers);
     }
 
     // 카드에 대한 코멘트를 가져오는 API 호출
@@ -958,7 +1004,7 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
   // 업데이트 함수 호출
   CardAllUpdate(columnId, cardId, updatedData);
-  window.location.reload;
+  window.location.reload();
 });
 
 // card update api
@@ -1174,11 +1220,8 @@ function Getcomment(cardId, commentId) {
     },
     success: function (comments) {
       const filteredComments = comments.filter(function (comment) {
-        console.log('a', comment.reply_id, commentId);
         return comment.reply_id === Number(commentId);
       });
-      console.log('필터', filteredComments);
-      console.log('코멘트', comments);
       if (filteredComments.length > 0) {
         // 필터링된 모든 코멘트를 사용하여 모달을 동적으로 생성
         createReplyModal(filteredComments);

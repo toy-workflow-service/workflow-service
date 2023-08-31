@@ -5377,6 +5377,11 @@ body.top-menu .navbar-left .customizer-trigger + .top-menu {
   transform: scale(1);
 }
 
+#recentMessageContainer > .dropdown-menu {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 /* basic dropdown */
 .dropdown-default,
 .dropdown-menu {

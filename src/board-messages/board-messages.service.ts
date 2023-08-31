@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Message } from 'src/_common/entities/board-message.entity';
+import { BoardMembersService } from 'src/board-members/board-members.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -11,38 +12,54 @@ export class BoardMessagesService {
     @InjectRepository(Board_Message)
     private boardMessageRepository: Repository<Board_Message>,
     private boardsService: BoardsService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private boardMembersService: BoardMembersService
   ) {}
 
   //보드 메세지 조회
-  async GetBoardMessages(boardId: number) {
-    const boardMessages = await this.boardMessageRepository.find({ relations: ['board', 'user'] });
-
-    const messages = boardMessages.filter((boardMessage) => {
-      return boardMessage.board.id == boardId;
-    });
-
-    return messages.map((message) => {
-      return {
-        boardMessageId: message.id,
-        boardId: message.board.id,
-        userId: message.user.id,
-        message: message.message,
-        fileUrl: message.file_url,
-        createdAt: message.created_at,
-        updatedAt: message.updated_at,
-      };
-    });
+  async GetBoardMessages(joinBoards: any): Promise<any> {
+    return Promise.all(
+      joinBoards.map(async (board: any) => {
+        const messageInfos = await this.boardMessageRepository
+          .createQueryBuilder('message')
+          .innerJoinAndSelect('message.user', 'user')
+          .innerJoinAndSelect('message.board', 'board')
+          .select([
+            'message.id',
+            'message.board_id',
+            'message.message',
+            'message.file_url',
+            'message.file_original_name',
+            'message.created_at',
+            'board.name',
+            'user.id',
+            'user.name',
+            'user.profile_url',
+          ])
+          .where('message.board_id = :boardId ', { boardId: board.board_id })
+          .orderBy('message.created_at')
+          .getRawMany();
+        return messageInfos;
+      })
+    );
   }
 
   //보드 메세지 생성
-  async PostBoardMessage(boardId: number, message: string, file_url: string, userId: number) {
-    const board = await this.boardsService.GetBoardById(boardId);
-    const user = await this.usersService.findUserById(userId);
-    if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
-    const mention = await this.boardMessageMentions(message);
-    console.log(mention);
-    await this.boardMessageRepository.insert({ message, file_url, user, board });
+  async SaveBoardMessage(boardId: number, userId: number, message: string) {
+    return await this.boardMessageRepository.save({ message, user: { id: userId }, board: { id: boardId } });
+  }
+
+  async SaveBoardFile(userId: number, boardId: number, fileUrl: string, originalname: string) {
+    return await this.boardMessageRepository.save({
+      user: { id: userId },
+      board: { id: boardId },
+      file_url: fileUrl,
+      file_original_name: originalname,
+    });
+  }
+
+  async deleteMessage(messageId: number) {
+    return await this.boardMessageRepository.delete({ id: messageId });
   }
 
   //보드 메세지 멘션 추출

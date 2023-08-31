@@ -112,6 +112,16 @@ function signup() {
     return;
   }
   if (newFile) {
+    if (newFile.size > 5 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '5MB이하의 이미지 파일만 업로드 가능합니다.',
+      }).then(() => {
+        document.querySelector('#upload-1').value = '';
+      });
+      return;
+    }
     form.append('newFile', newFile);
   }
 

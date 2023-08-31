@@ -3,6 +3,22 @@ const kakaoLoginBtn = document.querySelector('.kakaoLogin');
 const googleLoginBtn = document.querySelector('.googleLogin');
 const naverLoginBtn = document.querySelector('.naverLogin');
 
+$(document).ready(() => {
+  const emailInput = document.querySelector('#emailInput');
+  const passwordInput = document.querySelector('#passwordInput');
+
+  emailInput.addEventListener('keyup', function (event) {
+    if (event.key === 'Enter') {
+      login();
+    }
+  });
+  passwordInput.addEventListener('keyup', function (event) {
+    if (event.key === 'Enter') {
+      login();
+    }
+  });
+});
+
 function login() {
   const email = document.querySelector('#emailInput').value;
   const password = document.querySelector('#passwordInput').value;
@@ -20,6 +36,7 @@ function login() {
         title: 'Success',
         text: data.message,
       }).then(() => {
+        window.localStorage.clear();
         window.location.href = '/';
       });
       return;

@@ -7,13 +7,6 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 @Controller('')
 export class BoardMembersController {
   constructor(private readonly boardMembersService: BoardMembersService) {}
-  //보드 멤버 조회
-  @Get('/boards/:boardId/members')
-  @UseGuards(AuthGuard)
-  async GetBoardMembers(@Param('boardId') boardId: number, @Res() res: Response) {
-    const members = await this.boardMembersService.GetBoardMembers(boardId);
-    return res.status(HttpStatus.OK).json({ boardMembers: members });
-  }
 
   // 보드 멤버 찾기
   @Get('/boards/:boardId/members/:userId')
@@ -33,6 +26,14 @@ export class BoardMembersController {
   async CreateBoardMember(@Param('boardId') boardId: number, @Body() data: CreateBoardMemberDto, @Res() res: Response) {
     await this.boardMembersService.CreateBoardMember(boardId, data.name);
     return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
+  }
+
+  //보드 멤버 조회
+  @Get('/boards/:boardId/members')
+  @UseGuards(AuthGuard)
+  async GetBoardMembers(@Param('boardId') boardId: number, @Res() res: Response) {
+    const members = await this.boardMembersService.GetBoardMembers(boardId);
+    return res.status(HttpStatus.OK).json({ boardMembers: members });
   }
 
   //보드 멤버 제외

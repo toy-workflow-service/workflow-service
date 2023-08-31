@@ -1,4 +1,18 @@
-import { Body, Controller, Get, Param, Post, Patch, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  Query,
+  UseGuards,
+  Put,
+  Req,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from '../_common/dtos/create-card.dto';
 import { UpdateCardDto } from '../_common/dtos/update-card.dto';
@@ -6,6 +20,8 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UpdateCardSequenceDto } from 'src/_common/dtos/update-card-sequence.dto';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { MulterRequest } from 'src/_common/interfaces/multer-request.interface';
+import { Response } from 'express';
 
 @Controller('cards')
 export class CardsController {
@@ -47,7 +63,15 @@ export class CardsController {
     @Param('cardId') id: number,
     @Body() data: UpdateCardDto
   ) {
-    return await this.cardsService.UpdateCard(board_column_Id, id, data.name, data.content, data.file_url);
+    return await this.cardsService.UpdateCard(
+      board_column_Id,
+      id,
+      data.name,
+      data.content,
+      data.file_url,
+      data.color,
+      data.members
+    );
   }
   //카드 삭제
   @Delete('/:cardId')
@@ -65,5 +89,15 @@ export class CardsController {
     @Body() data: UpdateCardSequenceDto
   ) {
     await this.cardsService.UpdateCardSequence(board_column_Id, cardId, data.sequence);
+  }
+
+  @Post('uploads')
+  async UploadCard(@Req() req: MulterRequest, @Res() res: Response) {
+    const array: any = req.files;
+    let originalnames = [];
+    array.forEach((fileInfo: any) => {
+      originalnames.push(fileInfo.originalname);
+    });
+    return res.status(HttpStatus.OK).json({ message: '업로드 성공' });
   }
 }
