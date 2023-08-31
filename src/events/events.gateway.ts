@@ -73,12 +73,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /////////////////////////////////////////////////////////////////////////////////////////////
   @SubscribeMessage('invite')
   handleInvite(client: Socket, data: any): void {
-    console.log('1');
     let user = [];
     for (let key in this.connectedClients) {
       if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
     }
-
     user.forEach((sock) => {
       this.server.to(sock).emit('response', {
         callerId: client.id,
@@ -91,7 +89,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(client: Socket, data: any): void {
-    console.log('2');
     const roomName = data.callerName;
     client.join(roomName);
     this.server.to(roomName).emit('welcome', roomName);
@@ -99,19 +96,16 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('sendOffer')
   handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
-    console.log('3');
-    client.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+    this.server.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
   }
 
   @SubscribeMessage('sendAnswer')
   handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
-    console.log('4');
     this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
   }
 
   @SubscribeMessage('sendIce')
-  handleSendIce(client: Socket, ice: any, roomName: string): void {
-    console.log('5');
-    client.to(roomName).emit('receiveIce', ice);
+  handleSendIce(client: Socket, data: any): void {
+    this.server.to(data.roomName).emit('receiveIce', data);
   }
 }

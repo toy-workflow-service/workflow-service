@@ -4,10 +4,10 @@ socket.on('connect', () => {
 });
 
 socket.on('response', (data) => {
-  responseAlert(data.callerId, data.callerName, data.receiverId, data.receiverName);
+  responseAlert(data.callerName, data.receiverName);
 });
 
-function responseAlert(callerId, callerName, receiverId, receiverName) {
+function responseAlert(callerName, receiverName) {
   const messageHtml = `${callerName}님이 대화에 초대했습니다. <br />
   <button type="button" class="accept" data-dismiss="alert" aria-label="accpet">수락</button>
   <button type="button" class="refuse" data-dismiss="alert" aria-label="refuse">거절</button>
@@ -25,7 +25,7 @@ function responseAlert(callerId, callerName, receiverId, receiverName) {
   const refuseBtn = document.querySelector('.refuse');
 
   acceptBtn.addEventListener('click', () => {
-    acceptCall(callerId, callerName, receiverId, receiverName);
+    acceptCall(callerName, receiverName);
     acceptBtn.style.display = 'none';
     refuseBtn.style.display = 'none';
   });
@@ -42,10 +42,9 @@ function responseAlert(callerId, callerName, receiverId, receiverName) {
 }
 
 // 응답 버튼을 누를 때 호출되는 함수
-function acceptCall(callerId, callerName, receiverId, receiverName) {
-  // socket.emit('createRoom', { callerId, callerName });
-  const width = 1200;
-  const height = 800;
+function acceptCall(callerName, receiverName) {
+  const width = 800;
+  const height = 900;
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
 

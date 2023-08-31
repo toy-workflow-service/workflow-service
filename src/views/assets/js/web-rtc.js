@@ -1,6 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 let callerName = params.get('callerName');
-let receiverName = params.get('receiverId');
+let receiverName = params.get('receiverName');
 
 socket.on('connect', async () => {
   await initCall();
@@ -17,8 +17,11 @@ const messages = document.getElementById('messages');
 const chatForm = document.getElementById('chat');
 const screenShareBtn = document.getElementById('screen-share');
 const leaveBtn = document.getElementById('leave-room');
+const myName = document.getElementById('my-name');
+const peerName = document.getElementById('peer-name');
 
-callRoom.style.display = 'column';
+myName.textContent = callerName;
+peerName.textContent = receiverName;
 
 let myStream;
 let muted = false;
@@ -194,7 +197,6 @@ socket.on('receiveAnswer', async (answer) => {
 socket.on('receiveIce', (ice) => {
   try {
     myPeerConnection.addIceCandidate(ice);
-    console.log('아이스', myPeerConnection);
     console.log('receive ice');
   } catch (err) {
     console.error(err);
@@ -202,19 +204,18 @@ socket.on('receiveIce', (ice) => {
 });
 
 function handleIce(data, roomName) {
-  socket.emit('sendIce', data.candidate, roomName);
+  socket.emit('sendIce', { data: data.candidate, roomName });
   console.log('send ice');
 }
 
 function handleAddStream(data) {
   try {
+    console.log('스트림', myPeerConnection);
     const peerVideo = document.querySelector('#peer-video');
-    // const peerStream = data.streams[0];
-    // peerVideo.srcObject = peerStream;
-    peerVideo.srcObject = data.stream;
+    const peerStream = data.streams[0];
+    peerVideo.srcObject = peerStream;
     console.log('peer와 스트림 연결');
     console.log('peers', data);
-    console.log(peerVideo);
     console.log('peers', peerVideo.srcObject);
     console.log('my', myStream);
   } catch (err) {
@@ -245,7 +246,7 @@ function makeConnection(roomName) {
   console.log('커넥션', myPeerConnection);
   // addstream은 사용하지 말라고 함
   // addtrack 사용
-  myPeerConnection.addEventListener('addstream', handleAddStream);
+  myPeerConnection.addEventListener('track', handleAddStream);
   myStream.getTracks().forEach((track) => myPeerConnection.addTrack(track, myStream));
 }
 

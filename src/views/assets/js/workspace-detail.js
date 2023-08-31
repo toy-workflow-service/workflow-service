@@ -582,8 +582,8 @@ function startVoiceCall(element) {
 }
 
 async function voiceCall(url, callType, receiverId, receiverName) {
-  const width = 1200;
-  const height = 800;
+  const width = 800;
+  const height = 900;
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
   window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
@@ -599,7 +599,7 @@ function startVideoCall(element) {
 
 async function videoCall(url, callType, receiverId, receiverName) {
   const width = 800;
-  const height = 600;
+  const height = 900;
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
   window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
