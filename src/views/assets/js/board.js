@@ -427,8 +427,6 @@ async function BoardColumns(data) {
   });
 }
 
-
-
 // column name update api
 async function BoardColumnNameUpdate(columnId, name) {
   $.ajax({
@@ -661,7 +659,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId) {
      <span>in list Active Project</span>
   </div>
    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}" data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
+id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">update</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
 id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">delete</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -743,11 +741,17 @@ function openCardDetailModal(columnId, cardId) {
 let typingTimer;
 let selectedMembers = [];
 let selectedMemberNumber = [];
-$(document).ready(async () => {
-  const memberInput = document.querySelector('#cardCreateAddMemberBtn');
-  const selectedMemberList = document.querySelector('#cardCreateMemberView');
 
-  memberInput.addEventListener('click', (e) => {
+$(document).ready(() => {
+  initializeMemberInput('#cardCreateAddMemberBtn', '#cardCreateMemberView');
+  initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers');
+});
+
+function initializeMemberInput(inputSelector, memberListSelector) {
+  const memberInput = document.querySelector(inputSelector);
+  const selectedMemberList = document.querySelector(memberListSelector);
+
+  memberInput.addEventListener('click', async (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const results = await searchMembers();
@@ -756,6 +760,7 @@ $(document).ready(async () => {
       document.getElementById(e.target.id).addEventListener('click', () => {
         console.log('id 확인 : ', e.target.id);
       });
+
       selectedMemberList.innerHTML = '';
       for (let result of results) {
         let Img = result.profileUrl ? result.profileUrl : '/assets/img/favicon.png';
@@ -780,7 +785,47 @@ $(document).ready(async () => {
       }
     });
   });
-});
+}
+
+// 유저검색
+async function searchMembers() {
+  try {
+    const { boardMembers } = await $.ajax({
+      method: 'GET',
+      url: `/boards/${boardId}/members`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+    return boardMembers;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 선택한 멤버 UI 출력
+function updateSelectedMembersUI() {
+  const selectedMemberList = document.querySelector('#selected-members');
+  selectedMemberList.innerHTML = selectedMembers
+    .map(
+      (member) => `
+    <li>${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
+  `
+    )
+    .join('');
+
+  // 재선택 시 삭제
+  const removeIcons = selectedMemberList.querySelectorAll('.remove-member');
+  removeIcons.forEach((icon) => {
+    icon.addEventListener('click', (e) => {
+      const memberRemove = e.target.getAttribute('data-member');
+      selectedMembers = selectedMembers.filter((name) => name.id !== memberRemove);
+      selectedMemberNumber = selectedMemberNumber.filter((id) => id !== memberRemove);
+      updateSelectedMembersUI();
+    });
+  });
+}
 
 // 유저검색
 async function searchMembers() {
@@ -852,6 +897,7 @@ async function DetailCardGet(columnId, cardId) {
     const commentsData = commentsResponse;
     console.log(commentsResponse);
     createCardDetailModal(cardData, commentsData, columnId, cardId);
+    openUpdateCardModal(cardData, columnId, cardId);
   } catch (error) {
     console.log(error);
   }
@@ -877,21 +923,24 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
 }
 
 // 업데이트 모달을 열기 위한 함수
-function openUpdateCardModal(columnId, cardId) {
+function openUpdateCardModal(cardData, columnId, cardId) {
   // 모달 내부의 필드들을 초기화 (빈 값으로)
-  document.getElementById('cardTitleUdpate').value = 'data.name';
-  document.getElementById('cardContentUpdate').value = 'data.content';
+  document.getElementById('cardTitleUdpate').value = cardData.name;
+  document.getElementById('cardContentUpdate').value = cardData.content;
   document.getElementById('cardfileUpdate').value = '';
-  document.getElementById('cardUpdateMembers').innerHTML = '';
-  document.getElementById('cardColorUpdate').value = '#000000';
-
+  document.getElementById('cardUpdateMembers').innerHTML = cardData.members;
+  document.getElementById('cardColorUpdate').value = cardData.color;
   // 컬럼 아이디와 카드 아이디를 모달의 data 속성에 설정
   document.getElementById('updateCardButton').setAttribute('data-column-id', columnId);
   document.getElementById('updateCardButton').setAttribute('data-card-id', cardId);
-
   // 업데이트 모달을 열기
-  $('#updateCardModal').modal('show');
 }
+
+document.addEventListener('click', function (event) {
+  if (event.target && event.target.id === 'updateCardButton') {
+    $('#updateCardModal').modal('show');
+  }
+});
 
 document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   // 컬럼 아이디와 카드 아이디 가져오기
@@ -920,6 +969,7 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
   // 업데이트 함수 호출
   CardAllUpdate(columnId, cardId, updatedData);
+  window.location.reload;
 });
 
 // card update api
