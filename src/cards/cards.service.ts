@@ -57,7 +57,7 @@ export class CardsService {
     id: number,
     name: string,
     content: string,
-    file_url: string,
+    file_url: string[],
     color: string,
     members: number[]
   ) {

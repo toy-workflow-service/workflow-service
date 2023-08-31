@@ -15,7 +15,6 @@ import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
-import { Board_Column } from 'src/_common/entities/board-column.entity';
 
 @Module({
   imports: [
