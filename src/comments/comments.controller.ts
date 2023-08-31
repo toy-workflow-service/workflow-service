@@ -18,6 +18,7 @@ export class CommentsController {
     // 모든 코멘트의 사용자 ID 및 사용자 이름을 추출
     const commentsWithUserDetails = comments.map((comment) => ({
       ...comment,
+      userId: user.id,
       // 다른 코멘트 관련 데이터를 필요에 따라 추가할 수 있습니다.
     }));
 
