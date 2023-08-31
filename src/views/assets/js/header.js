@@ -53,8 +53,8 @@ async function getWorkspaces() {
       success: (data) => {
         data.forEach((workspace) => {
           const result = `<li class="">
-                            <a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
-                          </li>`;
+<a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
+</li>`;
           workspaceList.innerHTML += result;
         });
       },

@@ -70,7 +70,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.emit('userList', { room: null, userList: Object.keys(this.connectedClients) });
   }
-
+  
   @SubscribeMessage('chatMessage')
   handleChatMessage(
     client: Socket,
@@ -118,4 +118,42 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       profileUrl: data.profileUrl,
     });
   }
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  @SubscribeMessage('invite')
+  handleInvite(client: Socket, data: any): void {
+    let user = [];
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
+    }
+    user.forEach((sock) => {
+      this.server.to(sock).emit('response', {
+        callerId: client.id,
+        callerName: data.callerName,
+        receiverId: data.receiverId,
+        receiverName: data.receiverName,
+      });
+    });
+  }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(client: Socket, data: any): void {
+    const roomName = data.callerName;
+    client.join(roomName);
+    this.server.to(roomName).emit('welcome', roomName);
+  }
+
+  @SubscribeMessage('sendOffer')
+  handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
+    this.server.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+  }
+
+  @SubscribeMessage('sendAnswer')
+  handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
+    this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
+  }
+
+  @SubscribeMessage('sendIce')
+  handleSendIce(client: Socket, data: any): void {
+    this.server.to(data.roomName).emit('receiveIce', data);
 }

@@ -10,8 +10,8 @@ export class BoardMembersService {
   constructor(
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
-    private usersService: UsersService,
-    private boardsService: BoardsService
+    private readonly usersService: UsersService,
+    private readonly boardsService: BoardsService
   ) {}
 
   //보드 멤버 초대
