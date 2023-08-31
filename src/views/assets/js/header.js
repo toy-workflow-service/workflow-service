@@ -91,7 +91,7 @@ async function createWorkspace() {
           title: 'success!',
           text: '워크스페이스 생성 완료',
         }).then(() => {
-          $('#modal-basic').modal('hide');
+          $('#modal-basic4').modal('hide');
           window.location.reload();
         });
       },
