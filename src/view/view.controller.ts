@@ -78,7 +78,16 @@ export class ViewController {
   async chatRoom(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'Woer-Flow', subtitle: '내 채팅방', header };
+    return { title: 'Work-Flow', subtitle: '내 채팅방', header };
+  }
+
+  @Get('membership')
+  @UseGuards(ViewAuthGuard)
+  @Render('membership.ejs')
+  async memberhsip(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '멤버십', header };
   }
 
   /**No header & footer */
