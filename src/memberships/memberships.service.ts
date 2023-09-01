@@ -9,7 +9,7 @@ import { LessThan, Repository } from 'typeorm';
 export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
-    private membershipRepository: Repository<Membership>,
+    private membershipRepository: Repository<Membership>
   ) {}
 
   // 멤버십 생성
@@ -73,6 +73,15 @@ export class MembershipsService {
     if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
 
     await this.membershipRepository.remove(targetMembership);
+
+    return { result: true };
+  }
+
+  async checkMembership(workspaceId: number): Promise<IResult> {
+    const checkMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+
+    if (!checkMembership)
+      throw new HttpException('프리미엄 멤버십부터 이용 가능한 서비스입니다.', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
   }
