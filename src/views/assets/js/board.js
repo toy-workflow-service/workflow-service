@@ -563,7 +563,7 @@ function openCommentDetailModal(columnId, cardId, commentId) {
 
 function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
-  $('#commentDetailModalLabel').text('Comment');
+  $('#commentDetailModalLabel').text('댓글');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
 

@@ -272,17 +272,21 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="editColumnModalLabel">Edit Column</h5>
+                              <h5 class="modal-title" id="editColumnModalLabel">컬럼 생성</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
                            </button>
                         </div>
-                        <div class="kanban-modal__research mt-30">
-                           <h6>Column Title </h6>
-                           <input type="text" id="columnTitle" />
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="ColumnAddBtn">submit</button>
+                        <div class="modal-body kanban-modal__body">
+                           <div class="kanban-modal__form ">
+                              <div class="mb-30">
+                                 <label for="exampleFormControlTextarea1111" class="form-label">컬럼 제목</label>
+                                 <input type="text" id="columnTitle" style="margin-bottom: 3%;" />
+                              </div>
+                              <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+                                 id="ColumnAddBtn">생성</button>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -295,7 +299,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="updateColumnModalLabel">Edit Column</h5>
+                              <h5 class="modal-title" id="updateColumnModalLabel">컬럼 수정</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -304,11 +308,11 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Column Title</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">컬럼 제목</label>
                                  <input type="text" id="columnTitleUpdate" style="margin-bottom: 3%;" />
                               </div>
                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                                 id="ColumnUpdateNameBtn">submit</button>
+                                 id="ColumnUpdateNameBtn">수정</button>
                            </div>
                         </div>
                      </div>
@@ -322,7 +326,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="createCardModalLabel">Create Card</h5>
+                              <h5 class="modal-title" id="createCardModalLabel">카드 생성</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -331,16 +335,16 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Title</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">제목</label>
                                  <input type="text" id="cardTitleCreate" style="margin-bottom: 3%;" />
                               </div>
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">내용</label>
                                  <textarea class="form-control" id="cardContentCreate" rows="3"
-                                    placeholder="Add a more detailed description…"></textarea>
+                                    placeholder="내용을 작성해주세요…"></textarea>
                               </div>
                               <div class="row">
-                                 <label> file upload </label>
+                                 <label> 파일 업로드 </label>
                                  <!-- <div>
                                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
                                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
@@ -351,11 +355,10 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Members </h6>
+                              <h6>참여자 </h6>
                            </div>
                            <div class="kanban-modal__list">
-                              <button class="btn btn-primary btn-sm btn-squared" id="cardCreateAddMemberBtn">member to
-                                 invite</button>
+                              <button class="btn btn-primary btn-sm btn-squared" id="cardCreateAddMemberBtn">초대하기...</button>
                               <div id="cardCreateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
                                  <div class="mb-25">
                                     <div class="form-group mb-10">
@@ -377,11 +380,11 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Color </h6>
+                              <h6>카드 색상 </h6>
                               <input type="color" id="cardColorCreate" />
                            </div>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="CardCreateBtn">submit</button>
+                              id="CardCreateBtn">생성</button>
                         </div>
                      </div>
                   </div>
@@ -394,7 +397,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="updateCardModalLabel">Update Card</h5>
+                              <h5 class="modal-title" id="updateCardModalLabel">카드 수정</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -403,16 +406,16 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Title</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">제목</label>
                                  <input type="text" id="cardTitleUdpate" style="margin-bottom: 3%;" />
                               </div>
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">내용</label>
                                  <textarea class="form-control" id="cardContentUpdate" rows="3"
-                                    placeholder="Add a more detailed description…"></textarea>
+                                    placeholder="내용을 입력해주세요…"></textarea>
                               </div>
                               <div class="row">
-                                 <label> file upload </label>
+                                 <label> 파일 업로드 </label>
                                  <!-- <div>
                           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
                           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
@@ -423,11 +426,10 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Members </h6>
+                              <h6>참여자 </h6>
                            </div>
                            <div class="kanban-modal__list">
-                              <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">member to
-                                 invite</button>
+                              <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">초대하기...</button>
                               <div id="cardUpdateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
                                  <div class="mb-25">
                                     <div class="form-group mb-10">
@@ -442,11 +444,11 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Color </h6>
+                              <h6>카드 색상 </h6>
                               <input type="color" id="cardColorUpdate" />
                            </div>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="CardUpdateBtn">submit</button>
+                              id="CardUpdateBtn">수정</button>
                         </div>
                      </div>
                   </div>
