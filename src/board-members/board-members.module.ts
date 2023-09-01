@@ -13,8 +13,8 @@ import { Board } from 'src/_common/entities/board.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
-import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
+import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 
 @Module({
   imports: [

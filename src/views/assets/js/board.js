@@ -674,6 +674,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   selectedMembers = [];
   selectedMemberNumber = [];
   for (const member of users) {
+    console.log(member);
     let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
     membersHTML += `
   <div class="checkbox-group d-flex">
@@ -930,7 +931,7 @@ async function DetailCardGet(columnId, cardId) {
 
     // 코멘트 응답
     const commentsData = commentsResponse;
-    console.log(commentsResponse);
+    console.log(cardData);
     createCardDetailModal(cardData, commentsData, columnId, cardId, users);
     openUpdateCardModal(cardData, columnId, cardId);
   } catch (error) {
