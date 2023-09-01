@@ -733,7 +733,6 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   <div class=" kanban-modal__header-wrapper">
   <div class="kanban-modal__header">
      <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
-     <span>in list Active Project</span>
   </div>
    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
 id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">수정</button>
@@ -767,11 +766,13 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
       </ul>
     </div>
     <div class="kanban-modal__list">
-      <h6>댓글</h6>
-      <div class="comment-input">
-        <textarea class="form-control" rows="3" placeholder="Add a comment..." id="commentInput"></textarea>
-        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">댓글 추가...</button>
-      </div>
+    <div class="mb-30">
+      <label for="exampleFormControlTextarea1111" class="form-label">댓글</label>
+      <textarea class="form-control" id="commentInput" rows="3"
+        placeholder="내용을 작성해주세요…" style="resize :none"></textarea>
+    </div>
+    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">댓글 추가...</button>
+      
       <ul id="commentDetail">
         <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
         ${commentHTML}
