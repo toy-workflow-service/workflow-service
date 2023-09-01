@@ -74,6 +74,8 @@ Nest is [MIT licensed](LICENSE).
 
 ## 프로젝트 소개
 ### Work - Flow
+![Untitled (1)](https://github.com/toy-workflow-service/workflow-service/assets/133616786/f3fd887a-a5dd-4fa3-940f-cc8e6d2e305d)
+
 Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 자신의 작업 공간에 팀원들 초대해서 함께 작업하고 서로 의견을 나눠보세요.
 
