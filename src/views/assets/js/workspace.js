@@ -339,21 +339,8 @@ function getBoardMembers(boardId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
     });
-
-    // 보드 멤버 조회
-    function getBoardMembers(boardId) {
-      try {
-        const response = $.ajax({
-          method: 'GET',
-          url: `/boards/${boardId}/members`,
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader('Content-type', 'application/json');
-            xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-          },
-        });
-
-        return response;
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
+}

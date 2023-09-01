@@ -48,7 +48,7 @@ export class BoardsController {
     @Query('workspaceId') workspaceId: number,
     @Body() data: CreateBoardDto,
     @Res() res: Response
-  ): Promise<object> {
+  ): Promise<Object> {
     const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
     return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }

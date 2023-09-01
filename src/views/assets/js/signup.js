@@ -12,6 +12,9 @@ async function sendMail() {
   const verifyCodeBtn = document.querySelector('#verifyCodeBtn');
   let code, expireTime;
 
+  const sendingMessage = document.querySelector('#sending-message');
+  sendingMessage.style.display = 'block';
+
   if (!email || !emailReg.test(email)) {
     Swal.fire({
       icon: 'error',
@@ -29,6 +32,7 @@ async function sendMail() {
     },
     data: { email },
     success: (data) => {
+      sendingMessage.style.display = 'none';
       [code, expireTime] = [data.code, data.expireTime];
       Swal.fire({
         icon: 'success',
@@ -41,6 +45,7 @@ async function sendMail() {
     },
     error: (error) => {
       console.log(error);
+      sendingMessage.style.display = 'none';
       if (error.responseJSON.message) {
         Swal.fire({
           icon: 'error',

@@ -40,15 +40,7 @@ export class CardsService {
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
-    let check = 0;
-    for (const i in members) {
-      if (members[i] == userId) {
-        check++;
-      }
-    }
-    if (check == 0) {
-      members.push(userId);
-    }
+
     await this.cardRepository.insert({ board_column: column, name, content, file_url, sequence, color, members });
   }
   //카드 수정

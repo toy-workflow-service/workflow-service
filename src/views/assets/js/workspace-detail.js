@@ -25,6 +25,7 @@ async function getWorkspaceDetail() {
       },
       success: async (results) => {
         const { data } = results;
+        console.log(data.memberships[0]);
 
         userName = results.userName;
         callerId = results.userId;
@@ -33,9 +34,21 @@ async function getWorkspaceDetail() {
         const countBoards = await countWorkspaceBoards(data.id);
         const countCards = await countWorkspaceCards(data.id);
 
-        title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
-                  `;
+        if (data.memberships && data.memberships.length > 0) {
+          const membership = data.memberships[0];
+          const endDate = new Date(membership.end_date);
+          const currentDate = new Date();
+          const remaningDate = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
 
+          title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
+          <div style="display : inline-flex">
+          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="padding-right : 3px;"/><p style="padding-top : 15px; font-size : 13px">멤버십 종료까지 <strong>${remaningDate}일</strong> 남았습니다.</p>
+          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" id="extensionMembership" style="padding : 0.25rem 0.5rem">연장하기</button></div>
+          `;
+        } else {
+          title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
+          `;
+        }
         result += `<div class="card border-0 pb-md-50 pb-15" id="workspace-card">
                       <div class="card-header py-sm-20 py-3 px-sm-25 px-3">
                         <h6>워크스페이스 소개</h6>
@@ -306,6 +319,11 @@ async function getWorkspaceDetail() {
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
         printMemory.innerHTML = remaingMemory;
+
+        const extensionMembership = document.querySelector('#extensionMembership');
+        extensionMembership.addEventListener('click', () => {
+          openPaymentModal();
+        });
       },
     });
   } catch (err) {
@@ -502,6 +520,45 @@ async function setMemberRole() {
     });
   }
 }
+
+// function deleteConfirmModal(element) {
+//   const userId = element.getAttribute('data-rid-id')
+//   const confirmModal = document.querySelector('#modal-info-confirmed')
+//   modal.classList.add("show")
+
+//   const okBtn = modal.querySelector(".btn-info")
+//   const cancelBtn = modal.querySelector(".btn-light")
+
+//   okbtn.addE
+// }
+
+// <div class="modal-info-confirmed modal fade show" id="modal-info-confirmed" tabindex="-1" role="dialog" aria-hidden="true">
+
+// <div class="modal-dialog modal-sm modal-info" role="document">
+//    <div class="modal-content">
+//       <div class="modal-body">
+//          <div class="modal-info-body d-flex">
+//             <div class="modal-info-icon warning">
+//                <img src="img/svg/alert-circle.svg" alt="alert-circle" class="svg">
+//             </div>
+
+//             <div class="modal-info-text">
+//                <h6>Do you Want to delete these items?</h6>
+//                <p>Some descriptions</p>
+//             </div>
+
+//          </div>
+//       </div>
+//       <div class="modal-footer">
+
+//          <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">Cancel</button>
+//          <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Ok</button>
+
+//       </div>
+//    </div>
+// </div>
+
+// </div>
 
 // 워크스페이스 멤버 삭제
 function deleteMember(element) {

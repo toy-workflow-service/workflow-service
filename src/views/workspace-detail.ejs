@@ -133,7 +133,7 @@
                 <img class="svg" src="./assets/img/svg/user-plus.svg" alt="" /> 멤버초대
               </button>
             </div>
-            <div class="card-body" id="workspace-member">
+            <div class="card-body" id="workspace-member" style="overflow-y: scroll; max-height: 300px">
               <div class="d-flex align-items-center mb-25"></div>
             </div>
           </div>
@@ -176,7 +176,15 @@
                   </div>
                 </form>
                 <!-- 전송 중 메시지 -->
-                <div id="sending-message" style="display: none">전송 중...</div>
+                <div id="sending-message" style="display: none">
+                  전송 중...
+                  <div class="dm-spin-dots spin-md">
+                    <span class="spin-dot badge-dot dot-primary"></span>
+                    <span class="spin-dot badge-dot dot-primary"></span>
+                    <span class="spin-dot badge-dot dot-primary"></span>
+                    <span class="spin-dot badge-dot dot-primary"></span>
+                  </div>
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" onclick="inviteMember()">초대메일 전송</button>
