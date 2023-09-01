@@ -141,9 +141,6 @@ async function purchaseMembership() {
     const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
     const servicePeriod = document.querySelector('#service-period').textContent / 1;
     const workspaceId = document.querySelector('#workspace-select-text').getAttribute('data-workspace-id');
-    console.log(typeof membershipPrice);
-    console.log(typeof servicePeriod);
-    console.log(typeof workspaceId);
 
     await $.ajax({
       method: 'POST',

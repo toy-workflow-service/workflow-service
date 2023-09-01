@@ -25,8 +25,6 @@ async function getWorkspaceDetail() {
       },
       success: async (results) => {
         const { data } = results;
-        console.log(data.memberships[0]);
-
         userName = results.userName;
         callerId = results.userId;
 
@@ -43,7 +41,7 @@ async function getWorkspaceDetail() {
           title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
           <div style="display : inline-flex">
           <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="padding-right : 3px;"/><p style="padding-top : 15px; font-size : 13px">멤버십 종료까지 <strong>${remaningDate}일</strong> 남았습니다.</p>
-          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" id="extensionMembership" style="padding : 0.25rem 0.5rem">연장하기</button></div>
+          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" data-workspace-id="${data.id}" onclick="openPaymentModal(this)" style="padding : 0.25rem 0.5rem">연장하기</button></div>
           `;
         } else {
           title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
@@ -319,15 +317,118 @@ async function getWorkspaceDetail() {
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
         printMemory.innerHTML = remaingMemory;
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-        const extensionMembership = document.querySelector('#extensionMembership');
-        extensionMembership.addEventListener('click', () => {
-          openPaymentModal();
+// 멤버십 연장 모달열기
+function openPaymentModal(element) {
+  const workspaceId = element.getAttribute('data-workspace-id');
+  let paymentModal = document.querySelector('#modal-basic5');
+
+  paymentModal.innerHTML = `
+  <form>
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content modal-bg-white">
+      <div class="modal-header">
+        <h6 class="modal-title">멤버십 결제</h6>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>멤버십 타입:</strong> <span id="membership-type">Premium</span></p>
+        <p><strong>결제금액:</strong> <span id="membership-price"></span><span>원</span></p>
+        <div class="dropdown dropdown-hover">
+        <a style="cursor:pointer;">
+        <span id="period-select-text">이용기간 선택</span>
+          <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
+        </a>
+        <div class="dropdown-default dropdown-clickEvent">
+        <p class="dropdown-item" style="cursor:pointer;"><strong>이용기간:</strong> <span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
+        <p class="dropdown-item" style="cursor:pointer;"><strong>이용기간:</strong> <span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
+        </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-workspace-id="${workspaceId} "id="payment-btn">결제</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+      </div>
+    </div>
+  </div>
+  </form>
+  `;
+
+  let membershipItems = document.querySelectorAll('.dropdown-default .dropdown-item');
+  membershipItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      let selected = item.textContent;
+      document.querySelector('#period-select-text').textContent = selected;
+
+      const membershipPrice = document.querySelector('#membership-price');
+
+      switch (selected) {
+        case '이용기간: 30일':
+          membershipPrice.textContent = '6,500';
+          break;
+        case '이용기간: 180일':
+          membershipPrice.textContent = '31,000';
+          break;
+      }
+    });
+  });
+  const paymentBtn = document.querySelector('#payment-btn');
+  paymentBtn.addEventListener('click', () => {
+    extensionMembership();
+  });
+
+  $(paymentModal).modal('show');
+}
+
+// 멤버십 연장
+async function extensionMembership() {
+  try {
+    let membershipType = document.querySelector('#membership-type').textContent;
+    if (membershipType === 'Premium') membershipType = 1;
+    const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
+    const servicePeriod = document.querySelector('#service-period').textContent / 1;
+    const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
+
+    await $.ajax({
+      method: 'POST',
+      url: `/workspaces/${workspaceId}/payments/extension`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'success!',
+          text: '멤버십 연장 완료!',
+        }).then(() => {
+          window.location.reload();
         });
       },
     });
   } catch (err) {
     console.error(err);
+    if (err.responseJSON.message) {
+      Swal.fire({
+        icon: 'error',
+        title: 'error',
+        text: err.responseJSON.message,
+      });
+    }
+    Swal.fire({
+      icon: 'error',
+      title: 'error',
+      text: '멤버십 결제 도중 오류가 발생했습니다.',
+    });
   }
 }
 
