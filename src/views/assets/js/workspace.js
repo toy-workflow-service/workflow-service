@@ -1,15 +1,20 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
 let selectedMembers = [];
+let selectedMemberId = [];
 
 let typingTimer;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards();
+  initializeMemberInput('#name47', '#selected-members');
+  initializeMemberInput('#name48', '#edit-selected-members');
+});
 
-  const memberInput = document.querySelector('#name47');
-  const selectedMemberList = document.querySelector('#selected-members');
+function initializeMemberInput(inputSelector, memberListSelector) {
+  const memberInput = document.querySelector(inputSelector);
+  const selectedMemberList = document.querySelector(memberListSelector);
 
   memberInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
@@ -32,16 +37,16 @@ $(document).ready(async () => {
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMembers.includes(results.user.name)) {
-            selectedMembers.push(results.user.name);
-            updateSelectedMembersUI();
+          if (!selectedMemberId.includes(results.user.id)) {
+            selectedMembers.push({ name: results.user.name, id: results.user.id });
+            selectedMemberId.push(results.user.id);
+            updateSelectedMembersUI(memberListSelector);
           }
         });
       }
     });
   });
-});
-
+}
 const printBoard = document.querySelector('#board-box');
 const printButton = document.querySelector('.nav-item');
 
@@ -60,6 +65,7 @@ async function getMyBoards() {
         let result = '';
         let button = '';
         console.log(boards);
+        document.querySelector('#running-boards').innerHTML = `${boards.length} Running Boards`;
         for (const board of boards) {
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -87,7 +93,9 @@ async function getMyBoards() {
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
                                   }" onclick="openEditBoardModal(this)">edit</a>
-                                  <a class="dropdown-item">delete</a>
+                                  <a class="dropdown-item" boardId="${
+                                    board.boardId
+                                  }" onclick="deleteBoard(this)">delete</a>
                                 </div>
                               </div>
                             </div>
@@ -180,7 +188,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
-          await createBoardMember(boardId, member);
+          await createBoardMember(boardId, member.name);
         }
 
         Swal.fire({
@@ -258,12 +266,12 @@ async function searchMembers(searchText) {
 }
 
 // 선택한 멤버 UI 출력
-function updateSelectedMembersUI() {
-  const selectedMemberList = document.querySelector('#selected-members');
+function updateSelectedMembersUI(memberListSelector) {
+  const selectedMemberList = document.querySelector(memberListSelector);
   selectedMemberList.innerHTML = selectedMembers
     .map(
       (member) => `
-    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+    <li id="members" data-member="${member.name}" data-id="${member.id}">${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
   `
     )
     .join('');
@@ -273,8 +281,9 @@ function updateSelectedMembersUI() {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
-      updateSelectedMembersUI();
+      selectedMembers = selectedMembers.filter((member) => member.id !== memberRemove);
+      selectedMemberId = selectedMemberId.filter((selected) => selected !== memberRemove);
+      updateSelectedMembersUI(memberListSelector);
     });
   });
 }
@@ -321,10 +330,21 @@ async function openEditBoardModal(element) {
       icon.addEventListener('click', (e) => {
         const memberRemove = e.target.getAttribute('data-member');
         selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
-        updateSelectedMembersUI();
+        updateSelectedMembersUI('#edit-selected-members');
       });
     });
 
+    document.getElementById('edit-board-btn').addEventListener('click', async (event) => {
+      event.preventDefault();
+      const editMembers = [];
+      const members = document.querySelectorAll('#members');
+      members.forEach((icon) => {
+        editMembers.push(icon.getAttribute('data-id'));
+      });
+      await putBoard(boardId, titleInput.value, descriptionInput.value);
+      await putBoardMember(boardId, editMembers);
+      location.reload();
+    });
     $(editModal).modal('show');
   } catch (err) {
     console.error(err);
@@ -345,4 +365,62 @@ function getBoardMembers(boardId) {
   } catch (err) {
     console.error(err);
   }
+}
+
+// 보드 수정
+async function putBoard(boardId, name, description) {
+  await $.ajax({
+    type: 'PUT',
+    url: `boards/${boardId}?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ name, description }),
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+//보드 멤버 수정
+async function putBoardMember(boardId, userIdArray) {
+  await $.ajax({
+    type: 'PUT',
+    url: `/boards/${boardId}/members`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ userIdArray }),
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+//보드 삭제
+async function deleteBoard(element) {
+  const boardId = element.getAttribute('boardId');
+  await $.ajax({
+    type: 'DELETE',
+    url: `boards/${boardId}?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      console.log(data.message);
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
 }
