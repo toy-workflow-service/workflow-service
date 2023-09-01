@@ -38,22 +38,23 @@ export class CardsController {
   }
   //카드 생성
   @Post()
-  @UseGuards(AuthGuard)
   async CreateCard(
-    @GetUser() user: AccessPayload,
-    @Query('board_column_Id') board_column_Id: number,
-    @Body() data: CreateCardDto
+    @Query('board_column_Id') boardColumnId: number,
+    @Body() data: CreateCardDto,
+    @Body('members') memberIds: string[],
+    @Req() req: MulterRequest,
+    @Body('originalnames') originalnames: string[],
+    @Res() res: Response
   ) {
-    await this.cardsService.CreateCard(
-      board_column_Id,
-      data.name,
-      data.content,
-      data.file_url,
-      data.sequence,
-      data.color,
-      data.members,
-      user.id
-    );
+    const files: any = req.files;
+    let fileArray = [];
+    if (files) {
+      files.forEach((file) => {
+        fileArray.push(file.location);
+      });
+    }
+    await this.cardsService.CreateCard(boardColumnId, data, fileArray, originalnames, memberIds);
+    return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
   //카드 수정
   @Patch('/:cardId')
@@ -63,15 +64,7 @@ export class CardsController {
     @Param('cardId') id: number,
     @Body() data: UpdateCardDto
   ) {
-    return await this.cardsService.UpdateCard(
-      board_column_Id,
-      id,
-      data.name,
-      data.content,
-      data.file_url,
-      data.color,
-      data.members
-    );
+    return await this.cardsService.UpdateCard(board_column_Id, id, data.name, data.content, data.color);
   }
   //카드 삭제
   @Delete('/:cardId')
@@ -89,15 +82,5 @@ export class CardsController {
     @Body() data: UpdateCardSequenceDto
   ) {
     await this.cardsService.UpdateCardSequence(board_column_Id, cardId, data.sequence);
-  }
-
-  @Post('uploads')
-  async UploadCard(@Req() req: MulterRequest, @Res() res: Response) {
-    const array: any = req.files;
-    let originalnames = [];
-    array.forEach((fileInfo: any) => {
-      originalnames.push(fileInfo.originalname);
-    });
-    return res.status(HttpStatus.OK).json({ message: '업로드 성공' });
   }
 }

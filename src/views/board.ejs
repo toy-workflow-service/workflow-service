@@ -345,11 +345,12 @@
                               </div>
                               <div class="row">
                                  <label> 파일 업로드 </label>
-                                 <!-- <div>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                      </div> -->
-                                 <input type="file" id="cardfileCreate" style="margin-bottom: 3%;" />
+                                 <div class="insert">
+                                    <form method="POST" onsubmit="return false;" enctype="multipart/form-data">
+                                        <input type="file"onchange="addFile(this);" multiple />
+                                        <div class="file-list"></div>
+                                    </form>
+                                </div>
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
                            </div>

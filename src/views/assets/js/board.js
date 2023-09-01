@@ -257,7 +257,6 @@ async function BoardColumns(data) {
   
                                 </div>`;
     }
-    console.log(cardIndex);
   }
   kanbanList.innerHTML += `<div class="kanban-board__add-card">
                               <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
@@ -364,7 +363,6 @@ async function BoardColumns(data) {
       const columnId = e.target.getAttribute('data-columnId');
 
       DetailCardGet(columnId, cardId);
-      console.log(columnId, cardId);
     });
   });
 
@@ -408,24 +406,35 @@ async function BoardColumns(data) {
       cardColumnId = id;
       const sequence = e.target.getAttribute('data-index');
       cardSequence = Number(sequence) + 1;
-      console.log('sequence, columnId', cardSequence, cardColumnId);
     });
   });
-  document.getElementById('CardCreateBtn').addEventListener('click', () => {
+  document.getElementById('CardCreateBtn').addEventListener('click', async () => {
     const cardTitle = document.getElementById('cardTitleCreate').value;
     const cardColor = document.getElementById('cardColorCreate').value;
     const cardContent = document.getElementById('cardContentCreate').value;
-    const cardFile = document.getElementById('cardfileCreate').value;
-    const card = {
-      name: cardTitle,
-      color: cardColor,
-      content: cardContent,
-      fileUrl: cardFile,
-      members: selectedMemberNumber,
-      sequence: cardSequence,
-    };
-    console.log('create 보내기 전 :', cardColumnId, cardSequence);
-    CardCreate(cardColumnId, card);
+    // 폼데이터 담기
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+    if (filesArr) {
+      for (let i = 0; i < filesArr.length; i++) {
+        // 삭제되지 않은 파일만 폼데이터에 담기
+        if (!filesArr[i].is_delete) {
+          formData.append('newFiles', filesArr[i]);
+          formData.append('originalnames', filesArr[i].name);
+        }
+      }
+    }
+    if (selectedMemberNumber) {
+      for (let i = 0; i < selectedMemberNumber.length; i++) {
+        formData.append('members', selectedMemberNumber[i]);
+      }
+    }
+    formData.append('name', cardTitle);
+    formData.append('color', cardColor);
+    formData.append('content', cardContent);
+    formData.append('sequence', cardSequence);
+
+    CardCreate(cardColumnId, formData);
   });
 }
 
@@ -474,28 +483,30 @@ async function CardGet(columnId) {
 // card create api
 async function CardCreate(columnId, data) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  console.log(columnId, data);
   await $.ajax({
     type: 'POST',
     url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({
-      name: data.name,
-      content: data.content,
-      file_url: data.fileUrl,
-      sequence: data.sequence,
-      members: data.members,
-      color: data.color,
-    }),
+    processData: false,
+    contentType: false,
+    data: data,
     success: function (data) {
-      console.log(data.message);
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        location.reload();
+      });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message[0],
+      });
     },
   });
 }
@@ -685,7 +696,6 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     `;
 
       selectedMembers.push({ name: member[0].name, id: member[0].userId });
-      console.log('click함', selectedMembers);
       selectedMemberNumber.push(member[0].userId);
     }
   }
@@ -710,6 +720,14 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
         </div> `;
     }
   }
+  let fileHTML = '';
+  if (cardData.file_url.length > 1) {
+    for (let i in cardData.file_url) {
+      fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+    }
+  } else if (cardData.file_url) {
+    fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
+  }
 
   const modalContentHTML = `
   <div class=" kanban-modal__header-wrapper">
@@ -732,15 +750,9 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
         <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${cardData.content}</textarea>
      </div>
      <div class="row">
-        <label>이미지 파일</label>
+        <label>파일</label>
         <div id="cardDetailImgFile">
-           ${cardData.file_url}
-        </div>
-        <label style="margin-top: 3%;">그외 파일</label>
-        <div id="cardDetailNotImgFile">
-           <!-- 파일이 이미지가 아닐 경우 -->
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+           ${fileHTML}
         </div>
      </div>
      <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
@@ -814,11 +826,6 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const results = await searchMembers();
-      console.log(results);
-
-      document.getElementById(e.target.id).addEventListener('click', () => {
-        console.log('id 확인 : ', e.target.id);
-      });
 
       selectedMemberList.innerHTML = '';
       for (let result of results) {
@@ -837,7 +844,6 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
         li.addEventListener('click', () => {
           if (!selectedMemberNumber.includes(result.userId)) {
             selectedMembers.push({ name: result.name, id: result.userId });
-            console.log('click함', selectedMembers);
             selectedMemberNumber.push(result.userId);
             updateSelectedMembersUI(selected);
           }
@@ -914,7 +920,6 @@ async function DetailCardGet(columnId, cardId) {
         },
       });
       users.push(boardMembers);
-      console.log(boardMembers);
     }
 
     // 카드에 대한 코멘트를 가져오는 API 호출
@@ -929,7 +934,6 @@ async function DetailCardGet(columnId, cardId) {
 
     // 코멘트 응답
     const commentsData = commentsResponse;
-    console.log(commentsResponse);
     createCardDetailModal(cardData, commentsData, columnId, cardId, users);
     openUpdateCardModal(cardData, columnId, cardId);
   } catch (error) {
@@ -1232,4 +1236,69 @@ function Getcomment(cardId, commentId) {
       console.log(error);
     },
   });
+}
+
+// 여러 파일 보내기
+var fileNo = 0;
+var filesArr = [];
+
+/* 첨부파일 추가 */
+function addFile(obj) {
+  var maxFileCnt = 5; // 첨부파일 최대 개수
+  var attFileCnt = document.querySelectorAll('.filebox').length; // 기존 추가된 첨부파일 개수
+  var remainFileCnt = maxFileCnt - attFileCnt; // 추가로 첨부가능한 개수
+  var curFileCnt = obj.files.length; // 현재 선택된 첨부파일 개수
+
+  // 첨부파일 개수 확인
+  if (curFileCnt > remainFileCnt) {
+    alert('첨부파일은 최대 ' + maxFileCnt + '개 까지 첨부 가능합니다.');
+  }
+
+  for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
+    const file = obj.files[i];
+    // 첨부파일 검증
+    if (validation(file)) {
+      // 파일 배열에 담기
+      var reader = new FileReader();
+      reader.onload = function () {
+        filesArr.push(file);
+      };
+      reader.readAsDataURL(file);
+
+      // 목록 추가
+      let htmlData = '';
+      htmlData += '<div id="file' + fileNo + '" class="filebox">';
+      htmlData += '   <p class="name">' + file.name + '</p>';
+      htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+      htmlData += '</div>';
+      $('.file-list').append(htmlData);
+      fileNo++;
+    } else {
+      continue;
+    }
+  }
+  // 초기화
+  document.querySelector('input[type=file]').value = '';
+}
+
+/* 첨부파일 검증 */
+function validation(obj) {
+  if (obj.name.length > 100) {
+    alert('파일명이 100자 이상인 파일은 제외되었습니다.');
+    return false;
+  } else if (obj.size > 10 * 1024 * 1024) {
+    alert('최대 파일 용량인 10MB를 초과한 파일은 제외되었습니다.');
+    return false;
+  } else if (obj.name.lastIndexOf('.') == -1) {
+    alert('확장자가 없는 파일은 제외되었습니다.');
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/* 첨부파일 삭제 */
+function deleteFile(num) {
+  document.querySelector('#file' + num).remove();
+  filesArr[num].is_delete = true;
 }

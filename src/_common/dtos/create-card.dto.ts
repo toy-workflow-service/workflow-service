@@ -9,16 +9,13 @@ export class CreateCardDto {
   @IsString()
   content: string;
 
-  @IsString()
-  file_url: string[];
-
   @IsNotEmpty()
   @IsNumber()
   sequence: number;
 
-  @IsNotEmpty()
-  @IsArray()
-  members: number[];
+  // @IsNotEmpty()
+  // @IsArray()
+  // members: any[];
 
   @IsNotEmpty()
   color: string;
