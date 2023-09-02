@@ -80,6 +80,7 @@ $(BoardColumnsGet);
 function init() {
   $('.kanban-items,.todo-task1 tbody')
     .sortable({
+      containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
       stack: '.kanban-items  ul,.todo-task1 tbody',
       start: function (e, i) {
