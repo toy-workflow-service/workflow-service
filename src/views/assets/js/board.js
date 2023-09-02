@@ -726,7 +726,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     for (let i in cardData.file_url) {
       fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
     }
-  } else if (cardData.file_url) {
+  } else if (cardData.file_url[0]) {
     fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
   }
 
