@@ -323,24 +323,6 @@ async function openEditBoardModal(element) {
     }
     console.log(selectedMembers);
     initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
-    // const selectedMembersList = editModal.querySelector('#update-selected-members');
-
-    // // selectedMembersList.innerHTML = '';
-    // for (const member of data.boardMembers) {
-    //   selectedMembersList.innerHTML += `
-    //   <li id="members" data-member="${member.name}" data-id="${member.id}">${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>`;
-    // }
-
-    // const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
-    // removeIcons.forEach((icon) => {
-    //   icon.addEventListener('click', (e) => {
-    //     const memberRemove = e.target.getAttribute('data-member');
-    //     selectedMembers = selectedMembers.filter((member) => member.id !== memberRemove);
-    //     selectedMemberId = selectedMemberId.filter((id) => id !== memberRemove);
-    //     // selectedMemberId.push(results.user.id);
-    //     updateSelectedMembersUI('#update-selected-members');
-    //   });
-    // });
 
     document.getElementById('edit-board-btn').addEventListener('click', async (event) => {
       event.preventDefault();

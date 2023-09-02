@@ -604,7 +604,9 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate">${comment.comment}</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+            comment.comment
+          }</textarea>
           
           <!-- 수정 버튼 -->
           ${
