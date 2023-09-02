@@ -1,5 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { promises } from 'dns';
+import { OutgoingHttpHeader } from 'http';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
@@ -60,6 +62,13 @@ export class BoardsService {
   //보드 생성
   async CreateBoard(workspaceId: number, name: string, description: string): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
+    console.log(workspace);
+    const boardCount = await this.GetBoards(workspaceId);
+    const hasMembership = workspace.memberships.length > 0;
+
+    if (boardCount.length >= 3 && !hasMembership)
+      throw new HttpException('무료 워크스페이스는 보드를 3개까지만 생성할 수 있습니다.', HttpStatus.BAD_REQUEST);
+
     const board = await this.boardRepository.insert({ name, description, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
     await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });

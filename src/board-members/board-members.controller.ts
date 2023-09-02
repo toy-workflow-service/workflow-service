@@ -8,18 +8,6 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 export class BoardMembersController {
   constructor(private readonly boardMembersService: BoardMembersService) {}
 
-  // 보드 멤버 찾기
-  @Get('/boards/:boardId/members/:userId')
-  @UseGuards(AuthGuard)
-  async GetBoardMemberNameSearch(
-    @Param('userId') userId: number,
-    @Param('boardId') boardId: number,
-    @Res() res: Response
-  ) {
-    const members = await this.boardMembersService.GetBoardMemberName(boardId, userId);
-    return res.status(HttpStatus.OK).json({ boardMembers: members });
-  }
-
   //보드 멤버 초대
   @Post('/boards/:boardId/members')
   @UseGuards(AuthGuard)

@@ -14,7 +14,7 @@ export class PaymentsService {
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
     private readonly membershipService: MembershipsService,
-    private readonly userService: UsersService,
+    private readonly userService: UsersService
   ) {}
 
   // 멤버십 결제
