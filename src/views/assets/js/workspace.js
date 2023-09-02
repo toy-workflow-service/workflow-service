@@ -65,9 +65,10 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
-        console.log(boards);
         document.querySelector('#running-boards').innerHTML = `${boards.length} Running Boards`;
         for (const board of boards) {
+          // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
+          const cardLength = await detailBoardGet(board.boardId);
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
                         <div class="border-bottom px-30">
@@ -121,15 +122,19 @@ async function getMyBoards() {
                                 <div
                                   class="progress-bar bg-primary"
                                   role="progressbar"
-                                  style="width: 83%"
+                                  style="width: ${(cardLength.done / cardLength.cards) * 100}%"
                                   aria-valuenow="83"
                                   aria-valuemin="0"
                                   aria-valuemax="100"
                                 ></div>
                               </div>
-                              <span class="progress-percentage">83%</span>
+                              <span class="progress-percentage">${Math.round(
+                                (cardLength.done / cardLength.cards) * 100
+                              )}%</span>
                             </div>
-                            <p class="color-light fs-12 mb-20">12 / 15 tasks completed</p>
+                            <p class="color-light fs-12 mb-20">${cardLength.done} / ${
+                              cardLength.cards
+                            } tasks completed</p>
                           </div>
                         </div>
                         <div class="mt-20 px-30">
@@ -268,7 +273,6 @@ async function searchMembers(searchText) {
 
 // 선택한 멤버 UI 출력
 function updateSelectedMembersUI(memberListSelector) {
-  console.log('여기 들어오나요');
   const selectedMemberList = document.querySelector(memberListSelector);
   selectedMemberList.innerHTML = '';
   selectedMemberList.innerHTML += selectedMembers
@@ -413,4 +417,36 @@ async function deleteBoard(element) {
       console.log(error);
     },
   });
+}
+
+// 보드 상세 조회
+async function detailBoardGet(boardId) {
+  const allCard = await $.ajax({
+    method: 'GET',
+    url: `/board-columns?boardId=${boardId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+  }).then(async (columns) => {
+    let cardsLength = 0;
+    let doneLength = 0;
+    for (let column of columns) {
+      const cards = await $.ajax({
+        method: 'GET',
+        url: `/cards?board_column_Id=${column.columnId}`,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader('Content-type', 'application/json');
+          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+        },
+      });
+      cardsLength += cards.length;
+      if (column.columnName == 'Done') {
+        doneLength = cards.length;
+      }
+    }
+    return { cards: cardsLength, done: doneLength };
+  });
+
+  return allCard;
 }
