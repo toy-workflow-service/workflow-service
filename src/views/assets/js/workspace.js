@@ -128,9 +128,9 @@ async function getMyBoards() {
                                   aria-valuemax="100"
                                 ></div>
                               </div>
-                              <span class="progress-percentage">${Math.round(
-                                (cardLength.done / cardLength.cards) * 100
-                              )}%</span>
+                              <span class="progress-percentage">${
+                                Math.round((cardLength.done / cardLength.cards) * 100) || 0
+                              }%</span>
                             </div>
                             <p class="color-light fs-12 mb-20">${cardLength.done} / ${
                               cardLength.cards
@@ -337,7 +337,13 @@ async function openEditBoardModal(element) {
       });
       await putBoard(boardId, titleInput.value, descriptionInput.value);
       await putBoardMember(boardId, selectedMemberId);
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '보드를 수정하였습니다.',
+      }).then(() => {
+        window.location.reload();
+      });
     });
     $(editModal).modal('show');
   } catch (err) {
@@ -410,8 +416,13 @@ async function deleteBoard(element) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log(data.message);
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: data.message,
+      }).then(() => {
+        window.location.reload();
+      });
     },
     error: (error) => {
       console.log(error);
