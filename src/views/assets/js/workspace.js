@@ -8,14 +8,15 @@ const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards();
-  initializeMemberInput('#name47', '#selected-members');
-  initializeMemberInput('#name48', '#edit-selected-members');
+  initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
+  // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
 
-function initializeMemberInput(inputSelector, memberListSelector) {
+function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
   const selectedMemberList = document.querySelector(memberListSelector);
 
+  updateSelectedMembersUI(selected);
   memberInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
@@ -40,7 +41,7 @@ function initializeMemberInput(inputSelector, memberListSelector) {
           if (!selectedMemberId.includes(results.user.id)) {
             selectedMembers.push({ name: results.user.name, id: results.user.id });
             selectedMemberId.push(results.user.id);
-            updateSelectedMembersUI(memberListSelector);
+            updateSelectedMembersUI(selected);
           }
         });
       }
@@ -267,8 +268,10 @@ async function searchMembers(searchText) {
 
 // 선택한 멤버 UI 출력
 function updateSelectedMembersUI(memberListSelector) {
+  console.log('여기 들어오나요');
   const selectedMemberList = document.querySelector(memberListSelector);
-  selectedMemberList.innerHTML = selectedMembers
+  selectedMemberList.innerHTML = '';
+  selectedMemberList.innerHTML += selectedMembers
     .map(
       (member) => `
     <li id="members" data-member="${member.name}" data-id="${member.id}">${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
@@ -281,8 +284,9 @@ function updateSelectedMembersUI(memberListSelector) {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((member) => member.id !== memberRemove);
-      selectedMemberId = selectedMemberId.filter((selected) => selected !== memberRemove);
+      console.log(memberRemove, 'id값이 들어와야해');
+      selectedMembers = selectedMembers.filter((member) => member.id != memberRemove);
+      selectedMemberId = selectedMemberId.filter((selected) => selected != memberRemove);
       updateSelectedMembersUI(memberListSelector);
     });
   });
@@ -310,29 +314,33 @@ async function openEditBoardModal(element) {
     titleInput.value = board.name;
     descriptionInput.value = board.description;
 
-    const data = await getBoardMembers(boardId);
-    const selectedMembersList = editModal.querySelector('.user-group-people__parent');
-
-    selectedMembersList.innerHTML = '';
-    for (const member of data.boardMembers) {
-      const memberImage = member.profileUrl ? member.profileUrl : './assets/img/favicon.png';
-      selectedMembersList.innerHTML += `
-        <li>
-          <a>
-            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${memberImage}" alt="${member.name}" />
-            <span class="remove-member" data-member="${member.name}" data-member-id="${member.userId}">x</span>
-          </a>
-        </li>`;
+    const { boardMembers } = await getBoardMembers(boardId);
+    selectedMemberId = [];
+    selectedMembers = [];
+    for (let data of boardMembers) {
+      selectedMemberId.push(data.userId);
+      selectedMembers.push({ name: data.name, id: data.userId });
     }
+    console.log(selectedMembers);
+    initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
+    // const selectedMembersList = editModal.querySelector('#update-selected-members');
 
-    const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
-    removeIcons.forEach((icon) => {
-      icon.addEventListener('click', (e) => {
-        const memberRemove = e.target.getAttribute('data-member');
-        selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
-        updateSelectedMembersUI('#edit-selected-members');
-      });
-    });
+    // // selectedMembersList.innerHTML = '';
+    // for (const member of data.boardMembers) {
+    //   selectedMembersList.innerHTML += `
+    //   <li id="members" data-member="${member.name}" data-id="${member.id}">${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>`;
+    // }
+
+    // const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
+    // removeIcons.forEach((icon) => {
+    //   icon.addEventListener('click', (e) => {
+    //     const memberRemove = e.target.getAttribute('data-member');
+    //     selectedMembers = selectedMembers.filter((member) => member.id !== memberRemove);
+    //     selectedMemberId = selectedMemberId.filter((id) => id !== memberRemove);
+    //     // selectedMemberId.push(results.user.id);
+    //     updateSelectedMembersUI('#update-selected-members');
+    //   });
+    // });
 
     document.getElementById('edit-board-btn').addEventListener('click', async (event) => {
       event.preventDefault();
@@ -342,7 +350,7 @@ async function openEditBoardModal(element) {
         editMembers.push(icon.getAttribute('data-id'));
       });
       await putBoard(boardId, titleInput.value, descriptionInput.value);
-      await putBoardMember(boardId, editMembers);
+      await putBoardMember(boardId, selectedMemberId);
       location.reload();
     });
     $(editModal).modal('show');
