@@ -8,7 +8,7 @@
             <div class="col-lg-12">
 
                <div class="breadcrumb-main">
-                  <h4 class="text-capitalize breadcrumb-title">Kanban Board</h4>
+                  <h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
                   <div class="breadcrumb-action justify-content-center flex-wrap">
                      <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
@@ -272,17 +272,21 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="editColumnModalLabel">Edit Column</h5>
+                              <h5 class="modal-title" id="editColumnModalLabel">컬럼 생성</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
                            </button>
                         </div>
-                        <div class="kanban-modal__research mt-30">
-                           <h6>Column Title </h6>
-                           <input type="text" id="columnTitle" />
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="ColumnAddBtn">submit</button>
+                        <div class="modal-body kanban-modal__body">
+                           <div class="kanban-modal__form ">
+                              <div class="mb-30">
+                                 <label for="exampleFormControlTextarea1111" class="form-label">컬럼 제목</label>
+                                 <input type="text" id="columnTitle" style="margin-bottom: 3%;" />
+                              </div>
+                              <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+                                 id="ColumnAddBtn">생성</button>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -295,7 +299,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="updateColumnModalLabel">Edit Column</h5>
+                              <h5 class="modal-title" id="updateColumnModalLabel">컬럼 수정</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -304,11 +308,11 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Column Title</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">컬럼 제목</label>
                                  <input type="text" id="columnTitleUpdate" style="margin-bottom: 3%;" />
                               </div>
                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                                 id="ColumnUpdateNameBtn">submit</button>
+                                 id="ColumnUpdateNameBtn">수정</button>
                            </div>
                         </div>
                      </div>
@@ -322,7 +326,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="createCardModalLabel">Create Card</h5>
+                              <h5 class="modal-title" id="createCardModalLabel">카드 생성</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -331,31 +335,31 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Title</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">제목</label>
                                  <input type="text" id="cardTitleCreate" style="margin-bottom: 3%;" />
                               </div>
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">내용</label>
                                  <textarea class="form-control" id="cardContentCreate" rows="3"
-                                    placeholder="Add a more detailed description…"></textarea>
+                                    placeholder="내용을 작성해주세요…"></textarea>
                               </div>
                               <div class="row">
-                                 <label> file upload </label>
-                                 <!-- <div>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                         <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                      </div> -->
-                                 <input type="file" id="cardfileCreate" style="margin-bottom: 3%;" />
+                                 <label> 파일 업로드 </label>
+                                 <div class="insert">
+                                    <form method="POST" onsubmit="return false;" enctype="multipart/form-data">
+                                        <input type="file"onchange="addFile(this);" multiple />
+                                        <div class="file-list"></div>
+                                    </form>
+                                </div>
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Members </h6>
+                              <h6>참여자 </h6>
                            </div>
                            <div class="kanban-modal__list">
-                              <button class="btn btn-primary btn-sm btn-squared" id="cardCreateAddMemberBtn">member to
-                                 invite</button>
+                              <button class="btn btn-primary btn-sm btn-squared" id="cardCreateAddMemberBtn">초대하기...</button>
                               <div id="cardCreateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
                                  <div class="mb-25">
                                     <div class="form-group mb-10">
@@ -377,11 +381,11 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Color </h6>
+                              <h6>카드 색상 </h6>
                               <input type="color" id="cardColorCreate" />
                            </div>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="CardCreateBtn">submit</button>
+                              id="CardCreateBtn">생성</button>
                         </div>
                      </div>
                   </div>
@@ -394,7 +398,7 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="updateCardModalLabel">Update Card</h5>
+                              <h5 class="modal-title" id="updateCardModalLabel">카드 수정</h5>
                            </div>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                               <img src="./assets/img/svg/x.svg" alt="x" class="svg">
@@ -403,31 +407,32 @@
                         <div class="modal-body kanban-modal__body">
                            <div class="kanban-modal__form ">
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Title</label>
-                                 <input type="text" id="cardTitleUdpate" style="margin-bottom: 3%;" />
+                                 <label for="exampleFormControlTextarea1111" class="form-label">제목</label>
+                                 <input type="text" id="cardTitleUpdate" style="margin-bottom: 3%;" />
                               </div>
                               <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+                                 <label for="exampleFormControlTextarea1111" class="form-label">내용</label>
                                  <textarea class="form-control" id="cardContentUpdate" rows="3"
-                                    placeholder="Add a more detailed description…"></textarea>
+                                    placeholder="내용을 입력해주세요…"></textarea>
                               </div>
                               <div class="row">
-                                 <label> file upload </label>
-                                 <!-- <div>
-                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                          <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                       </div> -->
-                                 <input type="file" id="cardfileUpdate" style="margin-bottom: 3%;" />
+                                 <label> 파일 업로드 </label>
+                                 <div class="insert">
+                                    <form method="POST" onsubmit="return false;" enctype="multipart/form-data">
+                                        <input type="file"onchange="addFile(this);" multiple />
+                                        <div class="file-list" id="edit-card-file"></div>
+                                    </form>
+                                </div>
+                                 <!-- <input type="file" id="cardfileUpdate" style="margin-bottom: 3%;" /> -->
                               </div>
                               <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Members </h6>
+                              <h6>참여자 </h6>
                            </div>
                            <div class="kanban-modal__list">
-                              <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">member to
-                                 invite</button>
+                              <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">초대하기...</button>
                               <div id="cardUpdateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
                                  <div class="mb-25">
                                     <div class="form-group mb-10">
@@ -442,11 +447,11 @@
                            </div>
 
                            <div class="kanban-modal__research mt-30">
-                              <h6>Color </h6>
+                              <h6>카드 색상 </h6>
                               <input type="color" id="cardColorUpdate" />
                            </div>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                              id="CardUpdateBtn">submit</button>
+                              id="CardUpdateBtn">수정</button>
                         </div>
                      </div>
                   </div>
@@ -459,12 +464,12 @@
                      <div class="modal-content">
                         <div class=" kanban-modal__header-wrapper">
                            <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="commentDetailModalLabel">Comment</h5>
+                              <h5 class="modal-title" id="commentDetailModalLabel">댓글</h5>
                            </div>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              id="commentUpdateBtn">update</button>
+                              id="commentUpdateBtn">수정</button>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              id="commentDeleteBtn">delete</button>
+                              id="commentDeleteBtn">삭제</button>
                            <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
                               id="commentConfirmBtn" style="display:none;">확인</button>
                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -496,66 +501,7 @@
                            </div>
                            <div class="kanban-modal__list">
                               <ul>
-                                 <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
-                                          <label class=" strikethrough" style="color: black;">
-                                             test 1
-                                          </label>
-                                          <p> comment 1 </p>
-                                       </div>
-                                       <div class="dropdown dropdown-click">
-                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
-                                             aria-haspopup="true" aria-expanded="false">
-                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
-                                                class="svg">
-                                          </button>
-                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </li>
-                                 <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
-                                          <label class=" strikethrough" style="color: black;">
-                                             test 2
-                                          </label>
-                                          <p> comment2 </p>
-                                       </div>
-                                       <div class="dropdown dropdown-click">
-                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
-                                             aria-haspopup="true" aria-expanded="false">
-                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
-                                                class="svg">
-                                          </button>
-                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </li>
-                                 <li>
-                                    <div class="checkbox-group d-flex">
-                                       <div class="checkbox-group__single d-flex row" id="commentViewBoxBtn">
-                                          <label class=" strikethrough" style="color: black;">
-                                             test3
-                                          </label>
-                                          <p> comment 3</p>
-                                       </div>
-                                       <div class="dropdown dropdown-click">
-                                          <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown"
-                                             aria-haspopup="true" aria-expanded="false">
-                                             <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal"
-                                                class="svg">
-                                          </button>
-                                          <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                             <a class="dropdown-item" href="" id="">Delete Comment</a>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </li>
+
                               </ul>
                            </div>
                            <!-- <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="CardUpdateBtn">submit</button> -->
@@ -566,7 +512,7 @@
 
                <div class="kanban-board__card mb-50">
                   <div class="kanban-header">
-                     <h4>Basic Kanban Board</h4>
+                     <h4>board name</h4>
                   </div>
                   <section class="lists-container kanban-container ">
 

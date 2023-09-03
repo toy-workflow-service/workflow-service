@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from 'src/_common/entities/card.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
+import { CreateCardDto } from 'src/_common/dtos/create-card.dto';
+import { UpdateCardDto } from 'src/_common/dtos/update-card.dto';
 @Injectable()
 export class CardsService {
   constructor(
@@ -28,40 +30,43 @@ export class CardsService {
   //카드 생성
   async CreateCard(
     board_column_id: number,
-    name: string,
-    content: string,
-    file_url: string[],
-    sequence: number,
-    color: string,
-    members: number[],
-    userId: number
+    cardInfo: CreateCardDto,
+    files: string[],
+    originalnames: string[],
+    memberIds: string[]
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id);
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
 
-    await this.cardRepository.insert({ board_column: column, name, content, file_url, sequence, color, members });
+    await this.cardRepository.insert({
+      board_column: column,
+      ...cardInfo,
+      file_url: files,
+      file_original_name: originalnames,
+      members: memberIds,
+    });
   }
   //카드 수정
   async UpdateCard(
     board_column_Id: number,
     id: number,
-    name: string,
-    content: string,
-    file_url: string[],
-    color: string,
-    members: number[]
+    cardInfo: UpdateCardDto,
+    files: string[],
+    originalnames: string[],
+    memberIds: string[]
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_Id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
-    if (!name || !content) {
-      throw new NotFoundException('데이터 형식이 올바르지 않습니다.');
-    }
-
-    await this.cardRepository.update(id, { name, content, file_url, color, members });
+    await this.cardRepository.update(id, {
+      ...cardInfo,
+      file_url: files,
+      file_original_name: originalnames,
+      members: memberIds,
+    });
   }
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {

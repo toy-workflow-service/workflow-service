@@ -8,7 +8,7 @@
             <div class="d-flex flex-wrap justify-content-center breadcrumb-main__wrapper">
               <div class="d-flex align-items-center user-member__title justify-content-center me-sm-25">
                 <h4 class="text-capitalize fw-500 breadcrumb-title">Boards</h4>
-                <span class="sub-title ms-sm-25 ps-sm-25">12 Running boards</span>
+                <span class="sub-title ms-sm-25 ps-sm-25" id="running-boards">12 Running boards</span>
               </div>
             </div>
             <div class="action-btn">
@@ -79,6 +79,7 @@
                                 id="name47"
                                 placeholder="멤버의 이름을 입력해주세요."
                               />
+                              <div style="margin: 2% auto 2% auto;" id="create-selected-members"></div>
                             </div>
                             <ul class="d-flex flex-wrap mb-20 user-group-people__parent" id="selected-members">
                               <!-- 검색한 멤버를 선택하면 붙는곳 -->
@@ -176,22 +177,23 @@
                           </div>
                           <div class="mb-25">
                             <div class="form-group mb-10">
-                              <label for="name47">멤버 선택</label>
+                              <label for="name48">멤버 선택</label>
                               <input
                                 type="text"
                                 class="form-control"
-                                id="name47"
+                                id="name48"
                                 placeholder="멤버의 이름을 입력해주세요."
                               />
+                              <ul style="margin: 2% auto 2% auto;" id="update-selected-members"></ul>
                             </div>
-                            <ul class="d-flex flex-wrap mb-20 user-group-people__parent"></ul>
+                            <ul class="d-flex flex-wrap mb-20 user-group-people__parent"  id="edit-selected-members"></ul>
                           </div>
                           <div class="d-flex new-member-calendar">
                             <div class="form-group w-100 me-sm-15 form-group-calender">
                               <label for="datepicker">시작일</label>
                               <div class="position-relative">
                                 <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
-                                <a href="#">
+                                <a>
                                   <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
                                 /></a>
                               </div>
@@ -200,14 +202,14 @@
                               <label for="datepicker2">마감일</label>
                               <div class="position-relative">
                                 <input type="text" class="form-control" id="datepicker2" placeholder="mm/dd/yyyy" />
-                                <a href="#">
+                                <a>
                                   <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
                                 /></a>
                               </div>
                             </div>
                           </div>
                           <div class="button-group d-flex pt-25">
-                            <button class="btn btn-primary btn-default btn-squared text-capitalize">보드 수정</button>
+                            <button class="btn btn-primary btn-default btn-squared text-capitalize" id="edit-board-btn">보드 수정</button>
 
                             <button
                               type="button"
