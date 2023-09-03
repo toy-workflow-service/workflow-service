@@ -6,7 +6,6 @@ import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipDto } from 'src/_common/dtos/membership.dto';
-import { Payment } from 'src/_common/entities/payment.entity';
 
 @Controller('workspaces/:workspaceId/payments')
 export class PaymentsController {
@@ -19,22 +18,22 @@ export class PaymentsController {
   async purchaseMembership(
     @Body() body: MembershipDto,
     @Param('workspaceId') workspaceId: number,
-    @GetUser() user: AccessPayload,
+    @GetUser() user: AccessPayload
   ): Promise<IResult> {
     return await this.paymentService.purchaseMembership(body, workspaceId, user.id);
   }
 
-  // 결제 연장
-  @Post('extension')
-  @UseGuards(AuthGuard)
-  @UseInterceptors(CheckAdminInterceptor)
-  async extensionMembership(
-    @Body() body: MembershipDto,
-    @Param('workspaceId') workspaceId: number,
-    @GetUser() user: AccessPayload,
-  ): Promise<IResult> {
-    return await this.paymentService.extensionMembership(body, workspaceId, user.id);
-  }
+  // // 결제 연장
+  // @Post('extension')
+  // @UseGuards(AuthGuard)
+  // @UseInterceptors(CheckAdminInterceptor)
+  // async extensionMembership(
+  //   @Body() body: MembershipDto,
+  //   @Param('workspaceId') workspaceId: number,
+  //   @GetUser() user: AccessPayload
+  // ): Promise<IResult> {
+  //   return await this.paymentService.extensionMembership(body, workspaceId, user.id);
+  // }
 
   // 결제 취소
   @Delete(':paymentId')
@@ -43,15 +42,8 @@ export class PaymentsController {
   async cancelPurchase(
     @Param('workspaceId') workspaceId: number,
     @Param('paymentId') paymentId: number,
-    @GetUser() user: AccessPayload,
+    @GetUser() user: AccessPayload
   ): Promise<Object> {
     return await this.paymentService.cancelPurchase(workspaceId, paymentId, user.id);
-  }
-
-  // 결제내역 조회
-  @Get()
-  @UseGuards(AuthGuard)
-  async getMyPayments(@GetUser() user: AccessPayload): Promise<Payment[]> {
-    return await this.paymentService.getMyPayments(user.id);
   }
 }

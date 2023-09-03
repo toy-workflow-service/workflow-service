@@ -1,3 +1,7 @@
+$(document).ready(async () => {
+  await getPaymentHistory();
+});
+
 const updateUserInfoBtn = document.querySelector('#updateUserBtn');
 const deleteUserBtn = document.querySelector('#deleteUserBtn');
 const deleteBtn = document.querySelector('#deleteBtn');
@@ -10,6 +14,7 @@ const phoneAuthBtn = document.querySelector('#phoneAuthBtn');
 const cancelAuthBtn = document.querySelector('#cancelAuthBtn');
 const editBtn = document.querySelector('#editBtn');
 const cancelAuthBtn2 = document.querySelector('#cancelAuthBtn2');
+const paymentHistory = document.querySelector('#payment-history-table');
 
 function updateUserInfo() {
   const email = document.querySelector('#email45').value;
@@ -307,3 +312,103 @@ editBtn.addEventListener('click', () => {
   document.querySelector('#editBtnDiv').style.display = 'none';
   sendBtn.style.display = 'block';
 });
+
+// 결제내역 조회
+async function getPaymentHistory() {
+  try {
+    await $.ajax({
+      method: 'GET',
+      url: `/users/payments/history`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: (data) => {
+        console.log(data);
+        result = '';
+        data.forEach((history) => {
+          if (history.membershipCreatedAt === '취소된 결제') {
+            result += ` <tbody>
+            <tr>
+              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
+              <td>취소된 결제입니다.</td>
+              <td>-</td>
+              <td>`;
+          } else {
+            result += ` <tbody>
+            <tr>
+              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
+              <td>${history.membershipCreatedAt.substring(0, 10).replace('-', '.')} ~ 
+                  ${history.membershipEndDate.substring(0, 10).replace('-', '.')}</td>
+              <td>${history.membershipPrice.toLocaleString()}원</td>
+              <td>
+                <div class="dropdown">
+                  <a
+                    role="button"
+                    id="products"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
+                  </a>`;
+          }
+          result += ` <div class="dropdown-menu dropdown-menu-right" aria-labelledby="products">
+                                <a class="dropdown-item" style="cursor: pointer" data-payment-id="${history.paymentId}" id="cancel-payment-btn">결제 취소</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>`;
+        });
+        paymentHistory.innerHTML += result;
+
+        const cancelPaymentBtn = document.querySelectorAll('#cancel-payment-btn');
+        cancelPaymentBtn.forEach((btn) => {
+          const paymentId = btn.getAttribute('data-payment-id');
+          const workspaceId = btn.closest('tr').querySelector('[data-workspace-id]').getAttribute('data-workspace-id');
+
+          btn.addEventListener('click', () => {
+            cancelPayment(paymentId, workspaceId);
+          });
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 결제 취소
+async function cancelPayment(paymentId, workspaceId) {
+  console.log(paymentId);
+  console.log(workspaceId);
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `/workspaces/${workspaceId}/payments/${paymentId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'success!',
+          text: '결제 취소 완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}

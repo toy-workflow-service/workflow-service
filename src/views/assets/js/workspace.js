@@ -78,6 +78,9 @@ async function getMyBoards() {
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
+                                <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
+                                  board.boardName
+                                }</h6>
                               </a>
                               <span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">early</span>
                             </div>
@@ -205,13 +208,16 @@ createBoardBtn.addEventListener('click', async (event) => {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 });
 
@@ -226,13 +232,16 @@ async function createBoardMember(boardId, name) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       data: JSON.stringify({ name }),
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
