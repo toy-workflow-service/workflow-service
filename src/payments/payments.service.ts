@@ -119,6 +119,7 @@ export class PaymentsService {
         const membership = workspace.memberships[0];
         const paymentInfo = {
           paymentId: payment.id,
+          paymentCreatedAt: payment.created_at,
           workspaceId,
           workspaceName: workspace.name,
           membershipCreatedAt: membership.created_at,
@@ -129,11 +130,9 @@ export class PaymentsService {
       } else {
         const paymentInfo = {
           paymentId: payment.id,
+          paymentCreatedAt: payment.created_at,
           workspaceId,
           workspaceName: workspace.name,
-          membershipCreatedAt: '취소된 결제',
-          membershipEndDate: '취소된 결제',
-          membershipPrice: '취소된 결제',
         };
         paymentHistory.push(paymentInfo);
       }
