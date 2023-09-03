@@ -131,4 +131,11 @@ export class WorkspacesController {
   async countWorkspaceBoards(@Param('workspaceId') workspaceId: number): Promise<Object> {
     return await this.workspaceService.countWorkspaceBoards(workspaceId);
   }
+
+  @Get(':workspaceId/getFiles')
+  @UseGuards(AuthGuard)
+  async getAllfiles(@Param('workspaceId') workspaceId: number): Promise<File[]> {
+    const allFiles = await this.workspaceService.getAllFiles(workspaceId);
+    return allFiles;
+  }
 }

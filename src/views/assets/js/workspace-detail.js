@@ -110,7 +110,7 @@ async function getWorkspaceDetail() {
                         </div>
                       </div>`;
 
-        remaingMemory += `<div class="projects-tab-content mb-30">
+        progress += `<div class="projects-tab-content mb-30">
                                 <div class="row">
                                   <div class="col-xxl-3 col-lg-4 mb-25" id="workspace-memory">
                                     <div class="progress-box px-25 pt-25 pb-10 bg-success radius-xl">
@@ -318,7 +318,7 @@ async function getWorkspaceDetail() {
         printTitle.innerHTML = title;
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
-        printMemory.innerHTML = remaingMemory;
+        printMemory.innerHTML = progress;
       },
     });
   } catch (err) {

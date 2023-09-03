@@ -272,4 +272,18 @@ export class WorkspacesService {
 
     return countWorkspaceBoards.boards.length;
   }
+
+  // 워크스페이스에 업로드된 모든 파일 조회
+  async getAllFiles(workspaceId: number): Promise<File[]> {
+    const workspace = await this.workspaceRepository
+      .createQueryBuilder('workspace')
+      .leftJoinAndSelect('workspace.boards', 'boards')
+      .leftJoinAndSelect('boards.board_columns', 'board_columns')
+      .leftJoinAndSelect('board_columns.cards', 'cards')
+      .where('workspace.id = :workspaceId', { workspaceId })
+      .select(['cards.id', 'cards.file_original_name', 'cards.file_url', 'cards.created_at', 'cards.updated_at'])
+      .getRawMany();
+
+    return workspace;
+  }
 }
