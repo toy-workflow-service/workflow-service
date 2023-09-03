@@ -407,6 +407,11 @@ async function BoardColumns(data) {
       cardColumnId = id;
       const sequence = e.target.getAttribute('data-index');
       cardSequence = Number(sequence) + 1;
+
+      //update 모달과 같이 배열과 변수를 사용하기 때문에 create 모달 펼칠시 초기화 필요
+      filesArr = [];
+      fileNo = 0;
+      document.querySelector('.file-list').innerHTML = '';
     });
   });
   document.getElementById('CardCreateBtn').addEventListener('click', async () => {
@@ -967,15 +972,35 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
 // 업데이트 모달을 열기 위한 함수
 function openUpdateCardModal(cardData, columnId, cardId) {
   // 모달 내부의 필드들을 초기화 (빈 값으로)
-  document.getElementById('cardTitleUdpate').value = cardData.name;
+  document.getElementById('cardTitleUpdate').value = cardData.name;
   document.getElementById('cardContentUpdate').value = cardData.content;
-  document.getElementById('cardfileUpdate').value = '';
+  // document.getElementById('cardfileUpdate').value = '';
   document.getElementById('cardUpdateMembers').innerHTML = cardData.members;
   document.getElementById('cardColorUpdate').value = cardData.color;
   // 컬럼 아이디와 카드 아이디를 모달의 data 속성에 설정
   document.getElementById('updateCardButton').setAttribute('data-column-id', columnId);
   document.getElementById('updateCardButton').setAttribute('data-card-id', cardId);
-  // 업데이트 모달을 열기
+  // 파일 박스 안에 값을 넣어주기.
+  // 들어도 가고 지우기도 가능하나, db에서 가져오는 file_url값과 입력하는 file값은 다르기때문에
+  // 다른 방안이 필요할듯 함.
+  console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+  filesArr = [];
+  filesNameArr = [];
+  fileNo = 0;
+  document.querySelector('#edit-card-file').innerHTML = '';
+  for (let i = 0; i < cardData.file_url.length; i++) {
+    // 목록 추가
+    let htmlData = '';
+    htmlData += '<div id="file' + fileNo + '" class="filebox">';
+    htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+    htmlData += '</div>';
+    $('.file-list').append(htmlData);
+    filesArr.push(cardData.file_url[i]);
+    filesNameArr.push(cardData.file_original_name[i]);
+    fileNo++;
+  }
+  console.log(filesArr);
 }
 
 document.addEventListener('click', function (event) {
@@ -990,57 +1015,95 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   const cardId = document.getElementById('updateCardButton').getAttribute('data-card-id');
 
   // 업데이트할 데이터 수집
-  const updatedCardName = document.getElementById('cardTitleUdpate').value;
+  const updatedCardName = document.getElementById('cardTitleUpdate').value;
   const updatedCardContent = document.getElementById('cardContentUpdate').value;
   // 파일 업로드를 위한 코드 추가
-  const updatedCardFileInput = document.getElementById('cardfileUpdate');
-  const updatedCardFile = updatedCardFileInput.files[0];
+  // const updatedCardFileInput = document.getElementById('cardfileUpdate');
+  // const updatedCardFile = updatedCardFileInput.files[0];
 
   // 멤버는 이미 선택된 것을 사용하므로 selectedMemberNumber를 그대로 사용
-  const updatedCardMembers = selectedMemberNumber;
+  // const updatedCardMembers = selectedMemberNumber;
   const updatedCardColor = document.getElementById('cardColorUpdate').value;
 
-  // 업데이트할 데이터를 객체로 만들어서 전송
-  const updatedData = {
-    name: updatedCardName,
-    content: updatedCardContent,
-    fileUrl: updatedCardFile ? URL.createObjectURL(updatedCardFile) : null, // 파일이 있는 경우에만 처리
-    members: updatedCardMembers,
-    color: updatedCardColor,
-  };
+  // 폼데이터 담기
+  let form = document.querySelector('form');
+  let updatedData = new FormData(form);
+
+  // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
+  // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
+  // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
+  // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
+  // let i = 0;
+  // if (filesNameArr) {
+  //   for (i = 0; i < filesNameArr.length; i++) {
+  //     // 삭제되지 않은 파일만 폼데이터에 담기
+  //     if (!filesNameArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesNameArr[i]);
+  //     }
+  //   }
+  //   for (i; i < filesArr.length; i++) {
+  //     if (!filesArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesArr[i].name);
+  //     }
+  //   }
+  // } else {
+  //   for (i; i < filesArr.length; i++) {
+  //     if (!filesArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesArr[i].name);
+  //     }
+  //   }
+  // }
+  if (selectedMemberNumber) {
+    for (let j = 0; j < selectedMemberNumber.length; j++) {
+      updatedData.append('members', selectedMemberNumber[j]);
+    }
+  }
+  updatedData.append('name', updatedCardName);
+  updatedData.append('color', updatedCardColor);
+  updatedData.append('content', updatedCardContent);
 
   // 업데이트 함수 호출
-  CardAllUpdate(columnId, cardId, updatedData);
-  window.location.reload();
+  // CardAllUpdate(columnId, cardId, updatedData);
+  // window.location.reload();
 });
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('Updated Data:', data);
-
-    const response = await $.ajax({
+    console.log('Updated Data:', ...data);
+    await $.ajax({
       type: 'PATCH',
       url: `/cards/${cardId}?board_column_Id=${columnId}`,
-      data: JSON.stringify({
-        name: data.name,
-        content: data.content,
-        file_url: data.fileUrl,
-        members: data.members,
-        color: data.color,
-      }),
       beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      processData: false,
+      contentType: false,
+      data: data,
+      success: function (data) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: data.message,
+        }).then(() => {
+          // location.reload();
+        });
+      },
+      error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
+        });
       },
     });
 
-    // 업데이트 응답 결과 확인
-    console.log('Update Response:', response.message);
-
     // 성공적으로 업데이트가 완료되었을 때 모달을 닫을 수 있습니다.
-    $('#updateCardModal').modal('hide');
+    // $('#updateCardModal').modal('hide');
   } catch (error) {
     console.log(error);
   }
@@ -1245,6 +1308,7 @@ function Getcomment(cardId, commentId) {
 // 여러 파일 보내기
 var fileNo = 0;
 var filesArr = [];
+let filesNameArr = [];
 
 /* 첨부파일 추가 */
 function addFile(obj) {
@@ -1260,6 +1324,7 @@ function addFile(obj) {
 
   for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
     const file = obj.files[i];
+    console.log('origin file: ', file);
     // 첨부파일 검증
     if (validation(file)) {
       // 파일 배열에 담기
@@ -1303,6 +1368,7 @@ function validation(obj) {
 
 /* 첨부파일 삭제 */
 function deleteFile(num) {
-  document.querySelector('#file' + num).remove();
+  document.querySelector(`#file${num}`).remove();
   filesArr[num].is_delete = true;
+  filesNameArr[num].is_delete = true;
 }

@@ -62,9 +62,21 @@ export class CardsController {
   async UpdateCard(
     @Query('board_column_Id') board_column_Id: number,
     @Param('cardId') id: number,
-    @Body() data: UpdateCardDto
+    @Body('members') memberIds: string[],
+    @Body('originalnames') originalnames: string[],
+    @Req() req: MulterRequest,
+    @Body() data: UpdateCardDto,
+    @Res() res: Response
   ) {
-    return await this.cardsService.UpdateCard(board_column_Id, id, data.name, data.content, data.color);
+    const files: any = req.files;
+    let fileArray = [];
+    if (files) {
+      files.forEach((file) => {
+        fileArray.push(file.location);
+      });
+    }
+    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, originalnames, memberIds);
+    return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
   //카드 삭제
   @Delete('/:cardId')
