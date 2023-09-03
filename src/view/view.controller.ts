@@ -37,6 +37,7 @@ export class ViewController {
   @Render('user-info.ejs')
   async userInfo(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
+    console.log(user);
     const header = await this.viewService.header(user);
     if (header.phoneNumber.length === 11) {
       header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
@@ -49,7 +50,7 @@ export class ViewController {
         6
       )}-${header.phoneNumber.substring(6, 10)}`;
     }
-
+    console.log(header);
     return { title: 'Work-Flow', subtitle: '마이 페이지', header };
   }
 

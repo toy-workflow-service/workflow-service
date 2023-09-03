@@ -40,11 +40,13 @@ async function getWorkspaceDetail() {
 
           title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
           <div style="display : inline-flex">
-          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="padding-right : 3px;"/><p style="padding-top : 15px; font-size : 13px">멤버십 종료까지 <strong>${remaningDate}일</strong> 남았습니다.</p>
-          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" data-workspace-id="${data.id}" onclick="openPaymentModal(this)" style="padding : 0.25rem 0.5rem">연장하기</button></div>
+          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="padding-right: 3px;"/><p style="padding-top: 15px; font-size: 13px">멤버십 종료까지 <strong>${remaningDate}일</strong> 남았습니다.</p>
           `;
         } else {
           title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
+          <div style="display : inline-flex">
+          <p style="padding-top: 15px; font-size: 13px; margin-right: 5px;"><strong>멤버십 가입 시 보드생성 / 멤버초대 무제한!</strong></p>
+          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" data-workspace-id="${data.id}" onclick="openPaymentModal(this)" style="padding : 0.25rem 0.5rem">멤버십 결제</button></div>
           `;
         }
         result += `<div class="card border-0 pb-md-50 pb-15" id="workspace-card">
@@ -324,7 +326,7 @@ async function getWorkspaceDetail() {
   }
 }
 
-// 멤버십 연장 모달열기
+// 멤버십 결제 모달열기
 function openPaymentModal(element) {
   const workspaceId = element.getAttribute('data-workspace-id');
   let paymentModal = document.querySelector('#modal-basic5');
@@ -344,12 +346,12 @@ function openPaymentModal(element) {
         <p><strong>결제금액:</strong> <span id="membership-price"></span><span>원</span></p>
         <div class="dropdown dropdown-hover">
         <a style="cursor:pointer;">
-        <span id="period-select-text">이용기간 선택</span>
+        <span><strong>이용기간</strong> : <span id="period-select-text">선택</span></span>
           <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
         </a>
         <div class="dropdown-default dropdown-clickEvent">
-        <p class="dropdown-item" style="cursor:pointer;"><strong>이용기간:</strong> <span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
-        <p class="dropdown-item" style="cursor:pointer;"><strong>이용기간:</strong> <span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
+        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
+        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
         </div>
        </div>
       </div>
@@ -367,14 +369,13 @@ function openPaymentModal(element) {
     item.addEventListener('click', () => {
       let selected = item.textContent;
       document.querySelector('#period-select-text').textContent = selected;
-
       const membershipPrice = document.querySelector('#membership-price');
 
       switch (selected) {
-        case '이용기간: 30일':
+        case '30일':
           membershipPrice.textContent = '6,500';
           break;
-        case '이용기간: 180일':
+        case '180일':
           membershipPrice.textContent = '31,000';
           break;
       }
@@ -382,24 +383,25 @@ function openPaymentModal(element) {
   });
   const paymentBtn = document.querySelector('#payment-btn');
   paymentBtn.addEventListener('click', () => {
-    extensionMembership();
+    purchaseMembership();
   });
 
   $(paymentModal).modal('show');
 }
 
-// 멤버십 연장
-async function extensionMembership() {
+// 멤버십 결제
+async function purchaseMembership() {
   try {
     let membershipType = document.querySelector('#membership-type').textContent;
     if (membershipType === 'Premium') membershipType = 1;
     const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
-    const servicePeriod = document.querySelector('#service-period').textContent / 1;
+    const selectedPeriod = document.querySelector('#period-select-text').textContent;
+    const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
     const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
 
     await $.ajax({
       method: 'POST',
-      url: `/workspaces/${workspaceId}/payments/extension`,
+      url: `/workspaces/${workspaceId}/payments`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
@@ -409,26 +411,21 @@ async function extensionMembership() {
         Swal.fire({
           icon: 'success',
           title: 'success!',
-          text: '멤버십 연장 완료!',
+          text: '멤버십 결제 완료!',
         }).then(() => {
           window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
         });
       },
     });
   } catch (err) {
     console.error(err);
-    if (err.responseJSON.message) {
-      Swal.fire({
-        icon: 'error',
-        title: 'error',
-        text: err.responseJSON.message,
-      });
-    }
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: '멤버십 결제 도중 오류가 발생했습니다.',
-    });
   }
 }
 
@@ -488,13 +485,16 @@ async function updateWorkspace() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -518,16 +518,19 @@ async function deleteWorkspace() {
             window.location.reload();
           });
         },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          });
+        },
       });
     } else {
       return;
     }
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -565,14 +568,17 @@ async function inviteMember() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        sendingMessage.style.display = 'none';
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    sendingMessage.style.display = 'none';
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -612,13 +618,16 @@ async function setMemberRole() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -682,16 +691,19 @@ function deleteMember(element) {
             window.location.reload();
           });
         },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          });
+        },
       });
     } else {
       return;
     }
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 

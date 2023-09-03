@@ -7,4 +7,5 @@ export interface AccessPayload extends jwt.JwtPayload {
   profile_url: string;
   phone_number: string;
   phone_authentication: boolean;
+  points: number;
 }

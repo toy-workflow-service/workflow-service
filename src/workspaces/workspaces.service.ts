@@ -5,7 +5,6 @@ import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MailService } from 'src/_common/mail/mail.service';
-import { MembershipsService } from 'src/memberships/memberships.service';
 import { UsersService } from 'src/users/users.service';
 import { EntityManager, Repository } from 'typeorm';
 
