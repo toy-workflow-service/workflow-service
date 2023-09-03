@@ -3,6 +3,7 @@ const googleLoginBtn = document.querySelector('.googleLogin');
 const naverLoginBtn = document.querySelector('.naverLogin');
 const sendMailBtn = document.querySelector('#mailBtn');
 const signupBtn = document.querySelector('#signupBtn');
+const sendingMessage = document.querySelector('#sending-message');
 let emailAuth = false;
 
 async function sendMail() {
@@ -12,12 +13,17 @@ async function sendMail() {
   const verifyCodeBtn = document.querySelector('#verifyCodeBtn');
   let code, expireTime;
 
+  sendMailBtn.style.display = 'none';
+  sendingMessage.style.display = 'block';
+
   if (!email || !emailReg.test(email)) {
     Swal.fire({
       icon: 'error',
       title: 'Error',
       text: '이메일이 비어 있거나 이메일이 형식에 맞지 않습니다.',
     });
+    sendingMessage.style.display = 'none';
+    sendMailBtn.style.display = 'block';
     return;
   }
 
@@ -35,7 +41,8 @@ async function sendMail() {
         title: 'Success',
         text: data.message,
       });
-
+      document.querySelector('#email').readOnly = true;
+      sendingMessage.style.display = 'none';
       verifyCodeDiv.style = 'display: block';
       return;
     },
@@ -54,7 +61,9 @@ async function sendMail() {
           text: error.responseJSON,
         });
       }
-      verifyCodeDiv.style = 'display: none';
+
+      sendingMessage.style = 'diplay: none;';
+      sendMailBtn.style.display = 'block';
       return;
     },
   });
@@ -68,7 +77,6 @@ async function sendMail() {
         text: '인증에 성공하셨습니다.',
       });
       emailAuth = true;
-      document.querySelector('#email').readOnly = true;
       verifyCodeDiv.style = 'display:none';
       sendMailBtn.style.display = 'none';
       return;
@@ -86,9 +94,11 @@ async function sendMail() {
         title: 'Error',
         text: '인증시간이 초과되었습니다. 처음부터 다시 시도해 주세요. ',
       });
+      document.querySelector('#email').readOnly = false;
       document.querySelector('#email').value = '';
       document.querySelector('#verifyCode').value = '';
       verifyCodeDiv.style = 'display:none';
+      sendMailBtn.style.display = 'block';
       return;
     }
   });

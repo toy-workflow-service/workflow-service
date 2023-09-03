@@ -63,12 +63,25 @@
                           <br />
                           <div id="mail-div">
                             <input type="text" class="form-control" id="email" placeholder="address@example.com" />
-                            <button
-                              class="btn btn-primary btn-default w-10 btn-squared text-capitalize lh-normal px-10 signIn-createBtn"
-                              id="mailBtn"
-                            >
-                              전송
-                            </button>
+                            <div id="mail-btn-box">
+                              <button
+                                class="btn btn-primary btn-default w-10 btn-squared text-capitalize lh-normal px-10 signIn-createBtn"
+                                id="mailBtn"
+                              >
+                                전송
+                              </button>
+                              <div
+                                id="sending-message"
+                                style="display: none; width: 50px; height: 47px; background-color: white"
+                              >
+                                <div class="dm-spin-dots spin-md">
+                                  <span class="spin-dot badge-dot dot-primary"></span>
+                                  <span class="spin-dot badge-dot dot-primary"></span>
+                                  <span class="spin-dot badge-dot dot-primary"></span>
+                                  <span class="spin-dot badge-dot dot-primary"></span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div class="form-group mb-20" id="verifyCodeDiv" style="display: none">
