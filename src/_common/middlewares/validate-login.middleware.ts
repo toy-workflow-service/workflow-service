@@ -36,6 +36,7 @@ export class validateLoginMiddleware implements NestMiddleware {
           profile_url: findByUser.profile_url,
           phone_number: findByUser.phone_number,
           phone_authentication: findByUser.phone_authentication,
+          points: findByUser.points,
         },
         process.env.ACCESS_SECRET_KEY,
         process.env.ACCESS_EXPIRE_TIME

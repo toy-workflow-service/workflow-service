@@ -141,41 +141,43 @@ async function purchaseMembership() {
     const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
     const servicePeriod = document.querySelector('#service-period').textContent / 1;
     const workspaceId = document.querySelector('#workspace-select-text').getAttribute('data-workspace-id');
-    console.log(typeof membershipPrice);
-    console.log(typeof servicePeriod);
-    console.log(typeof workspaceId);
 
-    await $.ajax({
-      method: 'POST',
-      url: `/workspaces/${workspaceId}/payments`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
-      success: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'success!',
-          text: '멤버십 결제 완료!',
-        }).then(() => {
-          window.location.reload();
-        });
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    if (err.responseJSON.message) {
+    if (workspaceId === null) {
       Swal.fire({
         icon: 'error',
         title: 'error',
-        text: err.responseJSON.message,
+        text: '워크스페이스를 선택해주세요.',
+      }).then(() => {
+        return;
+      });
+    } else {
+      await $.ajax({
+        method: 'POST',
+        url: `/workspaces/${workspaceId}/payments`,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader('Content-type', 'application/json');
+          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+        },
+        data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
+        success: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'success!',
+            text: '멤버십 결제 완료!',
+          }).then(() => {
+            window.location.reload();
+          });
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          });
+        },
       });
     }
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: '멤버십 결제 도중 오류가 발생했습니다.',
-    });
+  } catch (err) {
+    console.error(err);
   }
 }
