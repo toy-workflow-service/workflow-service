@@ -58,24 +58,49 @@ export class CardsController {
   }
   //카드 수정
   @Patch('/:cardId')
-  @UseGuards(AuthGuard)
   async UpdateCard(
-    @Query('board_column_Id') board_column_Id: number,
     @Param('cardId') id: number,
+    @Query('board_column_Id') board_column_Id: number,
+    @Body() data: UpdateCardDto,
     @Body('members') memberIds: string[],
     @Body('originalnames') originalnames: string[],
+    @Body('alreadyFiles') alreadyFiles: string[],
+    @Body('alreadyFileNames') alreadyFileNames: string[],
+    @Body('alreadyFileCount') alreadyFileCount: number,
     @Req() req: MulterRequest,
-    @Body() data: UpdateCardDto,
     @Res() res: Response
   ) {
     const files: any = req.files;
     let fileArray = [];
-    if (files) {
+    let fileName = [];
+    if (files[0]) {
       files.forEach((file) => {
         fileArray.push(file.location);
       });
+      if (files.length > 1) {
+        originalnames.forEach((name) => {
+          fileName.push(name);
+        });
+      } else {
+        fileName.push(originalnames);
+      }
     }
-    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, originalnames, memberIds);
+    if (alreadyFiles[0]) {
+      if (alreadyFileCount > 1) {
+        alreadyFiles.forEach((file) => {
+          fileArray.push(file);
+        });
+        alreadyFileNames.forEach((name) => {
+          fileName.push(name);
+        });
+      } else {
+        const name = alreadyFileNames;
+        fileArray.push(alreadyFiles);
+        fileName.push(name);
+      }
+    }
+
+    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, memberIds);
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
   //카드 삭제

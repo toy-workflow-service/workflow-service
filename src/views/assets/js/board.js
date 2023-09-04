@@ -377,11 +377,11 @@ async function BoardColumns(data) {
   });
 
   // CardUpdateBtn 버튼 클릭 시
-  document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
-    // 수정 된값이 db로 넘어가야함.
-    console.log('update btn check');
-    // await CardAllUpdate(columnId, cardId, data)
-  });
+  // document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
+  //   // 수정 된값이 db로 넘어가야함.
+  //   console.log('update btn check');
+  //   // await CardAllUpdate(columnId, cardId, data)
+  // });
 
   // cardDeleteBtn 클릭 시
   document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
@@ -411,6 +411,7 @@ async function BoardColumns(data) {
       //update 모달과 같이 배열과 변수를 사용하기 때문에 create 모달 펼칠시 초기화 필요
       filesArr = [];
       fileNo = 0;
+      filesNameArr = [];
       document.querySelector('.file-list').innerHTML = '';
     });
   });
@@ -810,7 +811,7 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   $(modal).modal('show');
 }
 
-// 카드 세부 정보 모달을 열기 위한 함수
+// 카드 세부 정보 모달을 열기 위한 함수 - 사용하지 않는 함수.
 function openCardDetailModal(columnId, cardId) {
   // 카드 세부 정보를 서버에서 가져오는 API 호출
   DetailCardGet(columnId, cardId);
@@ -983,7 +984,9 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   // 파일 박스 안에 값을 넣어주기.
   // 들어도 가고 지우기도 가능하나, db에서 가져오는 file_url값과 입력하는 file값은 다르기때문에
   // 다른 방안이 필요할듯 함.
-  console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+  // console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+  // 초기화
+  document.querySelector('#edit-card-input').value = '';
   filesArr = [];
   filesNameArr = [];
   fileNo = 0;
@@ -1000,12 +1003,13 @@ function openUpdateCardModal(cardData, columnId, cardId) {
     filesNameArr.push(cardData.file_original_name[i]);
     fileNo++;
   }
-  console.log(filesArr);
 }
 
 document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'updateCardButton') {
     $('#updateCardModal').modal('show');
+
+    console.log(filesArr);
   }
 });
 
@@ -1027,35 +1031,35 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
   // 폼데이터 담기
   let form = document.querySelector('form');
-  let updatedData = new FormData(form);
+  const updatedData = new FormData(form);
 
   // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
   // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
   // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
-  // let i = 0;
-  // if (filesNameArr) {
-  //   for (i = 0; i < filesNameArr.length; i++) {
-  //     // 삭제되지 않은 파일만 폼데이터에 담기
-  //     if (!filesNameArr[i].is_delete) {
-  //       updatedData.append('newFiles', filesArr[i]);
-  //       updatedData.append('originalnames', filesNameArr[i]);
-  //     }
-  //   }
-  //   for (i; i < filesArr.length; i++) {
-  //     if (!filesArr[i].is_delete) {
-  //       updatedData.append('newFiles', filesArr[i]);
-  //       updatedData.append('originalnames', filesArr[i].name);
-  //     }
-  //   }
-  // } else {
-  //   for (i; i < filesArr.length; i++) {
-  //     if (!filesArr[i].is_delete) {
-  //       updatedData.append('newFiles', filesArr[i]);
-  //       updatedData.append('originalnames', filesArr[i].name);
-  //     }
-  //   }
-  // }
+  let i = 0;
+  if (filesNameArr) {
+    for (i = 0; i < filesNameArr.length; i++) {
+      // 삭제되지 않은 파일만 폼데이터에 담기
+      if (!filesNameArr[i].is_delete) {
+        updatedData.append('alreadyFiles', filesArr[i]);
+        updatedData.append('alreadyFileNames', filesNameArr[i]);
+      }
+    }
+    for (i; i < filesArr.length; i++) {
+      if (!filesArr[i].is_delete) {
+        updatedData.append('newFiles', filesArr[i]);
+        updatedData.append('originalnames', filesArr[i].name);
+      }
+    }
+  } else {
+    for (i; i < filesArr.length; i++) {
+      if (!filesArr[i].is_delete) {
+        updatedData.append('newFiles', filesArr[i]);
+        updatedData.append('originalnames', filesArr[i].name);
+      }
+    }
+  }
   if (selectedMemberNumber) {
     for (let j = 0; j < selectedMemberNumber.length; j++) {
       updatedData.append('members', selectedMemberNumber[j]);
@@ -1064,49 +1068,43 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   updatedData.append('name', updatedCardName);
   updatedData.append('color', updatedCardColor);
   updatedData.append('content', updatedCardContent);
+  updatedData.append('alreadyFileCount', filesNameArr.length);
 
   // 업데이트 함수 호출
-  // CardAllUpdate(columnId, cardId, updatedData);
+  CardAllUpdate(columnId, cardId, updatedData);
   // window.location.reload();
 });
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
-  try {
-    // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('Updated Data:', ...data);
-    await $.ajax({
-      type: 'PATCH',
-      url: `/cards/${cardId}?board_column_Id=${columnId}`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      processData: false,
-      contentType: false,
-      data: data,
-      success: function (data) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          // location.reload();
-        });
-      },
-      error: (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.responseJSON.message[0],
-        });
-      },
-    });
-
-    // 성공적으로 업데이트가 완료되었을 때 모달을 닫을 수 있습니다.
-    // $('#updateCardModal').modal('hide');
-  } catch (error) {
-    console.log(error);
-  }
+  // PATCH 요청을 보내기 전에 데이터 확인
+  console.log('Updated Data:', columnId, cardId, ...data);
+  await $.ajax({
+    type: 'PATCH',
+    url: `/cards/${cardId}?board_column_Id=${columnId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    processData: false,
+    contentType: false,
+    data: data,
+    success: function (data) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        // location.reload();
+      });
+    },
+    error: (error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message[0],
+      });
+    },
+  });
 }
 
 // 함수 내에서 카드 삭제를 처리하는 로직
@@ -1313,7 +1311,7 @@ let filesNameArr = [];
 /* 첨부파일 추가 */
 function addFile(obj) {
   var maxFileCnt = 5; // 첨부파일 최대 개수
-  var attFileCnt = document.querySelectorAll('.filebox').length; // 기존 추가된 첨부파일 개수
+  var attFileCnt = filesArr.length; // 기존 추가된 첨부파일 개수
   var remainFileCnt = maxFileCnt - attFileCnt; // 추가로 첨부가능한 개수
   var curFileCnt = obj.files.length; // 현재 선택된 첨부파일 개수
 
@@ -1324,7 +1322,7 @@ function addFile(obj) {
 
   for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
     const file = obj.files[i];
-    console.log('origin file: ', file);
+
     // 첨부파일 검증
     if (validation(file)) {
       // 파일 배열에 담기
@@ -1369,6 +1367,9 @@ function validation(obj) {
 /* 첨부파일 삭제 */
 function deleteFile(num) {
   document.querySelector(`#file${num}`).remove();
-  filesArr[num].is_delete = true;
-  filesNameArr[num].is_delete = true;
+  // filesArr[num].is_delete = true;
+  // filesNameArr[num].is_delete = true;
+  filesArr.splice(num, 1);
+  filesNameArr.splice(num, 1);
+  console.log(filesArr, filesNameArr);
 }

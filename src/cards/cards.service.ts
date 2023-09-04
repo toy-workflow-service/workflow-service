@@ -61,6 +61,7 @@ export class CardsService {
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
+    console.log(files, originalnames);
     await this.cardRepository.update(id, {
       ...cardInfo,
       file_url: files,
