@@ -597,7 +597,8 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate">${comment.comment}</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
+      }</textarea>
           
           <!-- 수정 버튼 -->
           ${isCurrentUserComment
@@ -719,8 +720,11 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
      <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
      <span>in list Active Project</span>
   </div>
-   <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">update</button>
+  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+        id="updateCardButton"
+        data-column-id="${columnId}"
+        data-card-id="${cardData.id}"
+        data-bs-dismiss="modal">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
 id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">delete</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -757,11 +761,13 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
       </ul>
     </div>
     <div class="kanban-modal__list">
-      <h6>Comment</h6>
-      <div class="comment-input">
-        <textarea class="form-control" rows="3" placeholder="Add a comment..." id="commentInput"></textarea>
-        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">Comment +</button>
-      </div>
+    <div class="mb-30">
+      <label for="exampleFormControlTextarea1111" class="form-label">댓글</label>
+      <textarea class="form-control" id="commentInput" rows="3"
+        placeholder="내용을 작성해주세요…" style="resize :none"></textarea>
+    </div>
+    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" data-bs-dismiss="modal" id="addCommentButton">댓글 추가...</button>
+      
       <ul id="commentDetail">
         <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
         ${commentHTML}
