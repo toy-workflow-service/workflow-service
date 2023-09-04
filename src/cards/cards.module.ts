@@ -38,6 +38,6 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 export class CardsModule {
   @UseGuards(AuthGuard)
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UploadMultiMiddleware).forRoutes({ path: '/cards/uploads', method: RequestMethod.POST });
+    consumer.apply(UploadMultiMiddleware).forRoutes({ path: '/cards', method: RequestMethod.POST });
   }
 }

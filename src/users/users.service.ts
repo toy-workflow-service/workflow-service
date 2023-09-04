@@ -54,6 +54,7 @@ export class UsersService {
         profile_url: existUser.profile_url,
         phone_number: existUser.phone_number,
         phone_authentication: existUser.phone_authentication,
+        points: existUser.points,
       },
       process.env.ACCESS_SECRET_KEY,
       process.env.ACCESS_EXPIRE_TIME
