@@ -78,9 +78,6 @@ async function getMyBoards() {
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
-                                <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
-                                  board.boardName
-                                }</h6>
                               </a>
                               <span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">early</span>
                             </div>
@@ -125,18 +122,18 @@ async function getMyBoards() {
                                 <div
                                   class="progress-bar bg-primary"
                                   role="progressbar"
-                                  style="width: ${(cardLength.done / cardLength.cards) * 100}%"
+                                  style="width: ${(cardLength.done / cardLength.total) * 100}%"
                                   aria-valuenow="83"
                                   aria-valuemin="0"
                                   aria-valuemax="100"
                                 ></div>
                               </div>
                               <span class="progress-percentage">${
-                                Math.round((cardLength.done / cardLength.cards) * 100) || 0
+                                Math.round((cardLength.done / cardLength.total) * 100) || 0
                               }%</span>
                             </div>
                             <p class="color-light fs-12 mb-20">${cardLength.done} / ${
-                              cardLength.cards
+                              cardLength.total
                             } tasks completed</p>
                           </div>
                         </div>
@@ -441,32 +438,14 @@ async function deleteBoard(element) {
 
 // 보드 상세 조회
 async function detailBoardGet(boardId) {
-  const allCard = await $.ajax({
+  const result = await $.ajax({
     method: 'GET',
-    url: `/board-columns?boardId=${boardId}`,
+    url: `/board-columns/cards/count?boardId=${boardId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-  }).then(async (columns) => {
-    let cardsLength = 0;
-    let doneLength = 0;
-    for (let column of columns) {
-      const cards = await $.ajax({
-        method: 'GET',
-        url: `/cards?board_column_Id=${column.columnId}`,
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('Content-type', 'application/json');
-          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-        },
-      });
-      cardsLength += cards.length;
-      if (column.columnName == 'Done') {
-        doneLength = cards.length;
-      }
-    }
-    return { cards: cardsLength, done: doneLength };
   });
 
-  return allCard;
+  return result;
 }

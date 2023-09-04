@@ -83,7 +83,7 @@ export class BoardColumnsController {
   @Get('/cards/count')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckMemberInterceptor)
-  async countWorkspaceCards(@Query('workspaceId') workspaceId: number): Promise<Object> {
-    return await this.boardColumnsService.countWorkspaceCards(workspaceId);
+  async countWorkspaceCards(@Query('boardId') boardId: number): Promise<Object> {
+    return await this.boardColumnsService.countWorkspaceCards(boardId);
   }
 }
