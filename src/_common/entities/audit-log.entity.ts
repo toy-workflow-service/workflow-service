@@ -4,14 +4,7 @@ import { Workspace } from './workspace.entity';
 import { Board } from './board.entity';
 import { Board_Column } from './board-column.entity';
 import { Card } from './card.entity';
-
-enum ActionType {
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  INVITE = 'INVITE',
-  ROLE_CHANGE = 'ROLE_CHANGE',
-}
+import ActionType from '../utils/action-type';
 
 @Entity('audit_logs')
 export class Audit_log {

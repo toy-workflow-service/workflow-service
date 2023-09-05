@@ -47,9 +47,10 @@ export class BoardsController {
   async CreateBoard(
     @Query('workspaceId') workspaceId: number,
     @Body() data: CreateBoardDto,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ): Promise<Object> {
-    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description, user.name);
     return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }
 

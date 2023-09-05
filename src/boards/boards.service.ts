@@ -1,7 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { promises } from 'dns';
-import { OutgoingHttpHeader } from 'http';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
@@ -82,9 +80,8 @@ export class BoardsService {
   }
 
   //보드 생성
-  async CreateBoard(workspaceId: number, name: string, description: string): Promise<Object> {
+  async CreateBoard(workspaceId: number, name: string, description: string, loginUser: string): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    console.log(workspace);
     const boardCount: any = await this.GetBoards(workspaceId);
     const hasMembership = workspace.memberships.length > 0;
 
