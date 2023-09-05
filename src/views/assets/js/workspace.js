@@ -67,8 +67,15 @@ async function getMyBoards() {
         let button = '';
         console.log(boards[0].workspaceName);
         document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `${boards.length} Running Boards`;
+        document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
+        let check = '';
         for (const board of boards) {
+          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+          if (count == 100) {
+            check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
+          } else {
+            check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
+          }
           // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -80,7 +87,7 @@ async function getMyBoards() {
                                   board.boardName
                                 }</h6>
                               </a>
-                              <span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">early</span>
+                              ${check}
                             </div>
                             <div class="mt-n15">
                               <div class="dropdown dropleft">
@@ -95,10 +102,10 @@ async function getMyBoards() {
                                 <div class="dropdown-menu">
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
-                                  }" onclick="openEditBoardModal(this)">edit</a>
+                                  }" onclick="openEditBoardModal(this)">수정</a>
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
-                                  }" onclick="deleteBoard(this)">delete</a>
+                                  }" onclick="deleteBoard(this)">삭제</a>
                                 </div>
                               </div>
                             </div>
