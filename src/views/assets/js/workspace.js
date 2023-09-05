@@ -364,22 +364,22 @@ async function openEditBoardModal(element) {
     console.error(err);
   }
 }
-// 보드 멤버 조회
-function getBoardMembers(boardId) {
-  try {
-    const response = $.ajax({
-      method: 'GET',
-      url: `/boards/${boardId}/members`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-    });
-    return response;
-  } catch (err) {
-    console.error(err);
-  }
-}
+// 보드 멤버 조회 - 같은 함수가 위에 존재
+// function getBoardMembers(boardId) {
+//   try {
+//     const response = $.ajax({
+//       method: 'GET',
+//       url: `/boards/${boardId}/members`,
+//       beforeSend: function (xhr) {
+//         xhr.setRequestHeader('Content-type', 'application/json');
+//         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+//       },
+//     });
+//     return response;
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
 
 // 보드 수정
 async function putBoard(boardId, name, description) {
