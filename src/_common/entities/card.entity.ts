@@ -27,7 +27,7 @@ export class Card {
   @Column({ type: 'json', nullable: true })
   file_url: string[];
 
-  @Column({ type: 'json', nullable: false })
+  @Column({ type: 'json', nullable: true })
   file_size: string[];
 
   @Column({ type: 'tinyint', nullable: false })

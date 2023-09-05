@@ -77,7 +77,7 @@ export class CardsController {
     let fileArray = [];
     let fileName = [];
     let filesSizes = [];
-    console.log(files, alreadyFiles);
+
     if (files[0]) {
       files.forEach((file) => {
         fileArray.push(file.location);
@@ -112,9 +112,6 @@ export class CardsController {
         filesSizes.push(alreadyfileSize);
       }
     }
-    console.log(fileSize, alreadyfileSize);
-    console.log(filesSizes);
-
     await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, filesSizes, memberIds);
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }

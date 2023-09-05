@@ -1095,7 +1095,7 @@ async function CardAllUpdate(columnId, cardId, data) {
         title: 'Success',
         text: data.message,
       }).then(() => {
-        // location.reload();
+        location.reload();
       });
     },
     error: (error) => {
