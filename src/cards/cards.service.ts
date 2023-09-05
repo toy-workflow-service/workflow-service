@@ -32,6 +32,7 @@ export class CardsService {
     board_column_id: number,
     cardInfo: CreateCardDto,
     files: string[],
+    filesSize: string[],
     originalnames: string[],
     memberIds: string[]
   ) {
@@ -45,6 +46,7 @@ export class CardsService {
       ...cardInfo,
       file_url: files,
       file_original_name: originalnames,
+      file_size: filesSize,
       members: memberIds,
     });
   }
