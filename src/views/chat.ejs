@@ -27,7 +27,7 @@
           <div id="chat" class="left-sidebar-wrap radius-xl active">
             <div class="chat-wrapper py-25">
               <div class="search-header">
-                <form action="/" class="d-flex align-items-center">
+                <form class="d-flex align-items-center">
                   <img src="./assets/img/svg/search.svg" alt="search" class="svg" />
                   <input
                     class="form-control me-sm-2 border-0 box-shadow-none"
@@ -67,7 +67,6 @@
                   </li>
                 </ul>
               </div>
-
               <div class="tab-content">
                 <div class="tab-pane fade show active" id="panel_b_first" role="tabpanel" aria-labelledby="first-tab">
                   <ul class="user-list" id="boardChatList">
@@ -78,7 +77,12 @@
                   <ul class="user-list">
                     <li>
                       <div class="user-button-top">
-                        <button type="button" class="border bg-normal color-gray rounded-pill content-center">
+                        <button
+                          type="button"
+                          class="border bg-normal color-gray rounded-pill content-center"
+                          data-bs-toggle="modal"
+                          data-bs-target="#newChatModal"
+                        >
                           <img class="svg" src="./assets/img/svg/edit.svg" alt="edit" />새로운 채팅
                         </button>
                       </div>
@@ -86,6 +90,7 @@
                   </ul>
                 </div>
               </div>
+
               <!-- Ends: .search-body -->
             </div>
             <!-- Ends: .chat-wrapper -->
@@ -99,5 +104,37 @@
     </div>
     <!-- Ends: .chat-area -->
   </div>
+  <div class="modal-basic modal fade show" id="newChatModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content modal-bg-white">
+        <div class="modal-header">
+          <h6 class="modal-title">1:1 채팅방 만들기</h6>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-25">
+            <span class="search-icon uil uil-search"></span>
+            <label style="margin-bottom: 10px">이메일 검색</label>
+            <div style="display: flex">
+              <input
+                class="form-control form-control-lg"
+                type="text"
+                id="searchEmail"
+                style="width: 80%; margin-right: 10px"
+                placeholder="유저의 이메일을 입력하세요."
+              />
+              <button type="button" class="btn btn-primary btn-sm" style="width: 15%; height: 50px">검색</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ends: .modal-Basic -->
 </main>
 <%- include('includes/footer') %>

@@ -39,9 +39,7 @@ export class UploadMultiMiddleware implements NestMiddleware {
           return res.status(400).json({ message: '파일의 최대 업로드 개수는 5개 입니다.' });
         else if (err.message == 'File too large')
           return res.status(400).json({ message: '파일의 최대 크기는 5MB 입니다.' });
-        else {
-          return res.status(500).json({ message: '파일 업로드를 실패 했습니다.' });
-        }
+        else return res.status(500).json({ message: '파일 업로드를 실패 했습니다.' });
       } else {
         next();
       }

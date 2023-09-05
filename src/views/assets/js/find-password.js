@@ -1,5 +1,6 @@
 const sendMailBtn = document.querySelector('#mailBtn');
 const changePasswordBtn = document.querySelector('#changePasswordBtn');
+const sendingMessage = document.querySelector('#sending-message');
 let emailAuth = false;
 
 $(document).ready(() => {
@@ -20,15 +21,16 @@ async function sendMail() {
   const changePasswordDiv = document.querySelector('#changePasswordDiv');
   let code, expireTime;
 
-  const sendingMessage = document.querySelector('#sending-message');
+  sendMailBtn.style.display = 'none';
   sendingMessage.style.display = 'block';
-
   if (!mail || !mailReg.test(mail)) {
     Swal.fire({
       icon: 'error',
       title: 'Error',
       text: '이메일이 비어 있거나 이메일이 형식에 맞지 않습니다.',
     });
+    sendingMessage.style.display = 'none';
+    sendMailBtn.style.display = 'block';
     return;
   }
 
@@ -47,8 +49,9 @@ async function sendMail() {
         title: 'Success',
         text: data.message,
       });
+      document.querySelector('#mail').readOnly = true;
+      sendingMessage.style.display = 'none';
       verifyCodeDiv.style = 'display: block';
-      sendMailBtn.style.display = 'none';
       return;
     },
     error: (error) => {
@@ -67,7 +70,9 @@ async function sendMail() {
           text: error.responseJSON,
         });
       }
-      verifyCodeDiv.style = 'display: none';
+
+      sendingMessage.style = 'diplay: none;';
+      sendMailBtn.style.display = 'block';
       return;
     },
   });
@@ -81,7 +86,6 @@ async function sendMail() {
         text: '인증에 성공하셨습니다.',
       });
       emailAuth = true;
-      document.querySelector('#mail').readOnly = true;
       verifyCodeDiv.style = 'display:none';
       sendMailBtn.style.display = 'none';
       changePasswordDiv.style.display = 'block';
@@ -100,6 +104,7 @@ async function sendMail() {
         title: 'Error',
         text: '인증시간이 초과되었습니다. 처음부터 다시 시도해 주세요. ',
       });
+      document.querySelector('#mail').readOnly = false;
       document.querySelector('#mail').value = '';
       document.querySelector('#verifyCode').value = '';
       verifyCodeDiv.style = 'display:none';

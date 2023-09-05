@@ -52,7 +52,9 @@ export class WorkspacesController {
   @UseInterceptors(CheckMemberInterceptor)
   async getWorkspaceDetail(@GetUser() user: AccessPayload, @Param('workspaceId') workspaceId: number): Promise<Object> {
     const data = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    return { data, userId: user.id, userName: user.name };
+    const loginUserRole = await this.workspaceService.loginUserRole(user.id);
+
+    return { data, userId: user.id, userName: user.name, loginUserRole };
   }
 
   // 워크스페이스 수정

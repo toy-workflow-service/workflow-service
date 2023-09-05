@@ -57,7 +57,7 @@ export class CardsController {
       });
     }
     await this.cardsService.CreateCard(boardColumnId, data, fileArray, fileSizeArray, originalnames, memberIds);
-
+      
     return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
   //카드 수정
@@ -119,6 +119,7 @@ export class CardsController {
     console.log(filesSizes);
 
     await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, filesSizes, memberIds);
+
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
   //카드 삭제

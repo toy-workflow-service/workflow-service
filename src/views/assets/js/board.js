@@ -615,16 +615,18 @@ function createReplyModal(filteredComments) {
       }</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -1324,7 +1326,6 @@ function addFile(obj) {
 
   for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
     const file = obj.files[i];
-
     // 첨부파일 검증
     if (validation(file)) {
       // 파일 배열에 담기
