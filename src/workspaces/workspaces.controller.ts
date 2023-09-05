@@ -80,7 +80,7 @@ export class WorkspacesController {
     @Param('workspaceId') workspaceId: number,
     @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    return await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name);
+    return await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name, user.id);
   }
 
   // 워크스페이스 멤버 삭제
@@ -89,9 +89,11 @@ export class WorkspacesController {
   @UseInterceptors(CheckAuthInterceptor)
   async deleteWorkspaceMember(
     @Param('workspaceId') workspaceId: number,
-    @Param('userId') userId: number
+    @Param('userId') userId: number,
+    @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    return await this.workspaceService.deleteWorkspaceMember(workspaceId, userId);
+    const loginUser = user.id;
+    return await this.workspaceService.deleteWorkspaceMember(workspaceId, userId, loginUser);
   }
 
   // 워크스페이스 멤버역할 변경
@@ -101,9 +103,11 @@ export class WorkspacesController {
   async setMemberRole(
     @Body() body: SetRoleDto,
     @Param('workspaceId') workspaceId: number,
-    @Param('userId') userId: number
+    @Param('userId') userId: number,
+    @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    return await this.workspaceService.setMemberRole(body, workspaceId, userId);
+    const loginUser = user.id;
+    return await this.workspaceService.setMemberRole(body, workspaceId, userId, loginUser);
   }
 
   // 워크스페이스 참여자 상태변경, 이메일에서 수락버튼 클릭 시 실행
@@ -132,6 +136,7 @@ export class WorkspacesController {
     return await this.workspaceService.countWorkspaceBoards(workspaceId);
   }
 
+  // 워크스페이스에 업로드된 모든 파일 조회
   @Get(':workspaceId/getFiles')
   @UseGuards(AuthGuard)
   async getAllfiles(@Param('workspaceId') workspaceId: number): Promise<File[]> {

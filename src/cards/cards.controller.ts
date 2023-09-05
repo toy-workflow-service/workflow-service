@@ -48,12 +48,14 @@ export class CardsController {
   ) {
     const files: any = req.files;
     let fileArray = [];
+    let fileSizeArray = [];
     if (files) {
       files.forEach((file) => {
         fileArray.push(file.location);
+        fileSizeArray.push(file.size);
       });
     }
-    await this.cardsService.CreateCard(boardColumnId, data, fileArray, originalnames, memberIds);
+    await this.cardsService.CreateCard(boardColumnId, data, fileArray, fileSizeArray, originalnames, memberIds);
     return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
   //카드 수정

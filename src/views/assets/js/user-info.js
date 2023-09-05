@@ -334,29 +334,31 @@ async function getPaymentHistory() {
           if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
             if (!history.membershipCreatedAt) {
               result += ` <tbody>
-              <tr>
-                <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
-                <td>취소된 결제입니다.</td>
-                <td>-</td>
-                <td>`;
+                            <tr>
+                              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
+                              <td>취소된 결제입니다.</td>
+                              <td>-</td>
+                              <td>`;
             } else {
               result += ` <tbody>
-              <tr>
-                <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
-                <td>${history.membershipCreatedAt.substring(0, 10).replace('-', '.')} ~ 
-                    ${history.membershipEndDate.substring(0, 10).replace('-', '.')}</td>
-                <td>${history.membershipPrice.toLocaleString()}원</td>
-                <td>
-                  <div class="dropdown">
-                    <a
-                      role="button"
-                      id="products"
-                      data-bs-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
-                      <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                    </a>`;
+                          <tr>
+                            <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${
+                              history.workspaceName
+                            }</td>
+                            <td>${history.membershipCreatedAt.substring(0, 10).replace('-', '.')} ~ 
+                                ${history.membershipEndDate.substring(0, 10).replace('-', '.')}</td>
+                            <td>${history.membershipPrice.toLocaleString()}원</td>
+                            <td>
+                              <div class="dropdown">
+                                <a
+                                  role="button"
+                                  id="products"
+                                  data-bs-toggle="dropdown"
+                                  aria-haspopup="true"
+                                  aria-expanded="false"
+                                >
+                                  <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
+                                </a>`;
             }
             result += ` <div class="dropdown-menu dropdown-menu-right" aria-labelledby="products">
                                   <a class="dropdown-item" style="cursor: pointer" data-payment-id="${history.paymentId}" id="cancel-payment-btn">결제 취소</a>
@@ -397,11 +399,13 @@ async function cancelPayment(paymentId, workspaceId) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: () => {
+      success: (data) => {
+        console.log(data);
         Swal.fire({
           icon: 'success',
-          title: 'success!',
-          text: '결제 취소 완료!',
+          title: '결제 취소 완료!',
+          text: `잔여일 : ${data.remainingDays}일, 
+                 환불금액 : ${data.roundedRefundPrice.toLocaleString()}원`,
         }).then(() => {
           window.location.reload();
         });

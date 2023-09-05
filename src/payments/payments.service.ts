@@ -92,6 +92,7 @@ export class PaymentsService {
 
     const dailyPrice = Math.floor(targetMembership.package_price / daysInMembership);
     const refundPrice = Math.floor(remainingDays) * dailyPrice;
+    const roundedRefundPrice = Math.floor(refundPrice / 100) * 100;
 
     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
       await this.membershipService.cancelMembership(workspaceId);
@@ -100,22 +101,27 @@ export class PaymentsService {
       await transactionEntityManager.save(targetPayment);
 
       const user = await this.userService.findUserById(userId);
-      const refundPoint = refundPrice;
+      const refundPoint = roundedRefundPrice;
       const remainPoint = (user.points += refundPoint);
       await transactionEntityManager.save(User, { ...user, points: remainPoint });
     });
-    return { remainingDays, refundPrice };
+    return { remainingDays, roundedRefundPrice };
   }
 
   // 나의 결제내역 조회
   async getMyPayments(userId: number): Promise<Payment[]> {
-    const payments = await this.paymentRepository.find({ where: { user: { id: userId } }, relations: ['user'] });
+    const payments = await this.paymentRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+    });
     const paymentHistory = [];
     for (const payment of payments) {
       const workspaceId = payment.workspaceId;
+      const status = payment.status;
       const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
 
-      if (workspace.memberships.length > 0) {
+      if (workspace.memberships.length > 0 && status === true) {
         const membership = workspace.memberships[0];
         const paymentInfo = {
           paymentId: payment.id,
