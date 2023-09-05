@@ -190,8 +190,15 @@ async function getMyBoards() {
 
 // 보드 생성
 const createBoardBtn = document.querySelector('#create-button');
-document.querySelector('.la-plus').addEventListener('click', () => {
+document.querySelector('#create-board-btn').addEventListener('click', () => {
+  selectedMemberId = [];
   selectedMembers = [];
+  if (Boolean(document.querySelector('#name47').value)) {
+    document.querySelector('#name47').value = '';
+    document.querySelector('#create-selected-members').innerHTML = '';
+    document.querySelector('#selected-members').innerHTML = '';
+  }
+  console.log('보드 생성 버튼 클릭: ', selectedMemberId, selectedMembers);
 });
 
 createBoardBtn.addEventListener('click', async (event) => {
@@ -328,6 +335,8 @@ async function openEditBoardModal(element) {
   const count = element.getAttribute('checkCards');
   const checkBoxEnd = document.querySelector('#check-grp-4');
   const checkBoxIng = document.querySelector('#check-grp-3');
+  document.querySelector('#name48').value = '';
+  document.querySelector('#edit-selected-members').innerHTML = '';
   if (count == 100) {
     checkBoxEnd.checked = true;
     checkBoxIng.checked = false;
