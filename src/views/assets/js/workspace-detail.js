@@ -827,9 +827,11 @@ async function getAllFiles() {
         let result = '';
         data.forEach((file) => {
           const fileOriginalName = file.cards_file_original_name;
+          const fileUrl = file.cards_file_url;
           const fileSize = file.cards_file_size;
           let fileNames = [];
           let fileSizes = [];
+          let fileUrls = [];
 
           if (typeof fileOriginalName === 'string') {
             try {
@@ -851,20 +853,32 @@ async function getAllFiles() {
             fileSizes = [fileSize];
           }
 
+          if (typeof fileUrl === 'string') {
+            try {
+              fileUrls = JSON.parse(fileUrl);
+            } catch (err) {
+              fileUrls = [fileUrl];
+            }
+          } else {
+            fileUrls = fileUrl;
+          }
+
           if (Array.isArray(fileNames) && fileNames.length > 0) {
             for (let i = 0; i < fileNames.length; i++) {
               const fileName = fileNames[i];
+              const fileUrl = fileUrls[i];
               const imgSrc = getImgSource(fileName);
               const fileSize = getFileSize(fileSizes[i]);
 
-              result += printFilesHtml(fileName, imgSrc, fileSize);
+              result += printFilesHtml(fileName, imgSrc, fileSize, fileUrl);
             }
           } else if (typeof fileOriginalName === 'string') {
             const fileName = fileOriginalName.replace(/"/g, '');
             const fileSize = getFileSize(fileSizes);
+            const fileUrl = fileUrls;
             const imgSrc = getImgSource(fileName);
 
-            result += printFilesHtml(fileName, imgSrc, fileSize);
+            result += printFilesHtml(fileName, imgSrc, fileSize, fileUrl);
           }
         });
 
@@ -1001,7 +1015,7 @@ async function printStorageSize(totalSize) {
 }
 
 // 파일 출력 html
-function printFilesHtml(fileName, imgSrc, fileSize) {
+function printFilesHtml(fileName, imgSrc, fileSize, fileUrl) {
   return `<div class="mb-20">
             <div class="files-area d-flex justify-content-between align-items-center">
               <div class="files-area__left d-flex align-items-center">
@@ -1010,26 +1024,10 @@ function printFilesHtml(fileName, imgSrc, fileSize) {
                 </div>
                 <div class="files-area__title">
                   <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">${fileName}</p>
-                  <span class="color-light fs-12 d-flex">${fileSize}mb</span>
+                  <span class="color-light fs-12 d-flex">${fileSize}MB</span>
                   <div class="d-flex text-capitalize">
-                    <a class="fs-12 fw-500 color-primary">download</a>
+                    <a href="${fileUrl}" target="_blank" class="fs-12 fw-500 color-primary" style="cursor: pointer">download</a>
                     <a class="fs-12 fw-500 color-primary ms-10"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="files-area__right">
-                <div class="dropdown dropleft">
-                  <button
-                    class="btn-link border-0 bg-transparent p-0"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                  </button>
-                  <div class="dropdown-menu dropdown-menu--dynamic">
-                    <a class="dropdown-item">수정</a>
-                    <a class="dropdown-item">삭제</a>
                   </div>
                 </div>
               </div>
