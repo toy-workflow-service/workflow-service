@@ -17,6 +17,7 @@ import { Direct_Message } from './direct-message.entity';
 import { Reminder } from './reminder.entity';
 import { Mention } from './mention.entity';
 import { Payment } from './payment.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('users')
 export class User {
@@ -98,4 +99,7 @@ export class User {
     nullable: true,
   })
   payments: Payment[];
+
+  @OneToMany(() => Audit_log, (log) => log.user)
+  audit_logs: Audit_log[];
 }
