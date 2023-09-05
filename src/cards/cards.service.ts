@@ -65,14 +65,22 @@ export class CardsService {
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
-    console.log(files, originalnames, filesSizes);
-    // await this.cardRepository.update(id, {
-    //   ...cardInfo,
-    //   file_url: files,
-    //   file_original_name: originalnames,
-    //   file_size: filesSizes,
-    //   members: memberIds,
-    // });
+
+    if (!memberIds) {
+      memberIds = [];
+    }
+    await this.cardRepository.update(
+      { id },
+      {
+        name: cardInfo.name,
+        content: cardInfo.content,
+        color: cardInfo.color,
+        file_url: files,
+        file_original_name: originalnames,
+        file_size: filesSizes,
+        members: memberIds,
+      }
+    );
   }
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {
