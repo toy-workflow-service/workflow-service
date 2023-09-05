@@ -11,6 +11,15 @@ export class AuditLogsService {
     private auditLogRepository: Repository<Audit_log>
   ) {}
 
+  async getAllLogs(workspaceId: number): Promise<Audit_log[]> {
+    const allLogs = await this.auditLogRepository.find({
+      where: { workspace: { id: workspaceId } },
+      order: { created_at: 'DESC' },
+    });
+
+    return allLogs;
+  }
+
   async inviteMemberLog(
     workspaceId: number,
     inviterUserId: number,
@@ -21,7 +30,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: inviterUserId },
       actions: ActionType.INVITE,
-      details: `멤버 초대 - ${inviterUserName}님이 ${invitedUserName}님을 워크스페이스에 초대하였습니다. `,
+      details: `${inviterUserName}님이 ${invitedUserName}님을 워크스페이스에 초대하였습니다. `,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -37,7 +46,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.DELETE,
-      details: `멤버 삭제 - ${userName}님이 ${deletedUser}님을 워크스페이스에서 내보냈습니다.`,
+      details: `${userName}님이 ${deletedUser}님을 워크스페이스에서 내보냈습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -54,7 +63,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.ROLE_CHANGE,
-      details: `역할 변경 - ${userName}님이 ${targetUser}님의 역할을 ${role}로 변경했습니다.`,
+      details: `${userName}님이 ${targetUser}님의 역할을 ${role}로 변경했습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -65,7 +74,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.CREATE,
-      details: `보드 생성 - ${userName}님이 ${boardName} 보드를 생성하였습니다.`,
+      details: `${userName}님이 ${boardName} 보드를 생성하였습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -83,7 +92,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `보드 수정 - ${userName}님이 ${beforeBoardName} 보드를 수정하였습니다.`,
+        details: `${userName}님이 ${beforeBoardName} 보드를 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -92,7 +101,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `보드 수정 - ${userName}님이 ${beforeBoardName} 보드를 ${afterBoardName} 보드로 수정하였습니다.`,
+        details: `${userName}님이 ${beforeBoardName} 보드를 ${afterBoardName} 보드로 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -104,7 +113,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.DELETE,
-      details: `보드 삭제 - ${userName}님이 ${boardName} 보드를 삭제하였습니다.`,
+      details: `${userName}님이 ${boardName} 보드를 삭제하였습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -115,7 +124,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.CREATE,
-      details: `컬럼 생성 - ${userName}님이 ${columnName} 컬럼을 생성하였습니다.`,
+      details: `${userName}님이 ${columnName} 컬럼을 생성하였습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -133,7 +142,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `컬럼 수정 - ${userName}님이 ${beforeColumnName} 컬럼을 수정하였습니다.`,
+        details: `${userName}님이 ${beforeColumnName} 컬럼을 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -142,7 +151,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `컬럼 수정 - ${userName}님이 ${beforeColumnName} 컬럼을 ${afterColumnName} 컬럼으로 수정하였습니다.`,
+        details: `${userName}님이 ${beforeColumnName} 컬럼을 ${afterColumnName} 컬럼으로 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -154,7 +163,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.DELETE,
-      details: `컬럼 삭제 - ${userName}님이 ${columnName} 컬럼을 삭제하였습니다.`,
+      details: `${userName}님이 ${columnName} 컬럼을 삭제하였습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -165,7 +174,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.CREATE,
-      details: `카드 생성 - ${userName}님이 ${cardName} 카드를 생성하였습니다.`,
+      details: `${userName}님이 ${cardName} 카드를 생성하였습니다.`,
     });
 
     return await this.auditLogRepository.save(newLog);
@@ -183,7 +192,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `카드 수정 - ${userName}님이 ${beforeCardName} 카드를 수정하였습니다.`,
+        details: `${userName}님이 ${beforeCardName} 카드를 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -192,7 +201,7 @@ export class AuditLogsService {
         workspace: { id: workspaceId },
         user: { id: userId },
         actions: ActionType.UPDATE,
-        details: `카드 수정 - ${userName}님이 ${beforeCardName} 카드를 ${afterCardName} 카드로 수정하였습니다.`,
+        details: `${userName}님이 ${beforeCardName} 카드를 ${afterCardName} 카드로 수정하였습니다.`,
       });
 
       return await this.auditLogRepository.save(newLog);
@@ -204,7 +213,7 @@ export class AuditLogsService {
       workspace: { id: workspaceId },
       user: { id: userId },
       actions: ActionType.DELETE,
-      details: `카드 수정 - ${userName}님이 ${cardName} 카드를 삭제하였습니다.`,
+      details: `${userName}님이 ${cardName} 카드를 삭제하였습니다.`,
     });
     return await this.auditLogRepository.save(newLog);
   }

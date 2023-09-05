@@ -4,6 +4,7 @@ let workspaceId = params.get('workspaceId');
 $(document).ready(async () => {
   await getWorkspaceDetail();
   await getAllFiles();
+  await getWorkspaceActivity();
 });
 
 const printTitle = document.querySelector('#workspace-title');
@@ -12,6 +13,7 @@ const printTotal = document.querySelector('#workspace-total');
 const printMember = document.querySelector('#workspace-member');
 const printFiles = document.querySelector('#workspace-files');
 const printStorage = document.querySelector('#workspace-storage');
+const printActivity = document.querySelector('#workspace-activity');
 let userName;
 let callerId;
 
@@ -73,7 +75,6 @@ async function getWorkspaceDetail() {
                               <span class="color-light fs-13">생성일</span>
                               <p class="color-primary fs-14 mt-1 mb-0 fw-500">${data.created_at
                                 .substring(0, 10)
-                                .replace('-', '.')
                                 .replace('-', '.')}</p>
                             </li>
                           </ul>
@@ -1030,6 +1031,88 @@ function printFilesHtml(fileName, imgSrc, fileSize, fileUrl) {
                     <a class="fs-12 fw-500 color-primary ms-10"></a>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>`;
+}
+
+async function getWorkspaceActivity() {
+  try {
+    await $.ajax({
+      method: 'GET',
+      url: `/workspaces/${workspaceId}/getLogs`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: (data) => {
+        console.log(data);
+        let result = '';
+
+        data.forEach((log) => {
+          result += printActivityhtml(log.details, log.created_at, log.actions);
+        });
+        printActivity.innerHTML = result;
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function printActivityhtml(details, createdAt, actions) {
+  const formattedDate = new Date(createdAt).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const transAction = actions;
+  let span = '';
+  let imgSrc = '';
+  switch (transAction) {
+    case 'CREATE':
+      span = 'class="wh-24 me-15 rounded-circle content-center color-danger bg-opacity-danger"';
+      imgSrc = '"./assets/img/svg/plus.svg" alt="plus" class="svg"';
+      break;
+    case 'UPDATE':
+      span = 'class="wh-24 me-15 rounded-circle content-center color-success bg-opacity-success"';
+      imgSrc = '"./assets/img/svg/edit.svg" alt="edit" class="svg"';
+      break;
+    case 'DELETE':
+      span = 'class="wh-24 me-15 rounded-circle content-center color-primary bg-opacity-primary"';
+      imgSrc = '"./assets/img/svg/x2.svg" alt="x2" class="svg"';
+      break;
+    case 'INVITE':
+      span = 'class="wh-24 me-15 rounded-circle content-center color-info bg-opacity-info"';
+      imgSrc = '"./assets/img/svg/user-plus.svg" alt="user-plus" class="svg"';
+      break;
+    case 'ROLE_CHANGE':
+      span = 'class="wh-24 me-15 rounded-circle content-center color-warning bg-opacity-warning"';
+      imgSrc = '"./assets/img/svg/repeat.svg" alt="repeat" class="svg"';
+      break;
+  }
+
+  return `<div class="ffp d-flex justify-content-between align-items-center w-100">
+            <div class="d-flex">
+              <div class="me-3 ffp__imgWrapper d-flex align-items-center">
+                <span ${span}>
+                  <img src=${imgSrc}
+                /></span>
+                <span
+                  class="profile-image rounded-circle d-block wh-34 m-0"
+                  style="background-image: url('img/tm5.png'); background-size: cover"
+                ></span>
+              </div>
+              <div>
+                <a>
+                  <p class="fw-500 fs-14 text-dark mb-0">
+                    ${details}
+                  </p>
+                </a>
+                <span class="pt-1 d-block color-extra-light fs-12">${formattedDate}</span>
               </div>
             </div>
           </div>`;
