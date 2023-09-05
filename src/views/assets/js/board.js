@@ -428,6 +428,7 @@ async function BoardColumns(data) {
         if (!filesArr[i].is_delete) {
           formData.append('newFiles', filesArr[i]);
           formData.append('originalnames', filesArr[i].name);
+          formData.append('fileSize', filesArr[i].size);
         }
       }
     }
@@ -989,6 +990,7 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   document.querySelector('#edit-card-input').value = '';
   filesArr = [];
   filesNameArr = [];
+  filesSizeArr = [];
   fileNo = 0;
   document.querySelector('#edit-card-file').innerHTML = '';
   for (let i = 0; i < cardData.file_url.length; i++) {
@@ -1001,6 +1003,7 @@ function openUpdateCardModal(cardData, columnId, cardId) {
     $('.file-list').append(htmlData);
     filesArr.push(cardData.file_url[i]);
     filesNameArr.push(cardData.file_original_name[i]);
+    filesSizeArr.push(cardData.file_size[i]);
     fileNo++;
   }
 }
@@ -1038,25 +1041,23 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
   // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
   let i = 0;
+  let count = 0;
   if (filesNameArr) {
     for (i = 0; i < filesNameArr.length; i++) {
       // 삭제되지 않은 파일만 폼데이터에 담기
-      if (!filesNameArr[i].is_delete) {
-        updatedData.append('alreadyFiles', filesArr[i]);
-        updatedData.append('alreadyFileNames', filesNameArr[i]);
-      }
-    }
-    for (i; i < filesArr.length; i++) {
-      if (!filesArr[i].is_delete) {
-        updatedData.append('newFiles', filesArr[i]);
-        updatedData.append('originalnames', filesArr[i].name);
-      }
-    }
-  } else {
-    for (i; i < filesArr.length; i++) {
-      if (!filesArr[i].is_delete) {
-        updatedData.append('newFiles', filesArr[i]);
-        updatedData.append('originalnames', filesArr[i].name);
+      if (typeof filesArr[i] == 'object') {
+        if (document.getElementById(`file${i}`)) {
+          updatedData.append('newFiles', filesArr[i]);
+          updatedData.append('originalnames', filesNameArr[i]);
+          updatedData.append('fileSize', filesSizeArr[i]);
+        }
+      } else {
+        if (document.getElementById(`file${i}`)) {
+          updatedData.append('alreadyFiles', filesArr[i]);
+          updatedData.append('alreadyFileNames', filesNameArr[i]);
+          updatedData.append('alreadyfileSize', filesSizeArr[i]);
+          count++;
+        }
       }
     }
   }
@@ -1068,7 +1069,7 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   updatedData.append('name', updatedCardName);
   updatedData.append('color', updatedCardColor);
   updatedData.append('content', updatedCardContent);
-  updatedData.append('alreadyFileCount', filesNameArr.length);
+  updatedData.append('alreadyFileCount', count);
 
   // 업데이트 함수 호출
   CardAllUpdate(columnId, cardId, updatedData);
@@ -1307,6 +1308,7 @@ function Getcomment(cardId, commentId) {
 var fileNo = 0;
 var filesArr = [];
 let filesNameArr = [];
+let filesSizeArr = [];
 
 /* 첨부파일 추가 */
 function addFile(obj) {
@@ -1331,6 +1333,8 @@ function addFile(obj) {
         filesArr.push(file);
       };
       reader.readAsDataURL(file);
+      filesNameArr.push(file.name);
+      filesSizeArr.push(file.size);
 
       // 목록 추가
       let htmlData = '';
@@ -1367,9 +1371,9 @@ function validation(obj) {
 /* 첨부파일 삭제 */
 function deleteFile(num) {
   document.querySelector(`#file${num}`).remove();
-  // filesArr[num].is_delete = true;
-  // filesNameArr[num].is_delete = true;
-  filesArr.splice(num, 1);
-  filesNameArr.splice(num, 1);
-  console.log(filesArr, filesNameArr);
+  filesArr[num].is_delete = true;
+  filesNameArr[num].is_delete = true;
+  filesSizeArr[num].is_delete = true;
+  console.log('지우기를 누르면?', Boolean(filesArr[num]));
+  console.log(filesNameArr[num]);
 }

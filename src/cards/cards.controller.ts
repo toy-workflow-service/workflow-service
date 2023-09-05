@@ -44,6 +44,7 @@ export class CardsController {
     @Body('members') memberIds: string[],
     @Req() req: MulterRequest,
     @Body('originalnames') originalnames: string[],
+    @Body('fileSize') fileSize: string[],
     @Res() res: Response
   ) {
     const files: any = req.files;
@@ -53,7 +54,7 @@ export class CardsController {
         fileArray.push(file.location);
       });
     }
-    await this.cardsService.CreateCard(boardColumnId, data, fileArray, originalnames, memberIds);
+    await this.cardsService.CreateCard(boardColumnId, data, fileArray, originalnames, fileSize, memberIds);
     return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
   //카드 수정
@@ -66,6 +67,8 @@ export class CardsController {
     @Body('originalnames') originalnames: string[],
     @Body('alreadyFiles') alreadyFiles: string[],
     @Body('alreadyFileNames') alreadyFileNames: string[],
+    @Body('fileSize') fileSize: string[],
+    @Body('alreadyfileSize') alreadyfileSize: string[],
     @Body('alreadyFileCount') alreadyFileCount: number,
     @Req() req: MulterRequest,
     @Res() res: Response
@@ -73,6 +76,8 @@ export class CardsController {
     const files: any = req.files;
     let fileArray = [];
     let fileName = [];
+    let filesSizes = [];
+    console.log(files, alreadyFiles);
     if (files[0]) {
       files.forEach((file) => {
         fileArray.push(file.location);
@@ -81,11 +86,15 @@ export class CardsController {
         originalnames.forEach((name) => {
           fileName.push(name);
         });
+        fileSize.forEach((size) => {
+          filesSizes.push(size);
+        });
       } else {
         fileName.push(originalnames);
+        filesSizes.push(fileSize);
       }
     }
-    if (alreadyFiles[0]) {
+    if (alreadyFiles) {
       if (alreadyFileCount > 1) {
         alreadyFiles.forEach((file) => {
           fileArray.push(file);
@@ -93,14 +102,20 @@ export class CardsController {
         alreadyFileNames.forEach((name) => {
           fileName.push(name);
         });
+        alreadyfileSize.forEach((size) => {
+          filesSizes.push(size);
+        });
       } else {
         const name = alreadyFileNames;
         fileArray.push(alreadyFiles);
         fileName.push(name);
+        filesSizes.push(alreadyfileSize);
       }
     }
+    console.log(fileSize, alreadyfileSize);
+    console.log(filesSizes);
 
-    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, memberIds);
+    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, filesSizes, memberIds);
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
   //카드 삭제
