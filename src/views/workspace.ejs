@@ -61,12 +61,6 @@
                                     <label for="check-grp-1" class="fs-14 color-light strikethrough"> 진행중 </label>
                                   </div>
                                 </div>
-                                <div class="checkbox-group d-flex me-50 pe-10">
-                                  <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                    <input class="checkbox" type="checkbox" id="check-grp-2" />
-                                    <label for="check-grp-2" class="fs-14 color-light strikethrough"> 마감 </label>
-                                  </div>
-                                </div>
                               </div>
                             </div>
                           </div>
@@ -162,14 +156,14 @@
                               <div class="project-task-list__left d-flex align-items-center">
                                 <div class="checkbox-group d-flex me-50 pe-10">
                                   <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                    <input class="checkbox" type="checkbox" id="check-grp-1" checked />
-                                    <label for="check-grp-1" class="fs-14 color-light strikethrough"> 진행중 </label>
+                                    <input class="checkbox" type="checkbox" id="check-grp-3" />
+                                    <label for="check-grp-3" class="fs-14 color-light strikethrough"> 진행중 </label>
                                   </div>
                                 </div>
                                 <div class="checkbox-group d-flex me-50 pe-10">
                                   <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                    <input class="checkbox" type="checkbox" id="check-grp-2" />
-                                    <label for="check-grp-2" class="fs-14 color-light strikethrough"> 마감 </label>
+                                    <input class="checkbox" type="checkbox" id="check-grp-4" />
+                                    <label for="check-grp-4" class="fs-14 color-light strikethrough"> 마감 </label>
                                   </div>
                                 </div>
                               </div>
@@ -255,10 +249,10 @@
               <div class="d-flex align-items-center">
                 <p class="mb-0 me-10 fs-14 color-light">sort by:</p>
                 <div class="project-category__select">
-                  <select class="js-example-basic-single js-states form-control" id="event-category">
-                    <option value="all" selected>project category</option>
-                    <option value="JAN">event</option>
-                    <option value="FBR">Venues</option>
+                  <select class="js-example-basic-single js-states form-control" id="event-category" onchange="changeSelect()">
+                    <option value="all" selected>전체</option>
+                    <option value="ing">진행중</option>
+                    <option value="end">종료</option>
                   </select>
                 </div>
               </div>

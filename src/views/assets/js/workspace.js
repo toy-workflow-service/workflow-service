@@ -50,7 +50,16 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
 }
 const printBoard = document.querySelector('#board-box');
 const printButton = document.querySelector('.nav-item');
-
+function changeSelect() {
+  let selected = document.querySelector('#event-category');
+  if (selected.value == 'all') {
+    getMyBoards();
+  } else if (selected.value == 'ing') {
+    alert('아직 진행중입니다.');
+  } else {
+    alert('아직 진행중입니다.');
+  }
+}
 // 보드 전체 조회
 async function getMyBoards() {
   try {
@@ -65,9 +74,9 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
-        console.log(boards[0].workspaceName);
         document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
+
         let check = '';
         for (const board of boards) {
           const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
@@ -102,7 +111,7 @@ async function getMyBoards() {
                                 <div class="dropdown-menu">
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
-                                  }" onclick="openEditBoardModal(this)">수정</a>
+                                  }" checkCards="${count}" onclick="openEditBoardModal(this)">수정</a>
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
                                   }" onclick="deleteBoard(this)">삭제</a>
@@ -181,6 +190,9 @@ async function getMyBoards() {
 
 // 보드 생성
 const createBoardBtn = document.querySelector('#create-button');
+document.querySelector('.la-plus').addEventListener('click', () => {
+  selectedMembers = [];
+});
 
 createBoardBtn.addEventListener('click', async (event) => {
   event.preventDefault();
@@ -313,6 +325,16 @@ function updateSelectedMembersUI(memberListSelector) {
 // 보드 수정 모달
 async function openEditBoardModal(element) {
   const boardId = element.getAttribute('boardId');
+  const count = element.getAttribute('checkCards');
+  const checkBoxEnd = document.querySelector('#check-grp-4');
+  const checkBoxIng = document.querySelector('#check-grp-3');
+  if (count == 100) {
+    checkBoxEnd.checked = true;
+    checkBoxIng.checked = false;
+  } else {
+    checkBoxEnd.checked = false;
+    checkBoxIng.checked = true;
+  }
   try {
     const response = await $.ajax({
       method: 'GET',
