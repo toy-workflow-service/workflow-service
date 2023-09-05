@@ -13,7 +13,7 @@ export class CreateWorkspaceDto {
 
   @IsString()
   @IsNotEmpty({ message: '워크스페이스 소개를 입력해주세요.' })
-  @MaxLength(500, { message: '소개는 최대 500글자 이하입니다.' })
+  @MaxLength(500, { message: '소개는 최대 250글자 이하입니다.' })
   description: string;
 }
 
@@ -27,7 +27,7 @@ export class UpdateWorkspaceDto {
   type: string;
 
   @IsNotEmpty({ message: '워크스페이스 소개를 입력해주세요.' })
-  @MaxLength(500, { message: '소개는 최대 500글자 이하입니다.' })
+  @MaxLength(500, { message: '소개는 최대 250글자 이하입니다.' })
   description: string;
 }
 

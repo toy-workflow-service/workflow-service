@@ -126,7 +126,7 @@ export class UsersService {
   async tokenValidateUser(userId: number) {
     return await this.usersRepository.findOne({
       where: { id: userId },
-      select: ['id', 'email', 'name', 'phone_number', 'profile_url', 'phone_authentication'],
+      select: ['id', 'email', 'name', 'phone_number', 'profile_url', 'phone_authentication', 'points'],
     });
   }
 

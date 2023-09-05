@@ -3,13 +3,15 @@ let workspaceId = params.get('workspaceId');
 
 $(document).ready(async () => {
   await getWorkspaceDetail();
+  await getAllFiles();
 });
 
 const printTitle = document.querySelector('#workspace-title');
 const printDetail = document.querySelector('#workspace-card');
 const printTotal = document.querySelector('#workspace-total');
-const printMemory = document.querySelector('#workspace-memory');
 const printMember = document.querySelector('#workspace-member');
+const printFiles = document.querySelector('#workspace-files');
+const printStorage = document.querySelector('#workspace-storage');
 let userName;
 let callerId;
 
@@ -28,7 +30,7 @@ async function getWorkspaceDetail() {
         userName = results.userName;
         callerId = results.userId;
 
-        let [result, title, totalData, memberHtml, remaingMemory] = ['', '', '', '', ''];
+        let [result, title, totalData, memberHtml] = ['', '', '', '', ''];
         const countBoards = await countWorkspaceBoards(data.id);
         const countCards = await countWorkspaceCards(data.id);
 
@@ -49,7 +51,7 @@ async function getWorkspaceDetail() {
           <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" data-workspace-id="${data.id}" onclick="openPaymentModal(this)" style="padding : 0.25rem 0.5rem">멤버십 결제</button></div>
           `;
         }
-        result += `<div class="card border-0 pb-md-50 pb-15" id="workspace-card">
+        result += `<div class="card border-0 pb-md-50 pb-15" style="max-height:400px; height:400px">
                       <div class="card-header py-sm-20 py-3 px-sm-25 px-3">
                         <h6>워크스페이스 소개</h6>
                       </div>
@@ -109,28 +111,6 @@ async function getWorkspaceDetail() {
                           </div>
                         </div>
                       </div>`;
-
-        remaingMemory += `<div class="projects-tab-content mb-30">
-                                <div class="row">
-                                  <div class="col-xxl-3 col-lg-4 mb-25" id="workspace-memory">
-                                    <div class="progress-box px-25 pt-25 pb-10 bg-success radius-xl">
-                                      <div class="d-flex justify-content-between mb-3">
-                                        <h6 class="text-white fw-500 fs-16 text-capitalize">Memory</h6>
-                                        <span class="progress-percentage text-white fw-500 fs-16 text-capitalize">64%</span>
-                                      </div>
-                                      <div class="progress-wrap d-flex align-items-center mb-15">
-                                        <div class="progress progress-height">
-                                          <div
-                                            class="progress-bar bg-white"
-                                            role="progressbar"
-                                            style="width: 64%"
-                                            aria-valuenow="64"
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                          ></div>
-                                        </div>
-                                      </div>
-                                    </div>`;
         //유저 이름, 사진, 이메일, 휴대폰 번호, 메세지, 전화, 영상통화
         data.workspace_members.forEach(async (member) => {
           let memberRole = '';
@@ -153,6 +133,7 @@ async function getWorkspaceDetail() {
               6
             )} - ${user.phone_number.substring(6, 10)}`;
           }
+
           if (results.userId === user.id) {
             memberHtml += `
                         <div class="d-flex align-items-center mb-25">
@@ -228,8 +209,7 @@ async function getWorkspaceDetail() {
                               </div>
                             </div>
                           </div>
-                        </div>
-        `;
+                        </div>`;
           } else {
             memberHtml += `
                         <div class="d-flex align-items-center mb-25">
@@ -310,15 +290,13 @@ async function getWorkspaceDetail() {
                               </div>
                             </div>
                           </div>
-                        </div>
-        `;
+                        </div>`;
           }
         });
         printDetail.innerHTML = result;
         printTitle.innerHTML = title;
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
-        printMemory.innerHTML = remaingMemory;
       },
     });
   } catch (err) {
@@ -741,6 +719,230 @@ async function countWorkspaceCards(workspaceId) {
   } catch (err) {
     console.error(err);
   }
+}
+
+// 전체파일 조회
+async function getAllFiles() {
+  try {
+    await $.ajax({
+      method: 'GET',
+      url: `/workspaces/${workspaceId}/getFiles`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: async (data) => {
+        let result = '';
+        data.forEach((file) => {
+          const fileOriginalName = file.cards_file_original_name;
+          const fileSize = file.cards_file_size;
+          let fileNames = [];
+          let fileSizes = [];
+
+          if (typeof fileOriginalName === 'string') {
+            try {
+              fileNames = JSON.parse(fileOriginalName);
+            } catch (err) {
+              fileNames = [fileOriginalName];
+            }
+          } else {
+            fileNames = fileOriginalName;
+          }
+
+          if (typeof fileSize === 'string') {
+            try {
+              fileSizes = JSON.parse(fileSize);
+            } catch (err) {
+              fileSizes = [parseInt(fileSize)];
+            }
+          } else {
+            fileSizes = [fileSize];
+          }
+
+          if (Array.isArray(fileNames) && fileNames.length > 0) {
+            for (let i = 0; i < fileNames.length; i++) {
+              const fileName = fileNames[i];
+              const imgSrc = getImgSource(fileName);
+              const fileSize = getFileSize(fileSizes[i]);
+
+              result += printFilesHtml(fileName, imgSrc, fileSize);
+            }
+          } else if (typeof fileOriginalName === 'string') {
+            const fileName = fileOriginalName.replace(/"/g, '');
+            const fileSize = getFileSize(fileSizes);
+            const imgSrc = getImgSource(fileName);
+
+            result += printFilesHtml(fileName, imgSrc, fileSize);
+          }
+        });
+
+        const totalSize = getTotalFileSize(data);
+        console.log(totalSize);
+        const storage = await printStorageSize(totalSize);
+
+        printStorage.innerHTML = storage;
+        printFiles.innerHTML = result;
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 파일의 확장자 분류
+function getImgSource(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  const fileExtension = extension.replace(/"/g, '');
+  let imgSrc = '';
+
+  switch (fileExtension) {
+    case 'jpg':
+    case 'jpeg':
+      imgSrc = './assets/img/jpg@2x.png';
+      break;
+    case 'png':
+      imgSrc = './assets/img/png@2x.png';
+      break;
+    case 'zip':
+      imgSrc = './assets/img/zip@2x.png';
+      break;
+    case 'pdf':
+      imgSrc = './assets/img/pdf@2x.png';
+      break;
+    case 'psd':
+      imgSrc = './assets/img/psd@2x.png';
+      break;
+    default:
+      imgSrc = './assets/img/document.png';
+      break;
+  }
+  return imgSrc;
+}
+
+// 파일 메가바이트로 변환
+function getFileSize(fileSize) {
+  const fileSizeInMb = fileSize / (1024 * 1024);
+  return fileSizeInMb.toFixed(2);
+}
+
+// 파일 전체용량 계산
+function getTotalFileSize(files) {
+  let totalSize = 0;
+  for (const file of files) {
+    const fileSize = file.cards_file_size;
+
+    if (typeof fileSize === 'string') {
+      const sizes = JSON.parse(fileSize);
+      if (Array.isArray(sizes)) {
+        for (const size of sizes) {
+          totalSize += parseInt(size, 10) || 0;
+        }
+      } else {
+        totalSize += parseInt(sizes, 10) || 0;
+      }
+    } else if (typeof fileSize === 'number') {
+      totalSize += fileSize;
+    }
+  }
+
+  const totalSizeInMb = totalSize / (1024 * 1024);
+
+  return totalSizeInMb.toFixed(2);
+}
+
+async function printStorageSize(totalSize) {
+  try {
+    const results = await $.ajax({
+      method: 'GET',
+      url: `/workspaces/${workspaceId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+    });
+
+    const { data } = results;
+    const totalSizeInGb = (totalSize / 1024).toFixed(2);
+    const usagePercentageGb = ((totalSizeInGb / 10) * 100).toFixed(0);
+    const usagePercentageMb = ((totalSize / 100) * 100).toFixed(0);
+
+    if (data.memberships.length) {
+      return `<div class="user-group-progress-bar">
+                    <p>워크스페이스 사용량</p>
+                    <div class="progress-wrap d-flex align-items-center mb-0">
+                      <div class="progress">
+                        <div
+                          class="progress-bar bg-success"
+                          role="progressbar"
+                          style="width: ${usagePercentageGb}%"
+                          aria-valuenow="${usagePercentageGb}"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                      <span class="progress-percentage">${usagePercentageGb}%</span>
+                    </div>
+                    <span class="">10GB 중 ${totalSizeInGb}GB 사용</span>
+                  </div>`;
+    } else {
+      return `<div class="user-group-progress-bar">
+                    <p>워크스페이스 사용량</p>
+                    <div class="progress-wrap d-flex align-items-center mb-0">
+                      <div class="progress">
+                        <div
+                          class="progress-bar bg-success"
+                          role="progressbar"
+                          style="width: ${usagePercentageMb}&"
+                          aria-valuenow="${usagePercentageMb}"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                      <span class="progress-percentage">${usagePercentageMb}%</span>
+                    </div>
+                    <span class="">100MB 중 ${totalSize}MB 사용</span>
+                  </div>`;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 파일 출력 html
+function printFilesHtml(fileName, imgSrc, fileSize) {
+  return `<div class="mb-20">
+            <div class="files-area d-flex justify-content-between align-items-center">
+              <div class="files-area__left d-flex align-items-center">
+                <div class="files-area__img">
+                  <img src="${imgSrc}" alt="img" class="wh-42" />
+                </div>
+                <div class="files-area__title">
+                  <p class="mb-0 fs-14 fw-500 color-dark text-capitalize">${fileName}</p>
+                  <span class="color-light fs-12 d-flex">${fileSize}mb</span>
+                  <div class="d-flex text-capitalize">
+                    <a class="fs-12 fw-500 color-primary">download</a>
+                    <a class="fs-12 fw-500 color-primary ms-10"></a>
+                  </div>
+                </div>
+              </div>
+              <div class="files-area__right">
+                <div class="dropdown dropleft">
+                  <button
+                    class="btn-link border-0 bg-transparent p-0"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
+                  </button>
+                  <div class="dropdown-menu dropdown-menu--dynamic">
+                    <a class="dropdown-item">수정</a>
+                    <a class="dropdown-item">삭제</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`;
 }
 
 // 음성 통화 시작
