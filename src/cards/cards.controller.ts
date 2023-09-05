@@ -44,6 +44,7 @@ export class CardsController {
     @Body('members') memberIds: string[],
     @Req() req: MulterRequest,
     @Body('originalnames') originalnames: string[],
+    @Body('fileSize') fileSize: string[],
     @Res() res: Response
   ) {
     const files: any = req.files;
@@ -55,29 +56,78 @@ export class CardsController {
         fileSizeArray.push(file.size);
       });
     }
-    await this.cardsService.CreateCard(boardColumnId, data, fileArray, fileSizeArray, originalnames, memberIds);
+    await this.cardsService.CreateCard(
+      boardColumnId,
+      data,
+      fileArray,
+      fileSizeArray,
+      originalnames,
+      fileSize,
+      memberIds
+    );
+
     return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
   //카드 수정
   @Patch('/:cardId')
-  @UseGuards(AuthGuard)
   async UpdateCard(
-    @Query('board_column_Id') board_column_Id: number,
     @Param('cardId') id: number,
+    @Query('board_column_Id') board_column_Id: number,
+    @Body() data: UpdateCardDto,
     @Body('members') memberIds: string[],
     @Body('originalnames') originalnames: string[],
+    @Body('alreadyFiles') alreadyFiles: string[],
+    @Body('alreadyFileNames') alreadyFileNames: string[],
+    @Body('fileSize') fileSize: string[],
+    @Body('alreadyfileSize') alreadyfileSize: string[],
+    @Body('alreadyFileCount') alreadyFileCount: number,
     @Req() req: MulterRequest,
-    @Body() data: UpdateCardDto,
     @Res() res: Response
   ) {
     const files: any = req.files;
     let fileArray = [];
-    if (files) {
+    let fileName = [];
+    let filesSizes = [];
+    console.log(files, alreadyFiles);
+    if (files[0]) {
       files.forEach((file) => {
         fileArray.push(file.location);
       });
+      if (files.length > 1) {
+        originalnames.forEach((name) => {
+          fileName.push(name);
+        });
+        fileSize.forEach((size) => {
+          filesSizes.push(size);
+        });
+      } else {
+        fileName.push(originalnames);
+        filesSizes.push(fileSize);
+      }
     }
-    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, originalnames, memberIds);
+    if (alreadyFiles) {
+      if (alreadyFileCount > 1) {
+        alreadyFiles.forEach((file) => {
+          fileArray.push(file);
+        });
+        alreadyFileNames.forEach((name) => {
+          fileName.push(name);
+        });
+        alreadyfileSize.forEach((size) => {
+          filesSizes.push(size);
+        });
+      } else {
+        const name = alreadyFileNames;
+        fileArray.push(alreadyFiles);
+        fileName.push(name);
+        filesSizes.push(alreadyfileSize);
+      }
+    }
+    console.log(fileSize, alreadyfileSize);
+    console.log(filesSizes);
+
+    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, filesSizes, memberIds);
+
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
   //카드 삭제

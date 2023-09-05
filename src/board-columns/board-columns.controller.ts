@@ -86,4 +86,11 @@ export class BoardColumnsController {
   async countWorkspaceCards(@Query('workspaceId') workspaceId: number): Promise<Object> {
     return await this.boardColumnsService.countWorkspaceCards(workspaceId);
   }
+
+  @Get('/cards/count/done')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
+  async countDoneCard(@Query('boardId') boardId: number): Promise<Object> {
+    return await this.boardColumnsService.countDoneCard(boardId);
+  }
 }

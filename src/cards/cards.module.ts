@@ -39,5 +39,6 @@ export class CardsModule {
   @UseGuards(AuthGuard)
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(UploadMultiMiddleware).forRoutes({ path: '/cards', method: RequestMethod.POST });
+    consumer.apply(UploadMultiMiddleware).forRoutes({ path: '/cards/:cardId', method: RequestMethod.PATCH });
   }
 }

@@ -85,8 +85,10 @@ export class WorkspacesService {
   }
 
   // 로그인한 유저의 역할 조회
-  async loginUserRole(userId: number): Promise<any> {
-    const loginUserRole = await this.workspaceMemberRepository.findOne({ where: { user: { id: userId } } });
+  async loginUserRole(userId: number, workspaceId: number): Promise<any> {
+    const loginUserRole = await this.workspaceMemberRepository.findOne({
+      where: { user: { id: userId }, workspace: { id: workspaceId } },
+    });
 
     return loginUserRole.role;
   }
@@ -171,7 +173,7 @@ export class WorkspacesService {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { user: { id }, workspace: { id: workspaceId } },
     });
-    const loginUserRole = await this.loginUserRole(userId);
+    const loginUserRole = await this.loginUserRole(userId, workspaceId);
 
     if (loginUserRole / 1 >= body.role)
       throw new HttpException('관리자 권한을 줄 수 없습니다.', HttpStatus.BAD_REQUEST);
@@ -203,7 +205,7 @@ export class WorkspacesService {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
     });
-    const loginUserRole = await this.loginUserRole(loginUser);
+    const loginUserRole = await this.loginUserRole(loginUser, workspaceId);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
@@ -220,7 +222,7 @@ export class WorkspacesService {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
     });
-    const loginUserRole = await this.loginUserRole(loginUser);
+    const loginUserRole = await this.loginUserRole(loginUser, workspaceId);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 

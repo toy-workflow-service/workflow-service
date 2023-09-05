@@ -48,9 +48,7 @@ export class UploadImageMiddleware implements NestMiddleware {
       if (err) {
         if (err.message == 'Unexpected field') return res.status(400).json(['이미지의 최대 업로드 개수는 1개 입니다.']);
         else if (err.message == 'File too large') return res.status(400).json(['이미지의 최대 크기는 5MB 입니다.']);
-        else {
-          return res.status(500).json(['파일 업로드를 실패 했습니다.']);
-        }
+        else return res.status(500).json(['파일 업로드를 실패 했습니다.']);
       } else {
         next();
       }

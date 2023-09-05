@@ -1,14 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { PickType } from '@nestjs/mapped-types';
+import { CreateCardDto } from './create-card.dto';
 
-export class UpdateCardDto {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  content: string;
-
-  @IsNotEmpty()
-  color: string;
-}
+export class UpdateCardDto extends PickType(CreateCardDto, ['name', 'content', 'color'] as const) {}

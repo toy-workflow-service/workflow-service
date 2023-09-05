@@ -93,4 +93,25 @@ export class BoardColumnsService {
 
     return totalCardCount;
   }
+
+  // 진행완료 카드 개수 조회
+  async countDoneCard(boardId: number): Promise<Object> {
+    const totalCardCount = await this.boardColumnRepository
+      .createQueryBuilder('column')
+      .leftJoin('column.cards', 'card')
+      .where('column.board = :boardId', { boardId })
+      .select('SUM(card.board_column IS NOT NULL) as totalCount')
+      .getRawOne();
+
+    const doneCardCount = await this.boardColumnRepository
+      .createQueryBuilder('column')
+      .leftJoin('column.cards', 'card')
+      .where('column.board = :boardId', { boardId })
+      .andWhere('column.name = :name', { name: 'Done' })
+      .select('SUM(card.board_column IS NOT NULL) as doneCount')
+      .getRawOne();
+
+    const result: any = { total: totalCardCount.totalCount, done: doneCardCount.doneCount };
+    return result;
+  }
 }

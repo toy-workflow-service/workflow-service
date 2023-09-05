@@ -724,3 +724,8 @@ function deleteMessage(data) {
   }
   return;
 }
+
+// 워크스페이스 생성 모달열기
+async function openInviteModal() {
+  $('#newChatModal').modal('show');
+}
