@@ -19,16 +19,28 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UploadFileMiddleware } from 'src/_common/middlewares/upload-file-middleware';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
+import { Card } from 'src/_common/entities/card.entity';
+import { CardsService } from 'src/cards/cards.service';
 
 @Module({
   imports: [
     RedisCacheModule,
-    TypeOrmModule.forFeature([Board_Message, Board, Workspace, Workspace_Member, User, Board_Member, Board_Column]),
+    TypeOrmModule.forFeature([
+      Board_Message,
+      Card,
+      Board,
+      Workspace,
+      Workspace_Member,
+      User,
+      Board_Member,
+      Board_Column,
+    ]),
   ],
   exports: [TypeOrmModule],
   controllers: [BoardMessagesController],
   providers: [
     BoardMessagesService,
+    CardsService,
     BoardsService,
     WorkspacesService,
     JwtService,

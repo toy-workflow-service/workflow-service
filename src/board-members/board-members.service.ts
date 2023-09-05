@@ -2,6 +2,7 @@ import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/c
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
 import { BoardsService } from 'src/boards/boards.service';
+import { CardsService } from 'src/cards/cards.service';
 import { UsersService } from 'src/users/users.service';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -11,7 +12,8 @@ export class BoardMembersService {
     @InjectRepository(Board_Member)
     private boardMemberRepository: Repository<Board_Member>,
     private readonly usersService: UsersService,
-    private readonly boardsService: BoardsService
+    private readonly boardsService: BoardsService,
+    private readonly cardsService: CardsService
   ) {}
 
   //보드 멤버 이름 조회
@@ -114,6 +116,7 @@ export class BoardMembersService {
         if (deleteUsers.length > 0) {
           for (const i in deleteUsers) {
             await transactionEntityManager.delete(Board_Member, { id: deleteUsers[i].id });
+            await this.cardsService.DeleteCardMembers(boardId, deleteUsers[i].user.id);
           }
         }
       });
