@@ -32,8 +32,9 @@ export class CardsService {
     board_column_id: number,
     cardInfo: CreateCardDto,
     files: string[],
-    filesSize: string[],
+    fileSizes: string[],
     originalnames: string[],
+    fileSize: string[],
     memberIds: string[]
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id);
@@ -46,7 +47,7 @@ export class CardsService {
       ...cardInfo,
       file_url: files,
       file_original_name: originalnames,
-      file_size: filesSize,
+      file_size: fileSizes,
       members: memberIds,
     });
   }
@@ -57,18 +58,21 @@ export class CardsService {
     cardInfo: UpdateCardDto,
     files: string[],
     originalnames: string[],
+    filesSizes: string[],
     memberIds: string[]
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_Id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
-    await this.cardRepository.update(id, {
-      ...cardInfo,
-      file_url: files,
-      file_original_name: originalnames,
-      members: memberIds,
-    });
+    console.log(files, originalnames, filesSizes);
+    // await this.cardRepository.update(id, {
+    //   ...cardInfo,
+    //   file_url: files,
+    //   file_original_name: originalnames,
+    //   file_size: filesSizes,
+    //   members: memberIds,
+    // });
   }
   //카드삭제
   async DeleteCard(board_column_Id: number, id: number) {
