@@ -1,9 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entitiy';
 import { Workspace } from './workspace.entity';
-import { Board } from './board.entity';
-import { Board_Column } from './board-column.entity';
-import { Card } from './card.entity';
 import ActionType from '../utils/action-type';
 
 @Entity('audit_logs')
@@ -23,15 +20,9 @@ export class Audit_log {
   @ManyToOne(() => User, (user) => user.audit_logs)
   user: User;
 
-  @ManyToOne(() => Workspace, (workspace) => workspace.audit_logs)
+  @ManyToOne(() => Workspace, (workspace) => workspace.audit_logs, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   workspace: Workspace;
-
-  @ManyToOne(() => Board, (board) => board.audit_logs)
-  board: Board;
-
-  @ManyToOne(() => Board_Column, (column) => column.audit_logs)
-  board_column: Board_Column;
-
-  @ManyToOne(() => Card, (card) => card.audit_logs)
-  card: Card;
 }

@@ -14,9 +14,14 @@ import { Membership } from 'src/_common/entities/membership.entity';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { JwtStrategy } from 'src/_common/security/passport/passport.jwt.strategy';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Payment, User, Workspace, Workspace_Member, Membership])],
+  imports: [
+    RedisCacheModule,
+    TypeOrmModule.forFeature([Payment, User, Workspace, Workspace_Member, Membership, Audit_log]),
+  ],
   controllers: [PaymentsController],
   providers: [
     PaymentsService,
@@ -26,6 +31,7 @@ import { JwtStrategy } from 'src/_common/security/passport/passport.jwt.strategy
     MailService,
     WorkspacesService,
     MembershipsService,
+    AuditLogsService,
   ],
 })
 export class PaymentsModule {}

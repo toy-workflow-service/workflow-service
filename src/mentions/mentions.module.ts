@@ -25,6 +25,8 @@ import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { BoardMembersService } from 'src/board-members/board-members.service';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { Board_Member } from 'src/_common/entities/board-member.entity';
       Workspace,
       Workspace_Member,
       Board_Member,
+      Audit_log,
     ]),
   ],
   exports: [TypeOrmModule],
@@ -58,6 +61,7 @@ import { Board_Member } from 'src/_common/entities/board-member.entity';
     UsersService,
     MailService,
     BoardMembersService,
+    AuditLogsService,
   ],
 })
 export class MentionsModule {}

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestj
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { Board } from 'src/_common/entities/board.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Repository } from 'typeorm';
 
@@ -11,6 +12,7 @@ export class BoardsService {
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
     private readonly workspaceService: WorkspacesService,
+    private readonly auditLogService: AuditLogsService,
     @InjectRepository(Board_Column)
     private boardColumnRepository: Repository<Board_Column>
   ) {}
@@ -80,7 +82,13 @@ export class BoardsService {
   }
 
   //보드 생성
-  async CreateBoard(workspaceId: number, name: string, description: string, loginUser: string): Promise<Object> {
+  async CreateBoard(
+    workspaceId: number,
+    name: string,
+    description: string,
+    loginUserName: string,
+    loginUserId: number
+  ): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
     const boardCount: any = await this.GetBoards(workspaceId);
     const hasMembership = workspace.memberships.length > 0;
@@ -91,17 +99,33 @@ export class BoardsService {
     const board = await this.boardRepository.insert({ name, description, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
     await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
+    const boardId = board.raw.insertId;
+    await this.auditLogService.createBoardLog(workspaceId, boardId, name, loginUserId, loginUserName);
+
     return board;
   }
 
   //보드 수정
-  async UpdateBoard(workspaceId: number, id: number, name: string, description: string) {
+  async UpdateBoard(
+    workspaceId: number,
+    id: number,
+    name: string,
+    description: string,
+    loginUserId: number,
+    loginUserName: string
+  ) {
     await this.boardRepository.update({ id }, { name, description });
+    await this.auditLogService.updateBoardLog(workspaceId, id, name, loginUserId, loginUserName);
   }
 
   //보드 삭제
-  async DeleteBoard(workspaceId: number, id: number) {
+  async DeleteBoard(workspaceId: number, id: number, loginUserId: number, loginUserName: string) {
+    const targetBoard = await this.GetBoardById(id);
+
+    if (!targetBoard) throw new HttpException('해당 보드는 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
     await this.boardRepository.delete(id);
+    await this.auditLogService.deleteBoardLog(workspaceId, id, targetBoard.name, loginUserId, loginUserName);
   }
 
   async GetJoinBoards(userId: number) {

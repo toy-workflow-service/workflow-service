@@ -15,9 +15,14 @@ import { Payment } from 'src/_common/entities/payment.entity';
 import { Membership } from 'src/_common/entities/membership.entity';
 import { PaymentsService } from 'src/payments/payments.service';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([User, Workspace, Workspace_Member, Payment, Membership])],
+  imports: [
+    RedisCacheModule,
+    TypeOrmModule.forFeature([User, Workspace, Workspace_Member, Payment, Membership, Audit_log]),
+  ],
   exports: [UsersModule],
   controllers: [UsersController],
   providers: [
@@ -28,6 +33,7 @@ import { MembershipsService } from 'src/memberships/memberships.service';
     WorkspacesService,
     PaymentsService,
     MembershipsService,
+    AuditLogsService,
   ],
 })
 export class UsersModule {
