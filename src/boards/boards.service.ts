@@ -27,7 +27,7 @@ export class BoardsService {
       return board.workspace.id == workspaceId;
     });
 
-    const boardInfos = boards.map((board) => {
+    const boardInfo = boards.map((board) => {
       const boardMembers = board.board_members.map((boardMember) => ({
         id: boardMember.user.id,
         name: boardMember.user.name,
@@ -38,6 +38,7 @@ export class BoardsService {
 
       return {
         workspaceId: board.workspace.id,
+        workspaceName: board.workspace.name,
         boardId: board.id,
         boardName: board.name,
         description: board.description,
@@ -46,6 +47,27 @@ export class BoardsService {
         updatedAt: board.updated_at,
       };
     });
+
+    const boardInfos = [];
+    for (let board = 0; board < boardInfo.length; board++) {
+      const totalCardCount = await this.boardColumnRepository
+        .createQueryBuilder('column')
+        .leftJoin('column.cards', 'card')
+        .where('column.board.id = :boardId', { boardId: boardInfo[board].boardId })
+        .select('SUM(card.board_column IS NOT NULL) as totalCount')
+        .getRawOne();
+
+      const doneCardCount = await this.boardColumnRepository
+        .createQueryBuilder('column')
+        .leftJoin('column.cards', 'card')
+        .where('column.board.id = :boardId', { boardId: boardInfo[board].boardId })
+        .andWhere('column.name = :name', { name: 'Done' })
+        .select('SUM(card.board_column IS NOT NULL) as doneCount')
+        .getRawOne();
+
+      const cardCount = { total: totalCardCount.totalCount, done: doneCardCount.doneCount };
+      boardInfos.push({ ...boardInfo[board], cardCount });
+    }
 
     return boardInfos;
   }
@@ -63,7 +85,7 @@ export class BoardsService {
   async CreateBoard(workspaceId: number, name: string, description: string): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
     console.log(workspace);
-    const boardCount = await this.GetBoards(workspaceId);
+    const boardCount: any = await this.GetBoards(workspaceId);
     const hasMembership = workspace.memberships.length > 0;
 
     if (boardCount.length >= 3 && !hasMembership)

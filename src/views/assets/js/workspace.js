@@ -65,10 +65,11 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
+        console.log(boards[0].workspaceName);
+        document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `${boards.length} Running Boards`;
         for (const board of boards) {
           // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
-          const cardLength = await detailBoardGet(board.boardId);
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
                         <div class="border-bottom px-30">
@@ -122,19 +123,19 @@ async function getMyBoards() {
                                 <div
                                   class="progress-bar bg-primary"
                                   role="progressbar"
-                                  style="width: ${(cardLength.done / cardLength.total) * 100}%"
+                                  style="width: ${(board.cardCount.done / board.cardCount.total) * 100}%"
                                   aria-valuenow="83"
                                   aria-valuemin="0"
                                   aria-valuemax="100"
                                 ></div>
                               </div>
                               <span class="progress-percentage">${
-                                Math.round((cardLength.done / cardLength.total) * 100) || 0
+                                Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0
                               }%</span>
                             </div>
-                            <p class="color-light fs-12 mb-20">${cardLength.done} / ${
-                              cardLength.total
-                            } tasks completed</p>
+                            <p class="color-light fs-12 mb-20">${board.cardCount.done} / ${
+                              board.cardCount.total
+                            } 카드</p>
                           </div>
                         </div>
                         <div class="mt-20 px-30">
@@ -434,18 +435,4 @@ async function deleteBoard(element) {
       console.log(error);
     },
   });
-}
-
-// 보드 상세 조회
-async function detailBoardGet(boardId) {
-  const result = await $.ajax({
-    method: 'GET',
-    url: `/board-columns/cards/count/done?boardId=${boardId}`,
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
-  });
-
-  return result;
 }
