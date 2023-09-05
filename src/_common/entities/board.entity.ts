@@ -11,6 +11,7 @@ import { Workspace } from './workspace.entity';
 import { Board_Member } from './board-member.entity';
 import { Board_Message } from './board-message.entity';
 import { Board_Column } from './board-column.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('boards')
 export class Board {
@@ -49,4 +50,7 @@ export class Board {
     cascade: true,
   })
   board_columns: Board_Column[];
+
+  @OneToMany(() => Audit_log, (log) => log.board)
+  audit_logs: Audit_log[];
 }
