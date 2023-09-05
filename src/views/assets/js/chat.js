@@ -207,7 +207,7 @@ async function getChatRooms() {
                                                         <button  class="border-0 btn-deep color-light wh-50 p-10 rounded-circle">
                                                           <input id="message-file-upload${boardMembers[idx][0].board_id}" type="file" name="newFile" class="d-none" boardId="${boardMembers[idx][0].board_id}" onchange="uploadFile(this)" />
                                                           <label for="message-file-upload${boardMembers[idx][0].board_id}" >
-                                                            <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip">
+                                                            <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip" style="cursor: pointer">
                                                           </label>
                                                         </button>
                                                         <button type="button" class="border-0 btn-primary wh-50 p-10 rounded-circle" id="${boardMembers[idx][0].board_id}" boardName="${boardMembers[idx][0].board_name}" onclick="sendMessage(this)">
@@ -388,7 +388,7 @@ async function getChatRooms() {
                                                         <button  class="border-0 btn-deep color-light wh-50 p-10 rounded-circle">
                                                           <input id="message-file-upload${boardMembers[idx][0].board_id}" type="file" name="newFile" class="d-none" boardId="${boardMembers[idx][0].board_id}" boardName="${boardMembers[idx][0].board_name}" onchange="uploadFile(this)" />
                                                           <label for="message-file-upload${boardMembers[idx][0].board_id}" >
-                                                            <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip">
+                                                            <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip" style="cursor: pointer">
                                                           </label>
                                                         </button>
                                                         <button type="button" class="border-0 btn-primary wh-50 p-10 rounded-circle" id="${boardMembers[idx][0].board_id}" boardName="${boardMembers[idx][0].board_name}" onclick="sendMessage(this)">
@@ -723,4 +723,9 @@ function deleteMessage(data) {
     });
   }
   return;
+}
+
+// 워크스페이스 생성 모달열기
+async function openInviteModal() {
+  $('#newChatModal').modal('show');
 }

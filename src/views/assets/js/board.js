@@ -611,9 +611,8 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
-            comment.comment
-          }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
+      }</textarea>
           
           <!-- 수정 버튼 -->
           ${
@@ -744,8 +743,11 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   <div class="kanban-modal__header">
      <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
   </div>
-   <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">수정</button>
+  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+        id="updateCardButton"
+        data-column-id="${columnId}"
+        data-card-id="${cardData.id}"
+        data-bs-dismiss="modal">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
 id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -781,7 +783,7 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
       <textarea class="form-control" id="commentInput" rows="3"
         placeholder="내용을 작성해주세요…" style="resize :none"></textarea>
     </div>
-    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">댓글 추가...</button>
+    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" data-bs-dismiss="modal" id="addCommentButton">댓글 추가...</button>
       
       <ul id="commentDetail">
         <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
@@ -1324,7 +1326,6 @@ function addFile(obj) {
 
   for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
     const file = obj.files[i];
-
     // 첨부파일 검증
     if (validation(file)) {
       // 파일 배열에 담기

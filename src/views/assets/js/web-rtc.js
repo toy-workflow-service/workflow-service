@@ -148,6 +148,7 @@ async function initCall() {
   await getMedia();
 }
 
+// peerA(송신자)에게만 작동되어야하는데 peerB(수신자)에서도 작동중
 socket.on('welcome', async (roomName) => {
   try {
     makeConnection(roomName);
@@ -243,9 +244,6 @@ function makeConnection(roomName) {
       handleIce(event.candidate, roomName);
     }
   });
-  console.log('커넥션', myPeerConnection);
-  // addstream은 사용하지 말라고 함
-  // addtrack 사용
   myPeerConnection.addEventListener('track', handleAddStream);
   myStream.getTracks().forEach((track) => myPeerConnection.addTrack(track, myStream));
 }

@@ -316,6 +316,10 @@ editBtn.addEventListener('click', () => {
 // 결제내역 조회
 async function getPaymentHistory() {
   try {
+    const currentDate = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1); // 현재 날짜에서 한달을 뺀 날짜
+
     await $.ajax({
       method: 'GET',
       url: `/users/payments/history`,
@@ -324,42 +328,46 @@ async function getPaymentHistory() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data);
         result = '';
         data.forEach((history) => {
-          if (history.membershipCreatedAt === '취소된 결제') {
-            result += ` <tbody>
-            <tr>
-              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
-              <td>취소된 결제입니다.</td>
-              <td>-</td>
-              <td>`;
-          } else {
-            result += ` <tbody>
-            <tr>
-              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
-              <td>${history.membershipCreatedAt.substring(0, 10).replace('-', '.')} ~ 
-                  ${history.membershipEndDate.substring(0, 10).replace('-', '.')}</td>
-              <td>${history.membershipPrice.toLocaleString()}원</td>
-              <td>
-                <div class="dropdown">
-                  <a
-                    role="button"
-                    id="products"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
-                  </a>`;
-          }
-          result += ` <div class="dropdown-menu dropdown-menu-right" aria-labelledby="products">
-                                <a class="dropdown-item" style="cursor: pointer" data-payment-id="${history.paymentId}" id="cancel-payment-btn">결제 취소</a>
+          const paymentDate = new Date(history.paymentCreatedAt);
+          if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
+            if (!history.membershipCreatedAt) {
+              result += ` <tbody>
+                            <tr>
+                              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
+                              <td>취소된 결제입니다.</td>
+                              <td>-</td>
+                              <td>`;
+            } else {
+              result += ` <tbody>
+                          <tr>
+                            <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${
+                              history.workspaceName
+                            }</td>
+                            <td>${history.membershipCreatedAt.substring(0, 10).replace('-', '.')} ~ 
+                                ${history.membershipEndDate.substring(0, 10).replace('-', '.')}</td>
+                            <td>${history.membershipPrice.toLocaleString()}원</td>
+                            <td>
+                              <div class="dropdown">
+                                <a
+                                  role="button"
+                                  id="products"
+                                  data-bs-toggle="dropdown"
+                                  aria-haspopup="true"
+                                  aria-expanded="false"
+                                >
+                                  <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
+                                </a>`;
+            }
+            result += ` <div class="dropdown-menu dropdown-menu-right" aria-labelledby="products">
+                                  <a class="dropdown-item" style="cursor: pointer" data-payment-id="${history.paymentId}" id="cancel-payment-btn">결제 취소</a>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>`;
+                            </td>
+                          </tr>
+                        </tbody>`;
+          }
         });
         paymentHistory.innerHTML += result;
 
@@ -391,11 +399,13 @@ async function cancelPayment(paymentId, workspaceId) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: () => {
+      success: (data) => {
+        console.log(data);
         Swal.fire({
           icon: 'success',
-          title: 'success!',
-          text: '결제 취소 완료!',
+          title: '결제 취소 완료!',
+          text: `잔여일 : ${data.remainingDays}일, 
+                 환불금액 : ${data.roundedRefundPrice.toLocaleString()}원`,
         }).then(() => {
           window.location.reload();
         });
