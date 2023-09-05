@@ -82,7 +82,20 @@ export class BoardColumnsService {
   }
 
   // 워크스페이스가 보유한 카드개수 조회
-  async countWorkspaceCards(boardId: number): Promise<Number> {
+  async countWorkspaceCards(workspaceId: number): Promise<Number> {
+    const totalCardCount = await this.boardColumnRepository
+      .createQueryBuilder('column')
+      .innerJoin('column.board', 'board')
+      .innerJoin('column.cards', 'card')
+      .where('board.workspace = :workspaceId', { workspaceId })
+      .select('SUM(card.board_column IS NOT NULL) as totalCount')
+      .getRawOne();
+
+    return totalCardCount;
+  }
+
+  // 진행완료 카드 개수 조회
+  async countDoneCard(boardId: number): Promise<Object> {
     const totalCardCount = await this.boardColumnRepository
       .createQueryBuilder('column')
       .leftJoin('column.cards', 'card')
@@ -99,7 +112,6 @@ export class BoardColumnsService {
       .getRawOne();
 
     const result: any = { total: totalCardCount.totalCount, done: doneCardCount.doneCount };
-    // console.log(result);
     return result;
   }
 }

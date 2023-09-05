@@ -440,7 +440,7 @@ async function deleteBoard(element) {
 async function detailBoardGet(boardId) {
   const result = await $.ajax({
     method: 'GET',
-    url: `/board-columns/cards/count?boardId=${boardId}`,
+    url: `/board-columns/cards/count/done?boardId=${boardId}`,
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);

@@ -132,31 +132,29 @@
                 </button>
               </div>
               <div class="modal-body">
-                <form>
-                  <div class="form-basic">
-                    <div class="form-group mb-25">
-                      <label>이메일</label>
-                      <input
-                        class="form-control form-control-lg"
-                        type="text"
-                        id="email-input"
-                        placeholder="이메일을 입력하세요."
-                      />
+                <div class="form-basic">
+                  <div class="form-group mb-25">
+                    <label>이메일</label>
+                    <input
+                      class="form-control form-control-lg"
+                      type="text"
+                      id="email-input"
+                      placeholder="이메일을 입력하세요."
+                    />
+                  </div>
+                </div>
+                <div class="card card-default card-md mb-4">
+                  <label>역할</label>
+                  <div class="dm-select-list d-flex">
+                    <div class="dm-select">
+                      <select name="select-search" id="select-search" class="form-control">
+                        <option value="2">Manager</option>
+                        <option value="3">Member</option>
+                        <option value="4">OutSourcing</option>
+                      </select>
                     </div>
                   </div>
-                  <div class="card card-default card-md mb-4">
-                    <label>역할</label>
-                    <div class="dm-select-list d-flex">
-                      <div class="dm-select">
-                        <select name="select-search" id="select-search" class="form-control">
-                          <option value="2">Manager</option>
-                          <option value="3">Member</option>
-                          <option value="4">OutSourcing</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+                </div>
                 <!-- 전송 중 메시지 -->
                 <div id="sending-message" style="display: none">
                   전송 중...
