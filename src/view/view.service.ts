@@ -12,8 +12,8 @@ export class ViewService {
         profileUrl: user.profile_url ? user.profile_url : '/assets/img/favicon.png',
         phoneNumber: user.phone_number,
         phoneAuthentication: user.phone_authentication,
+        points: user.points,
       };
-
     return { isLogin: false };
   }
 }

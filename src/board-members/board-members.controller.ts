@@ -8,18 +8,6 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 export class BoardMembersController {
   constructor(private readonly boardMembersService: BoardMembersService) {}
 
-  // 보드 멤버 찾기
-  @Get('/boards/:boardId/members/:userId')
-  @UseGuards(AuthGuard)
-  async GetBoardMemberNameSearch(
-    @Param('userId') userId: number,
-    @Param('boardId') boardId: number,
-    @Res() res: Response
-  ) {
-    const members = await this.boardMembersService.GetBoardMemberName(boardId, userId);
-    return res.status(HttpStatus.OK).json({ boardMembers: members });
-  }
-
   //보드 멤버 초대
   @Post('/boards/:boardId/members')
   @UseGuards(AuthGuard)
@@ -50,5 +38,17 @@ export class BoardMembersController {
   async UpdateBoardMember(@Param('boardId') boardId: number, @Body() data: BoardMemberUpdateDto, @Res() res: Response) {
     await this.boardMembersService.UpdateBoardMember(boardId, data.userIdArray);
     return res.status(HttpStatus.OK).json({ message: '보드멤버를 업데이트 했습니다.' });
+  }
+
+  // 보드 멤버 찾기
+  @Get('/boards/:boardId/members/:userId')
+  @UseGuards(AuthGuard)
+  async GetBoardMemberNameSearch(
+    @Param('userId') userId: number,
+    @Param('boardId') boardId: number,
+    @Res() res: Response
+  ) {
+    const members = await this.boardMembersService.GetBoardMemberName(boardId, userId);
+    return res.status(HttpStatus.OK).json({ boardMembers: members });
   }
 }

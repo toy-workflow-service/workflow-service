@@ -31285,3 +31285,28 @@ body:after {
   display: none;
 }
 /*# sourceMappingURL=maps/style.css.map */
+.insert {
+  padding: 20px 30px;
+  display: block;
+  width: 600px;
+  margin: 5vh auto;
+  border: 1px solid #dbdbdb;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.insert .file-list {
+  height: 200px;
+  overflow: auto;
+  border: 1px solid #989898;
+  padding: 10px;
+}
+.insert .file-list .filebox p {
+  font-size: 14px;
+  margin-top: 10px;
+  display: inline-block;
+}
+.insert .file-list .filebox .delete i{
+  color: #ff5353;
+  margin-left: 5px;
+}

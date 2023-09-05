@@ -9,7 +9,7 @@ import { LessThan, Repository } from 'typeorm';
 export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
-    private membershipRepository: Repository<Membership>,
+    private membershipRepository: Repository<Membership>
   ) {}
 
   // 멤버십 생성
@@ -53,18 +53,18 @@ export class MembershipsService {
     return { result: true };
   }
 
-  // 멤버십 연장
-  async extensionMembership(body: MembershipDto, workspaceId: number): Promise<IResult> {
-    const targetMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
-    const servicePeriod = body.servicePeriod * 24 * 60 * 60 * 1000;
-    const newEndDate = new Date(targetMembership.end_date.getTime() + servicePeriod);
-    const updatePrice = (targetMembership.package_price += body.packagePrice);
+  // // 멤버십 연장
+  // async extensionMembership(body: MembershipDto, workspaceId: number): Promise<IResult> {
+  //   const targetMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+  //   const servicePeriod = body.servicePeriod * 24 * 60 * 60 * 1000;
+  //   const newEndDate = new Date(targetMembership.end_date.getTime() + servicePeriod);
+  //   const updatePrice = (targetMembership.package_price += body.packagePrice);
 
-    if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
+  //   if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
 
-    await this.membershipRepository.save({ ...targetMembership, package_price: updatePrice, end_date: newEndDate });
-    return { result: true };
-  }
+  //   await this.membershipRepository.save({ ...targetMembership, package_price: updatePrice, end_date: newEndDate });
+  //   return { result: true };
+  // }
 
   // 멤버십 취소
   async cancelMembership(workspaceId: number): Promise<IResult> {
@@ -73,6 +73,15 @@ export class MembershipsService {
     if (!targetMembership) throw new HttpException('결제된 멤버십이 없습니다.', HttpStatus.NOT_FOUND);
 
     await this.membershipRepository.remove(targetMembership);
+
+    return { result: true };
+  }
+
+  async checkMembership(workspaceId: number): Promise<IResult> {
+    const checkMembership = await this.membershipRepository.findOne({ where: { workspace: { id: workspaceId } } });
+
+    if (!checkMembership)
+      throw new HttpException('프리미엄 멤버십부터 이용 가능한 서비스입니다.', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
   }

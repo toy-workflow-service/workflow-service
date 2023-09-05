@@ -27,11 +27,14 @@ export class Card {
   @Column({ type: 'json', nullable: true })
   file_url: string[];
 
+  @Column({ type: 'json', nullable: true })
+  file_size: string[];
+
   @Column({ type: 'tinyint', nullable: false })
   sequence: number;
 
-  @Column({ type: 'json', nullable: false })
-  members: number[];
+  @Column({ type: 'json', nullable: true })
+  members: string[];
 
   @Column()
   color: string;

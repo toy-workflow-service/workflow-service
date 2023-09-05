@@ -54,6 +54,7 @@ export class UsersService {
         profile_url: existUser.profile_url,
         phone_number: existUser.phone_number,
         phone_authentication: existUser.phone_authentication,
+        points: existUser.points,
       },
       process.env.ACCESS_SECRET_KEY,
       process.env.ACCESS_EXPIRE_TIME
@@ -117,7 +118,7 @@ export class UsersService {
   async findUserByEmail(email: string): Promise<User> {
     const existUser = await this.usersRepository.findOne({ where: { email } });
 
-    if (!existUser) throw new HttpException(['해당 유저를 찾을 수 없습니다'], HttpStatus.NOT_FOUND);
+    if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
 
     return existUser;
   }
@@ -125,14 +126,14 @@ export class UsersService {
   async tokenValidateUser(userId: number) {
     return await this.usersRepository.findOne({
       where: { id: userId },
-      select: ['id', 'email', 'name', 'phone_number', 'profile_url', 'phone_authentication'],
+      select: ['id', 'email', 'name', 'phone_number', 'profile_url', 'phone_authentication', 'points'],
     });
   }
 
   async findUserById(id: number): Promise<User> {
     const existUser = await this.usersRepository.findOne({
       where: { id },
-      select: ['id', 'email', 'name', 'profile_url'],
+      select: ['id', 'email', 'name', 'profile_url', 'points'],
     });
 
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);

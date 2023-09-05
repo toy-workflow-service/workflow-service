@@ -1,16 +1,22 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
 let selectedMembers = [];
+let selectedMemberId = [];
 
 let typingTimer;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards();
+  initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
+  // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
+});
 
-  const memberInput = document.querySelector('#name47');
-  const selectedMemberList = document.querySelector('#selected-members');
+function initializeMemberInput(inputSelector, memberListSelector, selected) {
+  const memberInput = document.querySelector(inputSelector);
+  const selectedMemberList = document.querySelector(memberListSelector);
 
+  updateSelectedMembersUI(selected);
   memberInput.addEventListener('keyup', (e) => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
@@ -32,16 +38,16 @@ $(document).ready(async () => {
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMembers.includes(results.user.name)) {
-            selectedMembers.push(results.user.name);
-            updateSelectedMembersUI();
+          if (!selectedMemberId.includes(results.user.id)) {
+            selectedMembers.push({ name: results.user.name, id: results.user.id });
+            selectedMemberId.push(results.user.id);
+            updateSelectedMembersUI(selected);
           }
         });
       }
     });
   });
-});
-
+}
 const printBoard = document.querySelector('#board-box');
 const printButton = document.querySelector('.nav-item');
 
@@ -59,14 +65,19 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
-        console.log(boards);
+        document.querySelector('#running-boards').innerHTML = `${boards.length} Running Boards`;
         for (const board of boards) {
+          // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
+          const cardLength = await detailBoardGet(board.boardId);
           result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
                               <a href="/board?boardId=${board.boardId}">
+                                <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
+                                  board.boardName
+                                }</h6>
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -87,7 +98,9 @@ async function getMyBoards() {
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
                                   }" onclick="openEditBoardModal(this)">edit</a>
-                                  <a class="dropdown-item">delete</a>
+                                  <a class="dropdown-item" boardId="${
+                                    board.boardId
+                                  }" onclick="deleteBoard(this)">delete</a>
                                 </div>
                               </div>
                             </div>
@@ -112,15 +125,19 @@ async function getMyBoards() {
                                 <div
                                   class="progress-bar bg-primary"
                                   role="progressbar"
-                                  style="width: 83%"
+                                  style="width: ${(cardLength.done / cardLength.cards) * 100}%"
                                   aria-valuenow="83"
                                   aria-valuemin="0"
                                   aria-valuemax="100"
                                 ></div>
                               </div>
-                              <span class="progress-percentage">83%</span>
+                              <span class="progress-percentage">${
+                                Math.round((cardLength.done / cardLength.cards) * 100) || 0
+                              }%</span>
                             </div>
-                            <p class="color-light fs-12 mb-20">12 / 15 tasks completed</p>
+                            <p class="color-light fs-12 mb-20">${cardLength.done} / ${
+                              cardLength.cards
+                            } tasks completed</p>
                           </div>
                         </div>
                         <div class="mt-20 px-30">
@@ -180,7 +197,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
-          await createBoardMember(boardId, member);
+          await createBoardMember(boardId, member.name);
         }
 
         Swal.fire({
@@ -191,13 +208,16 @@ createBoardBtn.addEventListener('click', async (event) => {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 });
 
@@ -212,13 +232,16 @@ async function createBoardMember(boardId, name) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       data: JSON.stringify({ name }),
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -258,12 +281,13 @@ async function searchMembers(searchText) {
 }
 
 // 선택한 멤버 UI 출력
-function updateSelectedMembersUI() {
-  const selectedMemberList = document.querySelector('#selected-members');
-  selectedMemberList.innerHTML = selectedMembers
+function updateSelectedMembersUI(memberListSelector) {
+  const selectedMemberList = document.querySelector(memberListSelector);
+  selectedMemberList.innerHTML = '';
+  selectedMemberList.innerHTML += selectedMembers
     .map(
       (member) => `
-    <li>${member} <span class="remove-member" data-member="${member}">x</span></li>
+    <li id="members" data-member="${member.name}" data-id="${member.id}">${member.name} <span class="remove-member" data-member="${member.id}">x</span></li>
   `
     )
     .join('');
@@ -273,8 +297,10 @@ function updateSelectedMembersUI() {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
-      updateSelectedMembersUI();
+      console.log(memberRemove, 'id값이 들어와야해');
+      selectedMembers = selectedMembers.filter((member) => member.id != memberRemove);
+      selectedMemberId = selectedMemberId.filter((selected) => selected != memberRemove);
+      updateSelectedMembersUI(memberListSelector);
     });
   });
 }
@@ -301,30 +327,33 @@ async function openEditBoardModal(element) {
     titleInput.value = board.name;
     descriptionInput.value = board.description;
 
-    const data = await getBoardMembers(boardId);
-    const selectedMembersList = editModal.querySelector('.user-group-people__parent');
-
-    selectedMembersList.innerHTML = '';
-    for (const member of data.boardMembers) {
-      const memberImage = member.profileUrl ? member.profileUrl : './assets/img/favicon.png';
-      selectedMembersList.innerHTML += `
-        <li>
-          <a>
-            <img class="rounded-circle wh-34 bg-opacity-secondary" src="${memberImage}" alt="${member.name}" />
-            <span class="remove-member" data-member="${member.name}" data-member-id="${member.userId}">x</span>
-          </a>
-        </li>`;
+    const { boardMembers } = await getBoardMembers(boardId);
+    selectedMemberId = [];
+    selectedMembers = [];
+    for (let data of boardMembers) {
+      selectedMemberId.push(data.userId);
+      selectedMembers.push({ name: data.name, id: data.userId });
     }
+    console.log(selectedMembers);
+    initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 
-    const removeIcons = selectedMembersList.querySelectorAll('.remove-member');
-    removeIcons.forEach((icon) => {
-      icon.addEventListener('click', (e) => {
-        const memberRemove = e.target.getAttribute('data-member');
-        selectedMembers = selectedMembers.filter((name) => name !== memberRemove);
-        updateSelectedMembersUI();
+    document.getElementById('edit-board-btn').addEventListener('click', async (event) => {
+      event.preventDefault();
+      const editMembers = [];
+      const members = document.querySelectorAll('#members');
+      members.forEach((icon) => {
+        editMembers.push(icon.getAttribute('data-id'));
+      });
+      await putBoard(boardId, titleInput.value, descriptionInput.value);
+      await putBoardMember(boardId, selectedMemberId);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '보드를 수정하였습니다.',
+      }).then(() => {
+        window.location.reload();
       });
     });
-
     $(editModal).modal('show');
   } catch (err) {
     console.error(err);
@@ -345,4 +374,99 @@ function getBoardMembers(boardId) {
   } catch (err) {
     console.error(err);
   }
+}
+
+// 보드 수정
+async function putBoard(boardId, name, description) {
+  await $.ajax({
+    type: 'PUT',
+    url: `boards/${boardId}?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ name, description }),
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+//보드 멤버 수정
+async function putBoardMember(boardId, userIdArray) {
+  await $.ajax({
+    type: 'PUT',
+    url: `/boards/${boardId}/members`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ userIdArray }),
+    success: (data) => {
+      console.log(data.message);
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+//보드 삭제
+async function deleteBoard(element) {
+  const boardId = element.getAttribute('boardId');
+  await $.ajax({
+    type: 'DELETE',
+    url: `boards/${boardId}?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: data.message,
+      }).then(() => {
+        window.location.reload();
+      });
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+// 보드 상세 조회
+async function detailBoardGet(boardId) {
+  const allCard = await $.ajax({
+    method: 'GET',
+    url: `/board-columns?boardId=${boardId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+  }).then(async (columns) => {
+    let cardsLength = 0;
+    let doneLength = 0;
+    for (let column of columns) {
+      const cards = await $.ajax({
+        method: 'GET',
+        url: `/cards?board_column_Id=${column.columnId}`,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader('Content-type', 'application/json');
+          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+        },
+      });
+      cardsLength += cards.length;
+      if (column.columnName == 'Done') {
+        doneLength = cards.length;
+      }
+    }
+    return { cards: cardsLength, done: doneLength };
+  });
+
+  return allCard;
 }

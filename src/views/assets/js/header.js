@@ -1,5 +1,6 @@
 const logoutBtn = document.querySelector('#logoutBtn');
 const workspaceList = document.querySelector('.workspace-list');
+const workspaceListTop = document.querySelector('#workspace-list-top');
 const accessToken = document.cookie.split(';')[0].split('=')[1];
 let boardIds = [];
 let boardNames = [];
@@ -52,10 +53,33 @@ async function getWorkspaces() {
       },
       success: (data) => {
         data.forEach((workspace) => {
-          const result = `<li class="">
-<a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
-</li>`;
+          if (workspace.memberships_id !== null) {
+            result = `<li class="">
+                          <a href="/workspace?workspaceId=${workspace.id}">
+                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
+                          ${workspace.name}</a>
+                     </li>`;
+          } else {
+            result = `<li class="">
+                        <a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
+                     </li>`;
+          }
+
+          if (workspace.memberships_id !== null) {
+            topResult = `<li class="">
+                          <a href="/workspace?workspaceId=${workspace.id}">
+                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
+                          ${workspace.name}</a>
+                        </li>`;
+          } else {
+            topResult = `<li class="">
+                          <a href="/workspace?workspaceId=${workspace.id}">
+                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
+                          ${workspace.name}</a>
+                        </li>`;
+          }
           workspaceList.innerHTML += result;
+          workspaceListTop.innerHTML += topResult;
         });
       },
     });

@@ -80,6 +80,7 @@ $(BoardColumnsGet);
 function init() {
   $('.kanban-items,.todo-task1 tbody')
     .sortable({
+      containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
       stack: '.kanban-items  ul,.todo-task1 tbody',
       start: function (e, i) {
@@ -176,7 +177,7 @@ let cardIndex = 0;
 async function BoardColumns(data) {
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${data[0].boardName}</h4>
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -227,8 +228,7 @@ async function BoardColumns(data) {
                                     <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
+                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
                                   </div>
   
                                 </div>`;
@@ -253,22 +253,17 @@ async function BoardColumns(data) {
                                     <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg"> Add a
-                                    card</button>
+                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
                                   </div>
   
                                 </div>`;
     }
-    console.log(cardIndex);
   }
-  kanbanList.innerHTML += `<div class="kanban-list list draggable" draggable="true" data-columnId=0>
-                            <div class="list__add-card">
-                              <div class="kanban-board__add-card">
-                                  <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                    Add
-                                    column</button>
-                              </div>
-                            </div>
+  kanbanList.innerHTML += `<div class="kanban-board__add-card">
+                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                              <h5>
+                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
+                                컬럼 추가</h5></button>
                           </div>`;
 
   init();
@@ -369,7 +364,6 @@ async function BoardColumns(data) {
       const columnId = e.target.getAttribute('data-columnId');
 
       DetailCardGet(columnId, cardId);
-      console.log(columnId, cardId);
     });
   });
 
@@ -413,24 +407,40 @@ async function BoardColumns(data) {
       cardColumnId = id;
       const sequence = e.target.getAttribute('data-index');
       cardSequence = Number(sequence) + 1;
-      console.log('sequence, columnId', cardSequence, cardColumnId);
+
+      //update 모달과 같이 배열과 변수를 사용하기 때문에 create 모달 펼칠시 초기화 필요
+      filesArr = [];
+      fileNo = 0;
+      document.querySelector('.file-list').innerHTML = '';
     });
   });
-  document.getElementById('CardCreateBtn').addEventListener('click', () => {
+  document.getElementById('CardCreateBtn').addEventListener('click', async () => {
     const cardTitle = document.getElementById('cardTitleCreate').value;
     const cardColor = document.getElementById('cardColorCreate').value;
     const cardContent = document.getElementById('cardContentCreate').value;
-    const cardFile = document.getElementById('cardfileCreate').value;
-    const card = {
-      name: cardTitle,
-      color: cardColor,
-      content: cardContent,
-      fileUrl: cardFile,
-      members: selectedMemberNumber,
-      sequence: cardSequence,
-    };
-    console.log('create 보내기 전 :', cardColumnId, cardSequence);
-    CardCreate(cardColumnId, card);
+    // 폼데이터 담기
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+    if (filesArr) {
+      for (let i = 0; i < filesArr.length; i++) {
+        // 삭제되지 않은 파일만 폼데이터에 담기
+        if (!filesArr[i].is_delete) {
+          formData.append('newFiles', filesArr[i]);
+          formData.append('originalnames', filesArr[i].name);
+        }
+      }
+    }
+    if (selectedMemberNumber) {
+      for (let i = 0; i < selectedMemberNumber.length; i++) {
+        formData.append('members', selectedMemberNumber[i]);
+      }
+    }
+    formData.append('name', cardTitle);
+    formData.append('color', cardColor);
+    formData.append('content', cardContent);
+    formData.append('sequence', cardSequence);
+
+    CardCreate(cardColumnId, formData);
   });
 }
 
@@ -479,28 +489,30 @@ async function CardGet(columnId) {
 // card create api
 async function CardCreate(columnId, data) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  console.log(columnId, data);
   await $.ajax({
     type: 'POST',
     url: `/cards?board_column_Id=${columnId}`,
     beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({
-      name: data.name,
-      content: data.content,
-      file_url: data.fileUrl,
-      sequence: data.sequence,
-      members: data.members,
-      color: data.color,
-    }),
+    processData: false,
+    contentType: false,
+    data: data,
     success: function (data) {
-      console.log(data.message);
-      location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        location.reload();
+      });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message[0],
+      });
     },
   });
 }
@@ -568,7 +580,7 @@ function openCommentDetailModal(columnId, cardId, commentId) {
 
 function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
-  $('#commentDetailModalLabel').text('Comment');
+  $('#commentDetailModalLabel').text('댓글');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
 
@@ -597,19 +609,23 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate">${comment.comment}</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+            comment.comment
+          }</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -673,22 +689,23 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   let membersHTML = '';
   selectedMembers = [];
   selectedMemberNumber = [];
-  for (const member of users) {
-    let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
-    membersHTML += `
-  <div class="checkbox-group d-flex">
-    <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-      <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
-        <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
-          ${member[0].name}
-        </label>
+  if (users.length > 0) {
+    for (const member of users) {
+      let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
+      membersHTML += `
+    <div class="checkbox-group d-flex">
+      <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+        <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
+          <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
+            ${member[0].name}
+          </label>
+      </div>
     </div>
-  </div>
-  `;
+    `;
 
-    selectedMembers.push({ name: member[0].name, id: member[0].userId });
-    console.log('click함', selectedMembers);
-    selectedMemberNumber.push(member[0].userId);
+      selectedMembers.push({ name: member[0].name, id: member[0].userId });
+      selectedMemberNumber.push(member[0].userId);
+    }
   }
 
   let commentHTML = '';
@@ -711,17 +728,24 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
         </div> `;
     }
   }
+  let fileHTML = '';
+  if (cardData.file_url.length > 1) {
+    for (let i in cardData.file_url) {
+      fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+    }
+  } else if (cardData.file_url[0]) {
+    fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
+  }
 
   const modalContentHTML = `
   <div class=" kanban-modal__header-wrapper">
   <div class="kanban-modal__header">
      <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
-     <span>in list Active Project</span>
   </div>
    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">update</button>
+id="updateCardButton" data-column-id="${columnId}" data-card-id="${cardData.id}">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">delete</button>
+id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <img src="./assets/img/svg/x.svg" alt="x" class="svg">
 </button>
@@ -729,26 +753,20 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
 <div class="modal-body kanban-modal__body">
   <div class="kanban-modal__form ">
      <div class="mb-30">
-        <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+        <label for="exampleFormControlTextarea1111" class="form-label">카드 설명</label>
         <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${cardData.content}</textarea>
      </div>
      <div class="row">
-        <label> image file</label>
+        <label>파일</label>
         <div id="cardDetailImgFile">
-           ${cardData.file_url}
-        </div>
-        <label style="margin-top: 3%;">Files other than image files</label>
-        <div id="cardDetailNotImgFile">
-           <!-- 파일이 이미지가 아닐 경우 -->
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-           <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+           ${fileHTML}
         </div>
      </div>
      <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
   </div>
 
     <div class="kanban-modal__research mt-30">
-      <h6>Members</h6>
+      <h6>참여자</h6>
     </div>
     <div class="kanban-modal__list">
       <ul id="cardDetailMembers">
@@ -756,11 +774,13 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
       </ul>
     </div>
     <div class="kanban-modal__list">
-      <h6>Comment</h6>
-      <div class="comment-input">
-        <textarea class="form-control" rows="3" placeholder="Add a comment..." id="commentInput"></textarea>
-        <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">Comment +</button>
-      </div>
+    <div class="mb-30">
+      <label for="exampleFormControlTextarea1111" class="form-label">댓글</label>
+      <textarea class="form-control" id="commentInput" rows="3"
+        placeholder="내용을 작성해주세요…" style="resize :none"></textarea>
+    </div>
+    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCommentButton">댓글 추가...</button>
+      
       <ul id="commentDetail">
         <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
         ${commentHTML}
@@ -815,11 +835,6 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const results = await searchMembers();
-      console.log(results);
-
-      document.getElementById(e.target.id).addEventListener('click', () => {
-        console.log('id 확인 : ', e.target.id);
-      });
 
       selectedMemberList.innerHTML = '';
       for (let result of results) {
@@ -838,7 +853,6 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
         li.addEventListener('click', () => {
           if (!selectedMemberNumber.includes(result.userId)) {
             selectedMembers.push({ name: result.name, id: result.userId });
-            console.log('click함', selectedMembers);
             selectedMemberNumber.push(result.userId);
             updateSelectedMembersUI(selected);
           }
@@ -915,7 +929,6 @@ async function DetailCardGet(columnId, cardId) {
         },
       });
       users.push(boardMembers);
-      console.log(boardMembers);
     }
 
     // 카드에 대한 코멘트를 가져오는 API 호출
@@ -930,7 +943,6 @@ async function DetailCardGet(columnId, cardId) {
 
     // 코멘트 응답
     const commentsData = commentsResponse;
-    console.log(commentsResponse);
     createCardDetailModal(cardData, commentsData, columnId, cardId, users);
     openUpdateCardModal(cardData, columnId, cardId);
   } catch (error) {
@@ -960,15 +972,35 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
 // 업데이트 모달을 열기 위한 함수
 function openUpdateCardModal(cardData, columnId, cardId) {
   // 모달 내부의 필드들을 초기화 (빈 값으로)
-  document.getElementById('cardTitleUdpate').value = cardData.name;
+  document.getElementById('cardTitleUpdate').value = cardData.name;
   document.getElementById('cardContentUpdate').value = cardData.content;
-  document.getElementById('cardfileUpdate').value = '';
+  // document.getElementById('cardfileUpdate').value = '';
   document.getElementById('cardUpdateMembers').innerHTML = cardData.members;
   document.getElementById('cardColorUpdate').value = cardData.color;
   // 컬럼 아이디와 카드 아이디를 모달의 data 속성에 설정
   document.getElementById('updateCardButton').setAttribute('data-column-id', columnId);
   document.getElementById('updateCardButton').setAttribute('data-card-id', cardId);
-  // 업데이트 모달을 열기
+  // 파일 박스 안에 값을 넣어주기.
+  // 들어도 가고 지우기도 가능하나, db에서 가져오는 file_url값과 입력하는 file값은 다르기때문에
+  // 다른 방안이 필요할듯 함.
+  console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+  filesArr = [];
+  filesNameArr = [];
+  fileNo = 0;
+  document.querySelector('#edit-card-file').innerHTML = '';
+  for (let i = 0; i < cardData.file_url.length; i++) {
+    // 목록 추가
+    let htmlData = '';
+    htmlData += '<div id="file' + fileNo + '" class="filebox">';
+    htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+    htmlData += '</div>';
+    $('.file-list').append(htmlData);
+    filesArr.push(cardData.file_url[i]);
+    filesNameArr.push(cardData.file_original_name[i]);
+    fileNo++;
+  }
+  console.log(filesArr);
 }
 
 document.addEventListener('click', function (event) {
@@ -983,57 +1015,95 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   const cardId = document.getElementById('updateCardButton').getAttribute('data-card-id');
 
   // 업데이트할 데이터 수집
-  const updatedCardName = document.getElementById('cardTitleUdpate').value;
+  const updatedCardName = document.getElementById('cardTitleUpdate').value;
   const updatedCardContent = document.getElementById('cardContentUpdate').value;
   // 파일 업로드를 위한 코드 추가
-  const updatedCardFileInput = document.getElementById('cardfileUpdate');
-  const updatedCardFile = updatedCardFileInput.files[0];
+  // const updatedCardFileInput = document.getElementById('cardfileUpdate');
+  // const updatedCardFile = updatedCardFileInput.files[0];
 
   // 멤버는 이미 선택된 것을 사용하므로 selectedMemberNumber를 그대로 사용
-  const updatedCardMembers = selectedMemberNumber;
+  // const updatedCardMembers = selectedMemberNumber;
   const updatedCardColor = document.getElementById('cardColorUpdate').value;
 
-  // 업데이트할 데이터를 객체로 만들어서 전송
-  const updatedData = {
-    name: updatedCardName,
-    content: updatedCardContent,
-    fileUrl: updatedCardFile ? URL.createObjectURL(updatedCardFile) : null, // 파일이 있는 경우에만 처리
-    members: updatedCardMembers,
-    color: updatedCardColor,
-  };
+  // 폼데이터 담기
+  let form = document.querySelector('form');
+  let updatedData = new FormData(form);
+
+  // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
+  // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
+  // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
+  // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
+  // let i = 0;
+  // if (filesNameArr) {
+  //   for (i = 0; i < filesNameArr.length; i++) {
+  //     // 삭제되지 않은 파일만 폼데이터에 담기
+  //     if (!filesNameArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesNameArr[i]);
+  //     }
+  //   }
+  //   for (i; i < filesArr.length; i++) {
+  //     if (!filesArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesArr[i].name);
+  //     }
+  //   }
+  // } else {
+  //   for (i; i < filesArr.length; i++) {
+  //     if (!filesArr[i].is_delete) {
+  //       updatedData.append('newFiles', filesArr[i]);
+  //       updatedData.append('originalnames', filesArr[i].name);
+  //     }
+  //   }
+  // }
+  if (selectedMemberNumber) {
+    for (let j = 0; j < selectedMemberNumber.length; j++) {
+      updatedData.append('members', selectedMemberNumber[j]);
+    }
+  }
+  updatedData.append('name', updatedCardName);
+  updatedData.append('color', updatedCardColor);
+  updatedData.append('content', updatedCardContent);
 
   // 업데이트 함수 호출
-  CardAllUpdate(columnId, cardId, updatedData);
-  window.location.reload();
+  // CardAllUpdate(columnId, cardId, updatedData);
+  // window.location.reload();
 });
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('Updated Data:', data);
-
-    const response = await $.ajax({
+    console.log('Updated Data:', ...data);
+    await $.ajax({
       type: 'PATCH',
       url: `/cards/${cardId}?board_column_Id=${columnId}`,
-      data: JSON.stringify({
-        name: data.name,
-        content: data.content,
-        file_url: data.fileUrl,
-        members: data.members,
-        color: data.color,
-      }),
       beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      processData: false,
+      contentType: false,
+      data: data,
+      success: function (data) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: data.message,
+        }).then(() => {
+          // location.reload();
+        });
+      },
+      error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
+        });
       },
     });
 
-    // 업데이트 응답 결과 확인
-    console.log('Update Response:', response.message);
-
     // 성공적으로 업데이트가 완료되었을 때 모달을 닫을 수 있습니다.
-    $('#updateCardModal').modal('hide');
+    // $('#updateCardModal').modal('hide');
   } catch (error) {
     console.log(error);
   }
@@ -1233,4 +1303,72 @@ function Getcomment(cardId, commentId) {
       console.log(error);
     },
   });
+}
+
+// 여러 파일 보내기
+var fileNo = 0;
+var filesArr = [];
+let filesNameArr = [];
+
+/* 첨부파일 추가 */
+function addFile(obj) {
+  var maxFileCnt = 5; // 첨부파일 최대 개수
+  var attFileCnt = document.querySelectorAll('.filebox').length; // 기존 추가된 첨부파일 개수
+  var remainFileCnt = maxFileCnt - attFileCnt; // 추가로 첨부가능한 개수
+  var curFileCnt = obj.files.length; // 현재 선택된 첨부파일 개수
+
+  // 첨부파일 개수 확인
+  if (curFileCnt > remainFileCnt) {
+    alert('첨부파일은 최대 ' + maxFileCnt + '개 까지 첨부 가능합니다.');
+  }
+
+  for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
+    const file = obj.files[i];
+    console.log('origin file: ', file);
+    // 첨부파일 검증
+    if (validation(file)) {
+      // 파일 배열에 담기
+      var reader = new FileReader();
+      reader.onload = function () {
+        filesArr.push(file);
+      };
+      reader.readAsDataURL(file);
+
+      // 목록 추가
+      let htmlData = '';
+      htmlData += '<div id="file' + fileNo + '" class="filebox">';
+      htmlData += '   <p class="name">' + file.name + '</p>';
+      htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+      htmlData += '</div>';
+      $('.file-list').append(htmlData);
+      fileNo++;
+    } else {
+      continue;
+    }
+  }
+  // 초기화
+  document.querySelector('input[type=file]').value = '';
+}
+
+/* 첨부파일 검증 */
+function validation(obj) {
+  if (obj.name.length > 100) {
+    alert('파일명이 100자 이상인 파일은 제외되었습니다.');
+    return false;
+  } else if (obj.size > 10 * 1024 * 1024) {
+    alert('최대 파일 용량인 10MB를 초과한 파일은 제외되었습니다.');
+    return false;
+  } else if (obj.name.lastIndexOf('.') == -1) {
+    alert('확장자가 없는 파일은 제외되었습니다.');
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/* 첨부파일 삭제 */
+function deleteFile(num) {
+  document.querySelector(`#file${num}`).remove();
+  filesArr[num].is_delete = true;
+  filesNameArr[num].is_delete = true;
 }

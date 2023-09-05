@@ -6,6 +6,7 @@ import { User } from 'src/_common/entities/user.entitiy';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UsersService } from 'src/users/users.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -15,59 +16,57 @@ export class PaymentsService {
     private paymentRepository: Repository<Payment>,
     private readonly membershipService: MembershipsService,
     private readonly userService: UsersService,
+    private readonly workspaceService: WorkspacesService
   ) {}
 
   // 멤버십 결제
   async purchaseMembership(body: MembershipDto, workspaceId: number, userId: number): Promise<IResult> {
     const entityManager = this.paymentRepository.manager;
-    try {
-      await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        const findUserById = await this.userService.findUserById(userId);
 
-        if (findUserById.points < body.packagePrice)
-          throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
-        findUserById.points -= body.packagePrice;
-        await transactionEntityManager.save(findUserById);
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const findUserById = await this.userService.findUserById(userId);
 
-        const newPayment = this.paymentRepository.create({
-          workspaceId,
-          user: { id: userId },
-        });
-        await transactionEntityManager.save(newPayment);
-        await this.membershipService.createMembership(body, workspaceId);
+      if (findUserById.points < body.packagePrice)
+        throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
+      findUserById.points -= body.packagePrice;
+      await transactionEntityManager.save(findUserById);
+
+      const newPayment = this.paymentRepository.create({
+        workspaceId,
+        user: { id: userId },
       });
+      await transactionEntityManager.save(newPayment);
+      await this.membershipService.createMembership(body, workspaceId);
+    });
 
-      return { result: true };
-    } catch (err) {
-      console.error(err);
-    }
+    return { result: true };
   }
 
-  // 멤버십 연장
-  async extensionMembership(body: MembershipDto, workspaceId: number, userId: number): Promise<IResult> {
-    const entityManager = this.paymentRepository.manager;
+  // // 멤버십 연장
+  // async extensionMembership(body: MembershipDto, workspaceId: number, userId: number): Promise<IResult> {
+  //   const entityManager = this.paymentRepository.manager;
 
-    try {
-      await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        const findUserById = await this.userService.findUserById(userId);
+  //   try {
+  //     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+  //       const findUserById = await this.userService.findUserById(userId);
 
-        if (findUserById.points < body.packagePrice)
-          throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
-        findUserById.points -= body.packagePrice;
-        await transactionEntityManager.save(findUserById);
+  //       if (findUserById.points < body.packagePrice)
+  //         throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
+  //       findUserById.points -= body.packagePrice;
+  //       await transactionEntityManager.save(findUserById);
 
-        const newPayment = this.paymentRepository.create({
-          workspaceId,
-          user: { id: userId },
-        });
-        await transactionEntityManager.save(newPayment);
-        await this.membershipService.extensionMembership(body, workspaceId);
-      });
-      return { result: true };
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  //       const newPayment = this.paymentRepository.create({
+  //         workspaceId,
+  //         user: { id: userId },
+  //       });
+  //       await transactionEntityManager.save(newPayment);
+  //       await this.membershipService.extensionMembership(body, workspaceId);
+  //     });
+  //     return { result: true };
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
 
   // 결제 취소
   async cancelPurchase(workspaceId: number, paymentId: number, userId: number): Promise<Object> {
@@ -94,30 +93,51 @@ export class PaymentsService {
     const dailyPrice = Math.floor(targetMembership.package_price / daysInMembership);
     const refundPrice = Math.floor(remainingDays) * dailyPrice;
 
-    try {
-      await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-        await this.membershipService.cancelMembership(workspaceId);
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      await this.membershipService.cancelMembership(workspaceId);
 
-        targetPayment.status = false;
-        await transactionEntityManager.save(targetPayment);
+      targetPayment.status = false;
+      await transactionEntityManager.save(targetPayment);
 
-        const user = await this.userService.findUserById(userId);
-        const refundPoint = refundPrice;
-        const remainPoint = (user.points += refundPoint);
-        await transactionEntityManager.save(User, { ...user, points: remainPoint });
-      });
-      return { remainingDays, refundPrice };
-    } catch (err) {
-      console.error(err);
-    }
+      const user = await this.userService.findUserById(userId);
+      const refundPoint = refundPrice;
+      const remainPoint = (user.points += refundPoint);
+      await transactionEntityManager.save(User, { ...user, points: remainPoint });
+    });
+    return { remainingDays, refundPrice };
   }
 
   // 나의 결제내역 조회
   async getMyPayments(userId: number): Promise<Payment[]> {
-    const payments = await this.paymentRepository.find({ where: { user: { id: userId } } });
+    const payments = await this.paymentRepository.find({ where: { user: { id: userId } }, relations: ['user'] });
+    const paymentHistory = [];
+    for (const payment of payments) {
+      const workspaceId = payment.workspaceId;
+      const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
 
-    if (!payments) throw new HttpException('결제 내역이 없습니다.', HttpStatus.NOT_FOUND);
-
-    return payments;
+      if (workspace.memberships.length > 0) {
+        const membership = workspace.memberships[0];
+        const paymentInfo = {
+          paymentId: payment.id,
+          workspaceId,
+          workspaceName: workspace.name,
+          membershipCreatedAt: membership.created_at,
+          membershipEndDate: membership.end_date,
+          membershipPrice: membership.package_price,
+        };
+        paymentHistory.push(paymentInfo);
+      } else {
+        const paymentInfo = {
+          paymentId: payment.id,
+          workspaceId,
+          workspaceName: workspace.name,
+          membershipCreatedAt: '취소된 결제',
+          membershipEndDate: '취소된 결제',
+          membershipPrice: '취소된 결제',
+        };
+        paymentHistory.push(paymentInfo);
+      }
+    }
+    return paymentHistory;
   }
 }

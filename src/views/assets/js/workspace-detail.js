@@ -25,7 +25,6 @@ async function getWorkspaceDetail() {
       },
       success: async (results) => {
         const { data } = results;
-
         userName = results.userName;
         callerId = results.userId;
 
@@ -33,9 +32,23 @@ async function getWorkspaceDetail() {
         const countBoards = await countWorkspaceBoards(data.id);
         const countCards = await countWorkspaceCards(data.id);
 
-        title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
-                  `;
+        if (data.memberships && data.memberships.length > 0) {
+          const membership = data.memberships[0];
+          const endDate = new Date(membership.end_date);
+          const currentDate = new Date();
+          const remaningDate = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
 
+          title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
+          <div style="display : inline-flex">
+          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="padding-right: 3px;"/><p style="padding-top: 15px; font-size: 13px">멤버십 종료까지 <strong>${remaningDate}일</strong> 남았습니다.</p>
+          `;
+        } else {
+          title += `<h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">${data.name}</h4>
+          <div style="display : inline-flex">
+          <p style="padding-top: 15px; font-size: 13px; margin-right: 5px;"><strong>멤버십 가입 시 보드생성 / 멤버초대 무제한!</strong></p>
+          <button class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md" data-workspace-id="${data.id}" onclick="openPaymentModal(this)" style="padding : 0.25rem 0.5rem">멤버십 결제</button></div>
+          `;
+        }
         result += `<div class="card border-0 pb-md-50 pb-15" id="workspace-card">
                       <div class="card-header py-sm-20 py-3 px-sm-25 px-3">
                         <h6>워크스페이스 소개</h6>
@@ -118,6 +131,7 @@ async function getWorkspaceDetail() {
                                         </div>
                                       </div>
                                     </div>`;
+
         //유저 이름, 사진, 이메일, 휴대폰 번호, 메세지, 전화, 영상통화
         data.workspace_members.forEach(async (member) => {
           let memberRole = '';
@@ -140,6 +154,26 @@ async function getWorkspaceDetail() {
               6
             )} - ${user.phone_number.substring(6, 10)}`;
           }
+          let html1;
+          if (results.loginUserRole === 1 || results.loginUserRole === 2) {
+            html1 = `                <div class="files-area__right">
+                                  <div class="dropdown dropleft">
+                                    <button
+                                      class="btn-link border-0 bg-transparent p-0"
+                                      data-bs-toggle="dropdown"
+                                      aria-haspopup="true"
+                                      aria-expanded="false"
+                                    >
+                                      <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu--dynamic">
+                                      <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
+                                      <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
+                                    </div>
+                                  </div>
+                                </div>`;
+          }
+          html1 = html1 ? html1 : '';
           if (results.userId === user.id) {
             memberHtml += `
                         <div class="d-flex align-items-center mb-25">
@@ -197,22 +231,7 @@ async function getWorkspaceDetail() {
                                 <p class="fs-14 fw-600 color-dark mb-0">${memberRole} ${user.name}</p>
                                 <span class="mt-1 fs-14 color-light">${user.email}</span>
                               </div>
-                              <div class="files-area__right">
-                                <div class="dropdown dropleft">
-                                  <button
-                                    class="btn-link border-0 bg-transparent p-0"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                  >
-                                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
-                                  </button>
-                                  <div class="dropdown-menu dropdown-menu--dynamic">
-                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
-                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
-                                  </div>
-                                </div>
-                              </div>
+                              ${html1}
                             </div>
                           </div>
                         </div>
@@ -279,22 +298,7 @@ async function getWorkspaceDetail() {
                                 <p class="fs-14 fw-600 color-dark mb-0">${memberRole} ${user.name}</p>
                                 <span class="mt-1 fs-14 color-light">${user.email}</span>
                               </div>
-                              <div class="files-area__right">
-                                <div class="dropdown dropleft">
-                                  <button
-                                    class="btn-link border-0 bg-transparent p-0"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                  >
-                                    <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
-                                  </button>
-                                  <div class="dropdown-menu dropdown-menu--dynamic">
-                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
-                                    <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
-                                  </div>
-                                </div>
-                              </div>
+                              ${html1}
                             </div>
                           </div>
                         </div>
@@ -306,6 +310,109 @@ async function getWorkspaceDetail() {
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
         printMemory.innerHTML = remaingMemory;
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 멤버십 결제 모달열기
+function openPaymentModal(element) {
+  const workspaceId = element.getAttribute('data-workspace-id');
+  let paymentModal = document.querySelector('#modal-basic5');
+
+  paymentModal.innerHTML = `
+  <form>
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content modal-bg-white">
+      <div class="modal-header">
+        <h6 class="modal-title">멤버십 결제</h6>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>멤버십 타입:</strong> <span id="membership-type">Premium</span></p>
+        <p><strong>결제금액:</strong> <span id="membership-price"></span><span>원</span></p>
+        <div class="dropdown dropdown-hover">
+        <a style="cursor:pointer;">
+        <span><strong>이용기간</strong> : <span id="period-select-text">선택</span></span>
+          <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
+        </a>
+        <div class="dropdown-default dropdown-clickEvent">
+        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
+        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
+        </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-workspace-id="${workspaceId} "id="payment-btn">결제</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+      </div>
+    </div>
+  </div>
+  </form>
+  `;
+
+  let membershipItems = document.querySelectorAll('.dropdown-default .dropdown-item');
+  membershipItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      let selected = item.textContent;
+      document.querySelector('#period-select-text').textContent = selected;
+      const membershipPrice = document.querySelector('#membership-price');
+
+      switch (selected) {
+        case '30일':
+          membershipPrice.textContent = '6,500';
+          break;
+        case '180일':
+          membershipPrice.textContent = '31,000';
+          break;
+      }
+    });
+  });
+  const paymentBtn = document.querySelector('#payment-btn');
+  paymentBtn.addEventListener('click', () => {
+    purchaseMembership();
+  });
+
+  $(paymentModal).modal('show');
+}
+
+// 멤버십 결제
+async function purchaseMembership() {
+  try {
+    let membershipType = document.querySelector('#membership-type').textContent;
+    if (membershipType === 'Premium') membershipType = 1;
+    const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
+    const selectedPeriod = document.querySelector('#period-select-text').textContent;
+    const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
+    const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
+
+    await $.ajax({
+      method: 'POST',
+      url: `/workspaces/${workspaceId}/payments`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'success!',
+          text: '멤버십 결제 완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
       },
     });
   } catch (err) {
@@ -369,13 +476,16 @@ async function updateWorkspace() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -399,16 +509,19 @@ async function deleteWorkspace() {
             window.location.reload();
           });
         },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          });
+        },
       });
     } else {
       return;
     }
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -446,14 +559,17 @@ async function inviteMember() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        sendingMessage.style.display = 'none';
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    sendingMessage.style.display = 'none';
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 
@@ -493,15 +609,57 @@ async function setMemberRole() {
           window.location.reload();
         });
       },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
     });
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
+
+// function deleteConfirmModal(element) {
+//   const userId = element.getAttribute('data-rid-id')
+//   const confirmModal = document.querySelector('#modal-info-confirmed')
+//   modal.classList.add("show")
+
+//   const okBtn = modal.querySelector(".btn-info")
+//   const cancelBtn = modal.querySelector(".btn-light")
+
+//   okbtn.addE
+// }
+
+// <div class="modal-info-confirmed modal fade show" id="modal-info-confirmed" tabindex="-1" role="dialog" aria-hidden="true">
+
+// <div class="modal-dialog modal-sm modal-info" role="document">
+//    <div class="modal-content">
+//       <div class="modal-body">
+//          <div class="modal-info-body d-flex">
+//             <div class="modal-info-icon warning">
+//                <img src="img/svg/alert-circle.svg" alt="alert-circle" class="svg">
+//             </div>
+
+//             <div class="modal-info-text">
+//                <h6>Do you Want to delete these items?</h6>
+//                <p>Some descriptions</p>
+//             </div>
+
+//          </div>
+//       </div>
+//       <div class="modal-footer">
+
+//          <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">Cancel</button>
+//          <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Ok</button>
+
+//       </div>
+//    </div>
+// </div>
+
+// </div>
 
 // 워크스페이스 멤버 삭제
 function deleteMember(element) {
@@ -524,16 +682,19 @@ function deleteMember(element) {
             window.location.reload();
           });
         },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          });
+        },
       });
     } else {
       return;
     }
   } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    console.error(err);
   }
 }
 

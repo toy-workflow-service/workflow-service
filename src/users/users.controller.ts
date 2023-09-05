@@ -27,13 +27,16 @@ import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { ChangePasswordDTO } from 'src/_common/dtos/change-password.dto';
 import { deletePasswordDTO } from 'src/_common/dtos/delete-password.dto';
 import { PhoneNumberDTO } from 'src/_common/dtos/phone.dto';
+import { Payment } from 'src/_common/entities/payment.entity';
+import { PaymentsService } from 'src/payments/payments.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private cacheManager: RedisCacheService
+    private cacheManager: RedisCacheService,
+    private readonly paymentService: PaymentsService
   ) {}
 
   @Post('signup')
@@ -163,5 +166,12 @@ export class UsersController {
   ): Promise<any> {
     await this.usersService.updateUserPhoneAuth(user.id, PhoneNumberDTO.phoneNumber);
     return res.status(HttpStatus.OK).json({ message: '휴대폰 본인 인증에 성공하셨습니다. ' });
+  }
+
+  // 결제내역 조회
+  @Get('payments/history')
+  @UseGuards(AuthGuard)
+  async getMyPayments(@GetUser() user: AccessPayload): Promise<Payment[]> {
+    return await this.paymentService.getMyPayments(user.id);
   }
 }

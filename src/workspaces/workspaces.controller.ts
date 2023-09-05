@@ -8,12 +8,13 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
@@ -51,7 +52,9 @@ export class WorkspacesController {
   @UseInterceptors(CheckMemberInterceptor)
   async getWorkspaceDetail(@GetUser() user: AccessPayload, @Param('workspaceId') workspaceId: number): Promise<Object> {
     const data = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    return { data, userId: user.id, userName: user.name };
+    const loginUserRole = await this.workspaceService.loginUserRole(user.id);
+
+    return { data, userId: user.id, userName: user.name, loginUserRole };
   }
 
   // 워크스페이스 수정
@@ -107,9 +110,10 @@ export class WorkspacesController {
 
   // 워크스페이스 참여자 상태변경, 이메일에서 수락버튼 클릭 시 실행
   @Post(':workspaceId/participation')
-  async acceptInvitaion(@Param('workspaceId') workspaceId: number, @Req() req: Request): Promise<IResult> {
+  async acceptInvitaion(@Param('workspaceId') workspaceId: number, @Req() req: Request, @Res() res: Response) {
     const { email } = req.query;
-    return await this.workspaceService.acceptInvitaion(workspaceId, email);
+    await this.workspaceService.acceptInvitaion(workspaceId, email);
+    return res.redirect('/login');
   }
 
   @Get(':workspaceId/members/search')

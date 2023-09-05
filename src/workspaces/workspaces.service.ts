@@ -54,7 +54,8 @@ export class WorkspacesService {
     const myWorkspaces = await this.workspaceMemberRepository
       .createQueryBuilder('workspace_members')
       .innerJoinAndSelect('workspace_members.workspace', 'workspaces')
-      .select(['workspaces.id as id', 'workspaces.name as name'])
+      .leftJoinAndSelect('workspaces.memberships', 'memberships')
+      .select(['workspaces.id as id', 'workspaces.name as name', 'memberships'])
       .where('workspace_members.user = :userId and participation = true', { userId })
       .getRawMany();
 
@@ -76,10 +77,17 @@ export class WorkspacesService {
         'user.phone_number',
       ])
       .leftJoin('workspace_members.user', 'user')
+      .leftJoinAndSelect('workspace.memberships', 'membership')
       .where('workspace.id = :id', { id: workspaceId })
       .getOne();
 
     return existWorkspace;
+  }
+
+  async loginUserRole(userId: number): Promise<any> {
+    const loginUserRole = await this.workspaceMemberRepository.findOne({ where: { user: { id: userId } } });
+
+    return loginUserRole.role;
   }
 
   // 워크스페이스 멤버조회
@@ -143,7 +151,11 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버초대
   async inviteWorkspaceMember(body: InvitationDto, workspaceId: number, userName: string): Promise<IResult> {
-    const existWorkspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
+    const existWorkspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+      relations: ['memberships'],
+    });
+    const hasMembership = existWorkspace.memberships.length > 0;
     const entityManager = this.workspaceRepository.manager;
 
     if (!existWorkspace) throw new HttpException('해당 워크스페이스가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
@@ -153,6 +165,11 @@ export class WorkspacesService {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { user: { id }, workspace: { id: workspaceId } },
     });
+
+    const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
+
+    if (countMember.length >= 5 && !hasMembership)
+      throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
 
     if (existMember) throw new HttpException('이미 초대된 유저입니다.', HttpStatus.CONFLICT);
     try {
