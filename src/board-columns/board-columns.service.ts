@@ -82,15 +82,24 @@ export class BoardColumnsService {
   }
 
   // 워크스페이스가 보유한 카드개수 조회
-  async countWorkspaceCards(workspaceId: number): Promise<Number> {
+  async countWorkspaceCards(boardId: number): Promise<Number> {
     const totalCardCount = await this.boardColumnRepository
       .createQueryBuilder('column')
-      .innerJoin('column.board', 'board')
       .leftJoin('column.cards', 'card')
-      .where('board.workspace = :workspaceId', { workspaceId })
+      .where('column.board = :boardId', { boardId })
       .select('SUM(card.board_column IS NOT NULL) as totalCount')
       .getRawOne();
 
-    return totalCardCount;
+    const doneCardCount = await this.boardColumnRepository
+      .createQueryBuilder('column')
+      .leftJoin('column.cards', 'card')
+      .where('column.board = :boardId', { boardId })
+      .andWhere('column.name = :name', { name: 'Done' })
+      .select('SUM(card.board_column IS NOT NULL) as doneCount')
+      .getRawOne();
+
+    const result: any = { total: totalCardCount.totalCount, done: doneCardCount.doneCount };
+    // console.log(result);
+    return result;
   }
 }

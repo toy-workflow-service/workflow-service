@@ -84,6 +84,7 @@ export class WorkspacesService {
     return existWorkspace;
   }
 
+  // 로그인한 유저의 역할 조회
   async loginUserRole(userId: number): Promise<any> {
     const loginUserRole = await this.workspaceMemberRepository.findOne({ where: { user: { id: userId } } });
 
@@ -150,7 +151,12 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버초대
-  async inviteWorkspaceMember(body: InvitationDto, workspaceId: number, userName: string): Promise<IResult> {
+  async inviteWorkspaceMember(
+    body: InvitationDto,
+    workspaceId: number,
+    userName: string,
+    userId: number
+  ): Promise<IResult> {
     const existWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['memberships'],
@@ -165,6 +171,15 @@ export class WorkspacesService {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { user: { id }, workspace: { id: workspaceId } },
     });
+    const loginUserRole = await this.loginUserRole(userId);
+
+    if (loginUserRole / 1 >= body.role)
+      throw new HttpException('관리자 권한을 줄 수 없습니다.', HttpStatus.BAD_REQUEST);
+
+    const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
+
+    if (countMember.length >= 5 && !hasMembership)
+      throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
 
     const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
 
@@ -189,12 +204,16 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버삭제
-  async deleteWorkspaceMember(workspaceId: number, userId: number): Promise<IResult> {
+  async deleteWorkspaceMember(workspaceId: number, userId: number, loginUser: number): Promise<IResult> {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
     });
+    const loginUserRole = await this.loginUserRole(loginUser);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
+    if (loginUserRole / 1 >= existMember.role)
+      throw new HttpException('관리자 또는 어드민 계정은 삭제할 수 없습니다.', HttpStatus.BAD_REQUEST);
 
     await this.workspaceMemberRepository.remove(existMember);
 
@@ -202,14 +221,16 @@ export class WorkspacesService {
   }
 
   // 멤버 권한 변경
-  async setMemberRole(body: SetRoleDto, workspaceId: number, userId: number): Promise<IResult> {
+  async setMemberRole(body: SetRoleDto, workspaceId: number, userId: number, loginUser: number): Promise<IResult> {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
     });
+    const loginUserRole = await this.loginUserRole(loginUser);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    if (existMember.role === 1) throw new HttpException('Admin계정은 역할 변경이 불가합니다.', HttpStatus.BAD_REQUEST);
+    if (loginUserRole / 1 >= existMember.role)
+      throw new HttpException('관리자 또는 어드민 계정은 역할 변경이 불가합니다.', HttpStatus.BAD_REQUEST);
 
     await this.workspaceMemberRepository.update(
       { user: { id: userId }, workspace: { id: workspaceId } },
@@ -277,5 +298,25 @@ export class WorkspacesService {
     });
 
     return countWorkspaceBoards.boards.length;
+  }
+
+  // 워크스페이스에 업로드된 모든 파일 조회
+  async getAllFiles(workspaceId: number): Promise<File[]> {
+    const workspace = await this.workspaceRepository
+      .createQueryBuilder('workspace')
+      .innerJoinAndSelect('workspace.boards', 'boards')
+      .innerJoinAndSelect('boards.board_columns', 'board_columns')
+      .innerJoinAndSelect('board_columns.cards', 'cards')
+      .where('workspace.id = :workspaceId', { workspaceId })
+      .select([
+        'cards.id',
+        'cards.file_original_name',
+        'cards.file_url',
+        'cards.file_size',
+        'cards.created_at',
+        'cards.updated_at',
+      ])
+      .getRawMany();
+    return workspace;
   }
 }
