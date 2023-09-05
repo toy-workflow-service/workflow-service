@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Board_Column } from './board-column.entity';
 import { Comment } from './comment.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('cards')
 export class Card {
@@ -56,4 +57,7 @@ export class Card {
   })
   board_column: Board_Column;
   column: any;
+
+  @OneToMany(() => Audit_log, (log) => log.card)
+  audit_logs: Audit_log[];
 }

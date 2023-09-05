@@ -12,6 +12,7 @@ import { Workspace_Member } from './workspace-member.entity';
 import { Board } from './board.entity';
 import { Membership } from './membership.entity';
 import { Payment } from './payment.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('workspaces')
 export class Workspace {
@@ -55,9 +56,6 @@ export class Workspace {
   })
   memberships: Membership[];
 
-  // @OneToMany(() => Payment, (payment) => payment.workspace, {
-  //   onDelete: 'CASCADE',
-  //   nullable: true,
-  // })
-  // payments: Payment[];
+  @OneToMany(() => Audit_log, (log) => log.workspace)
+  audit_logs: Audit_log[];
 }
