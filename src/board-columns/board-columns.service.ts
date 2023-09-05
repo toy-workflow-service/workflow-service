@@ -86,7 +86,7 @@ export class BoardColumnsService {
     const totalCardCount = await this.boardColumnRepository
       .createQueryBuilder('column')
       .innerJoin('column.board', 'board')
-      .leftJoin('column.cards', 'card')
+      .innerJoin('column.cards', 'card')
       .where('board.workspace = :workspaceId', { workspaceId })
       .select('SUM(card.board_column IS NOT NULL) as totalCount')
       .getRawOne();
