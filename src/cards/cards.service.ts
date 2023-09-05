@@ -66,6 +66,9 @@ export class CardsService {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
 
+    if (!memberIds) {
+      memberIds = [];
+    }
     await this.cardRepository.update(
       { id },
       {
