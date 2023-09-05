@@ -17,11 +17,13 @@ import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { CardsService } from 'src/cards/cards.service';
 import { Card } from 'src/_common/entities/card.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
   imports: [
     RedisCacheModule,
-    TypeOrmModule.forFeature([Board_Member, Board, Card, Workspace, Workspace_Member, User, Board_Column]),
+    TypeOrmModule.forFeature([Board_Member, Board, Card, Workspace, Workspace_Member, User, Board_Column, Audit_log]),
   ],
   controllers: [BoardMembersController],
   providers: [
@@ -33,6 +35,7 @@ import { Card } from 'src/_common/entities/card.entity';
     UsersService,
     MailService,
     BoardColumnsService,
+    AuditLogsService,
   ],
 })
 export class BoardMembersModule {}

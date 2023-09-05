@@ -57,7 +57,4 @@ export class Card {
   })
   board_column: Board_Column;
   column: any;
-
-  @OneToMany(() => Audit_log, (log) => log.card)
-  audit_logs: Audit_log[];
 }

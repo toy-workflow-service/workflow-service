@@ -27,6 +27,7 @@ import { SocialLoginModule } from './social-login/social-login.module';
 import { PaymentsModule } from './payments/payments.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { EventsModule } from './events/events.module';
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { EventsModule } from './events/events.module';
     PaymentsModule,
     MembershipsModule,
     EventsModule,
+    AuditLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

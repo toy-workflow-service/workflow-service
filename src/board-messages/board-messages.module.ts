@@ -21,6 +21,8 @@ import { Board_Column } from 'src/_common/entities/board-column.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { Card } from 'src/_common/entities/card.entity';
 import { CardsService } from 'src/cards/cards.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { CardsService } from 'src/cards/cards.service';
       User,
       Board_Member,
       Board_Column,
+      Audit_log,
     ]),
   ],
   exports: [TypeOrmModule],
@@ -48,6 +51,7 @@ import { CardsService } from 'src/cards/cards.service';
     MailService,
     BoardMembersService,
     BoardColumnsService,
+    AuditLogsService,
   ],
 })
 export class BoardMessagesModule {
