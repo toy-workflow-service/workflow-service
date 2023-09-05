@@ -99,8 +99,7 @@ export class BoardsService {
     const board = await this.boardRepository.insert({ name, description, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
     await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
-    const boardId = board.raw.insertId;
-    await this.auditLogService.createBoardLog(workspaceId, boardId, name, loginUserId, loginUserName);
+    await this.auditLogService.createBoardLog(workspaceId, name, loginUserId, loginUserName);
 
     return board;
   }
@@ -114,8 +113,11 @@ export class BoardsService {
     loginUserId: number,
     loginUserName: string
   ) {
+    const board = await this.GetBoardById(id);
+    if (!board) throw new HttpException('해당 보드는 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+
     await this.boardRepository.update({ id }, { name, description });
-    await this.auditLogService.updateBoardLog(workspaceId, id, name, loginUserId, loginUserName);
+    await this.auditLogService.updateBoardLog(workspaceId, board.name, name, loginUserId, loginUserName);
   }
 
   //보드 삭제
@@ -125,7 +127,7 @@ export class BoardsService {
     if (!targetBoard) throw new HttpException('해당 보드는 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
     await this.boardRepository.delete(id);
-    await this.auditLogService.deleteBoardLog(workspaceId, id, targetBoard.name, loginUserId, loginUserName);
+    await this.auditLogService.deleteBoardLog(workspaceId, targetBoard.name, loginUserId, loginUserName);
   }
 
   async GetJoinBoards(userId: number) {

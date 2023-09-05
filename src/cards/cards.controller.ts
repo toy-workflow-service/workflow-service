@@ -31,21 +31,24 @@ export class CardsController {
   async GetCards(@Query('board_column_Id') board_column_Id: number) {
     return await this.cardsService.GetCards(board_column_Id);
   }
+
   //카드 상세 조회
   @Get('/:cardId')
   async GetCardById(@Query('board_column_Id') board_column_Id: number, @Param('cardId') id: number) {
     return await this.cardsService.GetCardById(board_column_Id, id);
   }
+
   //카드 생성
   @Post()
+  @UseGuards(AuthGuard)
   async CreateCard(
     @Query('board_column_Id') boardColumnId: number,
     @Body() data: CreateCardDto,
     @Body('members') memberIds: string[],
     @Req() req: MulterRequest,
     @Body('originalnames') originalnames: string[],
-    @Body('fileSize') fileSize: string[],
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ) {
     const files: any = req.files;
     let fileArray = [];
@@ -62,14 +65,17 @@ export class CardsController {
       fileArray,
       fileSizeArray,
       originalnames,
-      fileSize,
-      memberIds
+      memberIds,
+      user.id,
+      user.name
     );
 
     return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
   }
+
   //카드 수정
   @Patch('/:cardId')
+  @UseGuards(AuthGuard)
   async UpdateCard(
     @Param('cardId') id: number,
     @Query('board_column_Id') board_column_Id: number,
@@ -82,7 +88,8 @@ export class CardsController {
     @Body('alreadyfileSize') alreadyfileSize: string[],
     @Body('alreadyFileCount') alreadyFileCount: number,
     @Req() req: MulterRequest,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ) {
     const files: any = req.files;
     let fileArray = [];
@@ -123,15 +130,30 @@ export class CardsController {
         filesSizes.push(alreadyfileSize);
       }
     }
-    await this.cardsService.UpdateCard(board_column_Id, id, data, fileArray, fileName, filesSizes, memberIds);
+    await this.cardsService.UpdateCard(
+      board_column_Id,
+      id,
+      data,
+      fileArray,
+      fileName,
+      filesSizes,
+      memberIds,
+      user.id,
+      user.name
+    );
 
     return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
   }
+
   //카드 삭제
   @Delete('/:cardId')
   @UseGuards(AuthGuard)
-  async DeleteCard(@Query('board_column_Id') columnId: number, @Param('cardId') id: number) {
-    return await this.cardsService.DeleteCard(columnId, id);
+  async DeleteCard(
+    @Query('board_column_Id') columnId: number,
+    @Param('cardId') id: number,
+    @GetUser() user: AccessPayload
+  ) {
+    return await this.cardsService.DeleteCard(columnId, id, user.id, user.name);
   }
 
   //카드 시퀀스 수정

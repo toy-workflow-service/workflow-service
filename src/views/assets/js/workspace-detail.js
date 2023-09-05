@@ -585,7 +585,7 @@ async function deleteWorkspace() {
             title: 'Success!',
             text: '워크스페이스 삭제 완료',
           }).then(() => {
-            window.location.reload();
+            window.location.href = '/';
           });
         },
         error: (err) => {

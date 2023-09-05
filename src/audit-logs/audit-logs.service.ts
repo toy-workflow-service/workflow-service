@@ -60,13 +60,7 @@ export class AuditLogsService {
     return await this.auditLogRepository.save(newLog);
   }
 
-  async createBoardLog(
-    workspaceId: number,
-    boardId: number,
-    boardName: string,
-    userId: number,
-    userName: string
-  ): Promise<Audit_log> {
+  async createBoardLog(workspaceId: number, boardName: string, userId: number, userName: string): Promise<Audit_log> {
     const newLog = this.auditLogRepository.create({
       workspace: { id: workspaceId },
       user: { id: userId },
@@ -79,28 +73,33 @@ export class AuditLogsService {
 
   async updateBoardLog(
     workspaceId: number,
-    boardId: number,
-    boardName: string,
+    beforeBoardName: string,
+    afterBoardName: string,
     userId: number,
     userName: string
   ): Promise<Audit_log> {
-    const newLog = this.auditLogRepository.create({
-      workspace: { id: workspaceId },
-      user: { id: userId },
-      actions: ActionType.UPDATE,
-      details: `보드 수정 - ${userName}님이 ${boardName} 보드를 수정하였습니다.`,
-    });
+    if (beforeBoardName === afterBoardName) {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `보드 수정 - ${userName}님이 ${beforeBoardName} 보드를 수정하였습니다.`,
+      });
 
-    return await this.auditLogRepository.save(newLog);
+      return await this.auditLogRepository.save(newLog);
+    } else {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `보드 수정 - ${userName}님이 ${beforeBoardName} 보드를 ${afterBoardName} 보드로 수정하였습니다.`,
+      });
+
+      return await this.auditLogRepository.save(newLog);
+    }
   }
 
-  async deleteBoardLog(
-    workspaceId: number,
-    boardId: number,
-    boardName: string,
-    userId: number,
-    userName: string
-  ): Promise<Audit_log> {
+  async deleteBoardLog(workspaceId: number, boardName: string, userId: number, userName: string): Promise<Audit_log> {
     const newLog = this.auditLogRepository.create({
       workspace: { id: workspaceId },
       user: { id: userId },
@@ -111,23 +110,102 @@ export class AuditLogsService {
     return await this.auditLogRepository.save(newLog);
   }
 
-  // async createColumnLog() : Promise<Audit_log>{
+  async createColumnLog(workspaceId: number, columnName: string, userId: number, userName: string): Promise<Audit_log> {
+    const newLog = this.auditLogRepository.create({
+      workspace: { id: workspaceId },
+      user: { id: userId },
+      actions: ActionType.CREATE,
+      details: `컬럼 생성 - ${userName}님이 ${columnName} 컬럼을 생성하였습니다.`,
+    });
 
-  // }
+    return await this.auditLogRepository.save(newLog);
+  }
 
-  // async updateColumnLog(): Promise<Audit_log> {
+  async updateColumnLog(
+    workspaceId: number,
+    beforeColumnName: string,
+    afterColumnName: string,
+    userId: number,
+    userName: string
+  ): Promise<Audit_log> {
+    if (beforeColumnName === afterColumnName) {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `컬럼 수정 - ${userName}님이 ${beforeColumnName} 컬럼을 수정하였습니다.`,
+      });
 
-  // }
+      return await this.auditLogRepository.save(newLog);
+    } else {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `컬럼 수정 - ${userName}님이 ${beforeColumnName} 컬럼을 ${afterColumnName} 컬럼으로 수정하였습니다.`,
+      });
 
-  // async deleteColumnLog() : Promise<Audit_log>{
+      return await this.auditLogRepository.save(newLog);
+    }
+  }
 
-  // }
+  async deleteColumnLog(workspaceId: number, columnName: string, userId: number, userName: string): Promise<Audit_log> {
+    const newLog = this.auditLogRepository.create({
+      workspace: { id: workspaceId },
+      user: { id: userId },
+      actions: ActionType.DELETE,
+      details: `컬럼 삭제 - ${userName}님이 ${columnName} 컬럼을 삭제하였습니다.`,
+    });
 
-  // async createCardLog() : Promise<Audit_log>{
+    return await this.auditLogRepository.save(newLog);
+  }
 
-  // }
+  async createCardLog(workspaceId: number, cardName: string, userId: number, userName: string): Promise<Audit_log> {
+    const newLog = this.auditLogRepository.create({
+      workspace: { id: workspaceId },
+      user: { id: userId },
+      actions: ActionType.CREATE,
+      details: `카드 생성 - ${userName}님이 ${cardName} 카드를 생성하였습니다.`,
+    });
 
-  // async updateCardLog
+    return await this.auditLogRepository.save(newLog);
+  }
 
-  // async deleteCardLog
+  async updateCardLog(
+    workspaceId: number,
+    beforeCardName: string,
+    afterCardName: string,
+    userId: number,
+    userName: string
+  ) {
+    if (beforeCardName === afterCardName) {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `카드 수정 - ${userName}님이 ${beforeCardName} 카드를 수정하였습니다.`,
+      });
+
+      return await this.auditLogRepository.save(newLog);
+    } else {
+      const newLog = this.auditLogRepository.create({
+        workspace: { id: workspaceId },
+        user: { id: userId },
+        actions: ActionType.UPDATE,
+        details: `카드 수정 - ${userName}님이 ${beforeCardName} 카드를 ${afterCardName} 카드로 수정하였습니다.`,
+      });
+
+      return await this.auditLogRepository.save(newLog);
+    }
+  }
+
+  async deleteCardLog(workspaceId: number, cardName: string, userId: number, userName: string) {
+    const newLog = this.auditLogRepository.create({
+      workspace: { id: workspaceId },
+      user: { id: userId },
+      actions: ActionType.DELETE,
+      details: `카드 수정 - ${userName}님이 ${cardName} 카드를 삭제하였습니다.`,
+    });
+    return await this.auditLogRepository.save(newLog);
+  }
 }

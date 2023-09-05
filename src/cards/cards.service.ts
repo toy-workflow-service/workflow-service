@@ -5,12 +5,16 @@ import { Card } from 'src/_common/entities/card.entity';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { CreateCardDto } from 'src/_common/dtos/create-card.dto';
 import { UpdateCardDto } from 'src/_common/dtos/update-card.dto';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { BoardsService } from 'src/boards/boards.service';
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Card)
     private cardRepository: Repository<Card>,
-    private readonly boardColumnService: BoardColumnsService
+    private readonly boardColumnService: BoardColumnsService,
+    private readonly boardService: BoardsService,
+    private readonly auditLogService: AuditLogsService
   ) {}
   //카드 조회
   async GetCards(board_column_Id: number) {
@@ -23,10 +27,12 @@ export class CardsService {
       return card.board_column.id == board_column_Id;
     });
   }
+
   //카드 상세 조회
   async GetCardById(board_column_Id: number, id: number) {
     return await this.cardRepository.findOneBy({ id });
   }
+
   //카드 생성
   async CreateCard(
     board_column_id: number,
@@ -34,13 +40,15 @@ export class CardsService {
     files: string[],
     fileSizes: string[],
     originalnames: string[],
-    fileSize: string[],
-    memberIds: string[]
+    memberIds: string[],
+    loginUserId: number,
+    loginUserName: string
   ) {
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id);
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
+    const board = await this.boardService.GetBoardById(column.board.id);
 
     await this.cardRepository.insert({
       board_column: column,
@@ -50,21 +58,29 @@ export class CardsService {
       file_size: fileSizes,
       members: memberIds,
     });
+
+    await this.auditLogService.createCardLog(board.workspace.id, cardInfo.name, loginUserId, loginUserName);
   }
+
   //카드 수정
   async UpdateCard(
-    board_column_Id: number,
+    board_column_id: number,
     id: number,
     cardInfo: UpdateCardDto,
     files: string[],
     originalnames: string[],
     filesSizes: string[],
-    memberIds: string[]
+    memberIds: string[],
+    loginUserId: number,
+    loginUserName: string
   ) {
-    const column = await this.boardColumnService.findOneBoardColumnById(board_column_Id); // BoardColumnService에서 컬럼 가져옴
+    const column = await this.boardColumnService.findOneBoardColumnById(board_column_id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
+
+    const board = await this.boardService.GetBoardById(column.board.id);
+    const existCard = await this.GetCardById(board_column_id, id);
 
     if (!memberIds) {
       memberIds = [];
@@ -81,15 +97,29 @@ export class CardsService {
         members: memberIds,
       }
     );
+
+    await this.auditLogService.updateCardLog(
+      board.workspace.id,
+      existCard.name,
+      cardInfo.name,
+      loginUserId,
+      loginUserName
+    );
   }
   //카드삭제
-  async DeleteCard(board_column_Id: number, id: number) {
+  async DeleteCard(board_column_id: number, id: number, loginUserId: number, loginUserName: string) {
+    const column = await this.boardColumnService.findOneBoardColumnById(board_column_id);
+    const board = await this.boardService.GetBoardById(column.board.id);
+    const existCard = await this.GetCardById(board_column_id, id);
+    if (!existCard) throw new NotFoundException('해당 카드는 존재하지 않습니다.');
+
     await this.cardRepository.delete(id);
+    await this.auditLogService.deleteCardLog(board.workspace.id, existCard.name, loginUserId, loginUserName);
   }
 
   //카드 시퀀스 수정
-  async UpdateCardSequence(board_column_Id: number, cardId: number, sequence: number) {
-    const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_Id);
+  async UpdateCardSequence(board_column_id: number, cardId: number, sequence: number) {
+    const boardColumn = await this.boardColumnService.findOneBoardColumnById(board_column_id);
     const card = await this.cardRepository.findOneBy({ id: cardId });
     if (!boardColumn) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (!card) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
