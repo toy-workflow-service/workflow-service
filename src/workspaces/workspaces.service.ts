@@ -181,11 +181,6 @@ export class WorkspacesService {
     if (countMember.length >= 5 && !hasMembership)
       throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
 
-    const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
-
-    if (countMember.length >= 5 && !hasMembership)
-      throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
-
     if (existMember) throw new HttpException('이미 초대된 유저입니다.', HttpStatus.CONFLICT);
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
