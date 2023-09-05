@@ -100,6 +100,9 @@ export class User {
   })
   payments: Payment[];
 
-  @OneToMany(() => Audit_log, (log) => log.user)
+  @OneToMany(() => Audit_log, (log) => log.user, {
+    cascade: false,
+    nullable: true,
+  })
   audit_logs: Audit_log[];
 }

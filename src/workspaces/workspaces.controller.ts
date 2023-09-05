@@ -94,8 +94,8 @@ export class WorkspacesController {
     @Param('userId') userId: number,
     @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    const loginUser = user.id;
-    return await this.workspaceService.deleteWorkspaceMember(workspaceId, userId, loginUser);
+    const loginUser = user;
+    return await this.workspaceService.deleteWorkspaceMember(workspaceId, userId, loginUser.name, loginUser.id);
   }
 
   // 워크스페이스 멤버역할 변경
@@ -108,8 +108,8 @@ export class WorkspacesController {
     @Param('userId') userId: number,
     @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    const loginUser = user.id;
-    return await this.workspaceService.setMemberRole(body, workspaceId, userId, loginUser);
+    const loginUser = user;
+    return await this.workspaceService.setMemberRole(body, workspaceId, userId, loginUser.name, loginUser.id);
   }
 
   // 워크스페이스 참여자 상태변경, 이메일에서 수락버튼 클릭 시 실행

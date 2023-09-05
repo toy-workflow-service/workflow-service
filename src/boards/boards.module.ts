@@ -12,11 +12,16 @@ import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Board, Board_Column, Workspace, Workspace_Member, User])],
+  imports: [
+    RedisCacheModule,
+    TypeOrmModule.forFeature([Board, Board_Column, Workspace, Workspace_Member, User, Audit_log]),
+  ],
   exports: [TypeOrmModule],
   controllers: [BoardsController],
-  providers: [BoardsService, WorkspacesService, JwtService, UsersService, MailService],
+  providers: [BoardsService, WorkspacesService, JwtService, UsersService, MailService, AuditLogsService],
 })
 export class BoardsModule {}

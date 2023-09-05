@@ -13,10 +13,20 @@ import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 //import { ScheduleModule } from '@nestjs/schedule';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { JwtStrategy } from 'src/_common/security/passport/passport.jwt.strategy';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([Membership, User, Workspace, Workspace_Member])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([Membership, User, Workspace, Workspace_Member, Audit_log])],
   controllers: [MembershipsController],
-  providers: [MembershipsService, UsersService, JwtService, JwtStrategy, MailService, WorkspacesService],
+  providers: [
+    MembershipsService,
+    UsersService,
+    JwtService,
+    JwtStrategy,
+    MailService,
+    WorkspacesService,
+    AuditLogsService,
+  ],
 })
 export class MembershipsModule {}

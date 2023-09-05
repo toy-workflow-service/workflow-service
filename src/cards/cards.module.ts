@@ -17,11 +17,13 @@ import { Card } from 'src/_common/entities/card.entity';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { UploadMultiMiddleware } from 'src/_common/middlewares/upload-multi-middleware';
 import { AuthGuard } from 'src/_common/security/auth.guard';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Audit_log } from 'src/_common/entities/audit-log.entity';
 
 @Module({
   imports: [
     RedisCacheModule,
-    TypeOrmModule.forFeature([Card, Board_Column, Board, Workspace, Workspace_Member, User]), // Card 엔티티 등록
+    TypeOrmModule.forFeature([Card, Board_Column, Board, Workspace, Workspace_Member, User, Audit_log]), // Card 엔티티 등록
   ],
   exports: [TypeOrmModule],
   controllers: [CardsController],
@@ -33,6 +35,7 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
     UsersService,
     MailService,
     JwtService,
+    AuditLogsService,
   ],
 })
 export class CardsModule {
