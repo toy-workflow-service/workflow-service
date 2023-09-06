@@ -75,7 +75,13 @@ let boardId = new URLSearchParams(window.location.search).get('boardId');
 // boardId = 65;
 
 // $(init);
-$(BoardColumnsGet);
+// $(BoardColumnsGet);
+
+$(document).ready(() => {
+  BoardColumnsGet('');
+  initializeMemberInput('#cardCreateAddMemberBtn', '#cardCreateMemberView', '#selected-members');
+  initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers', '#update-selected-members');
+});
 
 function init() {
   $('.kanban-items,.todo-task1 tbody')
@@ -154,7 +160,7 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
 }
 
 // get column API
-async function BoardColumnsGet() {
+async function BoardColumnsGet(search) {
   await $.ajax({
     type: 'GET',
     url: `/board-columns?boardId=${boardId}`,
@@ -163,7 +169,7 @@ async function BoardColumnsGet() {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: async (data) => {
-      BoardColumns(data);
+      BoardColumns(data, search);
     },
     error: (error) => {
       console.log(error);
@@ -174,7 +180,8 @@ async function BoardColumnsGet() {
 // get board column, card getHtml
 // 아직 card api가 없기 때문에 column만 일단 넣음
 let cardIndex = 0;
-async function BoardColumns(data) {
+async function BoardColumns(data, search) {
+  console.log(search);
   document.querySelector(
     '.breadcrumb-main'
   ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
@@ -200,29 +207,71 @@ async function BoardColumns(data) {
   let i = 0;
   for (i in data) {
     const card = await CardGet(data[i].columnId);
-    const cardHtml = card
-      .map(
-        (c) =>
-          `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                                        ${c.name}
-                                      <button class="open-popup-modal" type="button">
-                                        <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-                                      </button>
-                                      <div class="popup-overlay">
-                                        <!--Creates the popup content-->
-                                        <div class="popup-content">
-                                            <div class="mb-10 popup-textarea">
-                                              <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-                                            </div>
-                                            <div class="d-flex align-items-center popup-button">
-                                              <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-                                            </div>
-                                            <div class="overlay-close"></div>
-                                        </div>
-                                      </div>
-                                  </li>`
-      )
-      .join('');
+    let cardHtml = '';
+    for (let c of card) {
+      if (!search) {
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
+                      ${c.name}
+                    <button class="open-popup-modal" type="button">
+                      <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                    </button>
+                    <div class="popup-overlay">
+                      <!--Creates the popup content-->
+                      <div class="popup-content">
+                          <div class="mb-10 popup-textarea">
+                            <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                          </div>
+                          <div class="d-flex align-items-center popup-button">
+                            <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                          </div>
+                          <div class="overlay-close"></div>
+                      </div>
+                    </div>
+                </li>`;
+      } else if (c.name.search(search) > -1) {
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
+                      ${c.name}
+                    <button class="open-popup-modal" type="button">
+                      <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+                    </button>
+                    <div class="popup-overlay">
+                      <!--Creates the popup content-->
+                      <div class="popup-content">
+                          <div class="mb-10 popup-textarea">
+                            <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+                          </div>
+                          <div class="d-flex align-items-center popup-button">
+                            <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+                          </div>
+                          <div class="overlay-close"></div>
+                      </div>
+                    </div>
+                </li>`;
+      }
+    }
+    // const cardHtml = card
+    //   .map(
+    //     (c) =>
+    //       `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
+    //                                     ${c.name}
+    //                                   <button class="open-popup-modal" type="button">
+    //                                     <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
+    //                                   </button>
+    //                                   <div class="popup-overlay">
+    //                                     <!--Creates the popup content-->
+    //                                     <div class="popup-content">
+    //                                         <div class="mb-10 popup-textarea">
+    //                                           <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
+    //                                         </div>
+    //                                         <div class="d-flex align-items-center popup-button">
+    //                                           <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
+    //                                         </div>
+    //                                         <div class="overlay-close"></div>
+    //                                     </div>
+    //                                   </div>
+    //                               </li>`
+    //   )
+    //   .join('');
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
@@ -612,20 +661,23 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
-      }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+            comment.comment
+          }</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -824,11 +876,6 @@ function openCardDetailModal(columnId, cardId) {
 let typingTimer;
 let selectedMembers = [];
 let selectedMemberNumber = [];
-
-$(document).ready(() => {
-  initializeMemberInput('#cardCreateAddMemberBtn', '#cardCreateMemberView', '#selected-members');
-  initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers', '#update-selected-members');
-});
 
 function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
@@ -1377,3 +1424,22 @@ function deleteFile(num) {
   console.log('지우기를 누르면?', Boolean(filesArr[num]));
   console.log(filesNameArr[num]);
 }
+
+// 헤더에 있는 검색창
+let searchInput = '';
+
+// 전체 화면일땐 이부분을 사용하는데
+document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchInput = document.querySelector('#header-search').value;
+  console.log(1, searchInput);
+  BoardColumnsGet(searchInput);
+});
+
+//화면을 줄이면 이부분을 사용함
+document.querySelector('.search-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchInput = document.querySelector('#search-form').value;
+  console.log(2, searchInput);
+  BoardColumnsGet(searchInput);
+});
