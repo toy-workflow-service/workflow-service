@@ -232,7 +232,7 @@ async function BoardColumns(data) {
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -257,7 +257,7 @@ async function BoardColumns(data) {
                                   </div>
   
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>

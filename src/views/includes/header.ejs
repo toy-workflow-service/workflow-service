@@ -46,9 +46,9 @@
 
   <body class="layout-light side-menu">
     <div class="mobile-search">
-      <form action="/" class="search-form">
+      <form class="search-form">
         <img src="../assets/img/svg/search.svg" alt="search" class="svg" />
-        <input class="form-control me-sm-2 box-shadow-none" type="search" placeholder="Search..." aria-label="Search" />
+        <input class="form-control me-sm-2 box-shadow-none" type="search" id="search-form" placeholder="Search..." aria-label="Search" />
       </form>
     </div>
     <div class="mobile-author-actions"></div>
@@ -226,13 +226,14 @@
                 <i class="uil uil-search"></i>
                 <i class="uil uil-times"></i>
               </a>
-              <form action="/" class="search-form-topMenu">
+              <form class="search-form-topMenu">
                 <span class="search-icon uil uil-search"></span>
                 <input
                   class="form-control me-sm-2 box-shadow-none"
                   type="search"
                   placeholder="Search..."
                   aria-label="Search"
+                  id="header-search"
                 />
               </form>
             </li>
@@ -350,7 +351,7 @@
         <% } else { %>
         <div class="navbar-right">
           <ul class="navbar-right__menu">
-            <li class="nav-search">
+            <!-- <li class="nav-search">
               <a href="#" class="search-toggle">
                 <i class="uil uil-search"></i>
                 <i class="uil uil-times"></i>
@@ -364,7 +365,7 @@
                   aria-label="Search"
                 />
               </form>
-            </li>
+            </li> -->
             <li class="">
               <a href="/signup">
                 <span class="nav-icon uil uil-sign-out-alt"></span>
