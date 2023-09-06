@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
+let workspaceName = params.get('workspaceName');
 let selectedMembers = [];
 let selectedMemberId = [];
 
@@ -74,7 +75,7 @@ async function getMyBoards(selectItem, search) {
         const boards = data.boards;
         let result = '';
         let button = '';
-        document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
+        document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
