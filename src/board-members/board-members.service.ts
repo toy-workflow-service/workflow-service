@@ -133,7 +133,15 @@ export class BoardMembersService {
           .createQueryBuilder('member')
           .innerJoinAndSelect('member.user', 'user')
           .innerJoinAndSelect('member.board', 'board')
-          .select(['user.id', 'user.profile_url', 'board.id', 'board.name'])
+          .select([
+            'user.id',
+            'user.name',
+            'user.email',
+            'user.phone_number',
+            'user.profile_url',
+            'board.id',
+            'board.name',
+          ])
           .where('member.board_id = :boardId ', { boardId: board.board_id })
           .getRawMany();
         return boardMembers;

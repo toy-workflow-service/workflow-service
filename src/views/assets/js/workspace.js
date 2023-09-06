@@ -261,6 +261,9 @@ createBoardBtn.addEventListener('click', async (event) => {
         }
 
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'Success!',
           text: data.message,
@@ -270,6 +273,9 @@ createBoardBtn.addEventListener('click', async (event) => {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -294,6 +300,9 @@ async function createBoardMember(boardId, name) {
       data: JSON.stringify({ name }),
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -419,6 +428,9 @@ async function openEditBoardModal(element) {
       await putBoard(boardId, titleInput.value, descriptionInput.value);
       await putBoardMember(boardId, selectedMemberId);
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success!',
         text: '보드를 수정하였습니다.',
@@ -498,6 +510,9 @@ async function deleteBoard(element) {
     },
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success!',
         text: data.message,

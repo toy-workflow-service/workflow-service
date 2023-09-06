@@ -18,6 +18,9 @@ async function sendMail() {
 
   if (!email || !emailReg.test(email)) {
     Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
       icon: 'error',
       title: 'Error',
       text: '이메일이 비어 있거나 이메일이 형식에 맞지 않습니다.',
@@ -38,6 +41,9 @@ async function sendMail() {
       sendingMessage.style.display = 'none';
       [code, expireTime] = [data.code, data.expireTime];
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -52,12 +58,18 @@ async function sendMail() {
       sendingMessage.style.display = 'none';
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,
@@ -74,16 +86,21 @@ async function sendMail() {
     const verifyCode = document.querySelector('#verifyCode').value;
     if (verifyCode === code && Date.now() < expireTime) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: '인증에 성공하셨습니다.',
       });
       emailAuth = true;
       verifyCodeDiv.style = 'display:none';
-      sendMailBtn.style.display = 'none';
       return;
     } else if (verifyCode !== code && Date.now() < expireTime) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '인증번호가 다릅니다. 인증번호를 다시 확인해 주세요. ',
@@ -92,6 +109,9 @@ async function sendMail() {
       return;
     } else {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '인증시간이 초과되었습니다. 처음부터 다시 시도해 주세요. ',
@@ -117,6 +137,9 @@ function signup() {
 
   if (document.querySelector('#email').readOnly === false) {
     Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
       icon: 'error',
       title: 'Error',
       text: '이메일 인증을 해주세요.',
@@ -126,6 +149,9 @@ function signup() {
   if (newFile) {
     if (newFile.size > 5 * 1024 * 1024) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '5MB이하의 이미지 파일만 업로드 가능합니다.',
@@ -152,6 +178,9 @@ function signup() {
     data: form,
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -163,12 +192,18 @@ function signup() {
       console.log(error);
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,

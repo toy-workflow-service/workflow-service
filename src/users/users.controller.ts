@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Req,
@@ -173,5 +174,17 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async getMyPayments(@GetUser() user: AccessPayload): Promise<Payment[]> {
     return await this.paymentService.getMyPayments(user.id);
+  }
+
+  @Get('searchEmail/:email')
+  async searchEmail(@Param('email') email: string, @Res() res: Response): Promise<Object> {
+    const user = await this.usersService.findEmail(email);
+    return res.status(HttpStatus.OK).json({ user });
+  }
+
+  @Get('findUser/:userId')
+  async searchUser(@Param('userId') userId: number, @Res() res: Response): Promise<Object> {
+    const user = await this.usersService.findUserById(userId);
+    return res.status(HttpStatus.OK).json({ user });
   }
 }

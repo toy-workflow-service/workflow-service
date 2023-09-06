@@ -35,6 +35,8 @@ export class BoardMessagesService {
             'user.id',
             'user.name',
             'user.profile_url',
+            'user.phone_number',
+            'user.email',
           ])
           .where('message.board_id = :boardId ', { boardId: board.board_id })
           .orderBy('message.created_at')
