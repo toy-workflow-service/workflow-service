@@ -1090,6 +1090,7 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
+  console.log(filesArr, filesNameArr);
   // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
   // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.

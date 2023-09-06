@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
+let workspaceName = params.get('workspaceName');
 let selectedMembers = [];
 let selectedMemberId = [];
 
@@ -74,7 +75,7 @@ async function getMyBoards(selectItem, search) {
         const boards = data.boards;
         let result = '';
         let button = '';
-        document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
+        document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
@@ -130,6 +131,12 @@ function boardHTML(board) {
   } else {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
   }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
   // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
   result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -174,6 +181,14 @@ function boardHTML(board) {
                                     .substring(0, 10)
                                     .replace('-', '.')
                                     .replace('-', '.')}</p>
+                                </div>
+                                <div class="media-ui__start">
+                                  <span class="color-light fs-12">마감일</span>
+                                  <p class="fs-14 fw-500 color-dark mb-0">${
+                                    board.deadline
+                                      ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      : '____.__.__'
+                                  }</p>
                                 </div>
                               </div>
                             </div>
@@ -234,6 +249,10 @@ createBoardBtn.addEventListener('click', async (event) => {
   try {
     const createTitle = document.querySelector('#create-board-title').value;
     const createDescription = document.querySelector('#create-board-desc').value;
+    let deadline = document.querySelector('#datepicker').value;
+
+    deadline = new Date(deadline);
+    console.log(deadline);
     console.log(createTitle);
     console.log(createDescription);
     await $.ajax({
@@ -243,7 +262,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name: createTitle, description: createDescription }),
+      data: JSON.stringify({ name: createTitle, description: createDescription, deadline }),
       success: async (data) => {
         console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
@@ -396,9 +415,17 @@ async function openEditBoardModal(element) {
 
     const titleInput = editModal.querySelector('input[type="text"]');
     const descriptionInput = editModal.querySelector('textarea');
-
+    const deadlineInput = document.querySelector('#datepicker2');
+    const offset = new Date().getTimezoneOffset() * 60 * 1000;
+    let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    console.log(sendTime);
     titleInput.value = board.name;
     descriptionInput.value = board.description;
+    deadlineInput.value = board.deadline ? '20' + sendTime : '';
 
     const { boardMembers } = await getBoardMembers(boardId);
     selectedMemberId = [];
@@ -417,7 +444,7 @@ async function openEditBoardModal(element) {
       members.forEach((icon) => {
         editMembers.push(icon.getAttribute('data-id'));
       });
-      await putBoard(boardId, titleInput.value, descriptionInput.value);
+      await putBoard(boardId, titleInput.value, descriptionInput.value, new Date(deadlineInput.value));
       await putBoardMember(boardId, selectedMemberId);
       Swal.fire({
         customClass: {
@@ -453,7 +480,7 @@ async function openEditBoardModal(element) {
 // }
 
 // 보드 수정
-async function putBoard(boardId, name, description) {
+async function putBoard(boardId, name, description, deadline) {
   await $.ajax({
     type: 'PUT',
     url: `boards/${boardId}?workspaceId=${workspaceId}`,
@@ -461,7 +488,7 @@ async function putBoard(boardId, name, description) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({ name, description }),
+    data: JSON.stringify({ name, description, deadline }),
     success: (data) => {
       console.log(data.message);
     },
