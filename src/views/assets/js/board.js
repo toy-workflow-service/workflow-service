@@ -83,8 +83,8 @@ $(document).ready(() => {
   initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers', '#update-selected-members');
 });
 
-function init() {
-  $('.kanban-items,.todo-task1 tbody')
+function init(cardIds) {
+  $(`${cardIds}`)
     .sortable({
       containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
@@ -200,6 +200,7 @@ async function BoardColumns(data, search) {
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
+  let cardBox = '';
   for (i in data) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
@@ -253,7 +254,7 @@ async function BoardColumns(data, search) {
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -278,7 +279,7 @@ async function BoardColumns(data, search) {
                                   </div>
   
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -286,9 +287,10 @@ async function BoardColumns(data, search) {
   
                                 </div>`;
     }
+    cardBox += '#' + document.querySelector(`#card-item${data[i].columnId}`).id + ',';
   }
-
-  init();
+  console.log(cardBox.slice(0, -1));
+  init(cardBox.slice(0, -1));
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
