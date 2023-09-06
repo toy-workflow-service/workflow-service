@@ -67,30 +67,31 @@
                   </li>
                 </ul>
               </div>
-              <div class="tab-content">
-                <div class="tab-pane fade show active" id="panel_b_first" role="tabpanel" aria-labelledby="first-tab">
-                  <ul class="user-list" id="boardChatList">
-                    <div class="nav flex-column text-start" id="chat-list-tab" role="tablist"></div>
-                  </ul>
-                </div>
-                <div class="tab-pane fade" id="panel_b_second" role="tabpanel" aria-labelledby="second-tab">
-                  <ul class="user-list">
-                    <li>
-                      <div class="user-button-top">
-                        <button
-                          type="button"
-                          class="border bg-normal color-gray rounded-pill content-center"
-                          data-bs-toggle="modal"
-                          data-bs-target="#newChatModal"
-                        >
-                          <img class="svg" src="./assets/img/svg/edit.svg" alt="edit" />새로운 채팅
-                        </button>
-                      </div>
-                    </li>
-                  </ul>
+              <div class="search-body">
+                <div class="tab-content">
+                  <div class="tab-pane fade show active" id="panel_b_first" role="tabpanel" aria-labelledby="first-tab">
+                    <ul class="user-list" id="boardChatList">
+                      <div class="nav flex-column text-start" id="chat-list-tab" role="tablist"></div>
+                    </ul>
+                  </div>
+                  <div class="tab-pane fade" id="panel_b_second" role="tabpanel" aria-labelledby="second-tab">
+                    <ul class="user-list">
+                      <li>
+                        <div class="user-button-top">
+                          <button
+                            type="button"
+                            class="border bg-normal color-gray rounded-pill content-center"
+                            data-bs-toggle="modal"
+                            data-bs-target="#newChatModal"
+                          >
+                            <img class="svg" src="./assets/img/svg/edit.svg" alt="edit" />새로운 채팅
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
-
               <!-- Ends: .search-body -->
             </div>
             <!-- Ends: .chat-wrapper -->
@@ -125,12 +126,26 @@
                 style="width: 80%; margin-right: 10px"
                 placeholder="유저의 이메일을 입력하세요."
               />
-              <button type="button" class="btn btn-primary btn-sm" style="width: 15%; height: 50px">검색</button>
+              <button
+                type="button"
+                id="searchEmailBtn"
+                class="btn btn-primary btn-sm"
+                style="width: 15%; height: 50px"
+                onclick="searchEmail()"
+              >
+                검색
+              </button>
+            </div>
+            <div id="searchResult"></div>
+            <div id="memberResult" style="margin-top: 5%">
+              <label style="margin-bottom: 10px"> 내가 참여중인 보드의 유저 목록 </label>
+            </div>
+            <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top: 7%">
+              <button class="btn btn-primary btn-default btn-squared text-capitalize" onclick="createChatRoom()">
+                메시지 보내기
+              </button>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

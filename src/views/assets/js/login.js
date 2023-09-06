@@ -32,6 +32,9 @@ function login() {
     data: { email, password },
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -45,12 +48,18 @@ function login() {
       console.log(error);
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,

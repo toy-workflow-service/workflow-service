@@ -14383,6 +14383,10 @@ input.is-invalid ~ label::after {
   flex: 19;
 }
 
+.my-swal {
+  z-index: 1000000;
+}
+
 @media only screen and (max-width: 991px) {
   .tab-slide-content .vertical-tabs {
     justify-content: center;
@@ -31306,7 +31310,7 @@ body:after {
   margin-top: 10px;
   display: inline-block;
 }
-.insert .file-list .filebox .delete i{
+.insert .file-list .filebox .delete i {
   color: #ff5353;
   margin-left: 5px;
 }

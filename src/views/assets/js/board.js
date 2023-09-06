@@ -502,6 +502,9 @@ async function CardCreate(columnId, data) {
     data: data,
     success: function (data) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -511,6 +514,9 @@ async function CardCreate(columnId, data) {
     },
     error: (error) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON.message[0],
@@ -1094,6 +1100,9 @@ async function CardAllUpdate(columnId, cardId, data) {
     data: data,
     success: function (data) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -1103,6 +1112,9 @@ async function CardAllUpdate(columnId, cardId, data) {
     },
     error: (error) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON.message[0],
