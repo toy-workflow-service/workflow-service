@@ -190,13 +190,12 @@ async function BoardColumns(data, search) {
                   </nav>
                 </div>
                 `;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>
-  <div class="kanban-board__add-card">
-                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
-                              <h5>
-                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                컬럼 추가</h5></button>
-                          </div>`;
+  document.querySelector(
+    '.kanban-header'
+  ).innerHTML = `<div class="col-4" style="width: fit-content;"><h4>${data[0].boardName}</h4></div>
+  <div class="col-4 kanban-board__add-card">
+  <a class="btn px-15 btn-primary" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                <i class="las la-plus fs-16"></i>컬럼 추가</a>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
@@ -662,20 +661,23 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
-      }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+            comment.comment
+          }</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -1055,7 +1057,6 @@ function openUpdateCardModal(cardData, columnId, cardId) {
 document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'updateCardButton') {
     $('#updateCardModal').modal('show');
-
   }
 });
 
