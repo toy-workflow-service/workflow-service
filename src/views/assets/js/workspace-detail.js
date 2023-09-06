@@ -849,9 +849,9 @@ async function getAllFiles() {
       success: async (data) => {
         let result = '';
         data.forEach((file) => {
-          const fileOriginalName = file.cards_file_original_name;
-          const fileUrl = file.cards_file_url;
-          const fileSize = file.cards_file_size;
+          const fileOriginalName = file.file_original_name;
+          const fileUrl = file.file_url;
+          const fileSize = file.file_size;
           let fileNames = [];
           let fileSizes = [];
           let fileUrls = [];
@@ -873,7 +873,7 @@ async function getAllFiles() {
               fileSizes = [parseInt(fileSize)];
             }
           } else {
-            fileSizes = [fileSize];
+            fileSizes = fileSize;
           }
 
           if (typeof fileUrl === 'string') {
@@ -957,7 +957,7 @@ function getFileSize(fileSize) {
 function getTotalFileSize(files) {
   let totalSize = 0;
   for (const file of files) {
-    const fileSize = file.cards_file_size;
+    const fileSize = file.file_size;
 
     if (typeof fileSize === 'string') {
       const sizes = JSON.parse(fileSize);
@@ -1021,7 +1021,7 @@ async function printStorageSize(totalSize) {
                         <div
                           class="progress-bar bg-success"
                           role="progressbar"
-                          style="width: ${usagePercentageMb}&"
+                          style="width: ${usagePercentageMb}%"
                           aria-valuenow="${usagePercentageMb}"
                           aria-valuemin="0"
                           aria-valuemax="100"
