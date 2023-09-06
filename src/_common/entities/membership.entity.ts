@@ -22,6 +22,7 @@ export class Membership {
   updated_at: Date;
 
   @ManyToOne(() => Workspace, (workspace) => workspace.memberships, {
+    onDelete: 'CASCADE',
     nullable: true,
   })
   workspace: Workspace;

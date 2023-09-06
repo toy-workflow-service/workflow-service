@@ -95,4 +95,35 @@ export class CardsService {
     if (!card) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     await this.cardRepository.update({ id: cardId }, { sequence, board_column: boardColumn });
   }
+
+  //보드에서 멤버 삭제시 해당하는 카드에서도 멤버 삭제. -> 업데이트임
+  async DeleteCardMembers(boardId: number, userId: number) {
+    const columns = await this.boardColumnService.GetBoardColumns(boardId);
+    columns.map(async (column) => {
+      const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+      const cards = findCards.filter((card) => {
+        return card.board_column.id == column.columnId;
+      });
+
+      cards.map(async (card) => {
+        const member = [];
+        if (typeof card.members == 'string') {
+          member.push(card.members);
+          for (let i: number = 0; i < member.length; i++) {
+            if (member[i] == userId) {
+              member.splice(i, 1);
+            }
+          }
+        } else if (card.members != null) {
+          card.members.forEach((m) => {
+            if (m != String(userId)) {
+              member.push(m);
+            }
+          });
+        }
+        const cardId = card.id;
+        await this.cardRepository.update({ id: cardId }, { members: member });
+      });
+    });
+  }
 }

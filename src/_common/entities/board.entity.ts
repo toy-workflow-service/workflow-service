@@ -50,7 +50,4 @@ export class Board {
     cascade: true,
   })
   board_columns: Board_Column[];
-
-  @OneToMany(() => Audit_log, (log) => log.board)
-  audit_logs: Audit_log[];
 }

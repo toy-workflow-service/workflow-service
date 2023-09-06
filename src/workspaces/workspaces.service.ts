@@ -5,6 +5,7 @@ import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MailService } from 'src/_common/mail/mail.service';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { UsersService } from 'src/users/users.service';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -16,7 +17,8 @@ export class WorkspacesService {
     @InjectRepository(Workspace_Member)
     private workspaceMemberRepository: Repository<Workspace_Member>,
     private readonly userService: UsersService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    private readonly auditLogService: AuditLogsService
   ) {}
 
   // 워크스페이스 생성
@@ -169,6 +171,7 @@ export class WorkspacesService {
     if (!existWorkspace) throw new HttpException('해당 워크스페이스가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
     const { id } = await this.userService.findUserByEmail(body.email);
+    const invitedUser = await this.userService.findUserById(id);
 
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { user: { id }, workspace: { id: workspaceId } },
@@ -193,6 +196,8 @@ export class WorkspacesService {
           user: { id },
           role: body.role,
         });
+
+        await this.auditLogService.inviteMemberLog(workspaceId, userId, userName, invitedUser.name);
       });
       return { result: true };
     } catch (err) {
@@ -201,11 +206,18 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버삭제
-  async deleteWorkspaceMember(workspaceId: number, userId: number, loginUser: number): Promise<IResult> {
+  async deleteWorkspaceMember(
+    workspaceId: number,
+    userId: number,
+    loginUserName: string,
+    loginUserId: number
+  ): Promise<IResult> {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
+      relations: ['user'],
     });
-    const loginUserRole = await this.loginUserRole(loginUser, workspaceId);
+
+    const loginUserRole = await this.loginUserRole(loginUserId, workspaceId);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
@@ -213,16 +225,24 @@ export class WorkspacesService {
       throw new HttpException('관리자 또는 어드민 계정은 삭제할 수 없습니다.', HttpStatus.BAD_REQUEST);
 
     await this.workspaceMemberRepository.remove(existMember);
+    await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
 
     return { result: true };
   }
 
   // 멤버 권한 변경
-  async setMemberRole(body: SetRoleDto, workspaceId: number, userId: number, loginUser: number): Promise<IResult> {
+  async setMemberRole(
+    body: SetRoleDto,
+    workspaceId: number,
+    userId: number,
+    loginUserName: string,
+    loginUserId: number
+  ): Promise<IResult> {
     const existMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId } },
+      relations: ['user'],
     });
-    const loginUserRole = await this.loginUserRole(loginUser, workspaceId);
+    const loginUserRole = await this.loginUserRole(loginUserId, workspaceId);
 
     if (!existMember) throw new HttpException('해당 멤버가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
@@ -233,6 +253,13 @@ export class WorkspacesService {
       { user: { id: userId }, workspace: { id: workspaceId } },
       { role: body.role }
     );
+
+    let role = '';
+    if (body.role === 2) role = 'Manager';
+    if (body.role === 3) role = 'Member';
+    if (body.role === 4) role = 'OutSourcing';
+
+    await this.auditLogService.roleChangeLog(workspaceId, userId, loginUserName, existMember.user.name, role);
 
     return { result: true };
   }

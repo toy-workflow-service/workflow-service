@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Board } from './board.entity';
 import { Card } from './card.entity';
-import { Audit_log } from './audit-log.entity';
 
 @Entity('board_columns')
 export class Board_Column {
@@ -38,7 +37,4 @@ export class Board_Column {
     cascade: true,
   })
   cards: Card[];
-
-  @OneToMany(() => Audit_log, (log) => log.board_column)
-  audit_logs: Audit_log[];
 }

@@ -47,9 +47,10 @@ export class BoardsController {
   async CreateBoard(
     @Query('workspaceId') workspaceId: number,
     @Body() data: CreateBoardDto,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ): Promise<Object> {
-    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description);
+    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description, user.name, user.id);
     return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }
 
@@ -61,9 +62,10 @@ export class BoardsController {
     @Query('workspaceId') workspaceId: number,
     @Param('boardId') id: number,
     @Body() data: UpdateBoardDto,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ) {
-    await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description);
+    await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description, user.id, user.name);
     return res.status(HttpStatus.OK).json({ message: '보드를 수정하였습니다.' });
   }
 
@@ -71,8 +73,13 @@ export class BoardsController {
   @Delete('/:boardId')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAuthInterceptor)
-  async DeleteBoard(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
-    await this.boardsService.DeleteBoard(workspaceId, id);
+  async DeleteBoard(
+    @Query('workspaceId') workspaceId: number,
+    @Param('boardId') id: number,
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
+  ) {
+    await this.boardsService.DeleteBoard(workspaceId, id, user.id, user.name);
     return res.status(HttpStatus.OK).json({ message: '보드를 삭제하였습니다.' });
   }
 

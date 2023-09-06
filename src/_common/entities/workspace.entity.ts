@@ -56,6 +56,9 @@ export class Workspace {
   })
   memberships: Membership[];
 
-  @OneToMany(() => Audit_log, (log) => log.workspace)
+  @OneToMany(() => Audit_log, (log) => log.workspace, {
+    cascade: true,
+    nullable: false,
+  })
   audit_logs: Audit_log[];
 }
