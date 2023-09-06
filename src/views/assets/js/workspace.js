@@ -80,6 +80,7 @@ async function getMyBoards(selectItem, search) {
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
+          console.log(board.cardCount);
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
             listResult += boardListHTML(board);

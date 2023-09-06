@@ -62,7 +62,7 @@ export class BoardsService {
         .createQueryBuilder('column')
         .leftJoin('column.cards', 'card')
         .where('column.board.id = :boardId', { boardId: boardInfo[board].boardId })
-        .andWhere('column.name = :name', { name: 'Done' })
+        .andWhere('column.name = :name', { name: '완료' })
         .select('SUM(card.board_column IS NOT NULL) as doneCount')
         .getRawOne();
 

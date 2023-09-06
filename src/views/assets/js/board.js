@@ -88,7 +88,7 @@ function init() {
     .sortable({
       containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
-      stack: '.kanban-items  ul,.todo-task1 tbody',
+      stack: '.kanban-items,.todo-task1 tbody',
       start: function (e, i) {
         // console.log('start : ', e, i);
       },
@@ -131,7 +131,7 @@ function CardListReorder() {
   const cards = document.querySelectorAll('#card-list-item');
   Object.values(cards).forEach(async (card, index) => {
     const columnId = card.parentElement.getAttribute('data-columnId');
-    const cardId = card.getAttribute('data-cardid');
+    const cardId = card.getAttribute('data-cardId');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
   // console.dir($('.list-items'));
@@ -190,13 +190,12 @@ async function BoardColumns(data, search) {
                   </nav>
                 </div>
                 `;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>
-  <div class="kanban-board__add-card">
-                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
-                              <h5>
-                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                컬럼 추가</h5></button>
-                          </div>`;
+  document.querySelector(
+    '.kanban-header'
+  ).innerHTML = `<div class="col-4" style="width: fit-content;"><h4>${data[0].boardName}</h4></div>
+  <div class="col-4 kanban-board__add-card">
+  <a class="btn px-15 btn-primary" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                컬럼 추가</a>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
