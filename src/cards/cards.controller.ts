@@ -94,7 +94,7 @@ export class CardsController {
     const files: any = req.files;
     let fileArray = [];
     let fileName = [];
-    let filesSizes = [];
+    let fileSizes = [];
 
     if (files[0]) {
       files.forEach((file) => {
@@ -105,11 +105,11 @@ export class CardsController {
           fileName.push(name);
         });
         fileSize.forEach((size) => {
-          filesSizes.push(size);
+          fileSizes.push(size);
         });
       } else {
         fileName.push(originalnames);
-        filesSizes.push(fileSize);
+        fileSizes.push(fileSize);
       }
     }
     if (alreadyFiles) {
@@ -121,13 +121,13 @@ export class CardsController {
           fileName.push(name);
         });
         alreadyfileSize.forEach((size) => {
-          filesSizes.push(size);
+          fileSizes.push(size);
         });
       } else {
         const name = alreadyFileNames;
         fileArray.push(alreadyFiles);
         fileName.push(name);
-        filesSizes.push(alreadyfileSize);
+        fileSizes.push(alreadyfileSize);
       }
     }
     await this.cardsService.UpdateCard(
@@ -136,7 +136,7 @@ export class CardsController {
       data,
       fileArray,
       fileName,
-      filesSizes,
+      fileSizes,
       memberIds,
       user.id,
       user.name
