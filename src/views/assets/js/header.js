@@ -21,6 +21,9 @@ function logout() {
     },
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success!',
         text: data.message,
@@ -31,6 +34,9 @@ function logout() {
     },
     error: (error) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON.message,
@@ -110,6 +116,9 @@ async function createWorkspace() {
       data: JSON.stringify({ name: titleInput, type: typeInput, description: descriptionInput }),
       success: () => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'success!',
           text: '워크스페이스 생성 완료',
@@ -121,6 +130,9 @@ async function createWorkspace() {
     });
   } catch (err) {
     Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
       icon: 'error',
       title: 'error',
       text: err.responseJSON.message,

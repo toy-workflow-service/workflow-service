@@ -14383,6 +14383,10 @@ input.is-invalid ~ label::after {
   flex: 19;
 }
 
+.my-swal {
+  z-index: 1000000;
+}
+
 @media only screen and (max-width: 991px) {
   .tab-slide-content .vertical-tabs {
     justify-content: center;

@@ -82,7 +82,11 @@ export class BoardMessagesController {
     if (!fileUrl) throw new HttpException({ message: '파일 업로드에 실패했습니다. ' }, HttpStatus.BAD_REQUEST);
 
     const result = await this.boardMessagesService.SaveBoardFile(user.id, boardId, fileUrl, originalname);
-    return res.status(HttpStatus.OK).json({ fileUrl, date: result.created_at, messageId: result.id });
+    return res.status(HttpStatus.OK).json({
+      fileUrl,
+      date: result.created_at,
+      messageId: result.id,
+    });
   }
 
   @Delete(':messageId')
