@@ -121,26 +121,28 @@ export class PaymentsService {
       const status = payment.status;
       const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
 
-      if (workspace.memberships.length > 0 && status === true) {
-        const membership = workspace.memberships[0];
-        const paymentInfo = {
-          paymentId: payment.id,
-          paymentCreatedAt: payment.created_at,
-          workspaceId,
-          workspaceName: workspace.name,
-          membershipCreatedAt: membership.created_at,
-          membershipEndDate: membership.end_date,
-          membershipPrice: membership.package_price,
-        };
-        paymentHistory.push(paymentInfo);
-      } else {
-        const paymentInfo = {
-          paymentId: payment.id,
-          paymentCreatedAt: payment.created_at,
-          workspaceId,
-          workspaceName: workspace.name,
-        };
-        paymentHistory.push(paymentInfo);
+      if (workspace) {
+        if (workspace.memberships.length > 0 && status === true) {
+          const membership = workspace.memberships[0];
+          const paymentInfo = {
+            paymentId: payment.id,
+            paymentCreatedAt: payment.created_at,
+            workspaceId,
+            workspaceName: workspace.name,
+            membershipCreatedAt: membership.created_at,
+            membershipEndDate: membership.end_date,
+            membershipPrice: membership.package_price,
+          };
+          paymentHistory.push(paymentInfo);
+        } else {
+          const paymentInfo = {
+            paymentId: payment.id,
+            paymentCreatedAt: payment.created_at,
+            workspaceId,
+            workspaceName: workspace.name,
+          };
+          paymentHistory.push(paymentInfo);
+        }
       }
     }
     return paymentHistory;

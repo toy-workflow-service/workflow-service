@@ -22,7 +22,7 @@
               type="button"
               class="breadcrumb-remove border-0 color-danger content-center bg-white fs-12 fw-500 ms-10 radius-md"
               id="remove-button"
-              onclick="deleteWorkspace()"
+              onclick="deleteConfirmModal()"
             >
               <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash-2" />remove
             </button>
@@ -270,6 +270,32 @@
         <!-- ends: .card -->
       </div>
       <!-- ends: col -->
+    </div>
+    <div
+      class="modal-info-confirmed modal fade show"
+      id="modal-info-confirmed"
+      tabindex="-1"
+      role="dialog"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm modal-info" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-info-body d-flex">
+              <div class="modal-info-icon warning">
+                <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+              </div>
+              <div class="modal-info-text">
+                <h6>정말로 삭제하시겠습니까?</h6>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+            <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">취소</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- ends: project tab -->
