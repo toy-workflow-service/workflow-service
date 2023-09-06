@@ -50,7 +50,14 @@ export class BoardsController {
     @Res() res: Response,
     @GetUser() user: AccessPayload
   ): Promise<Object> {
-    const newBoard = await this.boardsService.CreateBoard(workspaceId, data.name, data.description, user.name, user.id);
+    const newBoard = await this.boardsService.CreateBoard(
+      workspaceId,
+      data.name,
+      data.description,
+      data.deadline,
+      user.name,
+      user.id
+    );
     return res.status(HttpStatus.CREATED).json({ newBoard, message: '보드를 생성하였습니다.' });
   }
 
@@ -65,7 +72,15 @@ export class BoardsController {
     @Res() res: Response,
     @GetUser() user: AccessPayload
   ) {
-    await this.boardsService.UpdateBoard(workspaceId, id, data.name, data.description, user.id, user.name);
+    await this.boardsService.UpdateBoard(
+      workspaceId,
+      id,
+      data.name,
+      data.description,
+      data.deadline,
+      user.id,
+      user.name
+    );
     return res.status(HttpStatus.OK).json({ message: '보드를 수정하였습니다.' });
   }
 

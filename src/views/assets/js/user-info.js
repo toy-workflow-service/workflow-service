@@ -68,8 +68,8 @@ function updateUserInfo() {
   });
 }
 
-// 삭제 확인 모달
-function deleteConfirmModal(targetId, targetId2, targetType) {
+// 삭제 확인 모달 출력
+function deleteConfirmModal() {
   const confirmModal = document.querySelector('#modal-info-confirmed');
   $(confirmModal).modal('show');
 
@@ -77,11 +77,7 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
   const cancelBtn = confirmModal.querySelector('.btn-light');
 
   okBtn.addEventListener('click', () => {
-    if (targetType === 'payment') {
-      cancelPayment(targetId, targetId2);
-    } else {
-      deleteUser();
-    }
+    deleteUser();
     $(confirmModal).modal('hide');
   });
 
@@ -406,7 +402,14 @@ async function getPaymentHistory() {
         data.forEach((history) => {
           const paymentDate = new Date(history.paymentCreatedAt);
           if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
-            if (!history.membershipCreatedAt) {
+            if (history.workspaceName === null) {
+              result += ` <tbody>
+                            <tr>
+                              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">삭제된 워크스페이스입니다.</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>`;
+            } else if (!history.membershipCreatedAt) {
               result += ` <tbody>
                             <tr>
                               <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>

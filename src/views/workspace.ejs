@@ -12,9 +12,44 @@
               </div>
             </div>
             <div class="action-btn">
-              <a class="btn px-15 btn-primary" id="create-board-btn" data-bs-toggle="modal" data-bs-target="#new-member">
+              <a
+                class="btn px-15 btn-primary"
+                id="create-board-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#new-member"
+              >
                 <i class="las la-plus fs-16"></i>보드 생성</a
               >
+              <!-- 삭제 확인 모달 -->
+              <div
+                class="modal-info-confirmed modal fade show"
+                id="modal-info-confirmed"
+                tabindex="-1"
+                role="dialog"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-sm modal-info" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <div class="modal-info-body d-flex">
+                        <div class="modal-info-icon warning">
+                          <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+                        </div>
+                        <div class="modal-info-text">
+                          <h6>정말로 삭제하시겠습니까?</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+                      <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 삭제 확인 모달 끝 -->
               <!-- Create Board Modal -->
               <div
                 class="modal fade new-member"
@@ -73,7 +108,7 @@
                                 id="name47"
                                 placeholder="멤버의 이름을 입력해주세요."
                               />
-                              <div style="margin: 2% auto 2% auto;" id="create-selected-members"></div>
+                              <div style="margin: 2% auto 2% auto" id="create-selected-members"></div>
                             </div>
                             <ul class="d-flex flex-wrap mb-20 user-group-people__parent" id="selected-members">
                               <!-- 검색한 멤버를 선택하면 붙는곳 -->
@@ -81,18 +116,9 @@
                           </div>
                           <div class="d-flex new-member-calendar">
                             <div class="form-group w-100 me-sm-15 form-group-calender">
-                              <label for="datepicker">시작일</label>
+                              <label for="datepicker">마감일</label>
                               <div class="position-relative">
                                 <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
-                                <a>
-                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
-                                /></a>
-                              </div>
-                            </div>
-                            <div class="form-group w-100 form-group-calender">
-                              <label for="datepicker2">마감일</label>
-                              <div class="position-relative">
-                                <input type="text" class="form-control" id="datepicker2" placeholder="mm/dd/yyyy" />
                                 <a>
                                   <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
                                 /></a>
@@ -178,20 +204,14 @@
                                 id="name48"
                                 placeholder="멤버의 이름을 입력해주세요."
                               />
-                              <ul style="margin: 2% auto 2% auto;" id="update-selected-members"></ul>
+                              <ul style="margin: 2% auto 2% auto" id="update-selected-members"></ul>
                             </div>
-                            <ul class="d-flex flex-wrap mb-20 user-group-people__parent"  id="edit-selected-members"></ul>
+                            <ul
+                              class="d-flex flex-wrap mb-20 user-group-people__parent"
+                              id="edit-selected-members"
+                            ></ul>
                           </div>
                           <div class="d-flex new-member-calendar">
-                            <div class="form-group w-100 me-sm-15 form-group-calender">
-                              <label for="datepicker">시작일</label>
-                              <div class="position-relative">
-                                <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
-                                <a>
-                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
-                                /></a>
-                              </div>
-                            </div>
                             <div class="form-group w-100 form-group-calender">
                               <label for="datepicker2">마감일</label>
                               <div class="position-relative">
@@ -203,7 +223,9 @@
                             </div>
                           </div>
                           <div class="button-group d-flex pt-25">
-                            <button class="btn btn-primary btn-default btn-squared text-capitalize" id="edit-board-btn">보드 수정</button>
+                            <button class="btn btn-primary btn-default btn-squared text-capitalize" id="edit-board-btn">
+                              보드 수정
+                            </button>
 
                             <button
                               type="button"
@@ -249,7 +271,11 @@
               <div class="d-flex align-items-center">
                 <p class="mb-0 me-10 fs-14 color-light">sort by:</p>
                 <div class="project-category__select">
-                  <select class="js-example-basic-single js-states form-control" id="event-category" onchange="changeSelect()">
+                  <select
+                    class="js-example-basic-single js-states form-control"
+                    id="event-category"
+                    onchange="changeSelect()"
+                  >
                     <option value="all" selected>전체</option>
                     <option value="ing">진행중</option>
                     <option value="end">종료</option>

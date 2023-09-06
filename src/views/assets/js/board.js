@@ -117,8 +117,6 @@ function init() {
 function ColumnListReorder() {
   const columns = document.querySelectorAll('.kanban-list');
   Object.values(columns).forEach(async (column, index) => {
-    // console.log('testest: ', column, index + 1);
-    // console.log('columnId : ', column.getAttribute('data-columnid'));
     const columnId = column.getAttribute('data-columnid');
     if (columnId != 0) {
       //컬럼 순서 저장
@@ -136,7 +134,6 @@ function CardListReorder() {
     const cardId = card.getAttribute('data-cardid');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
-  // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
 }
 
@@ -181,7 +178,6 @@ async function BoardColumnsGet(search) {
 // 아직 card api가 없기 때문에 column만 일단 넣음
 let cardIndex = 0;
 async function BoardColumns(data, search) {
-  console.log(search);
   document.querySelector(
     '.breadcrumb-main'
   ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
@@ -298,8 +294,8 @@ async function BoardColumns(data, search) {
                                               <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                           </button>
                                           <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
-                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
+                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">컬럼명 수정</a>
+                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">삭제</a>
                                           </div>
                                         </div>
                                     </div>
@@ -349,9 +345,31 @@ async function BoardColumns(data, search) {
   document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
     data.addEventListener('click', async (e) => {
       const columnId = e.target.getAttribute('value');
-      await BoardColumnDelete(columnId);
+      deleteConfirmModal(columnId);
     });
   });
+
+  // 삭제 확인 모달 출력
+  function deleteConfirmModal(targetId, targetId2, targetType) {
+    const confirmModal = document.querySelector('#modal-info-confirmed');
+    $(confirmModal).modal('show');
+
+    const okBtn = confirmModal.querySelector('.btn-info');
+    const cancelBtn = confirmModal.querySelector('.btn-light');
+
+    okBtn.addEventListener('click', async () => {
+      if (targetType === 'card') {
+        deleteCard(targetId, targetId2);
+      } else {
+        await BoardColumnDelete(targetId);
+      }
+      $(confirmModal).modal('hide');
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      $(confirmModal).modal('hide');
+    });
+  }
 
   // column delete api
   async function BoardColumnDelete(columnId) {
@@ -435,7 +453,6 @@ async function BoardColumns(data, search) {
 
   // cardDeleteBtn 클릭 시
   document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
-    console.log('delete btn check');
     // await CardDelete(columnId, cardId);
   });
 
@@ -519,7 +536,6 @@ async function BoardColumnNameUpdate(columnId, name) {
 // card get api
 async function CardGet(columnId) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  // console.log(columnId);
   const result = await $.ajax({
     type: 'GET',
     url: `/cards?board_column_Id=${columnId}`,
@@ -659,7 +675,6 @@ function createReplyModal(filteredComments) {
   for (const comment of filteredComments) {
     // 필요한 데이터를 추출하여 모달에 추가
     const isCurrentUserComment = comment.user.id === comment.userId;
-    console.log(filteredComments); // 현재 사용자의 댓글 여부 확인
 
     const commentHTML = `
       <div class="checkbox-group d-flex">
@@ -667,23 +682,20 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
-            comment.comment
-          }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
+      }</textarea>
           
           <!-- 수정 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+        : ''
+      }
           
           <!-- 삭제 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+        : ''
+      }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -735,7 +747,6 @@ document.addEventListener('click', function (event) {
     Getcomment(cardId, commentId);
     openCommentDetailModal(columnId, cardId, commentId);
     $('#commentDetailModal').modal('show');
-    console.log('컬럼아이디', columnId);
   }
 });
 
@@ -772,7 +783,6 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     if (!comment.reply_id) {
       const cardId = cardData.id;
       const commentId = comment.id;
-      console.log(comment.user.name);
 
       commentHTML += `
         <div class="checkbox-group d-flex" id="commentDetail"
@@ -806,7 +816,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
         data-card-id="${cardData.id}"
         data-bs-dismiss="modal">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">삭제</button>
+id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteConfirmModal(${columnId}, ${cardData.id}, 'card')">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <img src="./assets/img/svg/x.svg" alt="x" class="svg">
 </button>
@@ -1066,7 +1076,6 @@ document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'updateCardButton') {
     $('#updateCardModal').modal('show');
 
-    console.log(filesArr);
   }
 });
 
@@ -1090,6 +1099,7 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
+  console.log(filesArr, filesNameArr);
   // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
   // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
@@ -1133,7 +1143,6 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
   // PATCH 요청을 보내기 전에 데이터 확인
-  console.log('Updated Data:', columnId, cardId, ...data);
   await $.ajax({
     type: 'PATCH',
     url: `/cards/${cardId}?board_column_Id=${columnId}`,
@@ -1169,10 +1178,8 @@ async function CardAllUpdate(columnId, cardId, data) {
 }
 
 // 함수 내에서 카드 삭제를 처리하는 로직
-function deleteCard(button) {
-  const columnId = button.getAttribute('data-column-id');
-  const cardId = button.getAttribute('data-card-id');
-  console.log('deleteCard : ', columnId, cardId);
+
+function deleteCard(columnId, cardId) {
   // 카드 삭제 API 호출
   $.ajax({
     type: 'DELETE',
@@ -1185,30 +1192,13 @@ function deleteCard(button) {
       console.log(data.message);
 
       // 삭제 성공 후, 페이지 새로고침
-      location.reload();
+      window.location.reload();
     },
     error: (error) => {
       console.log(error);
     },
   });
 }
-
-// 버튼 클릭 이벤트 핸들러
-function handleDeleteButtonClick(button) {
-  const columnId = button.getAttribute('data-column-id');
-  const cardId = button.getAttribute('data-card-id');
-
-  // 카드 삭제 함수 호출
-  deleteCard(columnId, cardId);
-}
-
-// 버튼 클릭 이벤트 리스너 등록
-const deleteButtons = document.querySelectorAll('.btn-delete-card');
-deleteButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    handleDeleteButtonClick(button);
-  });
-});
 
 function deleteComment(commentId, cardId) {
   // 카드 삭제 API 호출
@@ -1236,7 +1226,6 @@ document.addEventListener('click', function (event) {
     const commentId = document.getElementById('commentDeleteBtn').getAttribute('data-comment-id');
     const cardId = document.getElementById('commentDeleteBtn').getAttribute('data-card-id');
     deleteComment(commentId, cardId);
-    console.log('삭제', commentId, cardId);
   }
 });
 
@@ -1244,7 +1233,6 @@ document.addEventListener('click', function (event) {
 async function CommentUpdate(commentId, columnId, cardId, data) {
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('코멘트 수정:', data);
 
     const response = await $.ajax({
       type: 'PATCH',
@@ -1259,7 +1247,6 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
     });
 
     // 업데이트 응답 결과 확인
-    console.log('Update Response:', response.message);
   } catch (error) {
     console.log(error);
   }
@@ -1354,8 +1341,6 @@ function Getcomment(cardId, commentId) {
       if (filteredComments.length > 0) {
         // 필터링된 모든 코멘트를 사용하여 모달을 동적으로 생성
         createReplyModal(filteredComments);
-      } else {
-        console.log('No comments found with the desired reply_id.');
       }
     },
     error: function (error) {
@@ -1433,8 +1418,6 @@ function deleteFile(num) {
   filesArr[num].is_delete = true;
   filesNameArr[num].is_delete = true;
   filesSizeArr[num].is_delete = true;
-  console.log('지우기를 누르면?', Boolean(filesArr[num]));
-  console.log(filesNameArr[num]);
 }
 
 // 헤더에 있는 검색창

@@ -8,6 +8,8 @@ export class CreateBoardDto {
   @IsString()
   @IsNotEmpty({ message: '보드 내용을 입력해주세요.' })
   readonly description: string;
+
+  readonly deadline: Date;
 }
 
 export class UpdateBoardDto {
@@ -18,6 +20,8 @@ export class UpdateBoardDto {
   @IsString()
   @IsNotEmpty({ message: '보드 내용을 입력해주세요.' })
   readonly description: string;
+
+  readonly deadline: Date;
 }
 
 export class CreateBoardColumnDto {

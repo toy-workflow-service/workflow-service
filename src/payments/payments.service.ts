@@ -42,32 +42,6 @@ export class PaymentsService {
     return { result: true };
   }
 
-  // // 멤버십 연장
-  // async extensionMembership(body: MembershipDto, workspaceId: number, userId: number): Promise<IResult> {
-  //   const entityManager = this.paymentRepository.manager;
-
-  //   try {
-  //     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-  //       const findUserById = await this.userService.findUserById(userId);
-
-  //       if (findUserById.points < body.packagePrice)
-  //         throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
-  //       findUserById.points -= body.packagePrice;
-  //       await transactionEntityManager.save(findUserById);
-
-  //       const newPayment = this.paymentRepository.create({
-  //         workspaceId,
-  //         user: { id: userId },
-  //       });
-  //       await transactionEntityManager.save(newPayment);
-  //       await this.membershipService.extensionMembership(body, workspaceId);
-  //     });
-  //     return { result: true };
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
   // 결제 취소
   async cancelPurchase(workspaceId: number, paymentId: number, userId: number): Promise<Object> {
     const entityManager = this.paymentRepository.manager;
@@ -121,24 +95,34 @@ export class PaymentsService {
       const status = payment.status;
       const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
 
-      if (workspace.memberships.length > 0 && status === true) {
-        const membership = workspace.memberships[0];
-        const paymentInfo = {
-          paymentId: payment.id,
-          paymentCreatedAt: payment.created_at,
-          workspaceId,
-          workspaceName: workspace.name,
-          membershipCreatedAt: membership.created_at,
-          membershipEndDate: membership.end_date,
-          membershipPrice: membership.package_price,
-        };
-        paymentHistory.push(paymentInfo);
+      if (workspace) {
+        if (workspace.memberships.length > 0 && status === true) {
+          const membership = workspace.memberships[0];
+          const paymentInfo = {
+            paymentId: payment.id,
+            paymentCreatedAt: payment.created_at,
+            workspaceId,
+            workspaceName: workspace.name,
+            membershipCreatedAt: membership.created_at,
+            membershipEndDate: membership.end_date,
+            membershipPrice: membership.package_price,
+          };
+          paymentHistory.push(paymentInfo);
+        } else {
+          const paymentInfo = {
+            paymentId: payment.id,
+            paymentCreatedAt: payment.created_at,
+            workspaceId,
+            workspaceName: workspace.name,
+          };
+          paymentHistory.push(paymentInfo);
+        }
       } else {
         const paymentInfo = {
           paymentId: payment.id,
           paymentCreatedAt: payment.created_at,
-          workspaceId,
-          workspaceName: workspace.name,
+          workspaceId: payment.workspaceId,
+          workspaceName: null,
         };
         paymentHistory.push(paymentInfo);
       }
