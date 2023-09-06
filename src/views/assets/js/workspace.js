@@ -177,10 +177,11 @@ function boardHTML(board) {
                                 </div>
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">마감일</span>
-                                  <p class="fs-14 fw-500 color-dark mb-0">${board.createdAt
-                                    .substring(0, 10)
-                                    .replace('-', '.')
-                                    .replace('-', '.')}</p>
+                                  <p class="fs-14 fw-500 color-dark mb-0">${
+                                    board.deadline
+                                      ? board.deadline.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      : '____.__.__'
+                                  }</p>
                                 </div>
                               </div>
                             </div>
@@ -241,7 +242,10 @@ createBoardBtn.addEventListener('click', async (event) => {
   try {
     const createTitle = document.querySelector('#create-board-title').value;
     const createDescription = document.querySelector('#create-board-desc').value;
-    const deadline = document.querySelector('#datepicker').value;
+    let deadline = document.querySelector('#datepicker').value;
+
+    deadline = new Date(deadline);
+    console.log(deadline);
     console.log(createTitle);
     console.log(createDescription);
     await $.ajax({
@@ -404,9 +408,12 @@ async function openEditBoardModal(element) {
 
     const titleInput = editModal.querySelector('input[type="text"]');
     const descriptionInput = editModal.querySelector('textarea');
+    const deadlineInput = document.querySelector('#datepicker2');
 
     titleInput.value = board.name;
     descriptionInput.value = board.description;
+    let date = new Date(board.deadline);
+    deadlineInput.value = board.deadline ? date.toDateString() : '';
 
     const { boardMembers } = await getBoardMembers(boardId);
     selectedMemberId = [];
@@ -425,7 +432,7 @@ async function openEditBoardModal(element) {
       members.forEach((icon) => {
         editMembers.push(icon.getAttribute('data-id'));
       });
-      await putBoard(boardId, titleInput.value, descriptionInput.value);
+      await putBoard(boardId, titleInput.value, descriptionInput.value, new Date(deadlineInput.value));
       await putBoardMember(boardId, selectedMemberId);
       Swal.fire({
         customClass: {
@@ -461,7 +468,7 @@ async function openEditBoardModal(element) {
 // }
 
 // 보드 수정
-async function putBoard(boardId, name, description) {
+async function putBoard(boardId, name, description, deadline) {
   await $.ajax({
     type: 'PUT',
     url: `boards/${boardId}?workspaceId=${workspaceId}`,
@@ -469,7 +476,7 @@ async function putBoard(boardId, name, description) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({ name, description }),
+    data: JSON.stringify({ name, description, deadline }),
     success: (data) => {
       console.log(data.message);
     },
