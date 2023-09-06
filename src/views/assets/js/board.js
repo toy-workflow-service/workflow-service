@@ -205,6 +205,7 @@ async function BoardColumns(data, search) {
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
+  let doneColumnData;
   for (i in data) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
@@ -249,45 +250,9 @@ async function BoardColumns(data, search) {
                 </li>`;
       }
     }
-    // const cardHtml = card
-    //   .map(
-    //     (c) =>
-    //       `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-    //                                     ${c.name}
-    //                                   <button class="open-popup-modal" type="button">
-    //                                     <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-    //                                   </button>
-    //                                   <div class="popup-overlay">
-    //                                     <!--Creates the popup content-->
-    //                                     <div class="popup-content">
-    //                                         <div class="mb-10 popup-textarea">
-    //                                           <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-    //                                         </div>
-    //                                         <div class="d-flex align-items-center popup-button">
-    //                                           <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-    //                                         </div>
-    //                                         <div class="overlay-close"></div>
-    //                                     </div>
-    //                                   </div>
-    //                               </li>`
-    //   )
-    //   .join('');
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
-                                  <div class="kanban-tops list-tops">
-                                    <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
-                                    </div>
-                                  </div>  
-                                  <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
-                                    ${cardHtml}
-                                    </ul>
-                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
-                                  </div>
-  
-                                </div>`;
+      doneColumnData = { columnId: data[i].columnId, name: data[i].columnName, card: cardHtml, cardIndex: cardIndex };
     } else {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
@@ -315,6 +280,21 @@ async function BoardColumns(data, search) {
                                 </div>`;
     }
   }
+  console.log(doneColumnData);
+  kanbanList.innerHTML += `<div class="list kanban-list" data-columnId=${doneColumnData.columnId}>
+                                  <div class="kanban-tops list-tops">
+                                    <div class="d-flex justify-content-between align-items-center py-10">
+                                        <h3 class="list-title">${doneColumnData.name}</h3>
+                                    </div>
+                                  </div>  
+                                  <div id="cardListItems${doneColumnData.columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${doneColumnData.columnId}">
+                                    ${doneColumnData.card}
+                                    </ul>
+                                    <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${doneColumnData.columnId}" data-index="${doneColumnData.cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
+                                  </div>
+  
+                                </div>`;
 
   init();
   // column add button click
@@ -322,7 +302,7 @@ async function BoardColumns(data, search) {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
     console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
-    BoardColumnsCreate(columnTitle, Number(i) + 1);
+    BoardColumnsCreate(columnTitle, Number(i));
   });
 
   // column create api

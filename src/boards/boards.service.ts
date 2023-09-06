@@ -100,7 +100,7 @@ export class BoardsService {
 
     const board = await this.boardRepository.insert({ name, description, deadline, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
-    await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
+    await this.boardColumnRepository.insert({ name: '완료', sequence: 1, board: findBoard });
     await this.auditLogService.createBoardLog(workspaceId, name, loginUserId, loginUserName);
 
     return board;
