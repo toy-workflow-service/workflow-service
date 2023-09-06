@@ -175,6 +175,13 @@ function boardHTML(board) {
                                     .replace('-', '.')
                                     .replace('-', '.')}</p>
                                 </div>
+                                <div class="media-ui__start">
+                                  <span class="color-light fs-12">마감일</span>
+                                  <p class="fs-14 fw-500 color-dark mb-0">${board.createdAt
+                                    .substring(0, 10)
+                                    .replace('-', '.')
+                                    .replace('-', '.')}</p>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -234,6 +241,7 @@ createBoardBtn.addEventListener('click', async (event) => {
   try {
     const createTitle = document.querySelector('#create-board-title').value;
     const createDescription = document.querySelector('#create-board-desc').value;
+    const deadline = document.querySelector('#datepicker').value;
     console.log(createTitle);
     console.log(createDescription);
     await $.ajax({
@@ -243,7 +251,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name: createTitle, description: createDescription }),
+      data: JSON.stringify({ name: createTitle, description: createDescription, deadline }),
       success: async (data) => {
         console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
