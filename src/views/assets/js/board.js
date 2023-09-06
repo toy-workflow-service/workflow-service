@@ -1408,7 +1408,14 @@ let searchInput = '';
 document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#header-search').value;
-  console.log(1, searchInput);
+  document.querySelector('.search-form-topMenu').classList.remove('show');
+  document.querySelector('.search-toggle').classList.remove('active');
+  if (searchInput) {
+    document.querySelector('.search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.search-result').innerHTML = '';
+  }
+  document.querySelector('#header-search').value = '';
   BoardColumnsGet(searchInput);
 });
 
@@ -1416,6 +1423,13 @@ document.querySelector('.search-form-topMenu').addEventListener('submit', (event
 document.querySelector('.search-form').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#search-form').value;
-  console.log(2, searchInput);
+  document.querySelector('.mobile-search').classList.remove('show');
+  document.querySelector('.btn-search').classList.remove('search-active');
+  document.querySelector('#search-form').value = '';
+  if (searchInput) {
+    document.querySelector('.mobile-search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.mobile-search-result').innerHTML = '';
+  }
   BoardColumnsGet(searchInput);
 });

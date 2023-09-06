@@ -6,8 +6,11 @@ export class User_Message_Room {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'json', nullable: false })
-  members: number[];
+  @Column({ nullable: false })
+  sender_id: number;
+
+  @Column({ nullable: false })
+  receiver_id: number;
 
   @CreateDateColumn()
   created_at: Date;
