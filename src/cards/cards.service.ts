@@ -66,12 +66,12 @@ export class CardsService {
     if (checkMembership) {
       const limitInGb = 10;
       if (fileSizes.length && limitInGb <= (checkStorage + inputFileSize) / (1024 * 1024)) {
-        throw new HttpException('용량제한을 초과하셨습니다.', HttpStatus.BAD_REQUEST);
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
       }
     } else {
       const limitInMb = 100;
       if (fileSizes.length && limitInMb <= (checkStorage + inputFileSize) / 1024) {
-        throw new HttpException('용량제한을 초과하셨습니다.', HttpStatus.BAD_REQUEST);
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
       }
     }
 
@@ -94,7 +94,7 @@ export class CardsService {
     cardInfo: UpdateCardDto,
     files: string[],
     originalnames: string[],
-    filesSizes: string[],
+    fileSizes: string[],
     memberIds: string[],
     loginUserId: number,
     loginUserName: string
@@ -106,6 +106,27 @@ export class CardsService {
 
     const board = await this.boardService.GetBoardById(column.board.id);
     const existCard = await this.GetCardById(board_column_id, id);
+    const checkStorage = await this.workspaceService.caculateFileSizes(board.workspace.id);
+    const checkMembership = await this.membershipService.checkMembership(board.workspace.id);
+
+    let inputFileSize = 0;
+    if (fileSizes.length) {
+      fileSizes.forEach((size) => {
+        inputFileSize += parseInt(size);
+      });
+    }
+
+    if (checkMembership) {
+      const limitInGb = 10;
+      if (fileSizes.length && limitInGb <= (checkStorage + inputFileSize) / (1024 * 1024)) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      const limitInMb = 100;
+      if (fileSizes.length && limitInMb <= (checkStorage + inputFileSize) / 1024) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    }
 
     if (!memberIds) {
       memberIds = [];
@@ -118,7 +139,7 @@ export class CardsService {
         color: cardInfo.color,
         file_url: files,
         file_original_name: originalnames,
-        file_size: filesSizes,
+        file_size: fileSizes,
         members: memberIds,
       }
     );
