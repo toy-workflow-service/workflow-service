@@ -50,6 +50,7 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
   });
 }
 const printBoard = document.querySelector('#board-box');
+const printListBoard = document.querySelector('#board-list-box');
 const printButton = document.querySelector('.nav-item');
 function changeSelect() {
   let selected = document.querySelector('#event-category');
@@ -75,28 +76,34 @@ async function getMyBoards(selectItem, search) {
         const boards = data.boards;
         let result = '';
         let button = '';
+        let listResult = '';
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
+            listResult += boardListHTML(board);
           } else if (selectItem == 'ing' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count != 100) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             }
           } else if (selectItem == 'end' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count == 100) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             }
           } else {
             if (board.boardName.search(search) > -1) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             } else {
               for (const member of board.boardMembers) {
                 if (member.name.search(search) > -1) {
                   result += boardHTML(board);
+                  listResult += boardListHTML(board);
                 }
               }
             }
@@ -112,6 +119,7 @@ async function getMyBoards(selectItem, search) {
                       >워크스페이스 디테일</a
                     >
                   </li>`;
+        printListBoard.innerHTML = listResult;
         printBoard.innerHTML = result;
         printButton.innerHTML = button;
       },
@@ -228,6 +236,87 @@ function boardHTML(board) {
   }
   result += `</ul></div>`;
   result += `</div></div></div>`;
+  return result;
+}
+
+function boardListHTML(board) {
+  let check = '';
+  let result = '';
+  const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+  if (count == 100) {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
+  } else {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
+  }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
+  result += `<tr>
+              <td>
+                <div class="contact-item d-flex align-items-center">
+                    <div class="contact-personal-wrap">
+                      <div class="checkbox-group-wrapper">
+                          <div class="checkbox-group d-flex">
+                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                <input class="checkbox" type="checkbox" id="check-grp-c-4">
+                                <label for="check-grp-c-4"></label>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="contact-personal-info d-flex">
+                      <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
+                      <div class="contact_title">
+                          <h6>
+                            <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
+                          </h6>
+                      </div>
+                    </div>
+
+                </div>
+              </td>
+              <td>
+                ${check}
+              </td>
+              <td>
+                <span class="board-startline">${board.createdAt
+                  .substring(0, 10)
+                  .replace('-', '.')
+                  .replace('-', '.')}</span>
+              </td>
+              <td>
+                <span class="board-deadline">${
+                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.') : '____.__.__'
+                }</span>
+              </td>
+              <td>
+                <span class="board-cardCount">${
+                  Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0
+                }%</span>
+              </td>
+              <td>
+                <div class="table-actions">
+                    <span class="board-memberCount" style="margin-right: 50%;">${board.boardMembers.length}</span>
+                    <div class="dropdown dropdown-click">
+                      <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <img class="svg" src="./assets/img/svg/more-vertical.svg" alt="more-vertical">
+                      </button>
+                      <div class="dropdown-default dropdown-menu dropdown-menu--dynamic">
+                          <a class="dropdown-item" boardId="${
+                            board.boardId
+                          }" checkCards="${count}" onclick="openEditBoardModal(this)">수정</a>
+                          <a class="dropdown-item" boardId="${board.boardId}" onclick="deleteConfirmModal(${
+                            board.boardId
+                          }, 'board')">삭제</a>
+                      </div>
+                    </div>
+                </div>
+              </td>
+            </tr>`;
   return result;
 }
 
@@ -595,4 +684,24 @@ document.querySelector('.search-form').addEventListener('submit', (event) => {
     document.querySelector('.mobile-search-result').innerHTML = '';
   }
   getMyBoards('all', searchInput);
+});
+
+//grid or list button
+
+document.querySelector('#grid-icon').addEventListener('click', (event) => {
+  event.preventDefault();
+  console.log('확인해보고 있어요.');
+  document.querySelector('#grid-icon').classList.add('active');
+  document.querySelector('#list-icon').classList.remove('active');
+  $('#list-box').hide();
+  $('#board-box').show();
+});
+
+document.querySelector('#list-icon').addEventListener('click', (event) => {
+  event.preventDefault();
+  console.log('확인해보고 있어요.');
+  document.querySelector('#list-icon').classList.add('active');
+  document.querySelector('#grid-icon').classList.remove('active');
+  $('#list-box').show();
+  $('#board-box').hide();
 });
