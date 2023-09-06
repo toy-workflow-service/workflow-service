@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from 'src/_common/entities/card.entity';
@@ -7,6 +7,8 @@ import { CreateCardDto } from 'src/_common/dtos/create-card.dto';
 import { UpdateCardDto } from 'src/_common/dtos/update-card.dto';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { BoardsService } from 'src/boards/boards.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { MembershipsService } from 'src/memberships/memberships.service';
 @Injectable()
 export class CardsService {
   constructor(
@@ -14,7 +16,9 @@ export class CardsService {
     private cardRepository: Repository<Card>,
     private readonly boardColumnService: BoardColumnsService,
     private readonly boardService: BoardsService,
-    private readonly auditLogService: AuditLogsService
+    private readonly auditLogService: AuditLogsService,
+    private readonly workspaceService: WorkspacesService,
+    private readonly membershipService: MembershipsService
   ) {}
   //카드 조회
   async GetCards(board_column_Id: number) {
@@ -49,6 +53,27 @@ export class CardsService {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
     const board = await this.boardService.GetBoardById(column.board.id);
+    const checkStorage = await this.workspaceService.caculateFileSizes(board.workspace.id);
+    const checkMembership = await this.membershipService.checkMembership(board.workspace.id);
+
+    let inputFileSize = 0;
+    if (fileSizes.length) {
+      fileSizes.forEach((size) => {
+        inputFileSize += parseInt(size);
+      });
+    }
+
+    if (checkMembership) {
+      const limitInGb = 10;
+      if (fileSizes.length && limitInGb <= (checkStorage + inputFileSize) / (1024 * 1024)) {
+        throw new HttpException('용량제한을 초과하셨습니다.', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      const limitInMb = 100;
+      if (fileSizes.length && limitInMb <= (checkStorage + inputFileSize) / 1024) {
+        throw new HttpException('용량제한을 초과하셨습니다.', HttpStatus.BAD_REQUEST);
+      }
+    }
 
     await this.cardRepository.insert({
       board_column: column,

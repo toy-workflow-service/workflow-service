@@ -7,10 +7,10 @@ export class User_Message_Room {
   id: number;
 
   @Column({ nullable: false })
-  senderId: number;
+  sender_id: number;
 
   @Column({ nullable: false })
-  receiveId: number;
+  receiver_id: number;
 
   @CreateDateColumn()
   created_at: Date;
