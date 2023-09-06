@@ -83,9 +83,8 @@ async function getMyBoards() {
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
                               <a href="/board?boardId=${board.boardId}">
-                                <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
-                                  board.boardName
-                                }</h6>
+                                <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${board.boardName
+            }</h6>
                               </a>
                               ${check}
                             </div>
@@ -100,12 +99,10 @@ async function getMyBoards() {
                                   <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg" />
                                 </button>
                                 <div class="dropdown-menu">
-                                  <a class="dropdown-item" boardId="${
-                                    board.boardId
-                                  }" onclick="openEditBoardModal(this)">수정</a>
-                                  <a class="dropdown-item" boardId="${
-                                    board.boardId
-                                  }" onclick="deleteBoard(this)">삭제</a>
+                                  <a class="dropdown-item" boardId="${board.boardId
+            }" onclick="openEditBoardModal(this)">수정</a>
+                                  <a class="dropdown-item" boardId="${board.boardId
+            }" onclick="deleteBoard(this)">삭제</a>
                                 </div>
                               </div>
                             </div>
@@ -117,9 +114,9 @@ async function getMyBoards() {
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">시작일</span>
                                   <p class="fs-14 fw-500 color-dark mb-0">${board.createdAt
-                                    .substring(0, 10)
-                                    .replace('-', '.')
-                                    .replace('-', '.')}</p>
+              .substring(0, 10)
+              .replace('-', '.')
+              .replace('-', '.')}</p>
                                 </div>
                               </div>
                             </div>
@@ -136,13 +133,11 @@ async function getMyBoards() {
                                   aria-valuemax="100"
                                 ></div>
                               </div>
-                              <span class="progress-percentage">${
-                                Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0
-                              }%</span>
+                              <span class="progress-percentage">${Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0
+            }%</span>
                             </div>
-                            <p class="color-light fs-12 mb-20">${board.cardCount.done} / ${
-                              board.cardCount.total
-                            } 카드</p>
+                            <p class="color-light fs-12 mb-20">${board.cardCount.done} / ${board.cardCount.total
+            } 카드</p>
                           </div>
                         </div>
                         <div class="mt-20 px-30">
