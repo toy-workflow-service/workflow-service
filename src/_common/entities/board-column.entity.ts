@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Board } from './board.entity';
 import { Card } from './card.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('board_columns')
 export class Board_Column {

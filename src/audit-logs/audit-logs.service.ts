@@ -12,10 +12,20 @@ export class AuditLogsService {
   ) {}
 
   async getAllLogs(workspaceId: number): Promise<Audit_log[]> {
-    const allLogs = await this.auditLogRepository.find({
-      where: { workspace: { id: workspaceId } },
-      order: { created_at: 'DESC' },
-    });
+    const allLogs = await this.auditLogRepository
+      .createQueryBuilder('audit_log')
+      .innerJoinAndSelect('audit_log.user', 'user')
+      .where('audit_log.workspace = :workspaceId', { workspaceId })
+      .select([
+        'audit_log.id as id',
+        'audit_log.actions as actions',
+        'audit_log.details as details ',
+        'audit_log.created_at as created_at',
+        'user.id',
+        'user.email',
+        'user.profile_url',
+      ])
+      .getRawMany();
 
     return allLogs;
   }

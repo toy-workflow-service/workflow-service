@@ -1050,7 +1050,7 @@ async function getWorkspaceActivity() {
         let result = '';
 
         data.forEach((log) => {
-          result += printActivityhtml(log.details, log.created_at, log.actions);
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
         });
         printActivity.innerHTML = result;
       },
@@ -1060,7 +1060,7 @@ async function getWorkspaceActivity() {
   }
 }
 
-function printActivityhtml(details, createdAt, actions) {
+function printActivityhtml(details, createdAt, actions, profile) {
   const formattedDate = new Date(createdAt).toLocaleString('ko-KR', {
     year: '2-digit',
     month: '2-digit',
@@ -1075,23 +1075,23 @@ function printActivityhtml(details, createdAt, actions) {
   switch (transAction) {
     case 'CREATE':
       span = 'class="wh-24 me-15 rounded-circle content-center color-danger bg-opacity-danger"';
-      imgSrc = '"./assets/img/svg/plus.svg" alt="plus" class="svg"';
+      imgSrc = '"./assets/img/svg/plus.svg" alt="plus" class="svg" width="15", height="15"';
       break;
     case 'UPDATE':
       span = 'class="wh-24 me-15 rounded-circle content-center color-success bg-opacity-success"';
-      imgSrc = '"./assets/img/svg/edit.svg" alt="edit" class="svg"';
+      imgSrc = '"./assets/img/svg/edit.svg" alt="edit" class="svg" width="15", height="15"';
       break;
     case 'DELETE':
       span = 'class="wh-24 me-15 rounded-circle content-center color-primary bg-opacity-primary"';
-      imgSrc = '"./assets/img/svg/x2.svg" alt="x2" class="svg"';
+      imgSrc = '"./assets/img/svg/x2.svg" alt="x2" class="svg" width="15", height="15"';
       break;
     case 'INVITE':
       span = 'class="wh-24 me-15 rounded-circle content-center color-info bg-opacity-info"';
-      imgSrc = '"./assets/img/svg/user-plus.svg" alt="user-plus" class="svg"';
+      imgSrc = '"./assets/img/svg/user-plus.svg" alt="user-plus" class="svg" width="15", height="15"';
       break;
     case 'ROLE_CHANGE':
       span = 'class="wh-24 me-15 rounded-circle content-center color-warning bg-opacity-warning"';
-      imgSrc = '"./assets/img/svg/repeat.svg" alt="repeat" class="svg"';
+      imgSrc = '"./assets/img/svg/repeat.svg" alt="repeat" class="svg" width="15", height="15"';
       break;
   }
 
@@ -1103,7 +1103,7 @@ function printActivityhtml(details, createdAt, actions) {
                 /></span>
                 <span
                   class="profile-image rounded-circle d-block wh-34 m-0"
-                  style="background-image: url('img/tm5.png'); background-size: cover"
+                  style="background-image: url(${profile}); background-size: cover"
                 ></span>
               </div>
               <div>
