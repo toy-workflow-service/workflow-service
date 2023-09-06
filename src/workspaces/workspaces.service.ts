@@ -281,7 +281,6 @@ export class WorkspacesService {
     const checkAdmin = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
-
     if (!checkAdmin) throw new HttpException('해당 워크스페이스를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
     if (checkAdmin.role !== 1) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);

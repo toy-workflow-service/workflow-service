@@ -25,6 +25,7 @@ export class AuditLogsService {
         'user.email',
         'user.profile_url',
       ])
+      .orderBy('audit_log.created_at', 'DESC')
       .getRawMany();
 
     return allLogs;

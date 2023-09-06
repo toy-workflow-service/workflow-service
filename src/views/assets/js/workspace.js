@@ -164,9 +164,9 @@ function boardHTML(board) {
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
                                   }" checkCards="${count}" onclick="openEditBoardModal(this)">수정</a>
-                                  <a class="dropdown-item" boardId="${
+                                  <a class="dropdown-item" boardId="${board.boardId}" onclick="deleteConfirmModal(${
                                     board.boardId
-                                  }" onclick="deleteBoard(this)">삭제</a>
+                                  }, 'board')">삭제</a>
                                 </div>
                               </div>
                             </div>
@@ -517,9 +517,28 @@ async function putBoardMember(boardId, userIdArray) {
   });
 }
 
+// 삭제 확인 모달 출력
+function deleteConfirmModal(targetId, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
+
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', () => {
+    if (targetType === 'board') {
+      deleteBoard(targetId);
+    }
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
+  });
+}
+
 //보드 삭제
-async function deleteBoard(element) {
-  const boardId = element.getAttribute('boardId');
+async function deleteBoard(boardId) {
   await $.ajax({
     type: 'DELETE',
     url: `boards/${boardId}?workspaceId=${workspaceId}`,

@@ -68,57 +68,71 @@ function updateUserInfo() {
   });
 }
 
+// 삭제 확인 모달 출력
+function deleteConfirmModal() {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
+
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', () => {
+    deleteUser();
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
+  });
+}
+
 function deleteUser() {
-  if (confirm('정말로 해당 아이디를 삭제하시겠습니까?')) {
-    const password = document.querySelector('#passwordInput').value;
-    const payload = { password };
-    $.ajax({
-      method: 'DELETE',
-      url: '/users',
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify(payload),
-      success: (data) => {
+  const password = document.querySelector('#passwordInput').value;
+  const payload = { password };
+  $.ajax({
+    method: 'DELETE',
+    url: '/users',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify(payload),
+    success: (data) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
+      return;
+    },
+    error: (error) => {
+      console.log(error);
+      if (error.responseJSON.message) {
         Swal.fire({
           customClass: {
             container: 'my-swal',
           },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.href = '/';
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
         });
-        return;
-      },
-      error: (error) => {
-        console.log(error);
-        if (error.responseJSON.message) {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON.message[0],
-          });
-        } else {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON,
-          });
-        }
-      },
-    });
-  } else {
-    return;
-  }
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON,
+        });
+      }
+    },
+  });
 }
 
 function changePassword() {
@@ -386,7 +400,14 @@ async function getPaymentHistory() {
         data.forEach((history) => {
           const paymentDate = new Date(history.paymentCreatedAt);
           if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
-            if (!history.membershipCreatedAt) {
+            if (history.workspaceName === null) {
+              result += ` <tbody>
+                            <tr>
+                              <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">삭제된 워크스페이스입니다.</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>`;
+            } else if (!history.membershipCreatedAt) {
               result += ` <tbody>
                             <tr>
                               <td data-workspace-id="${history.workspaceId}" id="workspace-name-table">${history.workspaceName}</td>
