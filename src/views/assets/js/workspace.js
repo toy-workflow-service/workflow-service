@@ -130,6 +130,12 @@ function boardHTML(board) {
   } else {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
   }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
   // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
   result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -179,7 +185,7 @@ function boardHTML(board) {
                                   <span class="color-light fs-12">마감일</span>
                                   <p class="fs-14 fw-500 color-dark mb-0">${
                                     board.deadline
-                                      ? board.deadline.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.')
                                       : '____.__.__'
                                   }</p>
                                 </div>
@@ -409,11 +415,16 @@ async function openEditBoardModal(element) {
     const titleInput = editModal.querySelector('input[type="text"]');
     const descriptionInput = editModal.querySelector('textarea');
     const deadlineInput = document.querySelector('#datepicker2');
-
+    const offset = new Date().getTimezoneOffset() * 60 * 1000;
+    let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    console.log(sendTime);
     titleInput.value = board.name;
     descriptionInput.value = board.description;
-    let date = new Date(board.deadline);
-    deadlineInput.value = board.deadline ? date.toDateString() : '';
+    deadlineInput.value = board.deadline ? '20' + sendTime : '';
 
     const { boardMembers } = await getBoardMembers(boardId);
     selectedMemberId = [];
