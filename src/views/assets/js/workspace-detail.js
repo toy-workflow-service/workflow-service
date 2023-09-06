@@ -377,6 +377,9 @@ async function purchaseMembership() {
       data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
       success: () => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'success!',
           text: '멤버십 결제 완료!',
@@ -386,6 +389,9 @@ async function purchaseMembership() {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -480,6 +486,9 @@ async function purchaseMembership() {
       data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
       success: () => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'success!',
           text: '멤버십 결제 완료!',
@@ -489,6 +498,9 @@ async function purchaseMembership() {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -548,6 +560,9 @@ async function updateWorkspace() {
       data: JSON.stringify({ name: updatedTitle, type: updatedType, description: updatedDescription }),
       success: () => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'success!',
           text: '워크스페이스 수정 완료',
@@ -558,6 +573,9 @@ async function updateWorkspace() {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -582,6 +600,9 @@ async function deleteWorkspace() {
         },
         success: () => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'success',
             title: 'Success!',
             text: '워크스페이스 삭제 완료',
@@ -591,6 +612,9 @@ async function deleteWorkspace() {
         },
         error: (err) => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,
@@ -632,6 +656,9 @@ async function inviteMember() {
       success: () => {
         sendingMessage.style.display = 'none';
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'Success!',
           text: '멤버 초대 완료!',
@@ -642,6 +669,9 @@ async function inviteMember() {
       error: (err) => {
         sendingMessage.style.display = 'none';
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -682,6 +712,9 @@ async function setMemberRole() {
       data: JSON.stringify({ role: roleInput }),
       success: () => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'Success!',
           text: '역할 변경 완료!',
@@ -691,6 +724,9 @@ async function setMemberRole() {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
@@ -755,6 +791,9 @@ function deleteMember(element) {
         },
         success: () => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'success',
             title: 'Success!',
             text: '멤버 삭제 완료!',
@@ -764,6 +803,9 @@ function deleteMember(element) {
         },
         error: (err) => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,

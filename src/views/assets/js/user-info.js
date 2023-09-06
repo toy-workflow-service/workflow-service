@@ -31,6 +31,9 @@ function updateUserInfo() {
     data: JSON.stringify(payload),
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -43,12 +46,18 @@ function updateUserInfo() {
       console.log(error);
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,
@@ -73,6 +82,9 @@ function deleteUser() {
       data: JSON.stringify(payload),
       success: (data) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'Success',
           text: data.message,
@@ -85,12 +97,18 @@ function deleteUser() {
         console.log(error);
         if (error.responseJSON.message) {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'Error',
             text: error.responseJSON.message[0],
           });
         } else {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'Error',
             text: error.responseJSON,
@@ -118,6 +136,9 @@ function changePassword() {
     data: JSON.stringify(payload),
     success: (data) => {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -130,12 +151,18 @@ function changePassword() {
       console.log(error);
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,
@@ -162,6 +189,9 @@ function send() {
     success: (data) => {
       [code, expireTime] = [data.code, data.expireTime];
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'success',
         title: 'Success',
         text: data.message,
@@ -176,12 +206,18 @@ function send() {
       console.log(error);
       if (error.responseJSON.message) {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message[0],
         });
       } else {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON,
@@ -205,6 +241,9 @@ function send() {
         data: JSON.stringify(payload),
         success: (data) => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'success',
             title: 'Success',
             text: data.message,
@@ -214,6 +253,9 @@ function send() {
         },
         error: (error) => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'Error',
             text: error.responseJSON.message,
@@ -222,6 +264,9 @@ function send() {
       });
     } else if (verifyCode !== code && Date.now() < expireTime) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '인증번호가 다릅니다. 인증번호를 다시 확인해 주세요. ',
@@ -230,6 +275,9 @@ function send() {
       return;
     } else {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '인증시간이 초과되었습니다. 처음부터 다시 시도해 주세요. ',
@@ -248,6 +296,9 @@ async function changeProfileImage() {
   if (img) {
     if (img.size > 5 * 1024 * 1024) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: '5MB이하의 이미지 파일만 업로드 가능합니다.',
@@ -271,6 +322,9 @@ async function changeProfileImage() {
     error: (error) => {
       console.error(error);
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON,
@@ -402,6 +456,9 @@ async function cancelPayment(paymentId, workspaceId) {
       success: (data) => {
         console.log(data);
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: '결제 취소 완료!',
           text: `잔여일 : ${data.remainingDays}일, 
@@ -412,6 +469,9 @@ async function cancelPayment(paymentId, workspaceId) {
       },
       error: (err) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,

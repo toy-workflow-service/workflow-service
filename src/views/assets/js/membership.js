@@ -144,6 +144,9 @@ async function purchaseMembership() {
 
     if (workspaceId === null) {
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'error',
         text: '워크스페이스를 선택해주세요.',
@@ -161,6 +164,9 @@ async function purchaseMembership() {
         data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
         success: () => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'success',
             title: 'success!',
             text: '멤버십 결제 완료!',
@@ -170,6 +176,9 @@ async function purchaseMembership() {
         },
         error: (err) => {
           Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,

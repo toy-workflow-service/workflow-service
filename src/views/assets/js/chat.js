@@ -4,11 +4,17 @@ const params = new URLSearchParams(window.location.search);
 const offset = 1000 * 60 * 60 * 9;
 let boardId = params.get('boardId');
 let myBoardIds = [];
-let loginUserId;
-let loginProfileUrl;
+let loginUserId, loginProfileUrl;
+let memberNameList = [];
+let memberIdList = [];
+let memberPhoneList = [];
+let memberEmailList = [];
+let memberProfileUrlList = [];
 
 $(document).ready(async () => {
   await getChatRooms();
+  createUserInfoModal();
+  getMemberList();
 
   myBoardIds.forEach((boardId) => {
     const inputMessage = document.getElementById(`room${boardId}-messageInput`);
@@ -20,6 +26,8 @@ $(document).ready(async () => {
       }
     });
   });
+
+  boardChatList.style.overflow = 'auto';
 });
 
 async function getChatRooms() {
@@ -38,6 +46,15 @@ async function getChatRooms() {
       loginProfileUrl = data.userProfileUrl ? data.userProfileUrl : '../assets/img/favicon.png';
 
       boardMembers.forEach((result, idx) => {
+        result.forEach((member) => {
+          if (memberIdList.includes(member.user_id)) return;
+
+          memberIdList.push(member.user_id);
+          memberNameList.push(member.user_name);
+          memberPhoneList.push(member.user_phone_number);
+          memberEmailList.push(member.user_email);
+          memberProfileUrlList.push(member.user_profile_url);
+        });
         myBoardIds.push(result[0].board_id);
         let active;
         if (idx === 0) {
@@ -281,7 +298,7 @@ async function getChatRooms() {
                                       <div class="chat-text-box ">
                                           <div class="media d-flex">
                                             <div class="chat-text-box__photo ">
-                                                <img src="${img}" class="align-self-start me-15 wh-46" alt="img">
+                                                <img src="${img}" class="align-self-start me-15 wh-46" data-bs-toggle="modal" data-bs-target="#new-member${data.user_id}" alt="img" />
                                             </div>
                                             <div class="media-body">
                                                 <div class="chat-text-box__content">
@@ -308,7 +325,7 @@ async function getChatRooms() {
             }
           });
           messages = messages.join('\n');
-          const chatRoomMessageList = `<div class="tab-pane ${activeMessage}" id="chat-list-room${boardMembers[idx][0].board_id}" role="tabpanel" aria-labelledby="chat-list-room${boardMembers[idx][0].board_id}-tab">                                         
+          const chatRoomMessageList = `<div class="tab-pane ${activeMessage}" id="chat-list-room${boardMembers[idx][0].board_id}" role="tabpanel" aria-labelledby="chat-list-room${boardMembers[idx][0].board_id}-tab" >                                         
                                           <div class="chat">
                                             <div class="chat-body bg-white radius-xl">
                                               <div class="chat-header">
@@ -423,6 +440,9 @@ async function uploadFile(data) {
 
   if (file.size > 5 * 1024 * 1024) {
     Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
       icon: 'error',
       title: 'Error',
       text: '5MB이하의 파일만 업로드 가능합니다.',
@@ -431,8 +451,7 @@ async function uploadFile(data) {
   }
   let fileUrl;
   const originalname = file.name;
-  let date;
-  let messageId;
+  let date, messageId;
 
   form.append('newFile', file);
   form.append('originalname', file.name);
@@ -454,6 +473,9 @@ async function uploadFile(data) {
     error: (error) => {
       console.error(error);
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON.message,
@@ -526,6 +548,9 @@ async function saveMessage(boardId, message) {
     error: (error) => {
       console.error(error);
       Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
         icon: 'error',
         title: 'Error',
         text: error.responseJSON,
@@ -600,7 +625,7 @@ function appendMessage(
                               <div class="chat-text-box ">
                                   <div class="media d-flex">
                                     <div class="chat-text-box__photo ">
-                                        <img src="${profileUrl}" class="align-self-start me-15 wh-46" alt="img">
+                                        <img src="${profileUrl}" class="align-self-start me-15 wh-46" data-bs-toggle="modal" data-bs-target="#new-member${userId}" alt="img" />
                                     </div>
                                     <div class="media-body">
                                         <div class="chat-text-box__content">
@@ -703,6 +728,9 @@ function deleteMessage(data) {
       },
       success: (data) => {
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'success',
           title: 'Success',
           text: data.message,
@@ -714,6 +742,9 @@ function deleteMessage(data) {
       error: (error) => {
         console.error(error);
         Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
           icon: 'error',
           title: 'Error',
           text: error.responseJSON.message,
@@ -725,7 +756,130 @@ function deleteMessage(data) {
   return;
 }
 
-// 워크스페이스 생성 모달열기
-async function openInviteModal() {
-  $('#newChatModal').modal('show');
+function getMemberList() {
+  const memberResult = document.querySelector('#memberResult');
+
+  if (memberIdList.length > 0) {
+    memberIdList.forEach((id, idx) => {
+      if (id === loginUserId) return;
+      const memberHtml = `<div style="margin: 10px auto 0 5%" >
+                            <input type="radio"
+                            name="chatUser"
+                            value="${id}" /> ${memberNameList[idx]}
+                          </div>`;
+      memberResult.innerHTML += memberHtml;
+    });
+  }
+}
+
+function searchEmail() {
+  const searchResult = document.querySelector('#searchResult');
+  const email = document.querySelector('#searchEmail').value;
+  if (!email) {
+    searchResult.innerHTML = `<p style="margin: 7% auto 0 32%"> 검색할 이메일을 입력해 주세요. </p>`;
+    return;
+  }
+  searchResult.innerHTML = '';
+  $.ajax({
+    method: 'GET',
+    url: `/users/searchEmail/${email}`,
+    success: (data) => {
+      const { user } = data;
+      if (!user) {
+        searchResult.innerHTML = `<p style="margin: 7% auto 0 25%"> 검색한 유저가 없습니다. 다시 검색해 주세요. </p>`;
+        return;
+      }
+
+      searchResult.innerHTML = `<div style="margin: 7% auto 0 5%" >
+                                  <input type="radio"
+                                  name="chatUser"
+                                  value="${user.id}" /> ${user.name}
+                                </div>`;
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+function createUserInfoModal() {
+  const main = document.querySelector('#main');
+
+  if (memberIdList.length > 0) {
+    memberIdList.forEach((id, idx) => {
+      if (id === loginUserId) return;
+
+      const modalHtml = ` <!-- Modal -->
+                          <div class="modal fade show new-member new-member__2" id="new-member${id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content  radius-xl">
+                                <div class="modal-header">
+                                  <h5 class="modal-title fw-500" id="staticBackdropLabel" style="font-weight:bold">프로필 정보</h5>
+                                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" >
+                                    <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="new-member-modal">
+                                    <div class="card position-relative user-member-card">
+                                      <div class="card-body text-center p-30">
+                                        <div class="ap-img d-flex justify-content-center">
+                                          <!-- Profile picture image-->
+                                          <img class="ap-img__main rounded-circle mb-20 bg-opacity-primary wh-150" src="${memberProfileUrlList[idx]}" alt="profile">
+                                        </div>
+                                        <div class="ap-nameAddress pb-3" >                                                                                     
+                                          <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${memberNameList[idx]}</h2>
+                                          <div style="display: inline-flex; margin-top:5%">
+                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                              <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
+                                              <br/>
+                                              <p class="c-info-item-text">
+                                              ${memberPhoneList[idx]}
+                                              </p>
+                                            </div>  
+                                            <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                              <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
+                                              <br/>
+                                              <p class="c-info-item-text" >
+                                                ${memberEmailList[idx]}
+                                              </p>
+                                            </div>                                     
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize">메시지 전송</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="startVoiceCall(this)">음성 통화</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="startVideoCall(this)">영상 통화</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Modal -->`;
+      main.innerHTML += modalHtml;
+    });
+  }
+}
+
+function createChatRoom() {
+  const userId = $('input[type=radio][name=chatUser]:checked').val();
+
+  if (!userId) return;
+
+  if (userId === loginUserId) {
+    document.querySelector('#main').append(
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: '자기 자신은 채팅에 초대할 수 없습니다. ',
+      })
+    );
+  }
+  console.log(userId, loginUserId);
 }
