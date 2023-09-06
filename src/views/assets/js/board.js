@@ -298,8 +298,8 @@ async function BoardColumns(data, search) {
                                               <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                           </button>
                                           <div class="dropdown-default dropdown-bottomRight dropdown-menu" style="">
-                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">Edit Column Title</a>
-                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">Delete Column</a>
+                                              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateColumnModal" id="updateColumnTitle" data-value="${data[i].columnId}" data-title="${data[i].columnName}">컬럼명 수정</a>
+                                              <a class="dropdown-item" id="ColumnDeleteBtn" value="${data[i].columnId}">삭제</a>
                                           </div>
                                         </div>
                                     </div>
@@ -349,9 +349,31 @@ async function BoardColumns(data, search) {
   document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
     data.addEventListener('click', async (e) => {
       const columnId = e.target.getAttribute('value');
-      await BoardColumnDelete(columnId);
+      deleteConfirmModal(columnId);
     });
   });
+
+  // 삭제 확인 모달 출력
+  function deleteConfirmModal(targetId, targetId2, targetType) {
+    const confirmModal = document.querySelector('#modal-info-confirmed');
+    $(confirmModal).modal('show');
+
+    const okBtn = confirmModal.querySelector('.btn-info');
+    const cancelBtn = confirmModal.querySelector('.btn-light');
+
+    okBtn.addEventListener('click', async () => {
+      if (targetType === 'card') {
+        deleteCard(targetId, targetId2);
+      } else {
+        await BoardColumnDelete(targetId);
+      }
+      $(confirmModal).modal('hide');
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      $(confirmModal).modal('hide');
+    });
+  }
 
   // column delete api
   async function BoardColumnDelete(columnId) {
@@ -806,7 +828,7 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
         data-card-id="${cardData.id}"
         data-bs-dismiss="modal">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteCard(this)">삭제</button>
+id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteConfirmModal(${columnId}, ${cardData.id}, 'card')">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <img src="./assets/img/svg/x.svg" alt="x" class="svg">
 </button>
@@ -1170,9 +1192,7 @@ async function CardAllUpdate(columnId, cardId, data) {
 }
 
 // 함수 내에서 카드 삭제를 처리하는 로직
-function deleteCard(button) {
-  const columnId = button.getAttribute('data-column-id');
-  const cardId = button.getAttribute('data-card-id');
+function deleteCard(columnId, cardId) {
   console.log('deleteCard : ', columnId, cardId);
   // 카드 삭제 API 호출
   $.ajax({
@@ -1186,30 +1206,13 @@ function deleteCard(button) {
       console.log(data.message);
 
       // 삭제 성공 후, 페이지 새로고침
-      location.reload();
+      window.location.reload();
     },
     error: (error) => {
       console.log(error);
     },
   });
 }
-
-// 버튼 클릭 이벤트 핸들러
-function handleDeleteButtonClick(button) {
-  const columnId = button.getAttribute('data-column-id');
-  const cardId = button.getAttribute('data-card-id');
-
-  // 카드 삭제 함수 호출
-  deleteCard(columnId, cardId);
-}
-
-// 버튼 클릭 이벤트 리스너 등록
-const deleteButtons = document.querySelectorAll('.btn-delete-card');
-deleteButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    handleDeleteButtonClick(button);
-  });
-});
 
 function deleteComment(commentId, cardId) {
   // 카드 삭제 API 호출

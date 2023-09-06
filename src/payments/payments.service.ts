@@ -42,32 +42,6 @@ export class PaymentsService {
     return { result: true };
   }
 
-  // // 멤버십 연장
-  // async extensionMembership(body: MembershipDto, workspaceId: number, userId: number): Promise<IResult> {
-  //   const entityManager = this.paymentRepository.manager;
-
-  //   try {
-  //     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
-  //       const findUserById = await this.userService.findUserById(userId);
-
-  //       if (findUserById.points < body.packagePrice)
-  //         throw new HttpException('포인트가 부족합니다', HttpStatus.BAD_REQUEST);
-  //       findUserById.points -= body.packagePrice;
-  //       await transactionEntityManager.save(findUserById);
-
-  //       const newPayment = this.paymentRepository.create({
-  //         workspaceId,
-  //         user: { id: userId },
-  //       });
-  //       await transactionEntityManager.save(newPayment);
-  //       await this.membershipService.extensionMembership(body, workspaceId);
-  //     });
-  //     return { result: true };
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
   // 결제 취소
   async cancelPurchase(workspaceId: number, paymentId: number, userId: number): Promise<Object> {
     const entityManager = this.paymentRepository.manager;
@@ -143,6 +117,14 @@ export class PaymentsService {
           };
           paymentHistory.push(paymentInfo);
         }
+      } else {
+        const paymentInfo = {
+          paymentId: payment.id,
+          paymentCreatedAt: payment.created_at,
+          workspaceId: payment.workspaceId,
+          workspaceName: null,
+        };
+        paymentHistory.push(paymentInfo);
       }
     }
     return paymentHistory;
