@@ -53,15 +53,15 @@ const printButton = document.querySelector('.nav-item');
 function changeSelect() {
   let selected = document.querySelector('#event-category');
   if (selected.value == 'all') {
-    getMyBoards(selected.value);
+    getMyBoards(selected.value, '');
   } else if (selected.value == 'ing') {
-    getMyBoards(selected.value);
+    getMyBoards(selected.value, '');
   } else {
-    getMyBoards(selected.value);
+    getMyBoards(selected.value, '');
   }
 }
 // 보드 전체 조회
-async function getMyBoards(selectItem) {
+async function getMyBoards(selectItem, search) {
   try {
     await $.ajax({
       method: 'GET',
@@ -77,17 +77,27 @@ async function getMyBoards(selectItem) {
         document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
-          if (selectItem == 'all') {
+          if (selectItem == 'all' && !search) {
             result += boardHTML(board);
-          } else if (selectItem == 'ing') {
+          } else if (selectItem == 'ing' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count != 100) {
               result += boardHTML(board);
             }
-          } else if (selectItem == 'end') {
+          } else if (selectItem == 'end' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count == 100) {
               result += boardHTML(board);
+            }
+          } else {
+            if (board.boardName.search(search) > -1) {
+              result += boardHTML(board);
+            } else {
+              for (const member of board.boardMembers) {
+                if (member.name.search(search) > -1) {
+                  result += boardHTML(board);
+                }
+              }
             }
           }
         }
@@ -494,18 +504,18 @@ async function deleteBoard(element) {
 }
 
 // 헤더에 있는 검색창
+let searchInput = '';
+
 // 전체 화면일땐 이부분을 사용하는데
 document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
   event.preventDefault();
-  const check = document.querySelector('#header-search').value;
-  console.log(1, check);
+  searchInput = document.querySelector('#header-search').value;
+  getMyBoards('all', searchInput);
 });
 
 //화면을 줄이면 이부분을 사용함
 document.querySelector('.search-form').addEventListener('submit', (event) => {
   event.preventDefault();
-  const check = document.querySelector('#search-form').value;
-  console.log(2, check);
-  // $('.mobile-search').hide();
-  document.querySelector('.btn-search search-active').className = 'btn-search';
+  searchInput = document.querySelector('#search-form').value;
+  getMyBoards('all', searchInput);
 });
