@@ -7,7 +7,7 @@ let typingTimer;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
-  await getMyBoards();
+  await getMyBoards('all');
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
   // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
@@ -50,9 +50,18 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
 }
 const printBoard = document.querySelector('#board-box');
 const printButton = document.querySelector('.nav-item');
-
+function changeSelect() {
+  let selected = document.querySelector('#event-category');
+  if (selected.value == 'all') {
+    getMyBoards(selected.value, '');
+  } else if (selected.value == 'ing') {
+    getMyBoards(selected.value, '');
+  } else {
+    getMyBoards(selected.value, '');
+  }
+}
 // 보드 전체 조회
-async function getMyBoards() {
+async function getMyBoards(selectItem, search) {
   try {
     await $.ajax({
       method: 'GET',
@@ -65,19 +74,64 @@ async function getMyBoards() {
         const boards = data.boards;
         let result = '';
         let button = '';
-        console.log(boards[0].workspaceName);
         document.querySelector('#workspace-title').innerHTML = `${boards[0].workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
-        let check = '';
         for (const board of boards) {
-          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-          if (count == 100) {
-            check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
+          if (selectItem == 'all' && !search) {
+            result += boardHTML(board);
+          } else if (selectItem == 'ing' && !search) {
+            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+            if (count != 100) {
+              result += boardHTML(board);
+            }
+          } else if (selectItem == 'end' && !search) {
+            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+            if (count == 100) {
+              result += boardHTML(board);
+            }
           } else {
-            check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
+            if (board.boardName.search(search) > -1) {
+              result += boardHTML(board);
+            } else {
+              for (const member of board.boardMembers) {
+                if (member.name.search(search) > -1) {
+                  result += boardHTML(board);
+                }
+              }
+            }
           }
-          // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
-          result += `<div class="col-xl-4 mb-25 col-md-6">
+        }
+        button += `<li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      id="ap-overview-tab"
+                      href="/workspaceDetail?workspaceId=${workspaceId}"
+                      role="tab"
+                      aria-selected="true"
+                      >워크스페이스 디테일</a
+                    >
+                  </li>`;
+        printBoard.innerHTML = result;
+        printButton.innerHTML = button;
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 보드 html
+function boardHTML(board) {
+  let check = '';
+  let result = '';
+  const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+  if (count == 100) {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
+  } else {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
+  }
+  // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
+  result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
@@ -102,7 +156,7 @@ async function getMyBoards() {
                                 <div class="dropdown-menu">
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
-                                  }" onclick="openEditBoardModal(this)">수정</a>
+                                  }" checkCards="${count}" onclick="openEditBoardModal(this)">수정</a>
                                   <a class="dropdown-item" boardId="${
                                     board.boardId
                                   }" onclick="deleteBoard(this)">삭제</a>
@@ -148,39 +202,32 @@ async function getMyBoards() {
                         <div class="mt-20 px-30">
                           <p class="fs-13 color-light mb-10">참여 멤버</p>
                           <ul class="d-flex flex-wrap user-group-people__parent">`;
-          for (const member of board.boardMembers) {
-            let Img = '';
-            member.profile_url ? (Img = `${member.profile_url}`) : (Img = `/assets/img/favicon.png`);
-            result += `<li>
+  for (const member of board.boardMembers) {
+    let Img = '';
+    member.profile_url ? (Img = `${member.profile_url}`) : (Img = `/assets/img/favicon.png`);
+    result += `<li>
                         <a href="#"
                           ><img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${member.name}"
                         /></a>
                       </li>`;
-          }
-          result += `</ul></div>`;
-          result += `</div></div></div>`;
-        }
-        button += `<li class="nav-item">
-                    <a
-                      class="nav-link active"
-                      id="ap-overview-tab"
-                      href="/workspaceDetail?workspaceId=${workspaceId}"
-                      role="tab"
-                      aria-selected="true"
-                      >워크스페이스 디테일</a
-                    >
-                  </li>`;
-        printBoard.innerHTML = result;
-        printButton.innerHTML = button;
-      },
-    });
-  } catch (err) {
-    console.error(err);
   }
+  result += `</ul></div>`;
+  result += `</div></div></div>`;
+  return result;
 }
 
 // 보드 생성
 const createBoardBtn = document.querySelector('#create-button');
+document.querySelector('#create-board-btn').addEventListener('click', () => {
+  selectedMemberId = [];
+  selectedMembers = [];
+  if (Boolean(document.querySelector('#name47').value)) {
+    document.querySelector('#name47').value = '';
+    document.querySelector('#create-selected-members').innerHTML = '';
+    document.querySelector('#selected-members').innerHTML = '';
+  }
+  console.log('보드 생성 버튼 클릭: ', selectedMemberId, selectedMembers);
+});
 
 createBoardBtn.addEventListener('click', async (event) => {
   event.preventDefault();
@@ -313,6 +360,18 @@ function updateSelectedMembersUI(memberListSelector) {
 // 보드 수정 모달
 async function openEditBoardModal(element) {
   const boardId = element.getAttribute('boardId');
+  const count = element.getAttribute('checkCards');
+  const checkBoxEnd = document.querySelector('#check-grp-4');
+  const checkBoxIng = document.querySelector('#check-grp-3');
+  document.querySelector('#name48').value = '';
+  document.querySelector('#edit-selected-members').innerHTML = '';
+  if (count == 100) {
+    checkBoxEnd.checked = true;
+    checkBoxIng.checked = false;
+  } else {
+    checkBoxEnd.checked = false;
+    checkBoxIng.checked = true;
+  }
   try {
     const response = await $.ajax({
       method: 'GET',
@@ -443,3 +502,20 @@ async function deleteBoard(element) {
     },
   });
 }
+
+// 헤더에 있는 검색창
+let searchInput = '';
+
+// 전체 화면일땐 이부분을 사용하는데
+document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchInput = document.querySelector('#header-search').value;
+  getMyBoards('all', searchInput);
+});
+
+//화면을 줄이면 이부분을 사용함
+document.querySelector('.search-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchInput = document.querySelector('#search-form').value;
+  getMyBoards('all', searchInput);
+});

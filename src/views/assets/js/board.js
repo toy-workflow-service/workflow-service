@@ -185,8 +185,15 @@ async function BoardColumns(data) {
                         <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
                       </ol>
                   </nav>
-                </div>`;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>`;
+                </div>
+                `;
+  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>
+  <div class="kanban-board__add-card">
+                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                              <h5>
+                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
+                                컬럼 추가</h5></button>
+                          </div>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
@@ -217,7 +224,7 @@ async function BoardColumns(data) {
       )
       .join('');
     cardIndex += Number(card.length);
-    if (data[i].columnName == 'Done') {
+    if (data[i].columnName == '완료') {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
@@ -225,7 +232,7 @@ async function BoardColumns(data) {
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -250,7 +257,7 @@ async function BoardColumns(data) {
                                   </div>
   
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 350px" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -259,12 +266,6 @@ async function BoardColumns(data) {
                                 </div>`;
     }
   }
-  kanbanList.innerHTML += `<div class="kanban-board__add-card">
-                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
-                              <h5>
-                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                컬럼 추가</h5></button>
-                          </div>`;
 
   init();
   // column add button click
@@ -611,23 +612,20 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
-            comment.comment
-          }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
+      }</textarea>
           
           <!-- 수정 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+        : ''
+      }
           
           <!-- 삭제 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+        : ''
+      }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>

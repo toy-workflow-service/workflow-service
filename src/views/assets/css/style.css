@@ -23380,6 +23380,7 @@ table.table-rounded tbody tr td:last-child {
   transition: all 0.3s ease;
   width: 100%;
   background-color: var(--bg-lighter);
+  width: 140px;
 }
 .kanban-board__add-card button:hover {
   background: rgba(146, 153, 187, 0.2);
@@ -31306,7 +31307,7 @@ body:after {
   margin-top: 10px;
   display: inline-block;
 }
-.insert .file-list .filebox .delete i{
+.insert .file-list .filebox .delete i {
   color: #ff5353;
   margin-left: 5px;
 }
