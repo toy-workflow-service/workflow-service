@@ -1,71 +1,110 @@
 <%- include('includes/header') %>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-   <script src="./assets/js/board.js" defer></script>
-   <div class="contents">
-
-      <div class="container-fluid">
-         <div class="row">
-            <div class="col-lg-12">
-
-               <div class="breadcrumb-main">
-                  <h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
-                  <div class="breadcrumb-action justify-content-center flex-wrap">
-                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                           <li class="breadcrumb-item"><a href="#"><i class="uil uil-estate"></i>Home</a></li>
-                           <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
-                        </ol>
-                     </nav>
-                  </div>
-               </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script src="./assets/js/board.js" defer></script>
+<div class="contents">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb-main">
+          <h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
+          <div class="breadcrumb-action justify-content-center flex-wrap">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="#"><i class="uil uil-estate"></i>Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 삭제 확인 모달 -->
+    <div
+      class="modal-info-confirmed modal fade show"
+      id="modal-info-confirmed"
+      tabindex="-1"
+      role="dialog"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm modal-info" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-info-body d-flex">
+              <div class="modal-info-icon warning">
+                <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+              </div>
+              <div class="modal-info-text">
+                <h6>정말로 삭제하시겠습니까?</h6>
+              </div>
             </div>
-         </div>
-         <div class="row">
-            <div class="col-lg-12">
-               <!-- Lists container -->
-
-               <!-- card detail modal -->
-               <div class="modal fade kanban-modal__card kanban__modal" id="exampleModal" tabindex="-1"
-                  aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-scrollable">
-                     <div class="modal-content">
-                        <div class=" kanban-modal__header-wrapper">
-                           <div class="kanban-modal__header">
-                              <h5 class="modal-title" id="exampleModalLabel">File Manager Design</h5>
-                              <span>in list Active Project</span>
-                           </div>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              data-bs-toggle="modal" data-bs-target="#updateCardModal">update</button>
-                           <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary "
-                              id="cardDeleteBtn">delete</button>
-                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                              <img src="./assets/img/svg/x.svg" alt="x" class="svg">
-                           </button>
-                        </div>
-                        <div class="modal-body kanban-modal__body">
-                           <div class="kanban-modal__form ">
-                              <div class="mb-30">
-                                 <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
-                                 <textarea class="form-control" readonly rows="3" id="cardDetailDescription"></textarea>
-                              </div>
-                              <div class="row">
-                                 <label> image file</label>
-                                 <div id="cardDetailImgFile">
-                                    <!-- 파일이 이미지일 경우 아래 사용 -->
-                                    <a href="./assets/img/american-express.png" download=""> <img
-                                          src="./assets/img/american-express.png"> </a>
-                                    <a href="./assets/img/american-express.png" download=""> <img
-                                          src="./assets/img/american-express.png"> </a>
-                                 </div>
-                                 <label style="margin-top: 3%;">Files other than image files</label>
-                                 <div id="cardDetailNotImgFile">
-                                    <!-- 파일이 이미지가 아닐 경우 -->
-                                    <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                    <a href="./assets/img/american-express.png" download=""> 파일명 </a>
-                                 </div>
-                              </div>
-                           </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+            <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 삭제 확인 모달 끝 -->
+    <div class="row">
+      <div class="col-lg-12">
+        <!-- Lists container -->
+        <!-- card detail modal -->
+        <div
+          class="modal fade kanban-modal__card kanban__modal"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="kanban-modal__header-wrapper">
+                <div class="kanban-modal__header">
+                  <h5 class="modal-title" id="exampleModalLabel">File Manager Design</h5>
+                  <span>in list Active Project</span>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#updateCardModal"
+                >
+                  update
+                </button>
+                <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="cardDeleteBtn">
+                  delete
+                </button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                </button>
+              </div>
+              <div class="modal-body kanban-modal__body">
+                <div class="kanban-modal__form">
+                  <div class="mb-30">
+                    <label for="exampleFormControlTextarea1111" class="form-label">Description</label>
+                    <textarea class="form-control" readonly rows="3" id="cardDetailDescription"></textarea>
+                  </div>
+                  <div class="row">
+                    <label> image file</label>
+                    <div id="cardDetailImgFile">
+                      <!-- 파일이 이미지일 경우 아래 사용 -->
+                      <a href="./assets/img/american-express.png" download="">
+                        <img src="./assets/img/american-express.png" />
+                      </a>
+                      <a href="./assets/img/american-express.png" download="">
+                        <img src="./assets/img/american-express.png" />
+                      </a>
+                    </div>
+                    <label style="margin-top: 3%">Files other than image files</label>
+                    <div id="cardDetailNotImgFile">
+                      <!-- 파일이 이미지가 아닐 경우 -->
+                      <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+                      <a href="./assets/img/american-express.png" download=""> 파일명 </a>
+                    </div>
+                  </div>
+                </div>
 
                            <div class="kanban-modal__research mt-30">
                               <h6>Members </h6>
@@ -339,24 +378,23 @@
                               </div>
                            </div>
 
-                           <div class="kanban-modal__research mt-30">
-                              <h6>참여자 </h6>
-                           </div>
-                           <div class="kanban-modal__list">
-                              <button class="btn btn-primary btn-sm btn-squared"
-                                 id="cardUpdateAddMembers">초대하기...</button>
-                              <div id="cardUpdateAddMemberBox" style="margin: 3% auto 3% auto; display: none;">
-                                 <div class="mb-25">
-                                    <div class="form-group mb-10">
-                                       <label for="cardCreateMmeberName">멤버 선택</label>
-                                       <div style="margin: 2% auto 2% auto;" id="update-selected-members"></div>
-                                    </div>
-                                    <ul class="d-flex flex-wrap mb-20 user-group-people__parent" id="cardUpdateMembers">
-                                       <!-- 검색한 멤버를 선택하면 붙는곳 -->
-                                    </ul>
-                                 </div>
-                              </div>
-                           </div>
+                <div class="kanban-modal__research mt-30">
+                  <h6>참여자</h6>
+                </div>
+                <div class="kanban-modal__list">
+                  <button class="btn btn-primary btn-sm btn-squared" id="cardUpdateAddMembers">초대하기...</button>
+                  <div id="cardUpdateAddMemberBox" style="margin: 3% auto 3% auto; display: none">
+                    <div class="mb-25">
+                      <div class="form-group mb-10">
+                        <label for="cardCreateMmeberName">멤버 선택</label>
+                        <div style="margin: 2% auto 2% auto" id="update-selected-members"></div>
+                      </div>
+                      <ul class="d-flex flex-wrap mb-20 user-group-people__parent" id="cardUpdateMembers">
+                        <!-- 검색한 멤버를 선택하면 붙는곳 -->
+                      </ul>
+                    </div>
+                  </div>
+                </div>
 
                            <div class="kanban-modal__research mt-30">
                               <h6>카드 색상 </h6>
@@ -408,8 +446,7 @@
                               <textarea class="form-control" id="replayComment" rows="3" placeholder="입력.."
                                  style="margin-bottom: 3%;"></textarea>
                               <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-                                 id="replayCommentButton">답글
-                                 추가</button>
+                                 id="replayCommentButton">답글 추가</button>
                            </div>
                            <div class="kanban-modal__list">
                               <ul>
@@ -422,20 +459,16 @@
                </div>
                <!-- end comment detail modal -->
 
-               <div class="kanban-board__card mb-50">
-                  <div class="kanban-header">
-                     <h4>board name</h4>
-                  </div>
-                  <section class="lists-container kanban-container ">
-
-                  </section>
-               </div>
-               <!-- End of lists container -->
-            </div>
-         </div>
+        <div class="kanban-board__card mb-50">
+          <div class="kanban-header">
+            <h4>board name</h4>
+          </div>
+          <section class="lists-container kanban-container"></section>
+        </div>
+        <!-- End of lists container -->
       </div>
+    </div>
+  </div>
+</div>
 
-
-   </div>
-
-   <%- include('includes/footer') %>
+<%- include('includes/footer') %>

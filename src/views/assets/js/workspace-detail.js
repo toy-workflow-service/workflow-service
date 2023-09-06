@@ -148,7 +148,7 @@ async function getWorkspaceDetail() {
                                     </button>
                                     <div class="dropdown-menu dropdown-menu--dynamic">
                                       <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
-                                      <a class="dropdown-item" data-rid-id="${user.id}" onclick="deleteMember(this)">delete</a>
+                                      <a class="dropdown-item" onclick="deleteConfirmModal(${user.id}, 'member')">delete</a>
                                     </div>
                                   </div>
                                 </div>`;
@@ -589,41 +589,38 @@ async function updateWorkspace() {
 
 // 워크스페이스 삭제
 async function deleteWorkspace() {
+  console.log(workspaceId);
   try {
-    if (confirm('정말로 워크스페이스를 삭제하시겠습니까?')) {
-      await $.ajax({
-        method: 'DELETE',
-        url: `/workspaces/${workspaceId}`,
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('Content-type', 'application/json');
-          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-        },
-        success: () => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'success',
-            title: 'Success!',
-            text: '워크스페이스 삭제 완료',
-          }).then(() => {
-            window.location.href = '/';
-          });
-        },
-        error: (err) => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          });
-        },
-      });
-    } else {
-      return;
-    }
+    await $.ajax({
+      method: 'DELETE',
+      url: `/workspaces/${workspaceId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: () => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'success',
+          title: 'Success!',
+          text: '워크스페이스 삭제 완료',
+        }).then(() => {
+          window.location.href = '/';
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
+    });
   } catch (err) {
     console.error(err);
   }
@@ -642,6 +639,8 @@ async function inviteMember() {
   const roleInput = inviteModal.querySelector('#select-search').value;
 
   const sendingMessage = document.querySelector('#sending-message');
+  const inviteBtn = document.querySelector('#invite-button');
+  inviteBtn.style.display = 'none';
   sendingMessage.style.display = 'block';
 
   try {
@@ -668,6 +667,7 @@ async function inviteMember() {
       },
       error: (err) => {
         sendingMessage.style.display = 'none';
+        inviteBtn.style.display = 'block';
         Swal.fire({
           customClass: {
             container: 'my-swal',
@@ -680,6 +680,8 @@ async function inviteMember() {
     });
   } catch (err) {
     console.error(err);
+    sendingMessage.style.display = 'none';
+    inviteBtn.style.display = 'block';
   }
 }
 
@@ -738,92 +740,70 @@ async function setMemberRole() {
   }
 }
 
-// function deleteConfirmModal(element) {
-//   const userId = element.getAttribute('data-rid-id')
-//   const confirmModal = document.querySelector('#modal-info-confirmed')
-//   modal.classList.add("show")
+// 삭제 확인 모달 출력
+function deleteConfirmModal(targetId, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
 
-//   const okBtn = modal.querySelector(".btn-info")
-//   const cancelBtn = modal.querySelector(".btn-light")
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
 
-//   okbtn.addE
-// }
+  okBtn.addEventListener('click', () => {
+    if (targetType === 'member') {
+      deleteMember(targetId);
+    } else {
+      deleteWorkspace();
+    }
+    $(confirmModal).modal('hide');
+  });
 
-// <div class="modal-info-confirmed modal fade show" id="modal-info-confirmed" tabindex="-1" role="dialog" aria-hidden="true">
-
-// <div class="modal-dialog modal-sm modal-info" role="document">
-//    <div class="modal-content">
-//       <div class="modal-body">
-//          <div class="modal-info-body d-flex">
-//             <div class="modal-info-icon warning">
-//                <img src="img/svg/alert-circle.svg" alt="alert-circle" class="svg">
-//             </div>
-
-//             <div class="modal-info-text">
-//                <h6>Do you Want to delete these items?</h6>
-//                <p>Some descriptions</p>
-//             </div>
-
-//          </div>
-//       </div>
-//       <div class="modal-footer">
-
-//          <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">Cancel</button>
-//          <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Ok</button>
-
-//       </div>
-//    </div>
-// </div>
-
-// </div>
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
+  });
+}
 
 // 워크스페이스 멤버 삭제
-function deleteMember(element) {
-  const userId = element.getAttribute('data-rid-id');
+function deleteMember(userId) {
   try {
-    if (confirm('정말로 해당 멤버를 제외하시겠습니까?')) {
-      $.ajax({
-        method: 'DELETE',
-        url: `/workspaces/${workspaceId}/member/${userId}`,
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('Content-type', 'application/json');
-          xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-        },
-        success: () => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'success',
-            title: 'Success!',
-            text: '멤버 삭제 완료!',
-          }).then(() => {
-            window.location.reload();
-          });
-        },
-        error: (err) => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          });
-        },
-      });
-    } else {
-      return;
-    }
+    $.ajax({
+      method: 'DELETE',
+      url: `/workspaces/${workspaceId}/member/${userId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: () => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'success',
+          title: 'Success!',
+          text: '멤버 삭제 완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
+    });
   } catch (err) {
     console.error(err);
   }
 }
 
 // 워크스페이스가 보유중인 전체 보드 개수
-function countWorkspaceBoards(workspaceId) {
+async function countWorkspaceBoards(workspaceId) {
   try {
-    const response = $.ajax({
+    const response = await $.ajax({
       method: 'GET',
       url: `/workspaces/${workspaceId}/boards/count`,
       beforeSend: function (xhr) {
@@ -926,7 +906,6 @@ async function getAllFiles() {
         });
 
         const totalSize = getTotalFileSize(data);
-        console.log(totalSize);
         const storage = await printStorageSize(totalSize);
 
         printStorage.innerHTML = storage;
@@ -999,6 +978,7 @@ function getTotalFileSize(files) {
   return totalSizeInMb.toFixed(2);
 }
 
+// 워크스페이스 용량 조회
 async function printStorageSize(totalSize) {
   try {
     const results = await $.ajax({
@@ -1078,6 +1058,7 @@ function printFilesHtml(fileName, imgSrc, fileSize, fileUrl) {
           </div>`;
 }
 
+// 활동로그 조회
 async function getWorkspaceActivity() {
   try {
     await $.ajax({
@@ -1088,7 +1069,6 @@ async function getWorkspaceActivity() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data);
         let result = '';
 
         data.forEach((log) => {
@@ -1102,8 +1082,11 @@ async function getWorkspaceActivity() {
   }
 }
 
+// 활동로그 출력
 function printActivityhtml(details, createdAt, actions, profile) {
-  const formattedDate = new Date(createdAt).toLocaleString('ko-KR', {
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+
+  const formattedDate = new Date(new Date(createdAt).getTime() - offset).toLocaleString('ko-KR', {
     year: '2-digit',
     month: '2-digit',
     day: '2-digit',
