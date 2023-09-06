@@ -21,6 +21,8 @@ import {
 } from 'src/_common/dtos/board.dto';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
+import { GetUser } from 'src/_common/decorators/get-user.decorator';
+import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 
 @Controller('board-columns')
 export class BoardColumnsController {
@@ -37,8 +39,13 @@ export class BoardColumnsController {
   //보드 칼럼 생성
   @Post()
   @UseGuards(AuthGuard)
-  async PostBoardColumn(@Query('boardId') boardId: number, @Body() data: CreateBoardColumnDto, @Res() res: Response) {
-    await this.boardColumnsService.PostBoardColumn(boardId, data.name, data.sequence);
+  async PostBoardColumn(
+    @Query('boardId') boardId: number,
+    @Body() data: CreateBoardColumnDto,
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
+  ) {
+    await this.boardColumnsService.PostBoardColumn(boardId, data.name, data.sequence, user.id, user.name);
     return res.status(HttpStatus.CREATED).json({ message: '칼럼을 생성하였습니다.' });
   }
 
@@ -49,9 +56,10 @@ export class BoardColumnsController {
     @Query('boardId') boardId: number,
     @Param('columnId') columnId: number,
     @Body() data: UpdateBoardColumnNameDto,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ) {
-    await this.boardColumnsService.UpdateBoardColumnName(boardId, columnId, data.name);
+    await this.boardColumnsService.UpdateBoardColumnName(boardId, columnId, data.name, user.id, user.name);
     return res.status(HttpStatus.OK).json({ message: '칼럼 이름을 수정하였습니다.' });
   }
 
@@ -74,9 +82,10 @@ export class BoardColumnsController {
   async DeleteBoardColumn(
     @Query('boardId') boardId: number,
     @Param('columnId') columnId: number,
-    @Res() res: Response
+    @Res() res: Response,
+    @GetUser() user: AccessPayload
   ) {
-    await this.boardColumnsService.DeleteBoardColumn(boardId, columnId);
+    await this.boardColumnsService.DeleteBoardColumn(boardId, columnId, user.id, user.name);
     return res.status(HttpStatus.OK).json({ message: '칼럼을 삭제하였습니다.' });
   }
 
