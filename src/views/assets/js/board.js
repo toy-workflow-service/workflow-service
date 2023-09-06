@@ -117,8 +117,6 @@ function init() {
 function ColumnListReorder() {
   const columns = document.querySelectorAll('.kanban-list');
   Object.values(columns).forEach(async (column, index) => {
-    // console.log('testest: ', column, index + 1);
-    // console.log('columnId : ', column.getAttribute('data-columnid'));
     const columnId = column.getAttribute('data-columnid');
     if (columnId != 0) {
       //컬럼 순서 저장
@@ -136,7 +134,6 @@ function CardListReorder() {
     const cardId = card.getAttribute('data-cardid');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
-  // console.log($('.list-items').children('li'));
   // console.dir($('.list-items'));
 }
 
@@ -181,7 +178,6 @@ async function BoardColumnsGet(search) {
 // 아직 card api가 없기 때문에 column만 일단 넣음
 let cardIndex = 0;
 async function BoardColumns(data, search) {
-  console.log(search);
   document.querySelector(
     '.breadcrumb-main'
   ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
@@ -435,7 +431,6 @@ async function BoardColumns(data, search) {
 
   // cardDeleteBtn 클릭 시
   document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
-    console.log('delete btn check');
     // await CardDelete(columnId, cardId);
   });
 
@@ -519,7 +514,6 @@ async function BoardColumnNameUpdate(columnId, name) {
 // card get api
 async function CardGet(columnId) {
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
-  // console.log(columnId);
   const result = await $.ajax({
     type: 'GET',
     url: `/cards?board_column_Id=${columnId}`,
@@ -659,7 +653,6 @@ function createReplyModal(filteredComments) {
   for (const comment of filteredComments) {
     // 필요한 데이터를 추출하여 모달에 추가
     const isCurrentUserComment = comment.user.id === comment.userId;
-    console.log(filteredComments); // 현재 사용자의 댓글 여부 확인
 
     const commentHTML = `
       <div class="checkbox-group d-flex">
@@ -667,23 +660,20 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
-            comment.comment
-          }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
+      }</textarea>
           
           <!-- 수정 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+        : ''
+      }
           
           <!-- 삭제 버튼 -->
-          ${
-            isCurrentUserComment
-              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-              : ''
-          }
+          ${isCurrentUserComment
+        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+        : ''
+      }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -735,7 +725,6 @@ document.addEventListener('click', function (event) {
     Getcomment(cardId, commentId);
     openCommentDetailModal(columnId, cardId, commentId);
     $('#commentDetailModal').modal('show');
-    console.log('컬럼아이디', columnId);
   }
 });
 
@@ -772,7 +761,6 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     if (!comment.reply_id) {
       const cardId = cardData.id;
       const commentId = comment.id;
-      console.log(comment.user.name);
 
       commentHTML += `
         <div class="checkbox-group d-flex" id="commentDetail"
@@ -1066,7 +1054,6 @@ document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'updateCardButton') {
     $('#updateCardModal').modal('show');
 
-    console.log(filesArr);
   }
 });
 
@@ -1134,7 +1121,6 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
   // PATCH 요청을 보내기 전에 데이터 확인
-  console.log('Updated Data:', columnId, cardId, ...data);
   await $.ajax({
     type: 'PATCH',
     url: `/cards/${cardId}?board_column_Id=${columnId}`,
@@ -1173,7 +1159,6 @@ async function CardAllUpdate(columnId, cardId, data) {
 function deleteCard(button) {
   const columnId = button.getAttribute('data-column-id');
   const cardId = button.getAttribute('data-card-id');
-  console.log('deleteCard : ', columnId, cardId);
   // 카드 삭제 API 호출
   $.ajax({
     type: 'DELETE',
@@ -1237,7 +1222,6 @@ document.addEventListener('click', function (event) {
     const commentId = document.getElementById('commentDeleteBtn').getAttribute('data-comment-id');
     const cardId = document.getElementById('commentDeleteBtn').getAttribute('data-card-id');
     deleteComment(commentId, cardId);
-    console.log('삭제', commentId, cardId);
   }
 });
 
@@ -1245,7 +1229,6 @@ document.addEventListener('click', function (event) {
 async function CommentUpdate(commentId, columnId, cardId, data) {
   try {
     // PATCH 요청을 보내기 전에 데이터 확인
-    console.log('코멘트 수정:', data);
 
     const response = await $.ajax({
       type: 'PATCH',
@@ -1260,7 +1243,6 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
     });
 
     // 업데이트 응답 결과 확인
-    console.log('Update Response:', response.message);
   } catch (error) {
     console.log(error);
   }
@@ -1355,8 +1337,6 @@ function Getcomment(cardId, commentId) {
       if (filteredComments.length > 0) {
         // 필터링된 모든 코멘트를 사용하여 모달을 동적으로 생성
         createReplyModal(filteredComments);
-      } else {
-        console.log('No comments found with the desired reply_id.');
       }
     },
     error: function (error) {
@@ -1434,8 +1414,6 @@ function deleteFile(num) {
   filesArr[num].is_delete = true;
   filesNameArr[num].is_delete = true;
   filesSizeArr[num].is_delete = true;
-  console.log('지우기를 누르면?', Boolean(filesArr[num]));
-  console.log(filesNameArr[num]);
 }
 
 // 헤더에 있는 검색창
