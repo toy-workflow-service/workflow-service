@@ -195,7 +195,7 @@ async function BoardColumns(data, search) {
   ).innerHTML = `<div class="col-4" style="width: fit-content;"><h4>${data[0].boardName}</h4></div>
   <div class="col-4 kanban-board__add-card">
   <a class="btn px-15 btn-primary" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#editColumnModal">
-                <i class="las la-plus fs-16"></i>컬럼 추가</a>`;
+                컬럼 추가</a>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
