@@ -155,19 +155,21 @@
                     </div>
                   </div>
                 </div>
-                <!-- 전송 중 메시지 -->
-                <div id="sending-message" style="display: none">
-                  전송 중...
-                  <div class="dm-spin-dots spin-md">
-                    <span class="spin-dot badge-dot dot-primary"></span>
-                    <span class="spin-dot badge-dot dot-primary"></span>
-                    <span class="spin-dot badge-dot dot-primary"></span>
-                    <span class="spin-dot badge-dot dot-primary"></span>
-                  </div>
-                </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" onclick="inviteMember()">초대메일 전송</button>
+                <div>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="inviteMember()" id="invite-button">
+                    초대메일 전송
+                  </button>
+                  <div id="sending-message" style="display: none; background-color: white">
+                    <div class="dm-spin-dots spin-md">
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                    </div>
+                  </div>
+                </div>
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
               </div>
             </div>

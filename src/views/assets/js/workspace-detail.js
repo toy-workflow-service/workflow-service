@@ -618,6 +618,8 @@ async function inviteMember() {
   const roleInput = inviteModal.querySelector('#select-search').value;
 
   const sendingMessage = document.querySelector('#sending-message');
+  const inviteBtn = document.querySelector('#invite-button');
+  inviteBtn.style.display = 'none';
   sendingMessage.style.display = 'block';
 
   try {
@@ -641,6 +643,7 @@ async function inviteMember() {
       },
       error: (err) => {
         sendingMessage.style.display = 'none';
+        inviteBtn.style.display = 'block';
         Swal.fire({
           icon: 'error',
           title: 'error',
@@ -650,6 +653,8 @@ async function inviteMember() {
     });
   } catch (err) {
     console.error(err);
+    sendingMessage.style.display = 'none';
+    inviteBtn.style.display = 'block';
   }
 }
 
@@ -1061,7 +1066,9 @@ async function getWorkspaceActivity() {
 }
 
 function printActivityhtml(details, createdAt, actions, profile) {
-  const formattedDate = new Date(createdAt).toLocaleString('ko-KR', {
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+
+  const formattedDate = new Date(new Date(createdAt).getTime() - offset).toLocaleString('ko-KR', {
     year: '2-digit',
     month: '2-digit',
     day: '2-digit',

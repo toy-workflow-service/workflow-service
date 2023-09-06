@@ -56,7 +56,7 @@ async function getWorkspaces() {
           if (workspace.memberships_id !== null) {
             result = `<li class="">
                           <a href="/workspace?workspaceId=${workspace.id}">
-                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
+                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="margin-right: 5px"/>
                           ${workspace.name}</a>
                      </li>`;
           } else {
@@ -68,13 +68,12 @@ async function getWorkspaces() {
           if (workspace.memberships_id !== null) {
             topResult = `<li class="">
                           <a href="/workspace?workspaceId=${workspace.id}">
-                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
+                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="margin-right: 5px"/>
                           ${workspace.name}</a>
                         </li>`;
           } else {
             topResult = `<li class="">
                           <a href="/workspace?workspaceId=${workspace.id}">
-                          <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" />
                           ${workspace.name}</a>
                         </li>`;
           }
