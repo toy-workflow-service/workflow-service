@@ -1,7 +1,7 @@
 const boardChatList = document.querySelector('#chat-list-tab');
 const boardChatMessageList = document.querySelector('#v-pills-tabContent');
 const params = new URLSearchParams(window.location.search);
-const offset = 1000 * 60 * 60 * 9;
+const offset = new Date().getTimezoneOffset() * 60 * 1000;
 let boardId = params.get('boardId');
 let myBoardIds = [];
 let loginUserId, loginProfileUrl;
@@ -65,9 +65,16 @@ async function getChatRooms() {
         if (messageList[idx].length > 0) {
           const lastMessageInfo = messageList[idx][messageList[idx].length - 1];
           const img = lastMessageInfo.user_profile_url ? lastMessageInfo.user_profile_url : '../assets/img/favicon.png';
-          let sendTime = new Date(new Date(lastMessageInfo.message_created_at).getTime() + offset).toLocaleString();
-          if (sendTime.length === 24) sendTime = sendTime.substring(0, 21);
-          else sendTime = sendTime.substring(0, 20);
+          let sendTime = new Date(new Date(lastMessageInfo.message_created_at).getTime() - offset).toLocaleString(
+            'ko-KR',
+            {
+              year: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }
+          );
 
           let message = lastMessageInfo.message_message ? lastMessageInfo.message_message : '파일을 보냈습니다. ';
           if (message.length > 15) {
@@ -242,9 +249,13 @@ async function getChatRooms() {
         } else {
           let messages = [];
           list.map((data) => {
-            let time = new Date(new Date(data.message_created_at).getTime() + offset).toLocaleString();
-            if (time.length === 24) time = time.substring(0, 21);
-            else time = time.substring(0, 20);
+            let time = new Date(new Date(data.message_created_at).getTime() - offset).toLocaleString('ko-KR', {
+              year: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
 
             if (data.user_id === loginUserId) {
               const message = data.message_message
@@ -484,7 +495,7 @@ async function uploadFile(data) {
     },
   });
   const message = `<a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>`;
-  date = new Date(new Date(date).getTime() + offset);
+  date = new Date(new Date(date).getTime() - offset);
 
   socket.emit('chatMessage', {
     messageId,
@@ -574,9 +585,13 @@ function appendMessage(
   sendUserId
 ) {
   const chatList = document.getElementById(`${room}-chat-list`);
-  let time = new Date(new Date(date).getTime()).toLocaleString();
-  if (time.length === 24) time = time.substring(0, 21);
-  else time = time.substring(0, 20);
+  let time = new Date(new Date(date).getTime()).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   if (loginUserId / 1 === userId) {
     if (fileUpload) message = message.replace('class="color-white"', 'class="color-gray"');
@@ -680,9 +695,13 @@ function appendMessage(
 
 function updateChatList(userName, message, room, boardName, date, profileUrl, fileUpload) {
   const chatList = document.querySelector(`#recentChatList-${room}`);
-  let time = new Date(new Date(date).getTime()).toLocaleString();
-  if (time.length === 24) time = time.substring(0, 21);
-  else time = time.substring(0, 20);
+  let time = new Date(new Date(date).getTime()).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   if (fileUpload) message = '파일을 보냈습니다. ';
 
   const chatListHtml = `<div class="avatar avatar-circle ms-0">
@@ -881,5 +900,14 @@ function createChatRoom() {
       })
     );
   }
+
+  $.ajax({
+    method: 'POST',
+    url: `/userMessageRooms/${userId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: () => {},
+  });
   console.log(userId, loginUserId);
 }

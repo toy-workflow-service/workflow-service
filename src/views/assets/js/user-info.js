@@ -68,57 +68,75 @@ function updateUserInfo() {
   });
 }
 
+// 삭제 확인 모달
+function deleteConfirmModal(targetId, targetId2, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
+
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', () => {
+    if (targetType === 'payment') {
+      cancelPayment(targetId, targetId2);
+    } else {
+      deleteUser();
+    }
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
+  });
+}
+
 function deleteUser() {
-  if (confirm('정말로 해당 아이디를 삭제하시겠습니까?')) {
-    const password = document.querySelector('#passwordInput').value;
-    const payload = { password };
-    $.ajax({
-      method: 'DELETE',
-      url: '/users',
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify(payload),
-      success: (data) => {
+  const password = document.querySelector('#passwordInput').value;
+  const payload = { password };
+  $.ajax({
+    method: 'DELETE',
+    url: '/users',
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify(payload),
+    success: (data) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
+      return;
+    },
+    error: (error) => {
+      console.log(error);
+      if (error.responseJSON.message) {
         Swal.fire({
           customClass: {
             container: 'my-swal',
           },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.href = '/';
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
         });
-        return;
-      },
-      error: (error) => {
-        console.log(error);
-        if (error.responseJSON.message) {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON.message[0],
-          });
-        } else {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON,
-          });
-        }
-      },
-    });
-  } else {
-    return;
-  }
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON,
+        });
+      }
+    },
+  });
 }
 
 function changePassword() {
@@ -337,7 +355,9 @@ async function changeProfileImage() {
 }
 
 updateUserInfoBtn.addEventListener('click', updateUserInfo);
-deleteUserBtn.addEventListener('click', deleteUser);
+deleteUserBtn.addEventListener('click', () => {
+  deleteConfirmModal();
+});
 deleteBtn.addEventListener('click', () => {
   deleteDiv.style = 'display: none';
   deleteUserDiv.style = 'display: inline-flex; width: 100%';
