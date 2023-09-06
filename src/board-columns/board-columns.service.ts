@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Column } from 'src/_common/entities/board-column.entity';
+import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { Repository } from 'typeorm';
 
@@ -9,7 +10,8 @@ export class BoardColumnsService {
   constructor(
     @InjectRepository(Board_Column)
     private boardColumnRepository: Repository<Board_Column>,
-    private boardsService: BoardsService
+    private boardsService: BoardsService,
+    private auditLogService: AuditLogsService
   ) {}
 
   //보드 칼럼 조회
@@ -42,7 +44,7 @@ export class BoardColumnsService {
   }
 
   //보드 칼럼 생성
-  async PostBoardColumn(boardId: number, name: string, sequence: number) {
+  async PostBoardColumn(boardId: number, name: string, sequence: number, loginUserId: number, loginUserName: string) {
     const column = await this.boardColumnRepository.find({ relations: ['board'] });
     const isDone = column.find((b) => {
       if (b.board.id == boardId && 'Done' == name) {
@@ -52,15 +54,23 @@ export class BoardColumnsService {
     if (isDone) throw new BadRequestException('Done은 더이상 추가할 수 없습니다.');
     const board = await this.boardsService.GetBoardById(boardId);
     await this.boardColumnRepository.insert({ name, sequence, board });
+    await this.auditLogService.createColumnLog(board.workspace.id, name, loginUserId, loginUserName);
   }
 
   //보드 칼럼 이름 수정
-  async UpdateBoardColumnName(boardId: number, columnId: number, name: string) {
+  async UpdateBoardColumnName(
+    boardId: number,
+    columnId: number,
+    name: string,
+    loginUserId: number,
+    loginUserName: string
+  ) {
     const board = await this.boardsService.GetBoardById(boardId);
     const column = await this.boardColumnRepository.findOneBy({ id: columnId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     await this.boardColumnRepository.update({ id: columnId }, { name });
+    await this.auditLogService.updateColumnLog(board.workspace.id, column.name, name, loginUserId, loginUserName);
   }
 
   //보드 칼럼 순서 수정
@@ -73,12 +83,13 @@ export class BoardColumnsService {
   }
 
   //보드 칼럼 삭제
-  async DeleteBoardColumn(boardId: number, columnId: number) {
+  async DeleteBoardColumn(boardId: number, columnId: number, loginUserId: number, loginUserName: string) {
     const board = await this.boardsService.GetBoardById(boardId);
     const column = await this.boardColumnRepository.findOneBy({ id: columnId });
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (!column) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
     await this.boardColumnRepository.delete({ id: columnId });
+    await this.auditLogService.deleteColumnLog(board.workspace.id, column.name, loginUserId, loginUserName);
   }
 
   // 워크스페이스가 보유한 카드개수 조회

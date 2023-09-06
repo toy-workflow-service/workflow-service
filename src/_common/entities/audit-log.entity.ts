@@ -2,6 +2,9 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } f
 import { User } from './user.entitiy';
 import { Workspace } from './workspace.entity';
 import ActionType from '../utils/action-type';
+import { Board } from './board.entity';
+import { Board_Column } from './board-column.entity';
+import { Card } from './card.entity';
 
 @Entity('audit_logs')
 export class Audit_log {
