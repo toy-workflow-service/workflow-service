@@ -43,6 +43,7 @@ export class BoardsService {
         boardName: board.name,
         description: board.description,
         deadline: board.deadline,
+        startDate: board.start_date,
         boardMembers: boardMembers,
         createdAt: board.created_at,
         updatedAt: board.updated_at,
@@ -62,7 +63,7 @@ export class BoardsService {
         .createQueryBuilder('column')
         .leftJoin('column.cards', 'card')
         .where('column.board.id = :boardId', { boardId: boardInfo[board].boardId })
-        .andWhere('column.name = :name', { name: 'Done' })
+        .andWhere('column.name = :name', { name: '완료' })
         .select('SUM(card.board_column IS NOT NULL) as doneCount')
         .getRawOne();
 
@@ -88,6 +89,7 @@ export class BoardsService {
     name: string,
     description: string,
     deadline: Date,
+    start_date: Date,
     loginUserName: string,
     loginUserId: number
   ): Promise<Object> {
@@ -98,9 +100,9 @@ export class BoardsService {
     if (boardCount.length >= 3 && !hasMembership)
       throw new HttpException('무료 워크스페이스는 보드를 3개까지만 생성할 수 있습니다.', HttpStatus.BAD_REQUEST);
 
-    const board = await this.boardRepository.insert({ name, description, deadline, workspace });
+    const board = await this.boardRepository.insert({ name, description, deadline, start_date, workspace });
     const findBoard = await this.boardRepository.findOneBy({ id: board.raw.insertId });
-    await this.boardColumnRepository.insert({ name: 'Done', sequence: 1, board: findBoard });
+    await this.boardColumnRepository.insert({ name: '완료', sequence: 1, board: findBoard });
     await this.auditLogService.createBoardLog(workspaceId, name, loginUserId, loginUserName);
 
     return board;
@@ -113,13 +115,14 @@ export class BoardsService {
     name: string,
     description: string,
     deadline: Date,
+    start_date: Date,
     loginUserId: number,
     loginUserName: string
   ) {
     const board = await this.GetBoardById(id);
     if (!board) throw new HttpException('해당 보드는 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    await this.boardRepository.update({ id }, { name, description, deadline });
+    await this.boardRepository.update({ id }, { name, description, deadline, start_date });
     await this.auditLogService.updateBoardLog(workspaceId, board.name, name, loginUserId, loginUserName);
   }
 

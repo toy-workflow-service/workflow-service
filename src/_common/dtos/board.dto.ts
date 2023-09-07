@@ -10,6 +10,8 @@ export class CreateBoardDto {
   readonly description: string;
 
   readonly deadline: Date;
+
+  readonly start_date: Date;
 }
 
 export class UpdateBoardDto {
@@ -22,6 +24,8 @@ export class UpdateBoardDto {
   readonly description: string;
 
   readonly deadline: Date;
+
+  readonly start_date: Date;
 }
 
 export class CreateBoardColumnDto {

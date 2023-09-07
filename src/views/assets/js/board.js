@@ -88,7 +88,7 @@ function init() {
     .sortable({
       containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
-      stack: '.kanban-items  ul,.todo-task1 tbody',
+      stack: '.kanban-items,.todo-task1 tbody',
       start: function (e, i) {
         // console.log('start : ', e, i);
       },
@@ -131,7 +131,7 @@ function CardListReorder() {
   const cards = document.querySelectorAll('#card-list-item');
   Object.values(cards).forEach(async (card, index) => {
     const columnId = card.parentElement.getAttribute('data-columnId');
-    const cardId = card.getAttribute('data-cardid');
+    const cardId = card.getAttribute('data-cardId');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
   // console.dir($('.list-items'));
@@ -190,13 +190,12 @@ async function BoardColumns(data, search) {
                   </nav>
                 </div>
                 `;
-  document.querySelector('.kanban-header').innerHTML = `<h4>${data[0].boardName}</h4>
-  <div class="kanban-board__add-card">
-                              <button class="shadow-none border-0" data-bs-toggle="modal" data-bs-target="#editColumnModal">
-                              <h5>
-                              <img src="./assets/img/svg/plus.svg" alt="plus" class="svg">
-                                컬럼 추가</h5></button>
-                          </div>`;
+  document.querySelector(
+    '.kanban-header'
+  ).innerHTML = `<div class="col-4" style="width: fit-content; margin-top: 10px;"><h4>${data[0].boardName}</h4></div>
+  <div class="col-4 kanban-board__add-card">
+  <a class="btn px-15 btn-primary" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#editColumnModal">
+                컬럼 추가</a>`;
 
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
@@ -245,29 +244,6 @@ async function BoardColumns(data, search) {
                 </li>`;
       }
     }
-    // const cardHtml = card
-    //   .map(
-    //     (c) =>
-    //       `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-    //                                     ${c.name}
-    //                                   <button class="open-popup-modal" type="button">
-    //                                     <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
-    //                                   </button>
-    //                                   <div class="popup-overlay">
-    //                                     <!--Creates the popup content-->
-    //                                     <div class="popup-content">
-    //                                         <div class="mb-10 popup-textarea">
-    //                                           <textarea class="form-control" rows="3" placeholder="Edit title..."></textarea>
-    //                                         </div>
-    //                                         <div class="d-flex align-items-center popup-button">
-    //                                           <button class="save-title-changes btn btn-primary btn-sm btn-squared rounded" type="submit">Submit</button>
-    //                                         </div>
-    //                                         <div class="overlay-close"></div>
-    //                                     </div>
-    //                                   </div>
-    //                               </li>`
-    //   )
-    //   .join('');
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
@@ -277,7 +253,7 @@ async function BoardColumns(data, search) {
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -302,7 +278,7 @@ async function BoardColumns(data, search) {
                                   </div>
   
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -311,7 +287,6 @@ async function BoardColumns(data, search) {
                                 </div>`;
     }
   }
-
   init();
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
@@ -1429,7 +1404,14 @@ let searchInput = '';
 document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#header-search').value;
-  console.log(1, searchInput);
+  document.querySelector('.search-form-topMenu').classList.remove('show');
+  document.querySelector('.search-toggle').classList.remove('active');
+  if (searchInput) {
+    document.querySelector('.search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.search-result').innerHTML = '';
+  }
+  document.querySelector('#header-search').value = '';
   BoardColumnsGet(searchInput);
 });
 
@@ -1437,6 +1419,13 @@ document.querySelector('.search-form-topMenu').addEventListener('submit', (event
 document.querySelector('.search-form').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#search-form').value;
-  console.log(2, searchInput);
+  document.querySelector('.mobile-search').classList.remove('show');
+  document.querySelector('.btn-search').classList.remove('search-active');
+  document.querySelector('#search-form').value = '';
+  if (searchInput) {
+    document.querySelector('.mobile-search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.mobile-search-result').innerHTML = '';
+  }
   BoardColumnsGet(searchInput);
 });

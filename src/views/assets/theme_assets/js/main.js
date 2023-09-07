@@ -54,12 +54,12 @@
       $('.ui-datepicker').removeClass('myClass', 'fast');
     }
   });
-  $('body').on('click', '#datepicker,#datepicker2', function () {
+  $('body').on('click', '#datepicker,#datepicker2,#datepicker3,#datepicker4', function () {
     $(this).closest('body').addClass('datePicker-active');
   });
 
   $('body').on('click', function (e) {
-    if (!$(e.target).closest('#datepicker,#datepicker2').length) {
+    if (!$(e.target).closest('#datepicker,#datepicker2,#datepicker3,#datepicker4').length) {
       $('body').removeClass('datePicker-active');
     }
   });
