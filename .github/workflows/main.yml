@@ -1,0 +1,34 @@
+name : Build and Deploy to EC2
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Run scripts in server
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Run scripts in server
+      - uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          timeout: 40s
+          script:
+            cd workflow-service
+            git pull origin main
+            npm run build
+            sudo pm2 restart
