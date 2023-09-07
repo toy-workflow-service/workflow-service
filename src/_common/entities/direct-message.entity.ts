@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -22,6 +21,9 @@ export class Direct_Message {
 
   @Column({ nullable: true })
   file_url: string;
+
+  @Column({ nullable: true })
+  file_original_name: string;
 
   @CreateDateColumn()
   created_at: Date;
