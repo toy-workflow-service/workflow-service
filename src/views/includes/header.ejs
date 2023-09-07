@@ -74,14 +74,6 @@
             <div class="hexadash-top-menu position-relative">
               <ul class="d-flex align-items-center flex-wrap">
                 <li class="has-subMenu">
-                  <a href="#" class="active">Dashboard</a>
-                  <ul class="subMenu">
-                    <li class="active">
-                      <a href="index.html">Demo 1</a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="has-subMenu">
                   <a href="#" class="">Layouts</a>
                   <ul class="subMenu">
                     <li class="l_sidebar">
@@ -103,7 +95,7 @@
                         <li class="has-subMenu-left">
                           <a href="/chat" class="">
                             <img src="../assets/img/svg/message-square.svg" alt="message-square" class="svg nav-icon" />
-                            <span class="menu-text">메시지</span>
+                            <span class="menu-text">Message</span>
                             <ul class="subMenu">
                               <li>
                                 <a><i class="uil uil-comment-dots"></i> 보드 채팅방</a>
@@ -137,35 +129,6 @@
                             <span class="nav-icon uil uil-calendar-alt"></span>
                             <span class="menu-text">Calendar</span>
                           </a>
-                        </li>
-                        <li class="has-subMenu-left">
-                          <a href="#" class="">
-                            <span class="nav-icon uil uil-users-alt"></span>
-                            <span class="menu-text">Users</span>
-                          </a>
-                          <ul class="subMenu">
-                            <li>
-                              <a href="users-membar.html" class="">Team</a>
-                            </li>
-                            <li>
-                              <a href="users-card.html" class="">Users Grid</a>
-                            </li>
-                            <li>
-                              <a href="users-list.html" class="">Users List</a>
-                            </li>
-                            <li>
-                              <a href="users-card2.html" class="">Users Grid style</a>
-                            </li>
-                            <li>
-                              <a href="users-group.html" class="">Users Group</a>
-                            </li>
-                            <li>
-                              <a href="user-info.html" class="">Add User</a>
-                            </li>
-                            <li>
-                              <a href="users-datatable.html" class="">Users Table</a>
-                            </li>
-                          </ul>
                         </li>
                         <li>
                           <a href="chat.html" class="">
@@ -201,26 +164,6 @@
                             <span class="menu-text">Kanban Board</span>
                           </a>
                         </li>
-                        <li class="has-subMenu-left">
-                          <a href="#" class="">
-                            <span class="nav-icon uil uil-search"></span>
-                            <span class="menu-text">JobSearch</span>
-                          </a>
-                          <ul class="subMenu">
-                            <li>
-                              <a class="" href="jobSearch.html">Grid view</a>
-                            </li>
-                            <li>
-                              <a class="" href="jobSearchList.html">List View</a>
-                            </li>
-                            <li>
-                              <a class="" href="jobDetails.html">Details</a>
-                            </li>
-                            <li>
-                              <a class="" href="job-apply.html">Apply</a>
-                            </li>
-                          </ul>
-                        </li>
                       </ul>
                     </li>
                   </ul>
@@ -233,7 +176,7 @@
         <% if(header.isLogin) { %>
         <div class="navbar-right">
           <ul class="navbar-right__menu">
-            <div style="margin-top: 8px;" class="search-result"></div>
+            <div style="margin-top: 8px" class="search-result"></div>
             <li class="nav-search">
               <a href="#" class="search-toggle">
                 <i class="uil uil-search"></i>
@@ -351,7 +294,7 @@
           </ul>
           <!-- ends: .navbar-right__menu -->
           <div class="navbar-right__mobileAction d-md-none">
-            <div style="margin-top: 8px;" class="mobile-search-result"></div>
+            <div style="margin-top: 8px" class="mobile-search-result"></div>
             <a href="#" class="btn-search">
               <img src="../assets/img/svg/search.svg" alt="search" class="svg feather-search" />
               <img src="../assets/img/svg/x.svg" alt="x" class="svg feather-x"
@@ -401,18 +344,6 @@
       <div class="sidebar sidebar-collapse" id="sidebar">
         <div class="sidebar__menu-group">
           <ul class="sidebar_nav">
-            <li class="has-child open">
-              <a href="#" class="active">
-                <span class="nav-icon uil uil-create-dashboard"></span>
-                <span class="menu-text">Dashboards</span>
-                <span class="toggle-icon"></span>
-              </a>
-              <ul>
-                <li class="active">
-                  <a href="index.html">Demo 1</a>
-                </li>
-              </ul>
-            </li>
             <li class="has-child">
               <a href="#" class="">
                 <span class="nav-icon uil uil-window-section"></span>
@@ -437,7 +368,7 @@
             <li class="has-child">
               <a href="chat.html" class="">
                 <span class="nav-icon uil uil-chat"></span>
-                <span class="menu-text">메시지</span>
+                <span class="menu-text">Message</span>
                 <span class="toggle-icon"></span>
               </a>
               <ul class="subMenu">
@@ -469,36 +400,6 @@
                 <span class="nav-icon uil uil-calendar-alt"></span>
                 <span class="menu-text">Calendar</span>
               </a>
-            </li>
-            <li class="has-child">
-              <a href="#" class="">
-                <span class="nav-icon uil uil-users-alt"></span>
-                <span class="menu-text">Users</span>
-                <span class="toggle-icon"></span>
-              </a>
-              <ul>
-                <li class="">
-                  <a href="users-membar.html">Team</a>
-                </li>
-                <li class="">
-                  <a href="users-card.html">Users Grid</a>
-                </li>
-                <li class="">
-                  <a href="users-list.html">Users List</a>
-                </li>
-                <li class="">
-                  <a href="users-card2.html">Users Grid style</a>
-                </li>
-                <li class="">
-                  <a href="users-group.html">Users Group</a>
-                </li>
-                <li class="">
-                  <a href="user-info.html">Add User</a>
-                </li>
-                <li class="">
-                  <a href="users-datatable.html">Users Table</a>
-                </li>
-              </ul>
             </li>
             <li class="">
               <a href="note.html">
