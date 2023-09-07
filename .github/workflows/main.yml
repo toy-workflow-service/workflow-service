@@ -24,7 +24,7 @@ jobs:
         with:
           host: ${{secrets.HOST }}
           username: ${{secrets.USERNAME }}
-          key: ${{secrets.KEY }}
+          password: ${{secrets.PASSWORD }}
           port: ${{secrets.PORT }}
           timeout: 40s
           script: ${{secrets.SCRIPT }}
