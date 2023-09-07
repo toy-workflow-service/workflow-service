@@ -27,8 +27,4 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           timeout: 40s
-          script:
-            cd workflow-service
-            git pull origin main
-            npm run build
-            sudo pm2 restart
+          script: ${{ secrets.SCRIPT }}
