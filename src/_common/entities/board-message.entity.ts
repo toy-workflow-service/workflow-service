@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -17,11 +16,14 @@ export class Board_Message {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   message: string;
 
   @Column({ nullable: true })
   file_url: string;
+
+  @Column({ nullable: true })
+  file_original_name: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -42,6 +44,5 @@ export class Board_Message {
   board: Board;
 
   @OneToOne(() => Mention, (mention) => mention.board_message)
-  @JoinColumn()
   mention: Mention;
 }

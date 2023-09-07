@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -23,6 +22,9 @@ export class Direct_Message {
   @Column({ nullable: true })
   file_url: string;
 
+  @Column({ nullable: true })
+  file_original_name: string;
+
   @CreateDateColumn()
   created_at: Date;
 
@@ -42,6 +44,5 @@ export class Direct_Message {
   user_message_room: User_Message_Room;
 
   @OneToOne(() => Mention, (mention) => mention.direct_message)
-  @JoinColumn()
   mention: Mention;
 }

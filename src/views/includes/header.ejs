@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title><%= title %> | <%= subtitle %></title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+    <!-- inject:css-->
+    <link rel="stylesheet" href="../assets/vendor_assets/css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/daterangepicker.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/fontawesome.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/footable.standalone.min.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/fullcalendar@5.2.0.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/jquery-jvectormap-2.0.5.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/jquery.mCustomScrollbar.min.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/leaflet.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/line-awesome.min.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/magnific-popup.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/select2.min.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/slick.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/star-rating-svg.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/trumbowyg.min.css" />
+    <link rel="stylesheet" href="../assets/vendor_assets/css/wickedpicker.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <!-- endinject -->
+
+    <script
+      src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+      integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
+      crossorigin="anonymous"
+    ></script>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png" />
+    <script src="../assets/js/header.js" defer></script>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+    <script src="../assets/js/socket.js" defer></script>
+  </head>
+
+  <body class="layout-light side-menu">
+    <div class="mobile-search">
+      <form class="search-form">
+        <img src="../assets/img/svg/search.svg" alt="search" class="svg" />
+        <input
+          class="form-control me-sm-2 box-shadow-none"
+          type="search"
+          id="search-form"
+          placeholder="Search..."
+          aria-label="Search"
+        />
+      </form>
+    </div>
+    <div class="mobile-author-actions"></div>
+    <header class="header-top">
+      <nav class="navbar navbar-light">
+        <div class="navbar-left">
+          <div class="logo-area">
+            <a class="navbar-brand" href="/">
+              <img class="dark" src="../assets/img/logo-dark.png" alt="logo" />
+              <img class="light" src="../assets/img/logo-white.png" alt="logo" />
+            </a>
+            <a href="#" class="sidebar-toggle">
+              <img class="svg" src="../assets/img/svg/align-center-alt.svg" alt="img"
+            /></a>
+          </div>
+          <div class="top-menu">
+            <div class="hexadash-top-menu position-relative">
+              <ul class="d-flex align-items-center flex-wrap">
+                <li class="has-subMenu">
+                  <a href="#" class="active">Dashboard</a>
+                  <ul class="subMenu">
+                    <li class="active">
+                      <a href="index.html">Demo 1</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="has-subMenu">
+                  <a href="#" class="">Layouts</a>
+                  <ul class="subMenu">
+                    <li class="l_sidebar">
+                      <a href="#" data-layout="light">라이트 모드</a>
+                    </li>
+                    <li class="l_sidebar">
+                      <a href="#" data-layout="dark">다크 모드</a>
+                    </li>
+                    <li class="l_navbar">
+                      <a href="#" data-layout="side">메뉴 사이드로 보기</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="has-subMenu">
+                  <a href="#" class="">Apps</a>
+                  <ul class="megaMenu-wrapper megaMenu-dropdown">
+                    <li>
+                      <ul>
+                        <li class="has-subMenu-left">
+                          <a href="/chat" class="">
+                            <img src="../assets/img/svg/message-square.svg" alt="message-square" class="svg nav-icon" />
+                            <span class="menu-text">메시지</span>
+                            <ul class="subMenu">
+                              <li>
+                                <a><i class="uil uil-comment-dots"></i> 보드 채팅방</a>
+                              </li>
+                              <hr class="dropdown-divider" />
+                              <ul class="groupChat"></ul>
+                              <li>
+                                <hr class="dropdown-divider" />
+                                <a><i class="uil uil-user-arrows"></i> 전체 채팅방으로 이동</a>
+                              </li>
+                              <ul class="privateChat"></ul>
+                            </ul>
+                          </a>
+                        </li>
+                        <li class="has-subMenu-left">
+                          <a class="">
+                            <span class="nav-icon uil uil-folder"></span>
+                            <span class="menu-text">Workspace</span>
+                          </a>
+                          <ul class="subMenu">
+                            <li id="workspace-list-top">
+                              <a onclick="openCreateWorkspaceModal()"
+                                ><img class="svg wh-25 text-primary" src="./assets/img/svg/plus.svg" alt="img" />
+                                워크스페이스 생성</a
+                              >
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <a href="calendar.html" class="">
+                            <span class="nav-icon uil uil-calendar-alt"></span>
+                            <span class="menu-text">Calendar</span>
+                          </a>
+                        </li>
+                        <li class="has-subMenu-left">
+                          <a href="#" class="">
+                            <span class="nav-icon uil uil-users-alt"></span>
+                            <span class="menu-text">Users</span>
+                          </a>
+                          <ul class="subMenu">
+                            <li>
+                              <a href="users-membar.html" class="">Team</a>
+                            </li>
+                            <li>
+                              <a href="users-card.html" class="">Users Grid</a>
+                            </li>
+                            <li>
+                              <a href="users-list.html" class="">Users List</a>
+                            </li>
+                            <li>
+                              <a href="users-card2.html" class="">Users Grid style</a>
+                            </li>
+                            <li>
+                              <a href="users-group.html" class="">Users Group</a>
+                            </li>
+                            <li>
+                              <a href="user-info.html" class="">Add User</a>
+                            </li>
+                            <li>
+                              <a href="users-datatable.html" class="">Users Table</a>
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <a href="chat.html" class="">
+                            <img src="../assets/img/svg/bookmark.svg" alt="bookmark" class="svg nav-icon" />
+                            <span class="menu-text">Note</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="chat.html" class="">
+                            <img src="../assets/img/svg/activity.svg" alt="activity" class="svg nav-icon" />
+                            <span class="menu-text">To-Do</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="/membership" class="">
+                            <span class="nav-icon uil uil-bill"></span>
+                            <span class="menu-text">Membership</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="/support" class="">
+                            <span class="nav-icon uil uil-headphones"></span>
+                            <span class="menu-text">Support</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <ul>
+                        <li>
+                          <a href="/board">
+                            <img src="../assets/img/svg/columns.svg" alt="columns" class="svg nav-icon" />
+                            <span class="menu-text">Kanban Board</span>
+                          </a>
+                        </li>
+                        <li class="has-subMenu-left">
+                          <a href="#" class="">
+                            <span class="nav-icon uil uil-search"></span>
+                            <span class="menu-text">JobSearch</span>
+                          </a>
+                          <ul class="subMenu">
+                            <li>
+                              <a class="" href="jobSearch.html">Grid view</a>
+                            </li>
+                            <li>
+                              <a class="" href="jobSearchList.html">List View</a>
+                            </li>
+                            <li>
+                              <a class="" href="jobDetails.html">Details</a>
+                            </li>
+                            <li>
+                              <a class="" href="job-apply.html">Apply</a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- ends: navbar-left -->
+        <% if(header.isLogin) { %>
+        <div class="navbar-right">
+          <ul class="navbar-right__menu">
+            <div style="margin-top: 8px;" class="search-result"></div>
+            <li class="nav-search">
+              <a href="#" class="search-toggle">
+                <i class="uil uil-search"></i>
+                <i class="uil uil-times"></i>
+              </a>
+              <form class="search-form-topMenu">
+                <span class="search-icon uil uil-search"></span>
+                <input
+                  class="form-control me-sm-2 box-shadow-none"
+                  type="search"
+                  placeholder="Search..."
+                  aria-label="Search"
+                  id="header-search"
+                />
+              </form>
+            </li>
+            <li class="nav-message">
+              <div class="dropdown-custom">
+                <div id="messageIcon">
+                  <a href="javascript:;" class="nav-item-toggle" id="messageAlarm">
+                    <img class="svg" src="../assets/img/svg/message.svg" alt="img" />
+                  </a>
+                </div>
+                <div class="dropdown-parent-wrapper" id="recentMessageContainer">
+                  <div class="dropdown-wrapper">
+                    <h2 class="dropdown-wrapper__title">최근 메시지</h2>
+                    <ul id="recentMessageList"></ul>
+                    <a href="/chat" class="dropdown-wrapper__more">전체 메시지 보기</a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <!-- ends: nav-message -->
+            <li class="nav-notification">
+              <div class="dropdown-custom">
+                <a href="javascript:;" class="nav-item-toggle icon-active">
+                  <img class="svg" src="../assets/img/svg/alarm.svg" alt="img" />
+                </a>
+                <div class="dropdown-parent-wrapper">
+                  <div class="dropdown-wrapper">
+                    <h2 class="dropdown-wrapper__title">
+                      최근 알림 <span class="badge-circle badge-warning ms-1">1</span>
+                    </h2>
+                    <ul>
+                      <li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
+                        <div class="nav-notification__type nav-notification__type--primary">
+                          <img class="svg" src="../assets/img/svg/inbox.svg" alt="inbox" />
+                        </div>
+                        <div class="nav-notification__details">
+                          <p>
+                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
+                            <span>sent you a message</span>
+                          </p>
+                          <p>
+                            <span class="time-posted">5 hours ago</span>
+                          </p>
+                        </div>
+                      </li>
+                    </ul>
+                    <a href="" class="dropdown-wrapper__more"></a>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <!-- ends: .nav-notification -->
+            <li class="nav-author">
+              <div class="dropdown-custom">
+                <a href="javascript:;" class="nav-item-toggle"
+                  ><img src="<%= header.profileUrl %>" alt="" class="rounded-circle" />
+                  <span class="nav-item__title"
+                    ><%= header.name %><i class="las la-angle-down nav-item__arrow"></i
+                  ></span>
+                </a>
+                <div class="dropdown-parent-wrapper">
+                  <div class="dropdown-wrapper">
+                    <div class="nav-author__info">
+                      <div class="author-img">
+                        <img src="<%= header.profileUrl %>" alt="" class="rounded-circle" />
+                      </div>
+                      <div>
+                        <h6><%= header.name %></h6>
+                        <span><%= header.email %></span>
+                      </div>
+                    </div>
+                    <div class="nav-author__options">
+                      <ul>
+                        <li>
+                          <a href="/userInfo"> <i class="uil uil-user"></i> Profile</a>
+                        </li>
+                        <li>
+                          <a href="">
+                            <i class="uil uil-setting"></i>
+                            Settings</a
+                          >
+                        </li>
+                        <li>
+                          <a href=""> <i class="uil uil-key-skeleton"></i> Billing</a>
+                        </li>
+                      </ul>
+                      <!-- <a class="nav-author__signout"> -->
+                      <button
+                        id="logoutBtn"
+                        class="btn btn-light btn-default btn-squared"
+                        style="width: 100%; height: 20%"
+                      >
+                        <i class="uil uil-sign-out-alt"> 로그아웃</i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- ends: .dropdown-wrapper -->
+                </div>
+              </div>
+            </li>
+            <!-- ends: .nav-author -->
+          </ul>
+          <!-- ends: .navbar-right__menu -->
+          <div class="navbar-right__mobileAction d-md-none">
+            <div style="margin-top: 8px;" class="mobile-search-result"></div>
+            <a href="#" class="btn-search">
+              <img src="../assets/img/svg/search.svg" alt="search" class="svg feather-search" />
+              <img src="../assets/img/svg/x.svg" alt="x" class="svg feather-x"
+            /></a>
+            <a href="#" class="btn-author-action">
+              <img class="svg" src="../assets/img/svg/more-vertical.svg" alt="more-vertical"
+            /></a>
+          </div>
+        </div>
+        <!-- ends: .navbar-right -->
+        <% } else { %>
+        <div class="navbar-right">
+          <ul class="navbar-right__menu">
+            <!-- <li class="nav-search">
+              <a href="#" class="search-toggle">
+                <i class="uil uil-search"></i>
+                <i class="uil uil-times"></i>
+              </a>
+              <form action="/" class="search-form-topMenu">
+                <span class="search-icon uil uil-search"></span>
+                <input
+                  class="form-control me-sm-2 box-shadow-none"
+                  type="search"
+                  placeholder="Search..."
+                  aria-label="Search"
+                />
+              </form>
+            </li> -->
+            <li class="">
+              <a href="/signup">
+                <span class="nav-icon uil uil-sign-out-alt"></span>
+                <span class="menu-text">회원가입</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="/login">
+                <span class="nav-icon uil uil-signin"></span>
+                <span class="menu-text">로그인</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <% } %>
+      </nav>
+    </header>
+    <div class="sidebar-wrapper">
+      <div class="sidebar sidebar-collapse" id="sidebar">
+        <div class="sidebar__menu-group">
+          <ul class="sidebar_nav">
+            <li class="has-child open">
+              <a href="#" class="active">
+                <span class="nav-icon uil uil-create-dashboard"></span>
+                <span class="menu-text">Dashboards</span>
+                <span class="toggle-icon"></span>
+              </a>
+              <ul>
+                <li class="active">
+                  <a href="index.html">Demo 1</a>
+                </li>
+              </ul>
+            </li>
+            <li class="has-child">
+              <a href="#" class="">
+                <span class="nav-icon uil uil-window-section"></span>
+                <span class="menu-text">Layouts</span>
+                <span class="toggle-icon"></span>
+              </a>
+              <ul>
+                <li class="l_sidebar">
+                  <a href="#" data-layout="light">라이트 모드</a>
+                </li>
+                <li class="l_sidebar">
+                  <a href="#" data-layout="dark">다크 모드</a>
+                </li>
+                <li class="l_navbar">
+                  <a href="#" data-layout="top">메뉴 상단으로 보기</a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-title mt-30">
+              <span>Applications</span>
+            </li>
+            <li class="has-child">
+              <a href="chat.html" class="">
+                <span class="nav-icon uil uil-chat"></span>
+                <span class="menu-text">메시지</span>
+                <span class="toggle-icon"></span>
+              </a>
+              <ul class="subMenu">
+                <li class="groupChattingRoom">
+                  <a style="font-weight: bold; font-size: 15px">보드 채팅방</a>
+                  <hr class="dropdown-divider" style="margin-left: 20%; margin-right: 15%" />
+                </li>
+                <li>
+                  <hr class="dropdown-divider" style="margin-left: 20%; margin-right: 15%" />
+                  <a href="/chat" style="font-weight: bold; color: darkorchid">전체 채팅방으로 이동</a>
+                  <hr class="dropdown-divider" style="margin-left: 20%; margin-right: 15%" />
+                </li>
+              </ul>
+            </li>
+            <li class="has-child">
+              <a href="#" class="">
+                <span class="nav-icon uil uil-folder"></span>
+                <span class="menu-text">Workspace</span>
+                <span class="toggle-icon"></span>
+              </a>
+              <ul class="workspace-list">
+                <li class="">
+                  <a onclick="openCreateWorkspaceModal()" style="font-weight: bold">+ 워크스페이스 생성</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="calendar.html" class="">
+                <span class="nav-icon uil uil-calendar-alt"></span>
+                <span class="menu-text">Calendar</span>
+              </a>
+            </li>
+            <li class="has-child">
+              <a href="#" class="">
+                <span class="nav-icon uil uil-users-alt"></span>
+                <span class="menu-text">Users</span>
+                <span class="toggle-icon"></span>
+              </a>
+              <ul>
+                <li class="">
+                  <a href="users-membar.html">Team</a>
+                </li>
+                <li class="">
+                  <a href="users-card.html">Users Grid</a>
+                </li>
+                <li class="">
+                  <a href="users-list.html">Users List</a>
+                </li>
+                <li class="">
+                  <a href="users-card2.html">Users Grid style</a>
+                </li>
+                <li class="">
+                  <a href="users-group.html">Users Group</a>
+                </li>
+                <li class="">
+                  <a href="user-info.html">Add User</a>
+                </li>
+                <li class="">
+                  <a href="users-datatable.html">Users Table</a>
+                </li>
+              </ul>
+            </li>
+            <li class="">
+              <a href="note.html">
+                <span class="nav-icon uil uil-clipboard-notes"></span>
+                <span class="menu-text">Note</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="to-do.html">
+                <span class="nav-icon uil uil-check-square"></span>
+                <span class="menu-text">To-Do</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="/membership">
+                <span class="nav-icon uil uil-bill"></span>
+                <span class="menu-text">Membership</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="/support">
+                <span class="nav-icon uil uil-headphones"></span>
+                <span class="menu-text">Support</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- 워크스페이스 생성모달 -->
+    <div class="modal-basic modal fade show" id="modal-basic4" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content modal-bg-white">
+          <div class="modal-header">
+            <h6 class="modal-title">워크스페이스 생성</h6>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-basic">
+                <div class="form-group mb-25">
+                  <label>워크스페이스 타이틀</label>
+                  <input
+                    class="form-control form-control-lg"
+                    type="text"
+                    id="create-title"
+                    placeholder="내용을 입력하세요."
+                  />
+                </div>
+                <div class="card card-default card-md mb-4">
+                  <label>워크스페이스 타입</label>
+                  <div class="dm-select-list d-flex">
+                    <div class="dm-select">
+                      <select name="select-search" id="select-search" class="form-control">
+                        <option>개발</option>
+                        <option>연구</option>
+                        <option>마케팅</option>
+                        <option>교육</option>
+                        <option>HRD</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mb-25">
+                  <label for="description">워크스페이스 소개</label>
+                  <div class="position-relative">
+                    <textarea
+                      class="form-control form-control-lg"
+                      id="create-description"
+                      placeholder="내용을 입력하세요."
+                      style="resize: none"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" onclick="createWorkspace()">생성</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 워크스페이스 생성모달 끝 -->
+  </body>
+</html>

@@ -1,0 +1,487 @@
+<%- include('includes/header') %>
+<main id="main" class="main">
+  <div class="contents">
+    <div class="container-fluid">
+      <div class="profile-content mb-50" style="display: inline">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="breadcrumb-main">
+              <h4 class="text-capitalize breadcrumb-title">내 프로필</h4>
+              <div class="breadcrumb-action justify-content-center flex-wrap">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="/"><i class="uil uil-estate"></i>Work Flow</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">내 프로필</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <!-- 결제취소 확인 모달 -->
+          <div
+            class="modal-info-confirmed modal fade show"
+            id="modal-info-confirmed"
+            tabindex="-1"
+            role="dialog"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-sm modal-info" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="modal-info-body d-flex">
+                    <div class="modal-info-icon warning">
+                      <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+                    </div>
+                    <div class="modal-info-text">
+                      <h6>정말로 삭제하시겠습니까?</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+                  <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">취소</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 결제취소 확인 모달 끝 -->
+          <div class="col-xxl-3 col-lg-4 col-sm-5">
+            <!-- Profile Acoount -->
+            <div class="card mb-25">
+              <div class="card-body text-center p-0">
+                <div class="account-profile border-bottom pt-25 px-25 pb-0 flex-column d-flex align-items-center">
+                  <div class="ap-img mb-20 pro_img_wrapper">
+                    <!-- <label for="file-upload"> -->
+                    <input id="file-upload" type="file" name="newFile" class="d-none" onchange="changeProfileImage()" />
+                    <label for="file-upload">
+                      <!-- Profile picture image-->
+                      <img class="ap-img__main rounded-circle wh-120" src="<%= header.profileUrl %>" alt="profile" />
+                      <span class="cross" id="remove_pro_pic">
+                        <img src="./assets/img/svg/camera.svg" alt="camera" class="svg" />
+                      </span>
+                      <!-- </label> -->
+                    </label>
+                  </div>
+                  <div class="ap-nameAddress pb-3">
+                    <h5 class="ap-nameAddress__title"><%= header.name %></h5>
+                    <p class="ap-nameAddress__subTitle fs-14 m-0"><%= header.email %></p>
+                  </div>
+                </div>
+                <div class="ps-tab p-20 pb-25">
+                  <div class="nav flex-column text-start" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a
+                      class="nav-link active"
+                      id="v-pills-home-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-home"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />내 프로필 정보</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-profile-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-profile"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/settings.svg" alt="setting" class="svg" />내 계정 관리</a
+                    >
+                    <a
+                      class="nav-link"
+                      id="v-pills-settings-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-settings"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img class="svg" src="./assets/img/svg/phone.svg" alt="users" />휴대폰 인증</a
+                    >
+
+                    <a
+                      class="nav-link"
+                      id="v-pills-messages-tab"
+                      data-bs-toggle="pill"
+                      href="#v-pills-messages"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <img src="./assets/img/svg/key.svg" alt="key" class="svg" />비밀번호 변경</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Profile Acoount End -->
+          </div>
+          <div class="col-xxl-9 col-lg-8 col-sm-7">
+            <div class="as-cover">
+              <div class="card card-default card-md mb-4">
+                <div class="card-header py-20">
+                  <h6>내 프로필 정보</h6>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div
+                      class="tab-pane fade show active"
+                      id="v-pills-home"
+                      role="tabpanel"
+                      aria-labelledby="v-pills-home-tab"
+                    >
+                      <p>이름 : <%= header.name %></p>
+                      <p style="margin-top: 3%">이메일 : <%= header.email %></p>
+                      <p style="margin-top: 3%">잔여포인트 : <%= header.points %></p>
+                      <% if(header.phoneAuthentication) { %>
+                      <div style="display: inline-flex; width: 100%">
+                        <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
+                        <button class="btn btn-success btn-sm btn-squared" style="margin-left: 2%">인증 완료</button>
+                      </div>
+                      <% } else { %>
+                      <div style="display: inline-flex; width: 100%">
+                        <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
+                        <button class="btn btn-warning btn-sm btn-squared" style="margin-left: 2%">
+                          인증 되지 않음
+                        </button>
+                      </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 결제내역 테이블 시작 -->
+            <div class="col-lg-12">
+              <div class="card mt-25 mb-40" style="max-height: 500px; overflow-y: auto">
+                <div class="card-header text-capitalize px-md-25 px-3">
+                  <h6>결제내역 <span class="subtitle">최근 한 달 이내만 출력됩니다.</span></h6>
+                </div>
+                <div class="card-body p-0">
+                  <div class="ap-product">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">워크스페이스명</th>
+                            <th scope="col">이용기간</th>
+                            <th scope="col">가격</th>
+                          </tr>
+                        </thead>
+                        <tbody id="payment-history-table"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 결제내역 테이블 끝 -->
+            <div class="mb-50">
+              <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>계정 관리</h6>
+                          <span class="fs-13 color-light fw-400"
+                            >유저 이름을 변경하거나 계정을 삭제 하실 수 있습니다.
+                          </span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <div class="form-group mb-20">
+                                <label for="name1">변경할 이름</label>
+                                <input type="text" class="form-control" id="name1" />
+                                <small id="passwordHelpInline2" class="text-light fs-13"
+                                  >이름은 한글이나 영어만 입력이 가능합니다.
+                                </small>
+                              </div>
+                              <div class="form-group mb-1">
+                                <label for="email45">이메일</label>
+                                <input
+                                  type="email"
+                                  class="form-control"
+                                  id="email45"
+                                  placeholder="현재 이메일을 입력해 주세요."
+                                />
+                              </div>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                style="margin-top: 4%; margin-bottom: 1%"
+                                id="updateUserBtn"
+                              >
+                                변경하기
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card-footer bg-transparent">
+                        <div class="row justify-content-center align-items-center">
+                          <div class="col-xxl-6">
+                            <div class="d-flex justify-content-between mt-1 align-items-center flex-wrap">
+                              <div style="display: inline-flex; width: 100%" id="deleteDiv">
+                                <div class="text-capitalize py-10">
+                                  <h6>회원 탈퇴</h6>
+                                  <span class="fs-13 color-light fw-400"
+                                    >계정을 삭제하신다면 저장된 모든 정보가 삭제되며 복구 하실 수 없습니다.
+                                  </span>
+                                </div>
+                                <div class="my-sm-0 my-10 py-10" style="margin-left: 5%">
+                                  <button
+                                    class="btn btn-danger btn-default btn-squared fw-400 text-capitalize"
+                                    id="deleteBtn"
+                                  >
+                                    삭제하기
+                                  </button>
+                                </div>
+                              </div>
+                              <div style="display: inline-flex; width: 100%; display: none" id="deleteUserDiv">
+                                <div class="card-body" style="margin-bottom: 3%">
+                                  <div class="position-relative">
+                                    <label for="email45" style="margin-bottom: 2%">비밀번호</label>
+                                    <input
+                                      type="password"
+                                      class="form-control"
+                                      id="passwordInput"
+                                      placeholder="현재 비밀번호를 입력해 주세요."
+                                    />
+                                    <div
+                                      class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password"
+                                      style="padding-top: 11%"
+                                    ></div>
+                                  </div>
+                                </div>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 2%; margin-bottom: 1%"
+                                  id="deleteUserBtn"
+                                >
+                                  삭제하기
+                                </button>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 2%; margin-bottom: 1%"
+                                  id="cancelBtn"
+                                >
+                                  돌아가기
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>비밀번호 변경</h6>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <div class="form-group mb-15">
+                                <label for="password-field">현재 비밀번호</label>
+                                <div class="position-relative">
+                                  <input
+                                    id="passwordInput2"
+                                    type="password"
+                                    class="form-control"
+                                    name="password"
+                                    placeholder="비밀번호"
+                                  />
+                                  <div class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password1"></div>
+                                </div>
+                              </div>
+                              <div class="form-group mb-1">
+                                <label for="password-field">새 비밀번호</label>
+                                <div class="position-relative">
+                                  <input
+                                    id="confirmPasswordInput"
+                                    type="password"
+                                    class="form-control"
+                                    name="password"
+                                    placeholder="비밀번호 확인"
+                                  />
+                                  <div class="uil uil-eye-slash text-lighten fs-15 field-icon toggle-password2"></div>
+                                </div>
+                                <small id="passwordHelpInline" class="text-light fs-13"
+                                  >비밀번호는 8~20자내로 입력해 주세요.
+                                </small>
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize"
+                                  style="margin-top: 4%; margin-bottom: 1%"
+                                  id="changePasswordBtn"
+                                >
+                                  변경하기
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                  <!-- Edit Profile -->
+                  <div class="edit-profile mt-25">
+                    <% if(!header.phoneAuthentication) { %>
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>휴대폰 본인 인증</h6>
+                          <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있지 않습니다.</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <div class="form-group mb-20">
+                                <label for="names">휴대폰 번호</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="phoneNumberInput"
+                                  value="<%= header.phoneNumber %>"
+                                />
+                              </div>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                style="margin-top: 4%; margin-bottom: 1%"
+                                id="sendBtn"
+                              >
+                                전송
+                              </button>
+                              <div id="phoneAuthDiv" style="display: none">
+                                <div class="form-group mb-20">
+                                  <label for="names">인증 번호</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="phoneAuthInput"
+                                    placeholder="인증번호를 입력해 주세요."
+                                  />
+                                </div>
+                                <div class="button-group d-flex flex-wrap pt-10 mb-15">
+                                  <button
+                                    class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                    id="phoneAuthBtn"
+                                  >
+                                    인증하기
+                                  </button>
+                                  <button
+                                    class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm"
+                                    id="cancelAuthBtn"
+                                  >
+                                    취소
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% } else { %>
+                    <div class="card">
+                      <div class="card-header px-sm-25 px-3">
+                        <div class="edit-profile__title">
+                          <h6>휴대폰 본인 인증</h6>
+                          <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있습니다.</span>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="row justify-content-center">
+                          <div class="col-xxl-6">
+                            <div class="edit-profile__body mx-xl-20">
+                              <div class="form-group mb-20">
+                                <label for="names">휴대폰 번호</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="phoneNumberInput"
+                                  value="<%= header.phoneNumber %>"
+                                  readonly
+                                />
+                              </div>
+                              <div id="editBtnDiv">
+                                <button
+                                  class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                  style="margin-top: 4%; margin-bottom: 1%"
+                                  id="editBtn"
+                                >
+                                  변경하기
+                                </button>
+                                <small id="changePhoneNumber" class="text-light fs-13"
+                                  >휴대폰 번호를 변경하시려면 본인 인증이 가능한 휴대폰 번호로만 변경이 가능합니다.
+                                </small>
+                              </div>
+                              <button
+                                class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                style="margin-top: 4%; margin-bottom: 1%; display: none"
+                                id="sendBtn"
+                              >
+                                전송
+                              </button>
+                              <div id="phoneAuthDiv" style="display: none; margin-top: 3%">
+                                <div class="form-group mb-20">
+                                  <label for="names">인증 번호</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="phoneAuthInput"
+                                    placeholder="인증번호를 입력해 주세요."
+                                  />
+                                </div>
+                                <div class="button-group d-flex flex-wrap pt-10 mb-15">
+                                  <button
+                                    class="btn btn-primary btn-default btn-squared me-15 text-capitalize btn-sm"
+                                    id="phoneAuthBtn"
+                                  >
+                                    인증하기
+                                  </button>
+                                  <button
+                                    class="btn btn-light btn-default btn-squared fw-400 text-capitalize btn-sm"
+                                    id="cancelAuthBtn2"
+                                  >
+                                    취소
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                  <!-- Edit Profile End -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="./assets/js/user-info.js" defer></script>
+<%- include('includes/footer') %>

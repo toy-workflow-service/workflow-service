@@ -1,0 +1,229 @@
+<%- include('includes/header') %>
+<div class="contents">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb-main">
+          <h4 class="text-capitalize breadcrumb-title">멤버십</h4>
+          <div class="breadcrumb-action justify-content-center flex-wrap">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="#"><i class="uil uil-estate"></i>Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">membership</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white pt-50 pb-40 mb-30 px-xxl-0 px-30 shadow-lg radius-xl">
+      <div role="tabpanel">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 text-center">
+              <!-- active inactive button -->
+              <!-- Active Switch -->
+              <ul class="ai-list mb-40 mt-20">
+                <li class="ai-list-item">
+                  <span class="monthly active space-nowrap">1개월</span>
+                </li>
+                <li class="ai-list-item">
+                  <input class="ail ail-light" id="ai1" type="checkbox" name="intervaltype" />
+                  <label class="ail-btn" for="ai1" data-bs-target="#monthly"></label>
+                </li>
+                <li class="ai-list-item">
+                  <span class="yearly space-nowrap">6개월</span>
+                </li>
+              </ul>
+              <!-- Active Switch End -->
+              <!-- active inactive button end -->
+            </div>
+          </div>
+        </div>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="monthly">
+            <div class="row justify-content-center">
+              <div class="col-xxl-3 col-lg-4 col-sm-6 mb-30">
+                <div class="card h-100">
+                  <div class="card-body p-30">
+                    <div class="pricing d-flex align-items-center">
+                      <span class="pricing__tag color-primary order-bg-opacity-primary rounded-pill">Free Forever</span>
+                    </div>
+                    <div class="pricing__price rounded">
+                      <p
+                        class="pricing_value display-3 color-dark d-flex align-items-center text-capitalize fw-600 mb-1"
+                      >
+                        free
+                      </p>
+                      <p class="pricing_subtitle mb-0">5명의 멤버 초대가능</p>
+                    </div>
+                    <div class="pricing__features">
+                      <ul>
+                        <li><span class="fa fa-check"></span>워크스페이스 용량 100MB</li>
+                        <li><span class="fa fa-check"></span>3개의 보드 생성 가능</li>
+                        <li><span class="fa fa-check"></span>기본적인 프로젝트 관리</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="price_action d-flex pb-30 ps-30">
+                    <button
+                      class="btn btn-default btn-squared color-light btn-outline-light text-capitalize px-30 color-gray fw-500"
+                    >
+                      기본 적용
+                    </button>
+                  </div>
+                </div>
+                <!-- End: .card -->
+              </div>
+              <!-- End: .col -->
+              <div class="col-xxl-3 col-lg-4 col-sm-6 mb-30">
+                <div class="card h-100">
+                  <div class="card-body p-30">
+                    <div class="pricing d-flex align-items-center">
+                      <span class="pricing__tag color-success order-bg-opacity-success rounded-pill">Premium</span>
+                    </div>
+                    <div class="pricing__price rounded">
+                      <p
+                        class="pricing_value display-3 color-dark d-flex align-items-center text-capitalize fw-600 mb-1"
+                      >
+                        6,500원
+                      </p>
+                      <p class="pricing_subtitle mb-0">멤버 초대 제한 없음</p>
+                    </div>
+                    <div class="pricing__features">
+                      <ul>
+                        <li><span class="fa fa-check"></span>워크스페이스 용량 10GB</li>
+                        <li><span class="fa fa-check"></span>보드 무제한 생성</li>
+                        <li><span class="fa fa-check"></span>음성 / 영상 통화 사용 가능</li>
+                        <li><span class="fa fa-check"></span>무제한 메시지 내역</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="price_action d-flex pb-30 ps-30">
+                    <button class="btn btn-secondary btn-default btn-squared text-capitalize px-30" id="onemonth-btn">
+                      결제하기
+                    </button>
+                  </div>
+                </div>
+                <!-- End: .card -->
+              </div>
+              <!-- End: .col -->
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="yearly">
+            <div class="row justify-content-center">
+              <div class="col-xxl-3 col-lg-4 col-sm-6 mb-30">
+                <div class="card h-100">
+                  <div class="card-body p-30">
+                    <div class="pricing d-flex align-items-center">
+                      <span class="pricing__tag color-primary order-bg-opacity-primary rounded-pill">Free Forever</span>
+                    </div>
+                    <div class="pricing__price rounded">
+                      <p
+                        class="pricing_value display-3 color-dark d-flex align-items-center text-capitalize fw-600 mb-1"
+                      >
+                        free
+                      </p>
+                      <p class="pricing_subtitle mb-0">5명의 멤버 초대가능</p>
+                    </div>
+                    <div class="pricing__features">
+                      <ul>
+                        <li><span class="fa fa-check"></span>워크스페이스 용량 100MB</li>
+                        <li><span class="fa fa-check"></span>3개의 보드 생성 가능</li>
+                        <li><span class="fa fa-check"></span>기본적인 프로젝트 관리</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="price_action d-flex pb-30 ps-30">
+                    <button
+                      class="btn btn-default btn-squared color-light btn-outline-light text-capitalize px-30 color-gray fw-500"
+                    >
+                      기본 적용
+                    </button>
+                  </div>
+                </div>
+                <!-- End: .card -->
+              </div>
+              <!-- End: .col -->
+              <div class="col-xxl-3 col-lg-4 col-sm-6 mb-30">
+                <div class="card h-100">
+                  <div class="card-body p-30">
+                    <div class="pricing d-flex align-items-center">
+                      <span class="pricing__tag color-success order-bg-opacity-success rounded-pill">Premium</span>
+
+                      <span class="pricing__badge bg-danger">-20%</span>
+                    </div>
+                    <div class="pricing__price rounded">
+                      <p
+                        class="pricing_value display-3 color-dark d-flex align-items-center text-capitalize fw-600 mb-1"
+                      >
+                        <span class="pricing_offer" style="text-decoration: line-through">39,000원</span>
+                        31,000원
+                      </p>
+                      <p class="pricing_subtitle mb-0">멤버 초대 제한 없음</p>
+                    </div>
+                    <div class="pricing__features">
+                      <ul>
+                        <li><span class="fa fa-check"></span>워크스페이스 용량 10GB</li>
+                        <li><span class="fa fa-check"></span>보드 무제한 생성</li>
+                        <li><span class="fa fa-check"></span>음성 / 영상 통화 사용 가능</li>
+                        <li><span class="fa fa-check"></span>무제한 메시지 내역</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="price_action d-flex pb-30 ps-30">
+                    <button class="btn btn-secondary btn-default btn-squared text-capitalize px-30" id="sixmonth-btn">
+                      결제하기
+                    </button>
+                  </div>
+                </div>
+                <!-- End: .card -->
+              </div>
+              <!-- End: .col -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End: .bg-white -->
+  </div>
+</div>
+<!-- 결제모달 -->
+<div class="modal-basic modal fade show" id="modal-basic" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content modal-bg-white">
+      <div class="modal-header">
+        <h6 class="modal-title">멤버십 결제</h6>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>결제금액:</strong> <span id="payment-amount">결제금액</span></p>
+        <p><strong>이용기간:</strong> <span id="usage-period">이용기간</span></p>
+        <div class="dropdown dropdown-hover">
+          <a class="btn-link" href="">
+            워크스페이스 선택
+            <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
+          </a>
+
+          <div class="dropdown-default dropdown-clickEvent">
+            <!-- 워크스페이스 선택 드롭다운 아이템들 추가 -->
+            <a class="dropdown-item" href="#" data-workspace-id="1">워크스페이스 1</a>
+            <a class="dropdown-item" href="#" data-workspace-id="2">워크스페이스 2</a>
+            <a class="dropdown-item" href="#" data-workspace-id="3">워크스페이스 3</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm">Save changes</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 결제모달 끝 -->
+<script src="./assets/js/membership.js" defer></script>
+<%- include('includes/footer') %>

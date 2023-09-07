@@ -1,0 +1,306 @@
+<%- include('includes/header') %>
+<div class="contents">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb-main application-ui mb-30">
+          <div class="breadcrumb-action d-flex">
+            <div class="d-flex align-items-center user-member__title me-sm-25 me-0">
+              <h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title"></h4>
+            </div>
+          </div>
+          <div class="d-flex text-capitalize">
+            <button
+              type="button"
+              class="breadcrumb-edit btn btn-white border-0 color-primary content-center fs-12 fw-500 radius-md"
+              id="edit-button"
+              onclick="openEditWorkspaceModal()"
+            >
+              <img src="./assets/img/svg/edit-3.svg" alt="edit-3" class="svg" />edit
+            </button>
+            <button
+              type="button"
+              class="breadcrumb-remove border-0 color-danger content-center bg-white fs-12 fw-500 ms-10 radius-md"
+              id="remove-button"
+              onclick="deleteConfirmModal()"
+            >
+              <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash-2" />remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 워크스페이스 수정모달 -->
+    <div class="modal-basic modal fade show" id="modal-basic" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content modal-bg-white">
+          <div class="modal-header">
+            <h6 class="modal-title">워크스페이스 수정</h6>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-basic">
+                <div class="form-group mb-25">
+                  <label>워크스페이스 타이틀</label>
+                  <input
+                    class="form-control form-control-lg"
+                    type="text"
+                    id="edit-title"
+                    placeholder="내용을 입력하세요."
+                  />
+                </div>
+                <div class="card card-default card-md mb-4">
+                  <label>워크스페이스 타입</label>
+                  <div class="dm-select-list d-flex">
+                    <div class="dm-select">
+                      <select name="select-search" id="select-search" class="form-control">
+                        <option>개발</option>
+                        <option>연구</option>
+                        <option>마케팅</option>
+                        <option>교육</option>
+                        <option>HRD</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mb-25">
+                  <label for="description">워크스페이스 소개</label>
+                  <div class="position-relative">
+                    <textarea
+                      class="form-control form-control-lg"
+                      id="edit-description"
+                      placeholder="내용을 입력하세요."
+                      style="resize: none"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" onclick="updateWorkspace()">수정</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 워크스페이스 수정모달 끝 -->
+    <!-- Tab Menu End -->
+    <div class="projects-tab-content mb-30">
+      <div class="row">
+        <div class="col-xxl-3 col-lg-4 mb-25">
+          <div class="fileM-progress" id="workspace-storage"></div>
+          <!-- 워크스페이스 사용량 붙는 곳 -->
+          <div class="card mt-25" id="workspace-total">
+            <!-- 토탈데이터 붙는 곳 -->
+          </div>
+          <!-- ends: .card -->
+        </div>
+        <div class="col-xxl-6 col-lg-8 mb-25" id="workspace-card">
+          <!-- ends: col -->
+        </div>
+        <!-- ends: .card -->
+        <div class="col-xxl-3 col-lg-6 col-12 mb-25 order-xxl-0 order-lg-1">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-10 px-sm-25 px-3">
+              <h6 class="fw-500">멤버</h6>
+              <button
+                type="button"
+                class="border radius-lg color-primary fw-500 fs-12 bg-transparent acButton"
+                onclick="openInviteWorkspaceModal()"
+              >
+                <img class="svg" src="./assets/img/svg/user-plus.svg" alt="" /> 멤버초대
+              </button>
+            </div>
+            <div class="card-body" id="workspace-member" style="overflow-y: scroll; max-height: 300px">
+              <div class="d-flex align-items-center mb-25"></div>
+            </div>
+          </div>
+        </div>
+        <!-- ends: .card -->
+        <!-- 멤버 초대 모달 -->
+        <div class="modal-basic modal fade show" id="modal-basic2" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white">
+              <div class="modal-header">
+                <h6 class="modal-title">멤버 초대</h6>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-basic">
+                  <div class="form-group mb-25">
+                    <label>이메일</label>
+                    <input
+                      class="form-control form-control-lg"
+                      type="text"
+                      id="email-input"
+                      placeholder="이메일을 입력하세요."
+                    />
+                  </div>
+                </div>
+                <div class="card card-default card-md mb-4">
+                  <label>역할</label>
+                  <div class="dm-select-list d-flex">
+                    <div class="dm-select">
+                      <select name="select-search" id="select-search" class="form-control">
+                        <option value="2">Manager</option>
+                        <option value="3">Member</option>
+                        <option value="4">OutSourcing</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="inviteMember()" id="invite-button">
+                    초대메일 전송
+                  </button>
+                  <div id="sending-message" style="display: none; background-color: white">
+                    <div class="dm-spin-dots spin-md">
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                      <span class="spin-dot badge-dot dot-primary"></span>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 멤버초대 모달 끝 -->
+        <!-- 멤버권한 수정 모달 -->
+        <div class="modal-basic modal fade show" id="modal-basic3" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content modal-bg-white">
+              <div class="modal-header">
+                <h6 class="modal-title">멤버역할 수정</h6>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                </button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="card card-default card-md mb-4">
+                    <label>역할</label>
+                    <div class="dm-select-list d-flex">
+                      <div class="dm-select">
+                        <select name="select-search" id="select-search" class="form-control">
+                          <option value="2">Manager</option>
+                          <option value="3">Member</option>
+                          <option value="4">OutSourcing</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="edit-member-btn" onclick="setMemberRole()">
+                  수정
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 멤버권한 수정 모달 끝 -->
+        <!-- 멤버십 연장 결제 모달 시작 -->
+        <div class="modal-basic modal fade show" id="modal-basic5" tabindex="-1" role="dialog" aria-hidden="true"></div>
+        <!-- 멤버십 연장 결제 모달 끝 -->
+        <!-- ends: col -->
+        <div class="col-xxl-8 mb-25">
+          <div class="card">
+            <div class="card-header p-0">
+              <ul class="nav px-25 ap-tab-main app-ui-tab" id="project-ap-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link" id="project-timeline-tab" data-bs-toggle="pill" role="tab" aria-selected="true"
+                    >활동 로그</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div
+              class="tab-content w-100"
+              id="projectContent"
+              style="overflow-y: scroll; max-height: 500px; height: 500px"
+            >
+              <div
+                class="tab-pane fade show active"
+                id="project-timeline"
+                role="tabpanel"
+                aria-labelledby="project-timeline-tab"
+              >
+                <div class="card-body px-0 mx-25 border-bottom">
+                  <div class="task-activities d-flex align-items-center">
+                    <div class="task-activities__left d-flex">
+                      <div class="task-activities__right">
+                        <ul>
+                          <li class="" id="workspace-activity"></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ends: .card -->
+        </div>
+        <!-- ends: col -->
+        <div class="col-xxl-4 col-lg-6 order-xxl-0 order-lg-1">
+          <div class="card pb-10 border-0">
+            <div class="card-header py-20 px-sm-25 px-3">
+              <h6>파일 목록</h6>
+            </div>
+            <div
+              class="card-body"
+              id="workspace-files"
+              style="overflow-y: scroll; max-height: 500px; height: 500px"
+            ></div>
+          </div>
+        </div>
+        <!-- ends: .card -->
+      </div>
+      <!-- ends: col -->
+    </div>
+    <!-- 삭제 확인 모달 -->
+    <div
+      class="modal-info-confirmed modal fade show"
+      id="modal-info-confirmed"
+      tabindex="-1"
+      role="dialog"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm modal-info" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-info-body d-flex">
+              <div class="modal-info-icon warning">
+                <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+              </div>
+              <div class="modal-info-text">
+                <h6>정말로 삭제하시겠습니까?</h6>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+            <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 삭제 확인 모달 끝 -->
+  </div>
+  <!-- ends: project tab -->
+</div>
+<script src="../assets/js/workspace-detail.js" defer></script>
+<%- include('includes/footer') %>

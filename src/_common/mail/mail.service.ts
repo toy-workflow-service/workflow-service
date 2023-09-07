@@ -17,14 +17,34 @@ export class MailService {
     });
   }
 
-  async inviteProjectMail(email: string, userName: string, projectName: string, projectId: number): Promise<boolean> {
+  async sendEmail(email: string): Promise<any> {
+    const code = Math.random().toString(36).substr(2, 6);
+    const expireTime = Date.now() + 1000 * 60 * 3;
+
     await this.transporter
       .sendMail({
         to: email,
         from: process.env.EMAIL_USER,
-        subject: `${projectName} 프로젝트 초대 메일`,
-        html: `<form action="http://127.0.0.1:3000/projects/${projectId}/participation?email=${email}" method="POST">
-                <h2>${userName}님이 ${projectName} 프로젝트에 초대했습니다. 초대 받기 버튼을 눌러주세요.</h2>
+        subject: 'Work Flow 서비스 인증 번호',
+        html: `<p>이메일 인증코드는 ${code} 입니다.</p>
+               <p>이 코드는 3분 후 만료됩니다.</p>`,
+      })
+      .then(() => {})
+      .catch((err: any) => {
+        console.log(err);
+        throw new HttpException(['메일 전송에 실패했습니다.'], HttpStatus.CONFLICT);
+      });
+    return { code, expireTime };
+  }
+
+  async inviteProjectMail(email: string, userName: string, workspace: string, workspaceId: number): Promise<boolean> {
+    await this.transporter
+      .sendMail({
+        to: email,
+        from: process.env.EMAIL_USER,
+        subject: `${workspace} 워크스페이스 초대 메일`,
+        html: `<form action="http://127.0.0.1:3000/workspaces/${workspaceId}/participation?email=${email}" method="POST">
+                <h2>${userName}님이 ${workspace}에 초대했습니다. 초대 받기 버튼을 눌러주세요.</h2>
                 <button>초대받기</button>
             </form>`,
       })
@@ -33,7 +53,7 @@ export class MailService {
       })
       .catch((err: any) => {
         console.log(err);
-        throw new HttpException('메일 전송에 실패했습니다.', HttpStatus.CONFLICT);
+        throw new HttpException(['메일 전송에 실패했습니다.'], HttpStatus.CONFLICT);
       });
     return true;
   }

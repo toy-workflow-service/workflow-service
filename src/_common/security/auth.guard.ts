@@ -11,7 +11,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   constructor(
     private redisCacheService: RedisCacheService,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {
     super({});
   }
@@ -19,12 +19,13 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   //@ts-ignore
   async canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    if (!request.headers.authorization) throw new UnauthorizedException('토큰이 존재하지 않습니다.');
+    if (!request.cookies.accessToken) throw new UnauthorizedException('토큰이 존재하지 않습니다.');
 
-    const token = request.headers.authorization.split(' ')[1];
+    const token = request.cookies.accessToken;
+
     const result = await this.tokenValidation(token);
-
     if (!result) throw new UnauthorizedException('이미 로그아웃한 계정입니다.');
+
     return super.canActivate(context);
   }
 
@@ -38,12 +39,22 @@ export class AuthGuard extends NestAuthGuard('jwt') {
   //@ts-ignore
   async handleRequest(err: any, user: any, info: any, context: ExecutionContext): Promise<any> {
     if (err || !user) {
-      const request = context.switchToHttp().getRequest();
-      const response = context.switchToHttp().getResponse();
-      const refreshToken = request.cookies.refreshToken;
-      const user = await this.verifyRefreshToken(refreshToken, response);
+      if (info.name === 'TokenExpiredError') {
+        const request = context.switchToHttp().getRequest();
+        const response = context.switchToHttp().getResponse();
+        const refreshToken = request.cookies.refreshToken;
+        const user = await this.verifyRefreshToken(refreshToken, response);
 
-      if (user) return user;
+        if (user) return user;
+        else {
+          await response.clearCookie('accessToken');
+          await response.clearCookie('refreshToken');
+          throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
+        }
+      }
+      const response = context.switchToHttp().getResponse();
+      await response.clearCookie('accessToken');
+      await response.clearCookie('refreshToken');
 
       throw err || new UnauthorizedException('만료되었거나 잘못된 토큰입니다.');
     }
@@ -60,7 +71,7 @@ export class AuthGuard extends NestAuthGuard('jwt') {
       const accessToken = this.jwtService.sign(
         { id: userInfo.id },
         process.env.ACCESS_SECRET_KEY,
-        process.env.ACCESS_EXPIRE_TIME,
+        process.env.ACCESS_EXPIRE_TIME
       );
 
       res.setHeader('authorization', accessToken);

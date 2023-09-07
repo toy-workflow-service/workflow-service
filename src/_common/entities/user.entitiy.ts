@@ -16,6 +16,9 @@ import { Comment } from './comment.entity';
 import { Direct_Message } from './direct-message.entity';
 import { Reminder } from './reminder.entity';
 import { Mention } from './mention.entity';
+import { Payment } from './payment.entity';
+import { Audit_log } from './audit-log.entity';
+import { User_Message_Room } from './user-message-room.entity';
 
 @Entity('users')
 export class User {
@@ -31,11 +34,17 @@ export class User {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ type: 'tinyint', nullable: false, default: null })
-  phone_number: number;
+  @Column({ type: 'tinytext', nullable: false, default: null })
+  phone_number: string;
+
+  @Column({ default: false })
+  phone_authentication: boolean;
 
   @Column({ nullable: true })
   profile_url: string;
+
+  @Column({ default: 1000000 })
+  points: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -80,10 +89,33 @@ export class User {
 
   @OneToOne(() => Mention, (mention) => mention.send_id)
   @JoinColumn()
-  mention_send_id: Mention;
+  mention_send: Mention;
 
   @OneToMany(() => Mention, (mention) => mention.receive_id, {
     cascade: true,
   })
-  mention_receive_ids: Mention[];
+  mention_receives: Mention[];
+
+  @OneToMany(() => Payment, (payment) => payment.user, {
+    nullable: true,
+  })
+  payments: Payment[];
+
+  @OneToMany(() => Audit_log, (log) => log.user, {
+    cascade: false,
+    nullable: true,
+  })
+  audit_logs: Audit_log[];
+
+  @OneToMany(() => User_Message_Room, (room) => room.sender, {
+    cascade: true,
+    nullable: false,
+  })
+  sender_ids: User_Message_Room[];
+
+  @OneToMany(() => User_Message_Room, (room) => room.receiver, {
+    cascade: true,
+    nullable: false,
+  })
+  receiver_ids: User_Message_Room[];
 }

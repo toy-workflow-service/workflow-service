@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Board_Column } from './board-column.entity';
 import { Comment } from './comment.entity';
+import { Audit_log } from './audit-log.entity';
 
 @Entity('cards')
 export class Card {
@@ -21,14 +22,23 @@ export class Card {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @Column({ nullable: true })
-  file_url: string;
+  @Column({ type: 'json', nullable: true })
+  file_original_name: string[];
+
+  @Column({ type: 'json', nullable: true })
+  file_url: string[];
+
+  @Column({ type: 'json', nullable: true })
+  file_size: string[];
 
   @Column({ type: 'tinyint', nullable: false })
   sequence: number;
 
-  @Column({ type: 'json', nullable: false })
-  members: number[];
+  @Column({ type: 'json', nullable: true })
+  members: string[];
+
+  @Column()
+  color: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -46,4 +56,5 @@ export class Card {
     nullable: false,
   })
   board_column: Board_Column;
+  column: any;
 }
