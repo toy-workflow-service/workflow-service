@@ -11,7 +11,6 @@ import { Workspace } from './workspace.entity';
 import { Board_Member } from './board-member.entity';
 import { Board_Message } from './board-message.entity';
 import { Board_Column } from './board-column.entity';
-import { Audit_log } from './audit-log.entity';
 
 @Entity('boards')
 export class Board {
@@ -26,6 +25,9 @@ export class Board {
 
   @Column({ nullable: true })
   deadline: Date;
+
+  @Column({ nullable: true })
+  start_date: Date;
 
   @CreateDateColumn()
   created_at: Date;
