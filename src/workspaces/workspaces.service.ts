@@ -332,14 +332,29 @@ export class WorkspacesService {
       .innerJoinAndSelect('board_columns.cards', 'cards')
       .where('workspace.id = :workspaceId', { workspaceId })
       .select([
-        'cards.id',
-        'cards.file_original_name',
-        'cards.file_url',
-        'cards.file_size',
-        'cards.created_at',
-        'cards.updated_at',
+        'cards.id as id',
+        'cards.file_original_name as file_original_name ',
+        'cards.file_url as file_url',
+        'cards.file_size as file_size',
+        'cards.created_at as created_at',
+        'cards.updated_at as updated_at',
       ])
       .getRawMany();
     return workspace;
+  }
+
+  // 전체파일 용량계산 (카드 생성제한용)
+  async caculateFileSizes(workspaceId: number): Promise<number> {
+    const allFiles = await this.getAllFiles(workspaceId);
+    let totalFileSize = 0;
+
+    allFiles.forEach((file) => {
+      const fileSizes = JSON.parse(file.file_size);
+      fileSizes.forEach((size) => {
+        totalFileSize += parseInt(size);
+      });
+    });
+
+    return totalFileSize;
   }
 }

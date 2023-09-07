@@ -563,7 +563,7 @@ async function CardCreate(columnId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message[0],
+        text: error.responseJSON.message,
       });
     },
   });
@@ -1151,7 +1151,7 @@ async function CardAllUpdate(columnId, cardId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message[0],
+        text: error.responseJSON.message,
       });
     },
   });

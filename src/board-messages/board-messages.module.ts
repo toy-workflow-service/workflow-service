@@ -23,6 +23,8 @@ import { Card } from 'src/_common/entities/card.entity';
 import { CardsService } from 'src/cards/cards.service';
 import { Audit_log } from 'src/_common/entities/audit-log.entity';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Membership } from 'src/_common/entities/membership.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
       Board_Member,
       Board_Column,
       Audit_log,
+      Membership,
     ]),
   ],
   exports: [TypeOrmModule],
@@ -52,6 +55,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
     BoardMembersService,
     BoardColumnsService,
     AuditLogsService,
+    MembershipsService,
   ],
 })
 export class BoardMessagesModule {
