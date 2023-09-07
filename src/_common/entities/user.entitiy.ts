@@ -18,6 +18,7 @@ import { Reminder } from './reminder.entity';
 import { Mention } from './mention.entity';
 import { Payment } from './payment.entity';
 import { Audit_log } from './audit-log.entity';
+import { User_Message_Room } from './user-message-room.entity';
 
 @Entity('users')
 export class User {
@@ -105,4 +106,16 @@ export class User {
     nullable: true,
   })
   audit_logs: Audit_log[];
+
+  @OneToMany(() => User_Message_Room, (room) => room.sender, {
+    cascade: true,
+    nullable: false,
+  })
+  sender_ids: User_Message_Room[];
+
+  @OneToMany(() => User_Message_Room, (room) => room.receiver, {
+    cascade: true,
+    nullable: false,
+  })
+  receiver_ids: User_Message_Room[];
 }
