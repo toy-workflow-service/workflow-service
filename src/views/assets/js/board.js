@@ -83,8 +83,8 @@ $(document).ready(() => {
   initializeMemberInput('#cardUpdateAddMembers', '#cardUpdateMembers', '#update-selected-members');
 });
 
-function init(cardIds) {
-  $(`${cardIds}`)
+function init() {
+  $('.kanban-items,.todo-task1 tbody')
     .sortable({
       containment: '.kanban-container',
       connectWith: '.kanban-items,.todo-task1 tbody',
@@ -192,7 +192,7 @@ async function BoardColumns(data, search) {
                 `;
   document.querySelector(
     '.kanban-header'
-  ).innerHTML = `<div class="col-4" style="width: fit-content;"><h4>${data[0].boardName}</h4></div>
+  ).innerHTML = `<div class="col-4" style="width: fit-content; margin-top: 10px;"><h4>${data[0].boardName}</h4></div>
   <div class="col-4 kanban-board__add-card">
   <a class="btn px-15 btn-primary" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#editColumnModal">
                 컬럼 추가</a>`;
@@ -200,7 +200,6 @@ async function BoardColumns(data, search) {
   const kanbanList = document.querySelector('.kanban-container');
   kanbanList.innerHTML = '';
   let i = 0;
-  let cardBox = '';
   for (i in data) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
@@ -287,10 +286,8 @@ async function BoardColumns(data, search) {
   
                                 </div>`;
     }
-    cardBox += '#' + document.querySelector(`#card-item${data[i].columnId}`).id + ',';
   }
-  console.log(cardBox.slice(0, -1));
-  init(cardBox.slice(0, -1));
+  init();
   // column add button click
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence

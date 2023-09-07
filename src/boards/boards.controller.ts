@@ -55,6 +55,7 @@ export class BoardsController {
       data.name,
       data.description,
       data.deadline,
+      data.start_date,
       user.name,
       user.id
     );
@@ -78,6 +79,7 @@ export class BoardsController {
       data.name,
       data.description,
       data.deadline,
+      data.start_date,
       user.id,
       user.name
     );

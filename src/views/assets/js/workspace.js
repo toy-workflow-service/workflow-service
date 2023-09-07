@@ -80,7 +80,6 @@ async function getMyBoards(selectItem, search) {
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
         document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
         for (const board of boards) {
-          console.log(board.cardCount);
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
             listResult += boardListHTML(board);
@@ -146,6 +145,12 @@ function boardHTML(board) {
     month: '2-digit',
     day: '2-digit',
   });
+
+  let startSendTime = new Date(new Date(board.startDate).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
   // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
   result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
@@ -186,10 +191,11 @@ function boardHTML(board) {
                               <div class="d-flex align-items-center user-group-progress-top">
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">시작일</span>
-                                  <p class="fs-14 fw-500 color-dark mb-0">${board.createdAt
-                                    .substring(0, 10)
-                                    .replace('-', '.')
-                                    .replace('-', '.')}</p>
+                                  <p class="fs-14 fw-500 color-dark mb-0">${
+                                    board.startDate
+                                      ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      : '____.__.__'
+                                  }</p>
                                 </div>
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">마감일</span>
@@ -255,6 +261,11 @@ function boardListHTML(board) {
     month: '2-digit',
     day: '2-digit',
   });
+  let startSendTime = new Date(new Date(board.startDate).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
   // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
   result += `<tr>
               <td>
@@ -284,10 +295,11 @@ function boardListHTML(board) {
                 ${check}
               </td>
               <td>
-                <span class="board-startline">${board.createdAt
-                  .substring(0, 10)
-                  .replace('-', '.')
-                  .replace('-', '.')}</span>
+                <span class="board-startline">${
+                  board.startDate
+                    ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                    : '____.__.__'
+                }</span>
               </td>
               <td>
                 <span class="board-deadline">${
@@ -340,8 +352,10 @@ createBoardBtn.addEventListener('click', async (event) => {
     const createTitle = document.querySelector('#create-board-title').value;
     const createDescription = document.querySelector('#create-board-desc').value;
     let deadline = document.querySelector('#datepicker').value;
+    let startline = document.querySelector('#datepicker4').value;
 
     deadline = new Date(deadline);
+    startline = new Date(startline);
     console.log(deadline);
     console.log(createTitle);
     console.log(createDescription);
@@ -352,7 +366,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name: createTitle, description: createDescription, deadline }),
+      data: JSON.stringify({ name: createTitle, description: createDescription, deadline, start_date: startline }),
       success: async (data) => {
         console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
@@ -506,16 +520,23 @@ async function openEditBoardModal(element) {
     const titleInput = editModal.querySelector('input[type="text"]');
     const descriptionInput = editModal.querySelector('textarea');
     const deadlineInput = document.querySelector('#datepicker2');
+    const startlineInput = document.querySelector('#datepicker3');
     const offset = new Date().getTimezoneOffset() * 60 * 1000;
     let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
       year: '2-digit',
       month: '2-digit',
       day: '2-digit',
     });
-    console.log(sendTime);
+    let startSendTime = new Date(new Date(board.start_date).getTime() - offset).toLocaleString('Ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    });
+
     titleInput.value = board.name;
     descriptionInput.value = board.description;
     deadlineInput.value = board.deadline ? '20' + sendTime : '';
+    startlineInput.value = board.start_date ? '20' + startSendTime : '';
 
     const { boardMembers } = await getBoardMembers(boardId);
     selectedMemberId = [];
@@ -524,7 +545,7 @@ async function openEditBoardModal(element) {
       selectedMemberId.push(data.userId);
       selectedMembers.push({ name: data.name, id: data.userId });
     }
-    console.log(selectedMembers);
+
     initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 
     document.getElementById('edit-board-btn').addEventListener('click', async (event) => {
@@ -534,7 +555,13 @@ async function openEditBoardModal(element) {
       members.forEach((icon) => {
         editMembers.push(icon.getAttribute('data-id'));
       });
-      await putBoard(boardId, titleInput.value, descriptionInput.value, new Date(deadlineInput.value));
+      await putBoard(
+        boardId,
+        titleInput.value,
+        descriptionInput.value,
+        new Date(deadlineInput.value),
+        new Date(startlineInput.value)
+      );
       await putBoardMember(boardId, selectedMemberId);
       Swal.fire({
         customClass: {
@@ -570,7 +597,7 @@ async function openEditBoardModal(element) {
 // }
 
 // 보드 수정
-async function putBoard(boardId, name, description, deadline) {
+async function putBoard(boardId, name, description, deadline, startDate) {
   await $.ajax({
     type: 'PUT',
     url: `boards/${boardId}?workspaceId=${workspaceId}`,
@@ -578,7 +605,7 @@ async function putBoard(boardId, name, description, deadline) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({ name, description, deadline }),
+    data: JSON.stringify({ name, description, deadline, start_date: startDate }),
     success: (data) => {
       console.log(data.message);
     },
