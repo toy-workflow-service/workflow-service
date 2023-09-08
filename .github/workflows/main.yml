@@ -31,15 +31,15 @@ jobs:
       
       - name: Install dependencies
         run: pwd
-             ls -la
-             cd workflow-service 
-             git pull orgin main
-             npm install
+      #        ls -la
+      #        cd workflow-service 
+      #        git pull orgin main
+      #        npm install
       
-      - name: Build
-        run: npm run build
+      # - name: Build
+      #   run: npm run build
 
-      - name: Server restart
-        run: sudo pm2 restart
+      # - name: Server restart
+      #   run: sudo pm2 restart
       #     timeout: 40s
       #     script: ${{secrets.SCRIPT }}
