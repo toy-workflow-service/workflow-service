@@ -29,7 +29,9 @@ jobs:
           port: ${{secrets.PORT }}
       
       - name: Install dependencies
-        run: cd workflow-service 
+        run: pwd
+             ls -la
+             cd workflow-service 
              git pull orgin main
              npm install
       
