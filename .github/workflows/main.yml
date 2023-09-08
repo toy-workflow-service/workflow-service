@@ -20,7 +20,7 @@ jobs:
           node-version: '16'
           run: export NODE_OPTIONS=--max_old_space_size=2048
 
-      - name: setup server
+      - name: Ec2 deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{secrets.HOST }}
@@ -28,14 +28,11 @@ jobs:
           password: ${{secrets.PASSWORD }}
           port: ${{secrets.PORT }}
           timeout: 40s
-      
-      - name: Install dependencies
-        run: git pull origin main
-             # npm install
-      
-      # - name: Build
-      #   run: npm run build
-
+          run : cd workflow-service
+                git pull origin main
+                npm install
+                npm run build
+                
       # - name: Server restart
       #   run: sudo pm2 restart
       #     timeout: 40s
