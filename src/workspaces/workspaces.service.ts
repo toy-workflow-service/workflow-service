@@ -96,25 +96,29 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버조회
-  async searchMemberByName(workspaceId: number, name: string): Promise<Workspace_Member> {
-    const user = await this.userService.findUserByName(name);
-    if (!user) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+  async searchMemberByName(workspaceId: number, name: string): Promise<any> {
+    const users = await this.userService.findUsersByName(name);
+    if (!users) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    const workspaceMember = await this.workspaceMemberRepository
-      .createQueryBuilder('workspace_member')
-      .innerJoinAndSelect('workspace_member.user', 'user')
-      .where('workspace_member.workspace = :workspaceId', { workspaceId })
-      .andWhere('workspace_member.user = :userId', { userId: user.id })
-      .select([
-        'workspace_member.id',
-        'workspace_member.role',
-        'workspace_member.participation',
-        'user.id',
-        'user.name',
-        'user.email',
-        'user.profile_url',
-      ])
-      .getOne();
+    const workspaceMember = [];
+    for (let i = 0; i < users.length; i++) {
+      const member = await this.workspaceMemberRepository
+        .createQueryBuilder('workspace_member')
+        .innerJoinAndSelect('workspace_member.user', 'user')
+        .where('workspace_member.workspace = :workspaceId', { workspaceId })
+        .andWhere('workspace_member.user = :userId', { userId: users[i].id })
+        .select([
+          'workspace_member.id',
+          'workspace_member.role',
+          'workspace_member.participation',
+          'user.id',
+          'user.name',
+          'user.email',
+          'user.profile_url',
+        ])
+        .getOne();
+      workspaceMember.push(member);
+    }
 
     return workspaceMember;
   }

@@ -51,9 +51,9 @@ export class UpdateBoardColumnSequenceDto {
 }
 
 export class CreateBoardMemberDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty({ message: '보드에 추가할 멤버이름을 입력해주세요.' })
-  readonly name: string;
+  readonly userId: number;
 }
 
 export class CreateBoardMessageDto {
