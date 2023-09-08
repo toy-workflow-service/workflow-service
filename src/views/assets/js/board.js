@@ -87,8 +87,9 @@ function init() {
   $('.kanban-items,.todo-task1 tbody')
     .sortable({
       containment: '.kanban-container',
+      items: '.align-items-center',
       connectWith: '.kanban-items,.todo-task1 tbody',
-      stack: '.kanban-items,.todo-task1 tbody',
+      // stack: '.kanban-items,.todo-task1 tbody',
       start: function (e, i) {
         // console.log('start : ', e, i);
       },
@@ -293,7 +294,7 @@ async function BoardColumns(data, search) {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
     console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
-    BoardColumnsCreate(columnTitle, Number(i) + 1);
+    BoardColumnsCreate(columnTitle, Number(i));
   });
 
   // column create api
