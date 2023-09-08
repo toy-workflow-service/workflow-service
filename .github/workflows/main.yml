@@ -14,17 +14,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '16'
 
-      - name: Run scripts in server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{secrets.HOST }}
-          username: ${{secrets.USERNAME }}
-          password: ${{secrets.PASSWORD }}
-          port: ${{secrets.PORT }}
-          timeout: 40s
-          script: ${{secrets.SCRIPT }}
+      # - name: Run scripts in server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{secrets.HOST }}
+      #     username: ${{secrets.USERNAME }}
+      #     password: ${{secrets.PASSWORD }}
+      #     port: ${{secrets.PORT }}
+      #     timeout: 40s
+      #     script: ${{secrets.SCRIPT }}
