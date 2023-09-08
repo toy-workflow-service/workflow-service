@@ -32,8 +32,4 @@ jobs:
                 git pull origin main
                 npm install
                 npm run build
-                
-      # - name: Server restart
-      #   run: sudo pm2 restart
-      #     timeout: 40s
-      #     script: ${{secrets.SCRIPT }}
+                sudo pm2 restart
