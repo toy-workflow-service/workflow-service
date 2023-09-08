@@ -19,12 +19,12 @@ jobs:
         with:
           node-version: '16'
 
-      # - name: Run scripts in server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{secrets.HOST }}
-      #     username: ${{secrets.USERNAME }}
-      #     password: ${{secrets.PASSWORD }}
-      #     port: ${{secrets.PORT }}
+      - name: Run scripts in server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.HOST }}
+          username: ${{secrets.USERNAME }}
+          password: ${{secrets.PASSWORD }}
+          port: ${{secrets.PORT }}
       #     timeout: 40s
       #     script: ${{secrets.SCRIPT }}
