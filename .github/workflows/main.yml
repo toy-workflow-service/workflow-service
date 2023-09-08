@@ -30,7 +30,7 @@ jobs:
           timeout: 40s
       
       - name: Install dependencies
-        run: git pull orgin main
+        run: git pull origin main
              npm install
       
       # - name: Build
