@@ -27,6 +27,7 @@ jobs:
           username: ${{secrets.USERNAME }}
           password: ${{secrets.PASSWORD }}
           port: ${{secrets.PORT }}
+          timeout: 40s
       
       - name: Install dependencies
         run: pwd
@@ -35,10 +36,10 @@ jobs:
              git pull orgin main
              npm install
       
-      # - name: Build
-      #   run: npm run build
+      - name: Build
+        run: npm run build
 
-      # - name: Server restart
-      #   run: sudo pm2 restart
+      - name: Server restart
+        run: sudo pm2 restart
       #     timeout: 40s
       #     script: ${{secrets.SCRIPT }}
