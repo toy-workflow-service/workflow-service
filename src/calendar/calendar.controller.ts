@@ -26,7 +26,6 @@ export class CalendarController {
   //캘린더 전체 조회
   @Get()
   @UseGuards(AuthGuard)
-  @UseInterceptors(CheckAuthInterceptor)
   async GetCalendars(@GetUser() user: AccessPayload) {
     return await this.calendarsService.GetCalendars(user.id);
   }
@@ -40,7 +39,6 @@ export class CalendarController {
   //캘린더 생성
   @Post()
   @UseGuards(AuthGuard)
-  @UseInterceptors(CheckAuthInterceptor)
   async PostCalendar(@GetUser() user: AccessPayload, @Body() data: CreateCalendarDto, @Res() res: Response) {
     await this.calendarsService.PostCalendar(user.id, data);
 
@@ -50,7 +48,6 @@ export class CalendarController {
   //캘린더 수정
   @Put(':calendarId')
   @UseGuards(AuthGuard)
-  @UseInterceptors(CheckAuthInterceptor)
   async UpdateCalendar(@Param('calendarId') calendarId: number, @Body() data: UpdateCalendarDto, @Res() res: Response) {
     await this.calendarsService.UpdateCalendar(calendarId, data);
 
