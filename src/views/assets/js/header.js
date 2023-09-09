@@ -62,25 +62,25 @@ async function getWorkspaces() {
         data.forEach((workspace) => {
           if (workspace.memberships_id !== null) {
             result = `<li class="">
-                          <a href="/workspace?workspaceId=${workspace.id}&workspaceName=${workspace.name}">
+                          <a href="/workspace?workspaceId=${workspace.id}">
                           <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="margin-right: 5px"/>
                           ${workspace.name}</a>
                      </li>`;
           } else {
             result = `<li class="">
-                        <a href="/workspace?workspaceId=${workspace.id}&workspaceName=${workspace.name}">${workspace.name}</a>
+                        <a href="/workspace?workspaceId=${workspace.id}">${workspace.name}</a>
                      </li>`;
           }
 
           if (workspace.memberships_id !== null) {
             topResult = `<li class="">
-                          <a href="/workspace?workspaceId=${workspace.id}&workspaceName=${workspace.name}">
+                          <a href="/workspace?workspaceId=${workspace.id}">
                           <img src="./assets/img/svg/surface1.svg" alt="surface1" class="svg" style="margin-right: 5px"/>
                           ${workspace.name}</a>
                         </li>`;
           } else {
             topResult = `<li class="">
-                          <a href="/workspace?workspaceId=${workspace.id}&workspaceName=${workspace.name}">
+                          <a href="/workspace?workspaceId=${workspace.id}">
                           ${workspace.name}</a>
                         </li>`;
           }

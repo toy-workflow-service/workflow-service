@@ -32,8 +32,8 @@ export class BoardColumnsController {
   @Get()
   @UseGuards(AuthGuard)
   async GetBoardColumns(@Query('boardId') boardId: number, @Res() res: Response) {
-    const columns = await this.boardColumnsService.GetBoardColumns(boardId);
-    return res.status(HttpStatus.OK).json(columns);
+    const result = await this.boardColumnsService.GetBoardColumns(boardId);
+    return res.status(HttpStatus.OK).json({ columns: result.columnInfos, workspaceName: result.workspaceName });
   }
 
   //보드 칼럼 생성

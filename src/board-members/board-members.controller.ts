@@ -12,7 +12,6 @@ export class BoardMembersController {
   @Post('/boards/:boardId/members')
   @UseGuards(AuthGuard)
   async CreateBoardMember(@Param('boardId') boardId: number, @Body() data: CreateBoardMemberDto, @Res() res: Response) {
-    console.log(data.userId);
     const result = await this.boardMembersService.CreateBoardMember(boardId, data.userId);
     return res
       .status(HttpStatus.CREATED)

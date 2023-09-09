@@ -46,13 +46,13 @@ export class BoardMessagesService {
   //보드 메세지 생성
   async SaveBoardMessage(boardId: number, userId: number, message: string) {
     const existBoard = await this.boardsService.GetBoard(boardId);
-    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.FORBIDDEN);
+    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.NOT_FOUND);
     return await this.boardMessageRepository.save({ message, user: { id: userId }, board: { id: boardId } });
   }
 
   async SaveBoardFile(userId: number, boardId: number, fileUrl: string, originalname: string) {
     const existBoard = await this.boardsService.GetBoard(boardId);
-    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.FORBIDDEN);
+    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.NOT_FOUND);
     return await this.boardMessageRepository.save({
       user: { id: userId },
       board: { id: boardId },

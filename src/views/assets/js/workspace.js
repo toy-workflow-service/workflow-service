@@ -1,17 +1,15 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
-let workspaceName = params.get('workspaceName');
 let selectedMembers = [];
 let selectedMemberId = [];
 
-let typingTimer;
+let typingTimer, workspaceName;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards('all');
   equalHeight($('.board-description'));
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
-  // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
 
 function equalHeight(group) {
@@ -40,7 +38,6 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
       const encodedSearchText = encodeURIComponent(searchText);
 
       const results = await searchMembers(encodedSearchText);
-      console.log(results);
       selectedMemberList.innerHTML = '';
       for (let result of results) {
         let Img = result.user.profile_url ? result.user.profile_url : '/assets/img/favicon.png';
@@ -80,52 +77,52 @@ function changeSelect() {
 }
 // 보드 전체 조회
 async function getMyBoards(selectItem, search) {
-  try {
-    await $.ajax({
-      method: 'GET',
-      url: `/boards?workspaceId=${workspaceId}`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      success: async (data) => {
-        const boards = data.boards;
-        let result = '';
-        let button = '';
-        let listResult = '';
-        document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
-        for (const board of boards) {
-          if (selectItem == 'all' && !search) {
+  await $.ajax({
+    method: 'GET',
+    url: `/boards?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: async (data) => {
+      const boards = data.boards;
+      workspaceName = data.workspaceName;
+      let result = '';
+      let button = '';
+      let listResult = '';
+      document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
+      document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
+      for (const board of boards) {
+        if (selectItem == 'all' && !search) {
+          result += boardHTML(board);
+          listResult += boardListHTML(board);
+        } else if (selectItem == 'ing' && !search) {
+          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+          if (count != 100) {
             result += boardHTML(board);
             listResult += boardListHTML(board);
-          } else if (selectItem == 'ing' && !search) {
-            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-            if (count != 100) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            }
-          } else if (selectItem == 'end' && !search) {
-            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-            if (count == 100) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            }
+          }
+        } else if (selectItem == 'end' && !search) {
+          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+          if (count == 100) {
+            result += boardHTML(board);
+            listResult += boardListHTML(board);
+          }
+        } else {
+          if (board.boardName.search(search) > -1) {
+            result += boardHTML(board);
+            listResult += boardListHTML(board);
           } else {
-            if (board.boardName.search(search) > -1) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            } else {
-              for (const member of board.boardMembers) {
-                if (member.name.search(search) > -1) {
-                  result += boardHTML(board);
-                  listResult += boardListHTML(board);
-                }
+            for (const member of board.boardMembers) {
+              if (member.name.search(search) > -1) {
+                result += boardHTML(board);
+                listResult += boardListHTML(board);
               }
             }
           }
         }
-        button += `<li class="nav-item">
+      }
+      button += `<li class="nav-item">
                     <a
                       class="nav-link active"
                       id="ap-overview-tab"
@@ -135,14 +132,23 @@ async function getMyBoards(selectItem, search) {
                       >워크스페이스 디테일</a
                     >
                   </li>`;
-        printListBoard.innerHTML = listResult;
-        printBoard.innerHTML = result;
-        printButton.innerHTML = button;
-      },
-    });
-  } catch (err) {
-    console.error(err);
-  }
+      printListBoard.innerHTML = listResult;
+      printBoard.innerHTML = result;
+      printButton.innerHTML = button;
+    },
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
+    },
+  });
 }
 
 // 보드 html
@@ -173,9 +179,7 @@ function boardHTML(board) {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardId=${
-                                board.boardId
-                              }&workspaceName=${workspaceName}" style="width: fit-content;">
+                              <a href="/board?boardId=${board.boardId}" style="width: fit-content;">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -302,9 +306,7 @@ function boardListHTML(board) {
                       <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
                       <div class="contact_title">
                           <h6>
-                            <a href="/board?boardId=${board.boardId}&workspaceName=${workspaceName}">${
-                              board.boardName
-                            }</a>
+                            <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
                           </h6>
                       </div>
                     </div>

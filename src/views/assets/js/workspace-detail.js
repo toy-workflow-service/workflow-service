@@ -1132,7 +1132,7 @@ function printActivityhtml(details, createdAt, actions, profile) {
       imgSrc = '"./assets/img/svg/repeat.svg" alt="repeat" class="svg" width="15", height="15"';
       break;
   }
-
+  profile = profile ? profile : './assets/img/favicon.png';
   return `<div class="ffp d-flex justify-content-between align-items-center w-100">
             <div class="d-flex">
               <div class="me-3 ffp__imgWrapper d-flex align-items-center">

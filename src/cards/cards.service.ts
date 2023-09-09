@@ -161,7 +161,11 @@ export class CardsService {
         updateUserList = [...memberIds];
       }
     }
-
+    if (files.length === 0) {
+      originalnames = null;
+      files = null;
+      fileSizes = null;
+    }
     await this.cardRepository.update(
       { id },
       {
@@ -207,7 +211,7 @@ export class CardsService {
   //보드에서 멤버 삭제시 해당하는 카드에서도 멤버 삭제. -> 업데이트임
   async DeleteCardMembers(boardId: number, userId: number) {
     const columns = await this.boardColumnService.GetBoardColumns(boardId);
-    columns.map(async (column) => {
+    columns.columnInfos.map(async (column) => {
       const findCards = await this.cardRepository.find({ relations: ['board_column'] });
       const cards = findCards.filter((card) => {
         return card.board_column.id == column.columnId;

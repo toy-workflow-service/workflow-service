@@ -14,7 +14,7 @@ export class DirectMessagesService {
 
   async savePrivateMessage(roomId: number, userId: number, message: string): Promise<any> {
     const existMessageRoom = await this.userMessageRoomsService.findPrivateRoom(roomId);
-    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.FORBIDDEN);
+    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.NOT_FOUND);
 
     return await this.DirectMessagesRepository.save({
       message,
@@ -25,7 +25,7 @@ export class DirectMessagesService {
 
   async savePrivateMessageFile(userId: number, roomId: number, fileUrl: string, originalname: string) {
     const existMessageRoom = await this.userMessageRoomsService.findPrivateRoom(roomId);
-    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.FORBIDDEN);
+    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.NOT_FOUND);
 
     return await this.DirectMessagesRepository.save({
       user: { id: userId },

@@ -1,281 +1,322 @@
 <%- include('includes/header') %>
 <script src="./assets/js/calendar.js" defer></script>
 <div class="contents">
-
-    <div class="dm-page-content">
-       <div class="container-fluid">
-          <div class="row">
-             <div class="col-lg-12">
-
-                <div class="breadcrumb-main">
-                   <h4 class="text-capitalize breadcrumb-title">달력</h4>
-                   <div class="breadcrumb-action justify-content-center flex-wrap">
-                      <nav aria-label="breadcrumb">
-                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">달력</li>
-                         </ol>
-                      </nav>
-                   </div>
-                </div>
-
-             </div>
+  <div class="dm-page-content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">달력</h4>
+            <div class="breadcrumb-action justify-content-center flex-wrap">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="uil uil-estate"></i>Work Flow</a>
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">달력</li>
+                </ol>
+              </nav>
+            </div>
           </div>
-          <div class="row calendar-grid justify-content-center">
-             <div class="col-xxl-3 col-xl-5 col-md-6 col-sm-8">
-                <div class="dm-calendar-left">
-                   <button class="btn btn-primary btn-lg btn-create-event" id="modal-open" data-bs-toggle="modal" data-bs-target="#c-event-modal">
-                      <img class="svg" src="./assets/img/svg/plus.svg" alt="">일정 추가</button>
-                   <div class="card card-md mb-4">
-                      <div class="card-body px-10">
-                         <div class="date-picker">
-                            <div class="date-picker__calendar"></div>
-                            <!-- ends: .date-picker__calendar -->
-                         </div>
-                      </div>
-                   </div>
-                   <div class="card card-md mb-4">
-                      <div class="card-body">
-                         <div class="draggable-events" id="draggable-events">
-                            <!-- <div class="draggable-events__top d-flex justify-content-between">
+        </div>
+      </div>
+      <div class="row calendar-grid justify-content-center">
+        <div class="col-xxl-3 col-xl-5 col-md-6 col-sm-8">
+          <div class="dm-calendar-left">
+            <button
+              class="btn btn-primary btn-lg btn-create-event"
+              id="modal-open"
+              data-bs-toggle="modal"
+              data-bs-target="#c-event-modal"
+            >
+              <img class="svg" src="./assets/img/svg/plus.svg" alt="" />일정 추가
+            </button>
+            <div class="card card-md mb-4">
+              <div class="card-body px-10">
+                <div class="date-picker">
+                  <div class="date-picker__calendar"></div>
+                  <!-- ends: .date-picker__calendar -->
+                </div>
+              </div>
+            </div>
+            <div class="card card-md mb-4">
+              <div class="card-body">
+                <div class="draggable-events" id="draggable-events">
+                  <!-- <div class="draggable-events__top d-flex justify-content-between">
                                <h6>My Calendars</h6>
                                <a href="#">
                                   <img class="svg" src="./assets/img/svg/plus.svg" alt=""></a>
                             </div> -->
-                            <!-- <ul class="draggable-event-list">
+                  <!-- <ul class="draggable-event-list">
                                <li class="draggable-event-list__single d-flex align-items-center" data-class="primary">
                                   <span class="badge-dot badge-primary"></span>
                                   <span class="event-text">이벤트</span>
                                </li> -->
-                               <!-- ends: .draggable-event-list__single -->
-                               <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="secondary">
+                  <!-- ends: .draggable-event-list__single -->
+                  <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="secondary">
                                   <span class="badge-dot badge-secondary"></span>
                                   <span class="event-text">제품 출시</span>
                                </li> -->
-                               <!-- ends: .draggable-event-list__single -->
-                               <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="success">
+                  <!-- ends: .draggable-event-list__single -->
+                  <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="success">
                                   <span class="badge-dot badge-success"></span>
                                   <span class="event-text">팀 미팅</span>
                                </li> -->
-                               <!-- ends: .draggable-event-list__single -->
-                               <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="primary">
+                  <!-- ends: .draggable-event-list__single -->
+                  <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="primary">
                                   <span class="badge-dot badge-primary"></span>
                                   <span class="event-text">UI/UX Tasks</span>
                                </li> -->
-                               <!-- ends: .draggable-event-list__single -->
-                               <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="warning">
+                  <!-- ends: .draggable-event-list__single -->
+                  <!-- <li class="draggable-event-list__single d-flex align-items-center" data-class="warning">
                                   <span class="badge-dot badge-warning"></span>
                                   <span class="event-text">프로젝트 수정</span>
                                </li> -->
-                               <!-- ends: .draggable-event-list__single -->
-                            <!-- </ul> -->
-                         </div>
-                      </div>
-                   </div>
-                   <!-- ends: .card -->
+                  <!-- ends: .draggable-event-list__single -->
+                  <!-- </ul> -->
                 </div>
-             </div>
-             <!-- ends: .col-lg-3 -->
-             <div class="col-xxl-9 col-xl-7">
-                <div class="card card-default card-md mb-4">
-                   <div class="card-body">
-                      <div id='full-calendar'></div>
-                   </div>
-                </div>
-                <!-- ends: .card -->
-             </div>
+              </div>
+            </div>
+            <!-- ends: .card -->
           </div>
-       </div>
-    </div>
-    <!-- ends: .dm-page-content -->
-
-    <!-- 달력에 값을 넣는 모달 -->
-    <div class="c-event-modal modal fade" id="c-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
-       <div class="modal-dialog modal-md c-event-dialog" role="document">
-          <div class="modal-content">
-             <div class="modal-header">
-                <h6 class="modal-title">일정 생성</h6>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                   <img src="./assets/img/svg/x.svg" alt="x" class="svg">
-                </button>
-             </div>
-             <div class="modal-body">
-                <div class="c-event-form">
-                   <form action="#">
-                      <div class="e-form-row d-flex">
-                         <div class="e-form-row__left">
-                            <label>제목</label>
-                         </div>
-                         <div class="e-form-row__right">
-                            <input type="text" name="e-title" id="create-title" placeholder="작성란.." class="form-control form-control-md">
-                         </div>
-                      </div>
-                      <!-- ends: .e-form-row -->
-                      <div class="e-form-row d-flex">
-                        <div class="e-form-row__left">
-                           <label>이벤트 타입</label>
-                        </div>
-                        <div class="e-form-row__right">
-                           <div class="radio-horizontal-list d-flex flex-wrap" id="type">
-                              <div class="radio-theme-default custom-radio ">
-                                 <input class="radio" type="radio" name="radio-e-type" value="01" id="radio-1">
-                                 <label for="radio-1">
-                                    <span class="radio-text">해야할일</span>
-                                 </label>
-                              </div>
-                              <div class="radio-theme-default custom-radio ">
-                                 <input class="radio" type="radio" name="radio-e-type" value="02" id="radio-2">
-                                 <label for="radio-2">
-                                    <span class="radio-text">중요한일</span>
-                                 </label>
-                              </div>
-                              <div class="radio-theme-default custom-radio ">
-                                 <input class="radio" type="radio" name="radio-e-type" value="03" id="radio-3">
-                                 <label for="radio-3">
-                                    <span class="radio-text">완료된일</span>
-                                 </label>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                      <!-- ends: .e-form-row -->
-                      <div class="e-form-row d-flex">
-                         <div class="e-form-row__left">
-                            <label>시작일</label>
-                         </div>
-                         <div class="e-form-row__right d-flex">
-                            <div class="input-container icon-left position-relative me-2">
-                               <span class="input-icon icon-left">
-                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg">
-                               </span>
-                               <input type="text" class="form-control form-control-md" id="start-date" name="s-date" placeholder="2023-01-01">
-                            </div>
-                            <div class="input-container icon-left position-relative">
-                               <span class="input-icon icon-left">
-                                  <img class="svg" src="./assets/img/svg/clock.svg" alt="clock">
-                               </span>
-                               <input type="text" class="form-control form-control-md" id="start-time" name="s-time" placeholder="00:00">
-                            </div>
-                         </div>
-                      </div>
-                      <!-- ends: .e-form-row -->
-                      <div class="e-form-row d-flex">
-                         <div class="e-form-row__left">
-                            <label>마감일</label>
-                         </div>
-                         <div class="e-form-row__right d-flex">
-                            <div class="input-container icon-left position-relative me-2">
-                               <span class="input-icon icon-left">
-                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg">
-                               </span>
-                               <input type="text" class="form-control form-control-md" id="deadline" name="e-date" placeholder="2023-01-01">
-                            </div>
-                            <div class="input-container icon-left position-relative">
-                               <span class="input-icon icon-left">
-                                  <img class="svg" src="./assets/img/svg/clock.svg" alt="clock">
-                               </span>
-                               <input type="text" class="form-control form-control-md" id="dead-time" name="e-time" placeholder="00:00">
-                            </div>
-                         </div>
-                      </div>
-                      <!-- ends: .e-form-row -->
-                      <div class="e-form-row d-flex">
-                         <div class="e-form-row__left">
-                            <label>내용</label>
-                         </div>
-                         <div class="e-form-row__right">
-                            <textarea name="e-description" class="form-control form-control-md" id="create-description" placeholder="내용 작성..."></textarea>
-                         </div>
-                      </div>
-                      <!-- ends: .e-form-row -->
-                   </form>
-                </div>
-             </div>
-             <div class="modal-footer">
-                <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary btn-sm" id="save-button">생성</button>
-             </div>
+        </div>
+        <!-- ends: .col-lg-3 -->
+        <div class="col-xxl-9 col-xl-7">
+          <div class="card card-default card-md mb-4">
+            <div class="card-body">
+              <div id="full-calendar"></div>
+            </div>
           </div>
-       </div>
+          <!-- ends: .card -->
+        </div>
+      </div>
     </div>
-    <!-- ends: .c-event-modal -->
+  </div>
+  <!-- ends: .dm-page-content -->
 
-    <!-- 달력안에있는 내용 세세하게 보는 모달 -->
-    <div class="e-info-modal modal fade" id="e-info-modal" tabindex="-1" role="dialog" aria-hidden="true">
-       <div class="modal-dialog modal-sm e-info-dialog modal-dialog-centered" id="c-event" role="document">
-          <div class="modal-content">
-             <div class="modal-header e-info-header bg-primary">
-                <h6 class="modal-title e-info-title" id="view-title"></h6>
-                <div class="e-info-action">                  
-                  <!-- <button class="btn-icon">
+  <!-- 달력에 값을 넣는 모달 -->
+  <div class="c-event-modal modal fade" id="c-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md c-event-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">일정 생성</h6>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="c-event-form">
+            <form action="#">
+              <div class="e-form-row d-flex">
+                <div class="e-form-row__left">
+                  <label>제목</label>
+                </div>
+                <div class="e-form-row__right">
+                  <input
+                    type="text"
+                    name="e-title"
+                    id="create-title"
+                    placeholder="작성란.."
+                    class="form-control form-control-md"
+                  />
+                </div>
+              </div>
+              <!-- ends: .e-form-row -->
+              <div class="e-form-row d-flex">
+                <div class="e-form-row__left">
+                  <label>이벤트 타입</label>
+                </div>
+                <div class="e-form-row__right">
+                  <div class="radio-horizontal-list d-flex flex-wrap" id="type">
+                    <div class="radio-theme-default custom-radio">
+                      <input class="radio" type="radio" name="radio-e-type" value="01" id="radio-1" />
+                      <label for="radio-1">
+                        <span class="radio-text">해야할일</span>
+                      </label>
+                    </div>
+                    <div class="radio-theme-default custom-radio">
+                      <input class="radio" type="radio" name="radio-e-type" value="02" id="radio-2" />
+                      <label for="radio-2">
+                        <span class="radio-text">중요한일</span>
+                      </label>
+                    </div>
+                    <div class="radio-theme-default custom-radio">
+                      <input class="radio" type="radio" name="radio-e-type" value="03" id="radio-3" />
+                      <label for="radio-3">
+                        <span class="radio-text">완료된일</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ends: .e-form-row -->
+              <div class="e-form-row d-flex">
+                <div class="e-form-row__left">
+                  <label>시작일</label>
+                </div>
+                <div class="e-form-row__right d-flex">
+                  <div class="input-container icon-left position-relative me-2">
+                    <span class="input-icon icon-left">
+                      <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg" />
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control form-control-md"
+                      id="start-date"
+                      name="s-date"
+                      placeholder="2023-01-01"
+                    />
+                  </div>
+                  <div class="input-container icon-left position-relative">
+                    <span class="input-icon icon-left">
+                      <img class="svg" src="./assets/img/svg/clock.svg" alt="clock" />
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control form-control-md"
+                      id="start-time"
+                      name="s-time"
+                      placeholder="00:00"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- ends: .e-form-row -->
+              <div class="e-form-row d-flex">
+                <div class="e-form-row__left">
+                  <label>마감일</label>
+                </div>
+                <div class="e-form-row__right d-flex">
+                  <div class="input-container icon-left position-relative me-2">
+                    <span class="input-icon icon-left">
+                      <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg" />
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control form-control-md"
+                      id="deadline"
+                      name="e-date"
+                      placeholder="2023-01-01"
+                    />
+                  </div>
+                  <div class="input-container icon-left position-relative">
+                    <span class="input-icon icon-left">
+                      <img class="svg" src="./assets/img/svg/clock.svg" alt="clock" />
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control form-control-md"
+                      id="dead-time"
+                      name="e-time"
+                      placeholder="00:00"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- ends: .e-form-row -->
+              <div class="e-form-row d-flex">
+                <div class="e-form-row__left">
+                  <label>내용</label>
+                </div>
+                <div class="e-form-row__right">
+                  <textarea
+                    name="e-description"
+                    class="form-control form-control-md"
+                    id="create-description"
+                    placeholder="내용 작성..."
+                  ></textarea>
+                </div>
+              </div>
+              <!-- ends: .e-form-row -->
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-primary btn-sm" id="save-button">생성</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ends: .c-event-modal -->
+
+  <!-- 달력안에있는 내용 세세하게 보는 모달 -->
+  <div class="e-info-modal modal fade" id="e-info-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm e-info-dialog modal-dialog-centered" id="c-event" role="document">
+      <div class="modal-content">
+        <div class="modal-header e-info-header bg-primary">
+          <h6 class="modal-title e-info-title" id="view-title"></h6>
+          <div class="e-info-action">
+            <!-- <button class="btn-icon">
                      <img class="svg" src="./assets/img/svg/edit.svg" alt="edit">
                   </button> -->
-                   <button class="btn-icon" id="delete-event">
-                      <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash">
-                   </button>
-                   <button type="button" class="btn-icon btn-closed" data-bs-dismiss="modal" aria-label="Close">
-                      <i class="uil uil-times"></i>
-                   </button>
-                </div>
-             </div>
-             <div class="modal-body">
-                <ul class="e-info-list">
-                   <li>
-                      <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg">
-                      <span class="list-line">
-                         <span class="list-label">Date :</span>
-                         <span class="list-meta" id="view-date"> Thursday, January 23</span>
-                      </span>
-                   </li>
-                   <li>
-                      <img class="svg" src="./assets/img/svg/clock.svg" alt="clock">
-                      <span class="list-line">
-                         <span class="list-label">Time :</span>
-                         <span class="list-meta" id="view-time"> 23⋅5:00 – 6:00 am</span>
-                      </span>
-                   </li>
-                   <li>
-                      <img class="svg" src="./assets/img/svg/align-left.svg" alt="align-left">
-                      <span class="list-line">
-                         <span class="list-text" id="view-description"> Lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam consetetur sadipscing elitr sed diam</span>
-                      </span>
-                   </li>
-                </ul>
-             </div>
+            <button class="btn-icon" id="delete-event">
+              <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash" />
+            </button>
+            <button type="button" class="btn-icon btn-closed" data-bs-dismiss="modal" aria-label="Close">
+              <i class="uil uil-times"></i>
+            </button>
           </div>
-       </div>
+        </div>
+        <div class="modal-body">
+          <ul class="e-info-list">
+            <li>
+              <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg" />
+              <span class="list-line">
+                <span class="list-label">Date :</span>
+                <span class="list-meta" id="view-date"> Thursday, January 23</span>
+              </span>
+            </li>
+            <li>
+              <img class="svg" src="./assets/img/svg/clock.svg" alt="clock" />
+              <span class="list-line">
+                <span class="list-label">Time :</span>
+                <span class="list-meta" id="view-time"> 23⋅5:00 – 6:00 am</span>
+              </span>
+            </li>
+            <li>
+              <img class="svg" src="./assets/img/svg/align-left.svg" alt="align-left" />
+              <span class="list-line">
+                <span class="list-text" id="view-description">
+                  Lorem ipsum dolor sit amet consetetur sadipscing elitr sed diam consetetur sadipscing elitr sed
+                  diam</span
+                >
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <!-- ends: .e-info-modal -->
-   <!-- 삭제 확인 모달 -->
-   <div
-   class="modal-info-confirmed modal fade show"
-   id="modal-info-confirmed"
-   tabindex="-1"
-   role="dialog"
-   aria-hidden="true"
-   >
-   <div class="modal-dialog modal-sm modal-info" role="document">
-   <div class="modal-content">
-      <div class="modal-body">
-         <div class="modal-info-body d-flex">
-         <div class="modal-info-icon warning">
-            <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
-         </div>
-         <div class="modal-info-text">
-            <h6>정말로 삭제하시겠습니까?</h6>
-         </div>
-         </div>
+  </div>
+  <!-- ends: .e-info-modal -->
+  <!-- 삭제 확인 모달 -->
+  <div
+    class="modal-info-confirmed modal fade show"
+    id="modal-info-confirmed"
+    tabindex="-1"
+    role="dialog"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-sm modal-info" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="modal-info-body d-flex">
+            <div class="modal-info-icon warning">
+              <img src="./assets/img/svg/alert-circle.svg" alt="alert-circle" class="svg" />
+            </div>
+            <div class="modal-info-text">
+              <h6>정말로 삭제하시겠습니까?</h6>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
+          <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">취소</button>
+        </div>
       </div>
-      <div class="modal-footer">
-         <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">삭제</button>
-         <button type="button" class="btn btn-light btn-outlined btn-sm" data-bs-dismiss="modal">
-         취소
-         </button>
-      </div>
-   </div>
-   </div>
-   </div>
-   <!-- 삭제 확인 모달 끝 -->
- </div>
- 
+    </div>
+  </div>
+  <!-- 삭제 확인 모달 끝 -->
+</div>
+
 <%- include('includes/footer') %>

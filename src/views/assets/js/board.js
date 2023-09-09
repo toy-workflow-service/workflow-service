@@ -54,7 +54,6 @@ function elementDrop(e) {
 function dragEnd(e) {
   // this/e.target is the source node.
   this.classList.remove('over');
-  console.log('dragEnd : ', e);
 }
 
 function addDnDHandlers(elem) {
@@ -71,7 +70,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
-let workspaceName = new URLSearchParams(window.location.search).get('workspaceName');
+let workspaceName;
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -149,9 +148,7 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ sequence }),
-    success: (data) => {
-      console.log(data.message);
-    },
+    success: (data) => {},
     error: (error) => {
       console.log(error);
     },
@@ -168,10 +165,20 @@ async function BoardColumnsGet(search) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: async (data) => {
-      BoardColumns(data, search);
+      workspaceName = data.workspaceName;
+      BoardColumns(data.columns, search);
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
     },
   });
 }
@@ -314,7 +321,6 @@ async function BoardColumns(data, search) {
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
-    console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
     BoardColumnsCreate(columnTitle, Number(i));
   });
 
@@ -329,7 +335,6 @@ async function BoardColumns(data, search) {
       },
       data: JSON.stringify({ name, sequence }),
       success: function (data) {
-        console.log(data.message);
         location.reload();
       },
       error: (error) => {
@@ -356,7 +361,6 @@ async function BoardColumns(data, search) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data.message);
         ColumnListReorder();
         location.reload();
       },
@@ -405,7 +409,6 @@ async function BoardColumns(data, search) {
     data.addEventListener('click', (e) => {
       const cardId = e.target.getAttribute('data-cardId');
       const columnId = e.target.getAttribute('data-columnId');
-      console.log(cardId, columnId);
       DetailCardGet(columnId, cardId);
     });
   });
@@ -499,7 +502,6 @@ async function BoardColumnNameUpdate(columnId, name) {
     },
     data: JSON.stringify({ name }),
     success: (data) => {
-      console.log(data.message);
       location.reload();
     },
     error: (error) => {
@@ -604,7 +606,6 @@ function createComment(columnId, cardId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
       },
       success: (data) => {
-        console.log(data.message);
         // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
         DetailCardGet(columnId, cardId);
       },
@@ -635,7 +636,6 @@ function openCommentDetailModal(columnId, cardId, commentId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: function (commentDetail) {
-      console.log(commentDetail);
       // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
       createCommentDetailModal(commentDetail, columnId, cardId, commentId);
       $('#commentDetailModal').modal('show');
@@ -755,19 +755,19 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   let membersHTML = '';
   selectedMembers = [];
   selectedMemberNumber = [];
-  if (users.length > 0) {
+  if (users) {
     for (const member of users) {
       let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
       membersHTML += `
-    <div class="checkbox-group d-flex">
-      <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-        <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
-          <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
-            ${member[0].name}
-          </label>
+      <div class="checkbox-group d-flex">
+        <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+          <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
+            <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
+              ${member[0].name}
+            </label>
+        </div>
       </div>
-    </div>
-    `;
+      `;
 
       selectedMembers.push({ name: member[0].name, id: member[0].userId });
       selectedMemberNumber.push(member[0].userId);
@@ -794,12 +794,14 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     }
   }
   let fileHTML = '';
-  if (cardData.file_url.length > 1) {
-    for (let i in cardData.file_url) {
-      fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+  if (cardData.file_url) {
+    if (cardData.file_url.length > 1) {
+      for (let i in cardData.file_url) {
+        fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+      }
+    } else if (cardData.file_url[0]) {
+      fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
     }
-  } else if (cardData.file_url[0]) {
-    fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
   }
 
   const modalContentHTML = `
@@ -990,6 +992,7 @@ async function DetailCardGet(columnId, cardId) {
           xhr.setRequestHeader('Content-type', 'application/json');
           xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
         },
+        success: (data) => {},
       });
       users.push(boardMembers);
     }
@@ -1023,9 +1026,7 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ sequence }),
-    success: (data) => {
-      console.log(data.message);
-    },
+    success: (data) => {},
     error: (error) => {
       console.log(error);
     },
@@ -1054,18 +1055,20 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   filesSizeArr = [];
   fileNo = 0;
   document.querySelector('#edit-card-file').innerHTML = '';
-  for (let i = 0; i < cardData.file_url.length; i++) {
-    // 목록 추가
-    let htmlData = '';
-    htmlData += '<div id="file' + fileNo + '" class="filebox">';
-    htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
-    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
-    htmlData += '</div>';
-    $('.file-list').append(htmlData);
-    filesArr.push(cardData.file_url[i]);
-    filesNameArr.push(cardData.file_original_name[i]);
-    filesSizeArr.push(cardData.file_size[i]);
-    fileNo++;
+  if (cardData.file_url) {
+    for (let i = 0; i < cardData.file_url.length; i++) {
+      // 목록 추가
+      let htmlData = '';
+      htmlData += '<div id="file' + fileNo + '" class="filebox">';
+      htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+      htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+      htmlData += '</div>';
+      $('.file-list').append(htmlData);
+      filesArr.push(cardData.file_url[i]);
+      filesNameArr.push(cardData.file_original_name[i]);
+      filesSizeArr.push(cardData.file_size[i]);
+      fileNo++;
+    }
   }
 }
 
@@ -1223,8 +1226,6 @@ function deleteCard(columnId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log(data.message);
-
       // 삭제 성공 후, 페이지 새로고침
       window.location.reload();
     },
@@ -1244,8 +1245,6 @@ function deleteComment(commentId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log(data.message);
-
       // 삭제 성공 후, 페이지 새로고침
       location.reload();
     },
@@ -1331,7 +1330,6 @@ function createreply(columnId, cardId, reply_id, replayComment) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      console.log(data.message);
       // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
     },
     error: (error) => {
