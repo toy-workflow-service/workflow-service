@@ -36,7 +36,7 @@ export class BoardsController {
   @Get('/:boardId')
   @UseGuards(AuthGuard)
   async GetBoardById(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
-    const board = await this.boardsService.GetBoard(workspaceId, id);
+    const board = await this.boardsService.GetBoard(id);
     return res.status(HttpStatus.OK).json({ board });
   }
 

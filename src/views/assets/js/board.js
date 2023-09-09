@@ -346,28 +346,6 @@ async function BoardColumns(data, search) {
     });
   });
 
-  // 삭제 확인 모달 출력
-  function deleteConfirmModal(targetId, targetId2, targetType) {
-    const confirmModal = document.querySelector('#modal-info-confirmed');
-    $(confirmModal).modal('show');
-
-    const okBtn = confirmModal.querySelector('.btn-info');
-    const cancelBtn = confirmModal.querySelector('.btn-light');
-
-    okBtn.addEventListener('click', async () => {
-      if (targetType === 'card') {
-        deleteCard(targetId, targetId2);
-      } else {
-        await BoardColumnDelete(targetId);
-      }
-      $(confirmModal).modal('hide');
-    });
-
-    cancelBtn.addEventListener('click', () => {
-      $(confirmModal).modal('hide');
-    });
-  }
-
   // column delete api
   async function BoardColumnDelete(columnId) {
     $.ajax({
@@ -1212,8 +1190,29 @@ async function CardAllUpdate(columnId, cardId, data) {
   }
 }
 
-// 함수 내에서 카드 삭제를 처리하는 로직
+// 삭제 확인 모달 출력
+function deleteConfirmModal(targetId, targetId2, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
 
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', async () => {
+    if (targetType === 'card') {
+      deleteCard(targetId, targetId2);
+    } else {
+      await BoardColumnDelete(targetId);
+    }
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
+  });
+}
+
+// 함수 내에서 카드 삭제를 처리하는 로직
 function deleteCard(columnId, cardId) {
   // 카드 삭제 API 호출
   $.ajax({

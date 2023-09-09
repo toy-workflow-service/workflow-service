@@ -75,7 +75,7 @@ export class BoardsService {
   }
 
   //보드 상세 조회
-  async GetBoard(workspaceId: number, id: number) {
+  async GetBoard(id: number) {
     return await this.boardRepository.findOne({ where: { id }, relations: ['workspace'] });
   }
 

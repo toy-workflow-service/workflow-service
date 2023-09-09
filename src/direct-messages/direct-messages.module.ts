@@ -12,11 +12,12 @@ import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/_common/mail/mail.service';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { UploadFileMiddleware } from 'src/_common/middlewares/upload-file-middleware';
+import { UserMessageRoomsService } from 'src/user-message-rooms/user-message-rooms.service';
 
 @Module({
   imports: [RedisCacheModule, TypeOrmModule.forFeature([User_Message_Room, User, Direct_Message])],
   exports: [DirectMessagesModule],
-  providers: [DirectMessagesService, JwtStrategy, JwtService, UsersService, MailService],
+  providers: [DirectMessagesService, JwtStrategy, JwtService, UsersService, MailService, UserMessageRoomsService],
   controllers: [DirectMessagesController],
 })
 export class DirectMessagesModule {
