@@ -123,10 +123,7 @@ export class WorkspacesController {
   @Get(':workspaceId/members/search')
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckMemberInterceptor)
-  async searchMemberByName(
-    @Param('workspaceId') workspaceId: number,
-    @Query('name') name: string
-  ): Promise<Workspace_Member> {
+  async searchMemberByName(@Param('workspaceId') workspaceId: number, @Query('name') name: string): Promise<any> {
     return await this.workspaceService.searchMemberByName(workspaceId, name);
   }
 
