@@ -410,6 +410,8 @@ createBoardBtn.addEventListener('click', async (event) => {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
         });
       },
     });
@@ -419,7 +421,7 @@ createBoardBtn.addEventListener('click', async (event) => {
 });
 
 // 보드멤버 생성
-async function createBoardMember(boardId, name) {
+async function createBoardMember(boardId, saveUserId) {
   let userId, boardName;
   const date = new Date(Date.now());
   try {
@@ -430,7 +432,7 @@ async function createBoardMember(boardId, name) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name }),
+      data: JSON.stringify({ userId: saveUserId }),
       success: (data) => {
         userId = data.userId;
         boardName = data.boardName;
@@ -443,6 +445,8 @@ async function createBoardMember(boardId, name) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
         });
       },
     });

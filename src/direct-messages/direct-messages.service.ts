@@ -1,16 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Direct_Message } from 'src/_common/entities/direct-message.entity';
+import { UserMessageRoomsService } from 'src/user-message-rooms/user-message-rooms.service';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class DirectMessagesService {
   constructor(
     @InjectRepository(Direct_Message)
-    private DirectMessagesRepository: Repository<Direct_Message>
+    private DirectMessagesRepository: Repository<Direct_Message>,
+    private userMessageRoomsService: UserMessageRoomsService
   ) {}
 
   async savePrivateMessage(roomId: number, userId: number, message: string): Promise<any> {
+    const existMessageRoom = await this.userMessageRoomsService.findPrivateRoom(roomId);
+    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.FORBIDDEN);
+
     return await this.DirectMessagesRepository.save({
       message,
       user: { id: userId },
@@ -19,6 +24,9 @@ export class DirectMessagesService {
   }
 
   async savePrivateMessageFile(userId: number, roomId: number, fileUrl: string, originalname: string) {
+    const existMessageRoom = await this.userMessageRoomsService.findPrivateRoom(roomId);
+    if (!existMessageRoom) throw new HttpException('대화 중인 상대방이 채팅 방을 나갔습니다. ', HttpStatus.FORBIDDEN);
+
     return await this.DirectMessagesRepository.save({
       user: { id: userId },
       user_message_room: { id: roomId },
@@ -57,10 +65,5 @@ export class DirectMessagesService {
     if (!existMessage) throw new HttpException({ message: '해당 메시지를 찾을 수 없습니다.' }, HttpStatus.NOT_FOUND);
 
     await this.DirectMessagesRepository.delete({ id: messageId });
-  }
-
-  async deleteAllMessages(roomId: number, transactionManger: EntityManager): Promise<void> {
-    console.log(roomId);
-    await transactionManger.getRepository(Direct_Message).delete({ user_message_room: { id: roomId } });
   }
 }

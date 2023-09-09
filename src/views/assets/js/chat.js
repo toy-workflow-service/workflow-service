@@ -619,7 +619,9 @@ async function saveMessage(boardId, message) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON,
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/chat';
       });
       return false;
     },
@@ -761,7 +763,9 @@ async function savePrivateMessage(roomId, message) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON,
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/chat';
       });
       return false;
     },

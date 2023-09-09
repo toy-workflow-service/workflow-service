@@ -55,4 +55,8 @@ export class UserMessageRoomsService {
   async deleteUserMessageRoom(roomId: number): Promise<void> {
     await this.userMessageRoomsRepository.delete({ id: roomId });
   }
+
+  async findPrivateRoom(roomId: number): Promise<any> {
+    return this.userMessageRoomsRepository.findOne({ where: { id: roomId } });
+  }
 }
