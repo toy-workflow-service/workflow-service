@@ -4,7 +4,7 @@ export class CreateWorkspaceDto {
   @IsString()
   @IsNotEmpty({ message: '워크스페이스명을 입력해주세요.' })
   @MinLength(2, { message: '워크스페이스명은 최소 2글자 이상입니다.' })
-  @MaxLength(10, { message: '워크스페이스명은 최대 10글자 이하입니다.' })
+  @MaxLength(30, { message: '워크스페이스명은 최대 30글자 이하입니다.' })
   name: string;
 
   @IsString()

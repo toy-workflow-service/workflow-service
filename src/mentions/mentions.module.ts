@@ -10,7 +10,6 @@ import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/_common/mail/mail.service';
 import { CommentsService } from 'src/comments/comments.service';
 import { BoardMessagesService } from 'src/board-messages/board-messages.service';
-import { DirectMessagesService } from 'src/direct-messages/direct-messages.service';
 import { Board_Message } from 'src/_common/entities/board-message.entity';
 import { Direct_Message } from 'src/_common/entities/direct-message.entity';
 import { CardsService } from 'src/cards/cards.service';
@@ -59,7 +58,6 @@ import { MembershipsService } from 'src/memberships/memberships.service';
     WorkspacesService,
     BoardsService,
     BoardMessagesService,
-    DirectMessagesService,
     JwtService,
     UsersService,
     MailService,

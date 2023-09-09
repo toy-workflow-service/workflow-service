@@ -25,7 +25,7 @@ export class BoardColumnsService {
     columns.sort((a, b) => {
       return a.sequence - b.sequence;
     });
-    return columns.map((column) => {
+    const columnInfos = columns.map((column) => {
       return {
         boardId: column.board.id,
         boardName: column.board.name,
@@ -36,6 +36,8 @@ export class BoardColumnsService {
         updatedAt: column.updated_at,
       };
     });
+
+    return { columnInfos, workspaceName: board.workspace.name };
   }
 
   //보드 칼럼 상세 조회

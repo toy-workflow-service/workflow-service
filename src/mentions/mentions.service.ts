@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Mention } from 'src/_common/entities/mention.entity';
 import { BoardMessagesService } from 'src/board-messages/board-messages.service';
 import { CommentsService } from 'src/comments/comments.service';
-import { DirectMessagesService } from 'src/direct-messages/direct-messages.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 
@@ -14,7 +13,6 @@ export class MentionsService {
     private mentionRepository: Repository<Mention>,
     private commentsService: CommentsService,
     private boardMessagesService: BoardMessagesService,
-    private directMessagesService: DirectMessagesService,
     private usersService: UsersService
   ) {}
 
@@ -91,7 +89,7 @@ export class MentionsService {
   //     }
   //   }
   // }
-  
+
   // mention all get
   async GetMentions(userId: number) {
     const mentions = await this.mentionRepository.find({

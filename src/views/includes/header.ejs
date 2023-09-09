@@ -74,14 +74,6 @@
             <div class="hexadash-top-menu position-relative">
               <ul class="d-flex align-items-center flex-wrap">
                 <li class="has-subMenu">
-                  <a href="#" class="active">Dashboard</a>
-                  <ul class="subMenu">
-                    <li class="active">
-                      <a href="index.html">Demo 1</a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="has-subMenu">
                   <a href="#" class="">Layouts</a>
                   <ul class="subMenu">
                     <li class="l_sidebar">
@@ -103,7 +95,7 @@
                         <li class="has-subMenu-left">
                           <a href="/chat" class="">
                             <img src="../assets/img/svg/message-square.svg" alt="message-square" class="svg nav-icon" />
-                            <span class="menu-text">메시지</span>
+                            <span class="menu-text">Message</span>
                             <ul class="subMenu">
                               <li>
                                 <a><i class="uil uil-comment-dots"></i> 보드 채팅방</a>
@@ -133,50 +125,15 @@
                           </ul>
                         </li>
                         <li>
-                          <a href="calendar.html" class="">
+                          <a href="/board">
+                            <img src="../assets/img/svg/columns.svg" alt="columns" class="svg nav-icon" />
+                            <span class="menu-text">Kanban Board</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="../calendar" class="">
                             <span class="nav-icon uil uil-calendar-alt"></span>
                             <span class="menu-text">Calendar</span>
-                          </a>
-                        </li>
-                        <li class="has-subMenu-left">
-                          <a href="#" class="">
-                            <span class="nav-icon uil uil-users-alt"></span>
-                            <span class="menu-text">Users</span>
-                          </a>
-                          <ul class="subMenu">
-                            <li>
-                              <a href="users-membar.html" class="">Team</a>
-                            </li>
-                            <li>
-                              <a href="users-card.html" class="">Users Grid</a>
-                            </li>
-                            <li>
-                              <a href="users-list.html" class="">Users List</a>
-                            </li>
-                            <li>
-                              <a href="users-card2.html" class="">Users Grid style</a>
-                            </li>
-                            <li>
-                              <a href="users-group.html" class="">Users Group</a>
-                            </li>
-                            <li>
-                              <a href="user-info.html" class="">Add User</a>
-                            </li>
-                            <li>
-                              <a href="users-datatable.html" class="">Users Table</a>
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          <a href="chat.html" class="">
-                            <img src="../assets/img/svg/bookmark.svg" alt="bookmark" class="svg nav-icon" />
-                            <span class="menu-text">Note</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="chat.html" class="">
-                            <img src="../assets/img/svg/activity.svg" alt="activity" class="svg nav-icon" />
-                            <span class="menu-text">To-Do</span>
                           </a>
                         </li>
                         <li>
@@ -193,36 +150,6 @@
                         </li>
                       </ul>
                     </li>
-                    <li>
-                      <ul>
-                        <li>
-                          <a href="/board">
-                            <img src="../assets/img/svg/columns.svg" alt="columns" class="svg nav-icon" />
-                            <span class="menu-text">Kanban Board</span>
-                          </a>
-                        </li>
-                        <li class="has-subMenu-left">
-                          <a href="#" class="">
-                            <span class="nav-icon uil uil-search"></span>
-                            <span class="menu-text">JobSearch</span>
-                          </a>
-                          <ul class="subMenu">
-                            <li>
-                              <a class="" href="jobSearch.html">Grid view</a>
-                            </li>
-                            <li>
-                              <a class="" href="jobSearchList.html">List View</a>
-                            </li>
-                            <li>
-                              <a class="" href="jobDetails.html">Details</a>
-                            </li>
-                            <li>
-                              <a class="" href="job-apply.html">Apply</a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
                   </ul>
                 </li>
               </ul>
@@ -233,7 +160,7 @@
         <% if(header.isLogin) { %>
         <div class="navbar-right">
           <ul class="navbar-right__menu">
-            <div style="margin-top: 8px;" class="search-result"></div>
+            <div style="margin-top: 8px" class="search-result"></div>
             <li class="nav-search">
               <a href="#" class="search-toggle">
                 <i class="uil uil-search"></i>
@@ -269,30 +196,13 @@
             <!-- ends: nav-message -->
             <li class="nav-notification">
               <div class="dropdown-custom">
-                <a href="javascript:;" class="nav-item-toggle icon-active">
+                <a href="javascript:;" class="nav-item-toggle" id="notificationAlarm">
                   <img class="svg" src="../assets/img/svg/alarm.svg" alt="img" />
                 </a>
                 <div class="dropdown-parent-wrapper">
                   <div class="dropdown-wrapper">
-                    <h2 class="dropdown-wrapper__title">
-                      최근 알림 <span class="badge-circle badge-warning ms-1">1</span>
-                    </h2>
-                    <ul>
-                      <li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
-                        <div class="nav-notification__type nav-notification__type--primary">
-                          <img class="svg" src="../assets/img/svg/inbox.svg" alt="inbox" />
-                        </div>
-                        <div class="nav-notification__details">
-                          <p>
-                            <a href="" class="subject stretched-link text-truncate" style="max-width: 180px">James</a>
-                            <span>sent you a message</span>
-                          </p>
-                          <p>
-                            <span class="time-posted">5 hours ago</span>
-                          </p>
-                        </div>
-                      </li>
-                    </ul>
+                    <h2 class="dropdown-wrapper__title">최근 알림</h2>
+                    <ul id="notificationDetail"></ul>
                     <a href="" class="dropdown-wrapper__more"></a>
                   </div>
                 </div>
@@ -351,7 +261,7 @@
           </ul>
           <!-- ends: .navbar-right__menu -->
           <div class="navbar-right__mobileAction d-md-none">
-            <div style="margin-top: 8px;" class="mobile-search-result"></div>
+            <div style="margin-top: 8px" class="mobile-search-result"></div>
             <a href="#" class="btn-search">
               <img src="../assets/img/svg/search.svg" alt="search" class="svg feather-search" />
               <img src="../assets/img/svg/x.svg" alt="x" class="svg feather-x"
@@ -401,18 +311,6 @@
       <div class="sidebar sidebar-collapse" id="sidebar">
         <div class="sidebar__menu-group">
           <ul class="sidebar_nav">
-            <li class="has-child open">
-              <a href="#" class="active">
-                <span class="nav-icon uil uil-create-dashboard"></span>
-                <span class="menu-text">Dashboards</span>
-                <span class="toggle-icon"></span>
-              </a>
-              <ul>
-                <li class="active">
-                  <a href="index.html">Demo 1</a>
-                </li>
-              </ul>
-            </li>
             <li class="has-child">
               <a href="#" class="">
                 <span class="nav-icon uil uil-window-section"></span>
@@ -437,7 +335,7 @@
             <li class="has-child">
               <a href="chat.html" class="">
                 <span class="nav-icon uil uil-chat"></span>
-                <span class="menu-text">메시지</span>
+                <span class="menu-text">Message</span>
                 <span class="toggle-icon"></span>
               </a>
               <ul class="subMenu">
@@ -465,51 +363,9 @@
               </ul>
             </li>
             <li>
-              <a href="calendar.html" class="">
+              <a href="../calendar" class="">
                 <span class="nav-icon uil uil-calendar-alt"></span>
                 <span class="menu-text">Calendar</span>
-              </a>
-            </li>
-            <li class="has-child">
-              <a href="#" class="">
-                <span class="nav-icon uil uil-users-alt"></span>
-                <span class="menu-text">Users</span>
-                <span class="toggle-icon"></span>
-              </a>
-              <ul>
-                <li class="">
-                  <a href="users-membar.html">Team</a>
-                </li>
-                <li class="">
-                  <a href="users-card.html">Users Grid</a>
-                </li>
-                <li class="">
-                  <a href="users-list.html">Users List</a>
-                </li>
-                <li class="">
-                  <a href="users-card2.html">Users Grid style</a>
-                </li>
-                <li class="">
-                  <a href="users-group.html">Users Group</a>
-                </li>
-                <li class="">
-                  <a href="user-info.html">Add User</a>
-                </li>
-                <li class="">
-                  <a href="users-datatable.html">Users Table</a>
-                </li>
-              </ul>
-            </li>
-            <li class="">
-              <a href="note.html">
-                <span class="nav-icon uil uil-clipboard-notes"></span>
-                <span class="menu-text">Note</span>
-              </a>
-            </li>
-            <li class="">
-              <a href="to-do.html">
-                <span class="nav-icon uil uil-check-square"></span>
-                <span class="menu-text">To-Do</span>
               </a>
             </li>
             <li class="">
@@ -539,44 +395,42 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
-              <div class="form-basic">
-                <div class="form-group mb-25">
-                  <label>워크스페이스 타이틀</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    id="create-title"
-                    placeholder="내용을 입력하세요."
-                  />
-                </div>
-                <div class="card card-default card-md mb-4">
-                  <label>워크스페이스 타입</label>
-                  <div class="dm-select-list d-flex">
-                    <div class="dm-select">
-                      <select name="select-search" id="select-search" class="form-control">
-                        <option>개발</option>
-                        <option>연구</option>
-                        <option>마케팅</option>
-                        <option>교육</option>
-                        <option>HRD</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group mb-25">
-                  <label for="description">워크스페이스 소개</label>
-                  <div class="position-relative">
-                    <textarea
-                      class="form-control form-control-lg"
-                      id="create-description"
-                      placeholder="내용을 입력하세요."
-                      style="resize: none"
-                    ></textarea>
+            <div class="form-basic">
+              <div class="form-group mb-25">
+                <label>워크스페이스 타이틀</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  id="create-title"
+                  placeholder="내용을 입력하세요."
+                />
+              </div>
+              <div class="card card-default card-md mb-4">
+                <label>워크스페이스 타입</label>
+                <div class="dm-select-list d-flex">
+                  <div class="dm-select">
+                    <select name="select-search" id="select-search" class="form-control">
+                      <option>개발</option>
+                      <option>연구</option>
+                      <option>마케팅</option>
+                      <option>교육</option>
+                      <option>HRD</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            </form>
+              <div class="form-group mb-25">
+                <label for="description">워크스페이스 소개</label>
+                <div class="position-relative">
+                  <textarea
+                    class="form-control form-control-lg"
+                    id="create-description"
+                    placeholder="내용을 입력하세요."
+                    style="resize: none"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" onclick="createWorkspace()">생성</button>

@@ -1,47 +1,60 @@
 const params = new URLSearchParams(window.location.search);
 let workspaceId = params.get('workspaceId');
-let workspaceName = params.get('workspaceName');
 let selectedMembers = [];
 let selectedMemberId = [];
 
-let typingTimer;
+let typingTimer, workspaceName;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards('all');
+  equalHeight($('.board-description'));
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
-  // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
+
+function equalHeight(group) {
+  tallest = 0;
+  group.each(function () {
+    thisHeight = $(this).height();
+    if (thisHeight > tallest) {
+      tallest = thisHeight;
+    }
+  });
+  group.height(tallest);
+}
 
 function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
   const selectedMemberList = document.querySelector(memberListSelector);
 
   updateSelectedMembersUI(selected);
-  memberInput.addEventListener('keyup', (e) => {
+  memberInput.addEventListener('keydown', (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const searchText = e.target.value;
       const encodedSearchText = encodeURIComponent(searchText);
 
       const results = await searchMembers(encodedSearchText);
-      if (results) {
-        selectedMemberList.innerHTML = '';
-        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+      selectedMemberList.innerHTML = '';
+      for (let result of results) {
+        let Img = result.user.profile_url ? result.user.profile_url : '/assets/img/favicon.png';
         let data = `<li>
                         <a href="#">
-                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${result.user.name}">
                         </a>
-                        <span>${results.user.name}</span>
+                        <span>${result.user.name}</span>
                       </li>`;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMemberId.includes(results.user.id)) {
-            selectedMembers.push({ name: results.user.name, id: results.user.id });
-            selectedMemberId.push(results.user.id);
+          if (!selectedMemberId.includes(result.user.id)) {
+            selectedMembers.push({ name: result.user.name, id: result.user.id });
+            selectedMemberId.push(result.user.id);
             updateSelectedMembersUI(selected);
           }
         });
@@ -64,52 +77,52 @@ function changeSelect() {
 }
 // 보드 전체 조회
 async function getMyBoards(selectItem, search) {
-  try {
-    await $.ajax({
-      method: 'GET',
-      url: `/boards?workspaceId=${workspaceId}`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      success: async (data) => {
-        const boards = data.boards;
-        let result = '';
-        let button = '';
-        let listResult = '';
-        document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
-        for (const board of boards) {
-          if (selectItem == 'all' && !search) {
+  await $.ajax({
+    method: 'GET',
+    url: `/boards?workspaceId=${workspaceId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: async (data) => {
+      const boards = data.boards;
+      workspaceName = data.workspaceName;
+      let result = '';
+      let button = '';
+      let listResult = '';
+      document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
+      document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
+      for (const board of boards) {
+        if (selectItem == 'all' && !search) {
+          result += boardHTML(board);
+          listResult += boardListHTML(board);
+        } else if (selectItem == 'ing' && !search) {
+          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+          if (count != 100) {
             result += boardHTML(board);
             listResult += boardListHTML(board);
-          } else if (selectItem == 'ing' && !search) {
-            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-            if (count != 100) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            }
-          } else if (selectItem == 'end' && !search) {
-            const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-            if (count == 100) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            }
+          }
+        } else if (selectItem == 'end' && !search) {
+          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+          if (count == 100) {
+            result += boardHTML(board);
+            listResult += boardListHTML(board);
+          }
+        } else {
+          if (board.boardName.search(search) > -1) {
+            result += boardHTML(board);
+            listResult += boardListHTML(board);
           } else {
-            if (board.boardName.search(search) > -1) {
-              result += boardHTML(board);
-              listResult += boardListHTML(board);
-            } else {
-              for (const member of board.boardMembers) {
-                if (member.name.search(search) > -1) {
-                  result += boardHTML(board);
-                  listResult += boardListHTML(board);
-                }
+            for (const member of board.boardMembers) {
+              if (member.name.search(search) > -1) {
+                result += boardHTML(board);
+                listResult += boardListHTML(board);
               }
             }
           }
         }
-        button += `<li class="nav-item">
+      }
+      button += `<li class="nav-item">
                     <a
                       class="nav-link active"
                       id="ap-overview-tab"
@@ -119,14 +132,23 @@ async function getMyBoards(selectItem, search) {
                       >워크스페이스 디테일</a
                     >
                   </li>`;
-        printListBoard.innerHTML = listResult;
-        printBoard.innerHTML = result;
-        printButton.innerHTML = button;
-      },
-    });
-  } catch (err) {
-    console.error(err);
-  }
+      printListBoard.innerHTML = listResult;
+      printBoard.innerHTML = result;
+      printButton.innerHTML = button;
+    },
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
+    },
+  });
 }
 
 // 보드 html
@@ -157,7 +179,7 @@ function boardHTML(board) {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardId=${board.boardId}">
+                              <a href="/board?boardId=${board.boardId}" style="width: fit-content;">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -186,7 +208,7 @@ function boardHTML(board) {
                             </div>
                           </div>
                           <div class="user-group-people mt-15 text-capitalize">
-                            <p>${board.description}</p>
+                            <div class="board-description"><p>${board.description}</p></div>
                             <div class="user-group-project">
                               <div class="d-flex align-items-center user-group-progress-top">
                                 <div class="media-ui__start">
@@ -343,7 +365,6 @@ document.querySelector('#create-board-btn').addEventListener('click', () => {
     document.querySelector('#create-selected-members').innerHTML = '';
     document.querySelector('#selected-members').innerHTML = '';
   }
-  console.log('보드 생성 버튼 클릭: ', selectedMemberId, selectedMembers);
 });
 
 createBoardBtn.addEventListener('click', async (event) => {
@@ -356,9 +377,7 @@ createBoardBtn.addEventListener('click', async (event) => {
 
     deadline = new Date(deadline);
     startline = new Date(startline);
-    console.log(deadline);
-    console.log(createTitle);
-    console.log(createDescription);
+
     await $.ajax({
       method: 'POST',
       url: `/boards?workspaceId=${workspaceId}`,
@@ -368,11 +387,10 @@ createBoardBtn.addEventListener('click', async (event) => {
       },
       data: JSON.stringify({ name: createTitle, description: createDescription, deadline, start_date: startline }),
       success: async (data) => {
-        console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
-          await createBoardMember(boardId, member.name);
+          await createBoardMember(boardId, member.id);
         }
 
         Swal.fire({
@@ -394,6 +412,8 @@ createBoardBtn.addEventListener('click', async (event) => {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
         });
       },
     });
@@ -403,7 +423,9 @@ createBoardBtn.addEventListener('click', async (event) => {
 });
 
 // 보드멤버 생성
-async function createBoardMember(boardId, name) {
+async function createBoardMember(boardId, saveUserId) {
+  let userId, boardName;
+  const date = new Date(Date.now());
   try {
     await $.ajax({
       method: 'POST',
@@ -412,7 +434,11 @@ async function createBoardMember(boardId, name) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name }),
+      data: JSON.stringify({ userId: saveUserId }),
+      success: (data) => {
+        userId = data.userId;
+        boardName = data.boardName;
+      },
       error: (err) => {
         Swal.fire({
           customClass: {
@@ -421,12 +447,22 @@ async function createBoardMember(boardId, name) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
         });
       },
     });
   } catch (err) {
     console.error(err);
   }
+
+  socket.emit('inviteBoard', {
+    userId,
+    workspaceId,
+    workspaceName,
+    boardName,
+    date: new Date(new Date(date).getTime()),
+  });
 }
 
 // 보드 멤버 조회
@@ -481,7 +517,7 @@ function updateSelectedMembersUI(memberListSelector) {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      console.log(memberRemove, 'id값이 들어와야해');
+
       selectedMembers = selectedMembers.filter((member) => member.id != memberRemove);
       selectedMemberId = selectedMemberId.filter((selected) => selected != memberRemove);
       updateSelectedMembersUI(memberListSelector);
@@ -579,22 +615,6 @@ async function openEditBoardModal(element) {
     console.error(err);
   }
 }
-// 보드 멤버 조회 - 같은 함수가 위에 존재
-// function getBoardMembers(boardId) {
-//   try {
-//     const response = $.ajax({
-//       method: 'GET',
-//       url: `/boards/${boardId}/members`,
-//       beforeSend: function (xhr) {
-//         xhr.setRequestHeader('Content-type', 'application/json');
-//         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-//       },
-//     });
-//     return response;
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
 
 // 보드 수정
 async function putBoard(boardId, name, description, deadline, startDate) {
@@ -617,6 +637,9 @@ async function putBoard(boardId, name, description, deadline, startDate) {
 
 //보드 멤버 수정
 async function putBoardMember(boardId, userIdArray) {
+  let updateUserList = [];
+  let boardName;
+  const date = new Date(Date.now());
   await $.ajax({
     type: 'PUT',
     url: `/boards/${boardId}/members`,
@@ -626,12 +649,27 @@ async function putBoardMember(boardId, userIdArray) {
     },
     data: JSON.stringify({ userIdArray }),
     success: (data) => {
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
+      boardName = data.boardName;
       console.log(data.message);
     },
     error: (error) => {
       console.log(error);
     },
   });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteBoard', {
+        userId,
+        workspaceId,
+        workspaceName,
+        boardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
 }
 
 // 삭제 확인 모달 출력
@@ -676,7 +714,14 @@ async function deleteBoard(boardId) {
       });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }

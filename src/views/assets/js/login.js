@@ -74,7 +74,7 @@ function googleLogin() {
   window.location.href =
     `https://accounts.google.com/o/oauth2/auth?client_id=1098266876328-ibg7lfkte0358vsqt5cprv6akf1l2mdq.apps.googleusercontent.com` +
     '&redirect_uri=' +
-    encodeURIComponent(`http://127.0.0.1:3000/socialLogin/google`) +
+    encodeURIComponent(`https://work-flow.online/socialLogin/google`) +
     '&response_type=code' +
     '&scope=email profile';
 }
@@ -82,14 +82,14 @@ function googleLogin() {
 function kakaoLogin() {
   window.location.href =
     `https://kauth.kakao.com/oauth/authorize?client_id=6cdf7b0e538d88b2284a5dee284f9b5b&redirect_uri=` +
-    encodeURIComponent(`http://127.0.0.1:3000/socialLogin/kakao`) +
+    encodeURIComponent(`https://work-flow.online/socialLogin/kakao`) +
     '&response_type=code';
 }
 
 function naverLogin() {
   window.location.href =
     `https://nid.naver.com/oauth2.0/authorize?client_id=xt0v4KWDrbjwuiriRYkt&redirect_uri=` +
-    encodeURIComponent(`http://127.0.0.1:3000/socialLogin/naver`) +
+    encodeURIComponent(`https://work-flow.online/socialLogin/naver`) +
     '&response_type=code';
 }
 

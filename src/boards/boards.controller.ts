@@ -28,15 +28,16 @@ export class BoardsController {
   @Get()
   @UseGuards(AuthGuard)
   async GetBoards(@Query('workspaceId') workspaceId: number, @Res() res: Response) {
-    const boards = await this.boardsService.GetBoards(workspaceId);
-    return res.status(HttpStatus.OK).json({ boards });
+    const result = await this.boardsService.GetBoards(workspaceId);
+
+    return res.status(HttpStatus.OK).json({ boards: result.boardInfos, workspaceName: result.workspaceName });
   }
 
   //보드 상세 조회
   @Get('/:boardId')
   @UseGuards(AuthGuard)
   async GetBoardById(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
-    const board = await this.boardsService.GetBoard(workspaceId, id);
+    const board = await this.boardsService.GetBoard(id);
     return res.status(HttpStatus.OK).json({ board });
   }
 

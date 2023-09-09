@@ -1,11 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
+import { Board_Member } from 'src/_common/entities/board-member.entity';
+import { Board } from 'src/_common/entities/board.entity';
+import { Card } from 'src/_common/entities/card.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MailService } from 'src/_common/mail/mail.service';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { CardsService } from 'src/cards/cards.service';
 import { UsersService } from 'src/users/users.service';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -31,7 +35,7 @@ export class WorkspacesService {
           ...body,
           user: { id: userId },
         });
-        console.log(newWorkspace);
+
         await transactionEntityManager.save(Workspace, newWorkspace);
 
         const newMember = this.workspaceMemberRepository.create({
@@ -96,25 +100,29 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버조회
-  async searchMemberByName(workspaceId: number, name: string): Promise<Workspace_Member> {
-    const user = await this.userService.findUserByName(name);
-    if (!user) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+  async searchMemberByName(workspaceId: number, name: string): Promise<any> {
+    const users = await this.userService.findUsersByName(name);
+    if (!users) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    const workspaceMember = await this.workspaceMemberRepository
-      .createQueryBuilder('workspace_member')
-      .innerJoinAndSelect('workspace_member.user', 'user')
-      .where('workspace_member.workspace = :workspaceId', { workspaceId })
-      .andWhere('workspace_member.user = :userId', { userId: user.id })
-      .select([
-        'workspace_member.id',
-        'workspace_member.role',
-        'workspace_member.participation',
-        'user.id',
-        'user.name',
-        'user.email',
-        'user.profile_url',
-      ])
-      .getOne();
+    const workspaceMember = [];
+    for (let i = 0; i < users.length; i++) {
+      const member = await this.workspaceMemberRepository
+        .createQueryBuilder('workspace_member')
+        .innerJoinAndSelect('workspace_member.user', 'user')
+        .where('workspace_member.workspace = :workspaceId', { workspaceId })
+        .andWhere('workspace_member.user = :userId', { userId: users[i].id })
+        .select([
+          'workspace_member.id',
+          'workspace_member.role',
+          'workspace_member.participation',
+          'user.id',
+          'user.name',
+          'user.email',
+          'user.profile_url',
+        ])
+        .getOne();
+      workspaceMember.push(member);
+    }
 
     return workspaceMember;
   }
@@ -160,7 +168,8 @@ export class WorkspacesService {
     workspaceId: number,
     userName: string,
     userId: number
-  ): Promise<IResult> {
+  ): Promise<any> {
+    let inviteInfo: any;
     const existWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['memberships'],
@@ -182,24 +191,22 @@ export class WorkspacesService {
       throw new HttpException('관리자 권한을 줄 수 없습니다.', HttpStatus.BAD_REQUEST);
 
     const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
-
     if (countMember.length >= 5 && !hasMembership)
       throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
-
     if (existMember) throw new HttpException('이미 초대된 유저입니다.', HttpStatus.CONFLICT);
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
         await this.mailService.inviteProjectMail(body.email, userName, existWorkspace.name, workspaceId);
 
-        await transactionEntityManager.save(Workspace_Member, {
+        const Info = await transactionEntityManager.save(Workspace_Member, {
           workspace: { id: workspaceId },
           user: { id },
           role: body.role,
         });
-
+        inviteInfo = Info.createdAt;
         await this.auditLogService.inviteMemberLog(workspaceId, userId, userName, invitedUser.name);
       });
-      return { result: true };
+      return { id, workspaceName: existWorkspace.name, date: inviteInfo };
     } catch (err) {
       console.error(err);
     }
@@ -216,6 +223,7 @@ export class WorkspacesService {
       where: { workspace: { id: workspaceId }, user: { id: userId } },
       relations: ['user'],
     });
+    const entityManager = this.workspaceMemberRepository.manager;
 
     const loginUserRole = await this.loginUserRole(loginUserId, workspaceId);
 
@@ -224,8 +232,42 @@ export class WorkspacesService {
     if (loginUserRole / 1 >= existMember.role)
       throw new HttpException('관리자 또는 어드민 계정은 삭제할 수 없습니다.', HttpStatus.BAD_REQUEST);
 
-    await this.workspaceMemberRepository.remove(existMember);
-    await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      await transactionEntityManager.remove(existMember);
+
+      const boardMember = await transactionEntityManager.find(Board_Member, {
+        where: { user: { id: existMember.user.id } },
+      });
+      if (boardMember) {
+        await transactionEntityManager.remove(Board_Member, boardMember);
+      }
+
+      const board = await transactionEntityManager.find(Board, {
+        where: { workspace: { id: workspaceId } },
+        relations: ['board_columns'],
+      });
+
+      for (const column of board) {
+        const columns = column.board_columns;
+        for (const id of columns) {
+          const columnId = id.id;
+          const cards = await transactionEntityManager.find(Card, {
+            where: { board_column: { id: columnId } },
+          });
+          for (const card of cards) {
+            if (typeof card.members === 'string') {
+              card.members = [];
+              await transactionEntityManager.save(Card, card);
+            } else if (Array.isArray(card.members)) {
+              card.members = card.members.filter((memberId) => memberId !== existMember.user.id.toString());
+              await transactionEntityManager.save(Card, card);
+            }
+          }
+        }
+      }
+
+      await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    });
 
     return { result: true };
   }
@@ -304,6 +346,12 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
+    const checkUser = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (!checkUser) return;
+
     const checkMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
@@ -340,6 +388,7 @@ export class WorkspacesService {
         'cards.updated_at as updated_at',
       ])
       .getRawMany();
+
     return workspace;
   }
 
@@ -348,12 +397,16 @@ export class WorkspacesService {
     const allFiles = await this.getAllFiles(workspaceId);
     let totalFileSize = 0;
 
-    allFiles.forEach((file) => {
-      const fileSizes = JSON.parse(file.file_size);
-      fileSizes.forEach((size) => {
-        totalFileSize += parseInt(size);
+    if (allFiles) {
+      allFiles.forEach((file) => {
+        const fileSizes = JSON.parse(file.file_size);
+        if (fileSizes) {
+          fileSizes.forEach((size) => {
+            totalFileSize += parseInt(size);
+          });
+        }
       });
-    });
+    }
 
     return totalFileSize;
   }

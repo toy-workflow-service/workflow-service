@@ -9,6 +9,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class CardsService {
   constructor(
@@ -18,18 +19,32 @@ export class CardsService {
     private readonly boardService: BoardsService,
     private readonly auditLogService: AuditLogsService,
     private readonly workspaceService: WorkspacesService,
-    private readonly membershipService: MembershipsService
+    private readonly membershipService: MembershipsService,
+    private readonly usersService: UsersService
   ) {}
   //카드 조회
   async GetCards(board_column_Id: number) {
-    const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+    let findCards = await this.cardRepository.find({ relations: ['board_column'] });
 
     findCards.sort((a, b) => {
       return a.sequence - b.sequence;
     });
-    return findCards.filter((card) => {
+    findCards = findCards.filter((card) => {
       return card.board_column.id == board_column_Id;
     });
+
+    const totalCard = [];
+    for (let i = 0; i < findCards.length; i++) {
+      const members = [];
+      if (findCards[i].members) {
+        for (let j = 0; j < findCards[i].members.length; j++) {
+          const member = await this.usersService.findUserById(Number(findCards[i].members[j]));
+          members.push(member);
+        }
+      }
+      totalCard.push({ cardInfo: findCards[i], cardMembers: members });
+    }
+    return totalCard;
   }
 
   //카드 상세 조회
@@ -75,7 +90,7 @@ export class CardsService {
       }
     }
 
-    await this.cardRepository.insert({
+    const result = await this.cardRepository.save({
       board_column: column,
       ...cardInfo,
       file_url: files,
@@ -83,8 +98,9 @@ export class CardsService {
       file_size: fileSizes,
       members: memberIds,
     });
-
     await this.auditLogService.createCardLog(board.workspace.id, cardInfo.name, loginUserId, loginUserName);
+
+    return { boardId: board.id, cardName: result.name };
   }
 
   //카드 수정
@@ -99,6 +115,7 @@ export class CardsService {
     loginUserId: number,
     loginUserName: string
   ) {
+    let updateUserList = [];
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
@@ -130,6 +147,24 @@ export class CardsService {
 
     if (!memberIds) {
       memberIds = [];
+    } else {
+      if (existCard.members) {
+        if (memberIds.length === 1) {
+          memberIds = [memberIds[0]];
+        }
+        updateUserList = [...existCard.members];
+        updateUserList = memberIds.map((userId) => {
+          if (!updateUserList.includes(userId)) return userId;
+        });
+        updateUserList = updateUserList.filter((userId) => userId);
+      } else {
+        updateUserList = [...memberIds];
+      }
+    }
+    if (files.length === 0) {
+      originalnames = null;
+      files = null;
+      fileSizes = null;
     }
     await this.cardRepository.update(
       { id },
@@ -151,6 +186,7 @@ export class CardsService {
       loginUserId,
       loginUserName
     );
+    return { updateUserList, boardId: board.id, cardName: existCard.name };
   }
   //카드삭제
   async DeleteCard(board_column_id: number, id: number, loginUserId: number, loginUserName: string) {
@@ -175,7 +211,7 @@ export class CardsService {
   //보드에서 멤버 삭제시 해당하는 카드에서도 멤버 삭제. -> 업데이트임
   async DeleteCardMembers(boardId: number, userId: number) {
     const columns = await this.boardColumnService.GetBoardColumns(boardId);
-    columns.map(async (column) => {
+    columns.columnInfos.map(async (column) => {
       const findCards = await this.cardRepository.find({ relations: ['board_column'] });
       const cards = findCards.filter((card) => {
         return card.board_column.id == column.columnId;

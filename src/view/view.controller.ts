@@ -8,6 +8,7 @@ export class ViewController {
   constructor(private viewService: ViewService) {}
 
   @Get()
+  @UseGuards(ViewAuthGuard)
   @Render('index.ejs')
   async index(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -16,6 +17,7 @@ export class ViewController {
   }
 
   @Get('maintenance')
+  @UseGuards(ViewAuthGuard)
   @Render('maintenance.ejs')
   async maintenance(@Req() req: AccessPayload) {
     const user: AccessPayload = req.user;
@@ -43,11 +45,13 @@ export class ViewController {
         3,
         7
       )}-${header.phoneNumber.substring(7, 11)}`;
-    } else {
+    } else if (header.phoneNumber.length === 10) {
       header.phoneNumber = `${header.phoneNumber.substring(0, 3)}-${header.phoneNumber.substring(
         3,
         6
       )}-${header.phoneNumber.substring(6, 10)}`;
+    } else {
+      header.phoneNumber = '';
     }
     return { title: 'Work-Flow', subtitle: '마이 페이지', header };
   }
@@ -96,6 +100,15 @@ export class ViewController {
     const user: AccessPayload = req.user;
     const header = await this.viewService.header(user);
     return { title: 'Work-Flow', subtitle: '서포트', header };
+  }
+
+  @Get('calendar')
+  @UseGuards(ViewAuthGuard)
+  @Render('calendar.ejs')
+  async calendar(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '캘린더', header };
   }
 
   /**No header & footer */
