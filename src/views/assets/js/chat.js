@@ -284,7 +284,7 @@ async function getChatRooms() {
                                                       </div>
                                                       <div class="chat-type-text__btn">                                                      
                                                         <button  class="border-0 btn-deep color-light wh-50 p-10 rounded-circle">
-                                                          <input id="message-file-upload${boardMembers[idx][0].board_id}" type="file" name="newFile" class="d-none" boardId="${boardMembers[idx][0].board_id}" onchange="uploadFile(this)" />
+                                                          <input id="message-file-upload${boardMembers[idx][0].board_id}" type="file" name="newFile" class="d-none" boardId="${boardMembers[idx][0].board_id}" boardName="${boardMembers[idx][0].board_name}" onchange="uploadFile(this)" />
                                                           <label for="message-file-upload${boardMembers[idx][0].board_id}" >
                                                             <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip" style="cursor: pointer">
                                                           </label>
@@ -927,7 +927,7 @@ function appendPrivateMessage(userId, userName, messageId, message, room, date, 
                                                           <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
                                                         </button>
                                                         <div class="dropdown-default dropdown-bottomRight dropdown-menu-right dropdown-menu" style="">
-                                                        <button class="dropdown-item" id="${messageId}" onclick="deleteMessage(this)">삭제하기</button>
+                                                        <button class="dropdown-item" id="${messageId}" onclick="deletePrivateMessage(this)">삭제하기</button>
                                                       </div>
                                                     </div>
 
@@ -1531,7 +1531,7 @@ async function getPrivateChatRooms() {
                                                     </div>
                                                     <div class="chat-type-text__btn">
                                                       <button  class="border-0 btn-deep color-light wh-50 p-10 rounded-circle">
-                                                        <input id="message-file-uploadprivateRoom${rooms[idx].room_id}" type="file" name="newFile" class="d-none" roomId="privateRoom${rooms[idx].room_id}" roomName="${userName}" onchange="uploadPrivateFile(this)" />
+                                                        <input id="message-file-uploadprivateRoom${rooms[idx].room_id}" type="file" name="newFile" class="d-none" userList="${rooms[idx].sender_id} ${rooms[idx].receiver_id}" roomId="privateRoom${rooms[idx].room_id}" roomName="${userName}" onchange="uploadPrivateFile(this)" />
                                                         <label for="message-file-uploadprivateRoom${rooms[idx].room_id}" >
                                                           <img class="svg" src="../assets/img/svg/paperclip.svg" alt="paperclip" style="cursor: pointer">
                                                         </label>
