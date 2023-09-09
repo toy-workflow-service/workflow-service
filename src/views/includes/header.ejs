@@ -125,21 +125,15 @@
                           </ul>
                         </li>
                         <li>
+                          <a href="/board">
+                            <img src="../assets/img/svg/columns.svg" alt="columns" class="svg nav-icon" />
+                            <span class="menu-text">Kanban Board</span>
+                          </a>
+                        </li>
+                        <li>
                           <a href="calendar.html" class="">
                             <span class="nav-icon uil uil-calendar-alt"></span>
                             <span class="menu-text">Calendar</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="chat.html" class="">
-                            <img src="../assets/img/svg/bookmark.svg" alt="bookmark" class="svg nav-icon" />
-                            <span class="menu-text">Note</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="chat.html" class="">
-                            <img src="../assets/img/svg/activity.svg" alt="activity" class="svg nav-icon" />
-                            <span class="menu-text">To-Do</span>
                           </a>
                         </li>
                         <li>
@@ -152,16 +146,6 @@
                           <a href="/support" class="">
                             <span class="nav-icon uil uil-headphones"></span>
                             <span class="menu-text">Support</span>
-                          </a>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <ul>
-                        <li>
-                          <a href="/board">
-                            <img src="../assets/img/svg/columns.svg" alt="columns" class="svg nav-icon" />
-                            <span class="menu-text">Kanban Board</span>
                           </a>
                         </li>
                       </ul>
@@ -402,18 +386,6 @@
               </a>
             </li>
             <li class="">
-              <a href="note.html">
-                <span class="nav-icon uil uil-clipboard-notes"></span>
-                <span class="menu-text">Note</span>
-              </a>
-            </li>
-            <li class="">
-              <a href="to-do.html">
-                <span class="nav-icon uil uil-check-square"></span>
-                <span class="menu-text">To-Do</span>
-              </a>
-            </li>
-            <li class="">
               <a href="/membership">
                 <span class="nav-icon uil uil-bill"></span>
                 <span class="menu-text">Membership</span>
@@ -440,44 +412,42 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
-              <div class="form-basic">
-                <div class="form-group mb-25">
-                  <label>워크스페이스 타이틀</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    id="create-title"
-                    placeholder="내용을 입력하세요."
-                  />
-                </div>
-                <div class="card card-default card-md mb-4">
-                  <label>워크스페이스 타입</label>
-                  <div class="dm-select-list d-flex">
-                    <div class="dm-select">
-                      <select name="select-search" id="select-search" class="form-control">
-                        <option>개발</option>
-                        <option>연구</option>
-                        <option>마케팅</option>
-                        <option>교육</option>
-                        <option>HRD</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group mb-25">
-                  <label for="description">워크스페이스 소개</label>
-                  <div class="position-relative">
-                    <textarea
-                      class="form-control form-control-lg"
-                      id="create-description"
-                      placeholder="내용을 입력하세요."
-                      style="resize: none"
-                    ></textarea>
+            <div class="form-basic">
+              <div class="form-group mb-25">
+                <label>워크스페이스 타이틀</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  id="create-title"
+                  placeholder="내용을 입력하세요."
+                />
+              </div>
+              <div class="card card-default card-md mb-4">
+                <label>워크스페이스 타입</label>
+                <div class="dm-select-list d-flex">
+                  <div class="dm-select">
+                    <select name="select-search" id="select-search" class="form-control">
+                      <option>개발</option>
+                      <option>연구</option>
+                      <option>마케팅</option>
+                      <option>교육</option>
+                      <option>HRD</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            </form>
+              <div class="form-group mb-25">
+                <label for="description">워크스페이스 소개</label>
+                <div class="position-relative">
+                  <textarea
+                    class="form-control form-control-lg"
+                    id="create-description"
+                    placeholder="내용을 입력하세요."
+                    style="resize: none"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" onclick="createWorkspace()">생성</button>

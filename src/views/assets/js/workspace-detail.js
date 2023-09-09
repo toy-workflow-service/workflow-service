@@ -997,7 +997,7 @@ async function printStorageSize(totalSize) {
 
     if (data.memberships.length) {
       return `<div class="user-group-progress-bar">
-                    <p>워크스페이스 사용량</p>
+                    <p style="font-weight: bold">워크스페이스 사용량</p>
                     <div class="progress-wrap d-flex align-items-center mb-0">
                       <div class="progress">
                         <div
