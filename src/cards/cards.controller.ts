@@ -53,13 +53,19 @@ export class CardsController {
     const files: any = req.files;
     let fileArray = [];
     let fileSizeArray = [];
+    let userIds = [];
     if (files) {
       files.forEach((file) => {
         fileArray.push(file.location);
         fileSizeArray.push(file.size);
       });
     }
-    await this.cardsService.CreateCard(
+
+    if (memberIds) {
+      userIds = [...memberIds];
+    }
+
+    const result = await this.cardsService.CreateCard(
       boardColumnId,
       data,
       fileArray,
@@ -70,7 +76,12 @@ export class CardsController {
       user.name
     );
 
-    return res.status(HttpStatus.OK).json({ message: '카드를 생성하였습니다.' });
+    return res.status(HttpStatus.OK).json({
+      message: '카드를 생성하였습니다.',
+      updateUserList: userIds,
+      boardId: result.boardId,
+      cardName: result.cardName,
+    });
   }
 
   //카드 수정
@@ -130,7 +141,7 @@ export class CardsController {
         fileSizes.push(alreadyfileSize);
       }
     }
-    await this.cardsService.UpdateCard(
+    const result = await this.cardsService.UpdateCard(
       board_column_Id,
       id,
       data,
@@ -142,7 +153,12 @@ export class CardsController {
       user.name
     );
 
-    return res.status(HttpStatus.OK).json({ message: '카드를 수정하였습니다.' });
+    return res.status(HttpStatus.OK).json({
+      message: '카드를 수정하였습니다.',
+      updateUserList: result.updateUserList,
+      boardId: result.boardId,
+      cardName: data.name,
+    });
   }
 
   //카드 삭제

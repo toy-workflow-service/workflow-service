@@ -54,7 +54,6 @@ function elementDrop(e) {
 function dragEnd(e) {
   // this/e.target is the source node.
   this.classList.remove('over');
-  console.log('dragEnd : ', e);
 }
 
 function addDnDHandlers(elem) {
@@ -71,6 +70,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
+let workspaceName;
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -87,8 +87,9 @@ function init() {
   $('.kanban-items,.todo-task1 tbody')
     .sortable({
       containment: '.kanban-container',
+      items: '.align-items-center',
       connectWith: '.kanban-items,.todo-task1 tbody',
-      stack: '.kanban-items,.todo-task1 tbody',
+      // stack: '.kanban-items,.todo-task1 tbody',
       start: function (e, i) {
         // console.log('start : ', e, i);
       },
@@ -147,9 +148,7 @@ async function BoardColumnSequenceUpdate(columnId, sequence) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ sequence }),
-    success: (data) => {
-      console.log(data.message);
-    },
+    success: (data) => {},
     error: (error) => {
       console.log(error);
     },
@@ -166,10 +165,20 @@ async function BoardColumnsGet(search) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: async (data) => {
-      BoardColumns(data, search);
+      workspaceName = data.workspaceName;
+      BoardColumns(data.columns, search);
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/';
+      });
     },
   });
 }
@@ -180,12 +189,12 @@ let cardIndex = 0;
 async function BoardColumns(data, search) {
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${workspaceName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
+                        <li class="breadcrumb-item active" aria-current="page">${workspaceName}</li>
                       </ol>
                   </nav>
                 </div>
@@ -204,9 +213,17 @@ async function BoardColumns(data, search) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
     for (let c of card) {
+      let members = '';
+      for (let m of c.cardMembers) {
+        let Img = '';
+        m.profile_url ? (Img = `${m.profile_url}`) : (Img = `/assets/img/favicon.png`);
+        members += `<li style="background-color:transparent; margin:0; padding:0;">
+                    <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}"/>
+                  </li>`;
+      }
       if (!search) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+        cardHtml += `<li class="d-flex justify-content-between row align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}       
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -221,11 +238,17 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>     
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
-      } else if (c.name.search(search) > -1) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+      } else if (c.cardInfo.name.search(search) > -1) {
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -240,6 +263,12 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>       
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
       }
@@ -249,7 +278,7 @@ async function BoardColumns(data, search) {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
@@ -264,7 +293,7 @@ async function BoardColumns(data, search) {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                         <div class="dropdown dropdown-click">
                                           <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                               <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -292,8 +321,7 @@ async function BoardColumns(data, search) {
   document.getElementById('ColumnAddBtn').addEventListener('click', (a) => {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
-    console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
-    BoardColumnsCreate(columnTitle, Number(i) + 1);
+    BoardColumnsCreate(columnTitle, Number(i));
   });
 
   // column create api
@@ -307,7 +335,6 @@ async function BoardColumns(data, search) {
       },
       data: JSON.stringify({ name, sequence }),
       success: function (data) {
-        console.log(data.message);
         location.reload();
       },
       error: (error) => {
@@ -334,7 +361,6 @@ async function BoardColumns(data, search) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data.message);
         ColumnListReorder();
         location.reload();
       },
@@ -383,7 +409,6 @@ async function BoardColumns(data, search) {
     data.addEventListener('click', (e) => {
       const cardId = e.target.getAttribute('data-cardId');
       const columnId = e.target.getAttribute('data-columnId');
-
       DetailCardGet(columnId, cardId);
     });
   });
@@ -477,7 +502,6 @@ async function BoardColumnNameUpdate(columnId, name) {
     },
     data: JSON.stringify({ name }),
     success: (data) => {
-      console.log(data.message);
       location.reload();
     },
     error: (error) => {
@@ -509,6 +533,9 @@ async function CardGet(columnId) {
 
 // card create api
 async function CardCreate(columnId, data) {
+  let updateUserList = [];
+  let boardId, cardName;
+  const date = new Date(Date.now());
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
   await $.ajax({
     type: 'POST',
@@ -520,6 +547,12 @@ async function CardCreate(columnId, data) {
     contentType: false,
     data: data,
     success: function (data) {
+      boardId = data.boardId;
+      cardName = data.cardName;
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
+
       Swal.fire({
         customClass: {
           container: 'my-swal',
@@ -538,10 +571,20 @@ async function CardCreate(columnId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message,
+        text: error.responseJSON.message[0],
       });
     },
   });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteCard', {
+        userId,
+        boardId,
+        cardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
 }
 
 // 코멘트 생성 함수
@@ -563,7 +606,6 @@ function createComment(columnId, cardId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
       },
       success: (data) => {
-        console.log(data.message);
         // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
         DetailCardGet(columnId, cardId);
       },
@@ -594,7 +636,6 @@ function openCommentDetailModal(columnId, cardId, commentId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: function (commentDetail) {
-      console.log(commentDetail);
       // 코멘트 디테일 정보를 사용하여 모달을 동적으로 생성
       createCommentDetailModal(commentDetail, columnId, cardId, commentId);
       $('#commentDetailModal').modal('show');
@@ -714,19 +755,19 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
   let membersHTML = '';
   selectedMembers = [];
   selectedMemberNumber = [];
-  if (users.length > 0) {
+  if (users) {
     for (const member of users) {
       let Img = member[0].profileUrl ? member[0].profileUrl : '/assets/img/favicon.png';
       membersHTML += `
-    <div class="checkbox-group d-flex">
-      <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-        <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
-          <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
-            ${member[0].name}
-          </label>
+      <div class="checkbox-group d-flex">
+        <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+          <img src="${Img}" style="border-radius: 50%; width: 30px; height: 30px; margin-right: 3%;">
+            <label for="check-grp-${member[0].userId}" class="strikethrough" style="width: 50px;">
+              ${member[0].name}
+            </label>
+        </div>
       </div>
-    </div>
-    `;
+      `;
 
       selectedMembers.push({ name: member[0].name, id: member[0].userId });
       selectedMemberNumber.push(member[0].userId);
@@ -753,12 +794,14 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
     }
   }
   let fileHTML = '';
-  if (cardData.file_url.length > 1) {
-    for (let i in cardData.file_url) {
-      fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+  if (cardData.file_url) {
+    if (cardData.file_url.length > 1) {
+      for (let i in cardData.file_url) {
+        fileHTML += `<a href="${cardData.file_url[i]}" download=""> ${cardData.file_original_name[i]} </a><br>`;
+      }
+    } else if (cardData.file_url[0]) {
+      fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
     }
-  } else if (cardData.file_url[0]) {
-    fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
   }
 
   const modalContentHTML = `
@@ -949,6 +992,7 @@ async function DetailCardGet(columnId, cardId) {
           xhr.setRequestHeader('Content-type', 'application/json');
           xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
         },
+        success: (data) => {},
       });
       users.push(boardMembers);
     }
@@ -982,9 +1026,7 @@ async function CardSequenceUpdate(columnId, cardId, sequence) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ sequence }),
-    success: (data) => {
-      console.log(data.message);
-    },
+    success: (data) => {},
     error: (error) => {
       console.log(error);
     },
@@ -1013,18 +1055,20 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   filesSizeArr = [];
   fileNo = 0;
   document.querySelector('#edit-card-file').innerHTML = '';
-  for (let i = 0; i < cardData.file_url.length; i++) {
-    // 목록 추가
-    let htmlData = '';
-    htmlData += '<div id="file' + fileNo + '" class="filebox">';
-    htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
-    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
-    htmlData += '</div>';
-    $('.file-list').append(htmlData);
-    filesArr.push(cardData.file_url[i]);
-    filesNameArr.push(cardData.file_original_name[i]);
-    filesSizeArr.push(cardData.file_size[i]);
-    fileNo++;
+  if (cardData.file_url) {
+    for (let i = 0; i < cardData.file_url.length; i++) {
+      // 목록 추가
+      let htmlData = '';
+      htmlData += '<div id="file' + fileNo + '" class="filebox">';
+      htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+      htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+      htmlData += '</div>';
+      $('.file-list').append(htmlData);
+      filesArr.push(cardData.file_url[i]);
+      filesNameArr.push(cardData.file_original_name[i]);
+      filesSizeArr.push(cardData.file_size[i]);
+      fileNo++;
+    }
   }
 }
 
@@ -1054,7 +1098,6 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
-  console.log(filesArr, filesNameArr);
   // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
   // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
@@ -1097,6 +1140,9 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
+  let updateUserList = [];
+  let boardId, cardName;
+  const date = new Date(Date.now());
   // PATCH 요청을 보내기 전에 데이터 확인
   await $.ajax({
     type: 'PATCH',
@@ -1108,6 +1154,11 @@ async function CardAllUpdate(columnId, cardId, data) {
     contentType: false,
     data: data,
     success: function (data) {
+      boardId = data.boardId;
+      cardName = data.cardName;
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
       Swal.fire({
         customClass: {
           container: 'my-swal',
@@ -1129,6 +1180,38 @@ async function CardAllUpdate(columnId, cardId, data) {
         text: error.responseJSON.message,
       });
     },
+  });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteCard', {
+        userId,
+        boardId,
+        cardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
+}
+
+// 삭제 확인 모달 출력
+function deleteConfirmModal(targetId, targetId2, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
+
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', async () => {
+    if (targetType === 'card') {
+      deleteCard(targetId, targetId2);
+    } else {
+      await BoardColumnDelete(targetId);
+    }
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
   });
 }
 
@@ -1155,7 +1238,6 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
 }
 
 // 함수 내에서 카드 삭제를 처리하는 로직
-
 function deleteCard(columnId, cardId) {
   // 카드 삭제 API 호출
   $.ajax({
@@ -1166,8 +1248,6 @@ function deleteCard(columnId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log(data.message);
-
       // 삭제 성공 후, 페이지 새로고침
       window.location.reload();
     },
@@ -1187,8 +1267,6 @@ function deleteComment(commentId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      console.log(data.message);
-
       // 삭제 성공 후, 페이지 새로고침
       location.reload();
     },
@@ -1274,7 +1352,6 @@ function createreply(columnId, cardId, reply_id, replayComment) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      console.log(data.message);
       // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
     },
     error: (error) => {

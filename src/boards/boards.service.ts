@@ -38,7 +38,7 @@ export class BoardsService {
 
       return {
         workspaceId: board.workspace.id,
-        workspaceName: board.workspace.name,
+        workspaceName: workspace.name,
         boardId: board.id,
         boardName: board.name,
         description: board.description,
@@ -71,11 +71,13 @@ export class BoardsService {
       boardInfos.push({ ...boardInfo[board], cardCount });
     }
 
-    return boardInfos;
+    return { boardInfos, workspaceName: workspace.name };
   }
 
   //보드 상세 조회
-  async GetBoard(workspaceId: number, id: number) {
+  async GetBoard(id: number) {
+    const existBoard = await this.boardRepository.findOne({ where: { id } });
+    if (!existBoard) throw new HttpException('해당 보드를 찾을 수 없습니다. ', HttpStatus.NOT_FOUND);
     return await this.boardRepository.findOne({ where: { id }, relations: ['workspace'] });
   }
 

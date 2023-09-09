@@ -72,14 +72,14 @@
                 <div class="ps-tab p-20 pb-25">
                   <div class="nav flex-column text-start" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a
-                      class="nav-link active"
-                      id="v-pills-home-tab"
+                      class="nav-link"
+                      id="v-pills-payment-tab"
                       data-bs-toggle="pill"
-                      href="#v-pills-home"
+                      href="#v-pills-payment"
                       role="tab"
                       aria-selected="false"
                     >
-                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />내 프로필 정보</a
+                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />결제내역</a
                     >
                     <a
                       class="nav-link"
@@ -126,12 +126,7 @@
                 </div>
                 <div class="card-body">
                   <div class="tab-content">
-                    <div
-                      class="tab-pane fade show active"
-                      id="v-pills-home"
-                      role="tabpanel"
-                      aria-labelledby="v-pills-home-tab"
-                    >
+                    <div>
                       <p>이름 : <%= header.name %></p>
                       <p style="margin-top: 3%">이메일 : <%= header.email %></p>
                       <p style="margin-top: 3%">잔여포인트 : <%= header.points %></p>
@@ -154,38 +149,38 @@
               </div>
             </div>
             <!-- 결제내역 테이블 시작 -->
-            <div class="col-lg-12">
-              <div class="card mt-25 mb-40" style="max-height: 500px; overflow-y: auto">
-                <div class="card-header text-capitalize px-md-25 px-3">
-                  <h6>결제내역 <span class="subtitle">최근 한 달 이내만 출력됩니다.</span></h6>
-                </div>
-                <div class="card-body p-0">
-                  <div class="ap-product">
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th scope="col">워크스페이스명</th>
-                            <th scope="col">이용기간</th>
-                            <th scope="col">가격</th>
-                          </tr>
-                        </thead>
-                        <tbody id="payment-history-table"></tbody>
-                      </table>
+            <div class="mb-50">
+              <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade" id="v-pills-payment" role="tabpanel" aria-labelledby="v-pills-payment-tab">
+                  <div class="card mt-25 mb-40" style="max-height: 500px; overflow-y: auto">
+                    <div class="card-header text-capitalize px-md-25 px-3">
+                      <h6>결제내역 <span class="subtitle">최근 한 달 이내만 출력됩니다.</span></h6>
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="ap-product">
+                        <div class="table-responsive">
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">워크스페이스명</th>
+                                <th scope="col">이용기간</th>
+                                <th scope="col">가격</th>
+                              </tr>
+                            </thead>
+                            <tbody id="payment-history-table"></tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <!-- 결제내역 테이블 끝 -->
-            <div class="mb-50">
-              <div class="tab-content" id="v-pills-tabContent">
+                <!-- 결제내역 테이블 끝 -->
                 <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                   <!-- Edit Profile -->
                   <div class="edit-profile mt-25">
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
-                        <div class="edit-profile__title">
+                        <div class="edit-profile__title" style="margin-top: 20px; margin-bottom: 20px">
                           <h6>계정 관리</h6>
                           <span class="fs-13 color-light fw-400"
                             >유저 이름을 변경하거나 계정을 삭제 하실 수 있습니다.
@@ -345,7 +340,7 @@
                     <% if(!header.phoneAuthentication) { %>
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
-                        <div class="edit-profile__title">
+                        <div class="edit-profile__title" style="margin-top: 20px; margin-bottom: 20px">
                           <h6>휴대폰 본인 인증</h6>
                           <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있지 않습니다.</span>
                         </div>
@@ -403,7 +398,7 @@
                     <% } else { %>
                     <div class="card">
                       <div class="card-header px-sm-25 px-3">
-                        <div class="edit-profile__title">
+                        <div class="edit-profile__title" style="margin-top: 20px; margin-bottom: 20px">
                           <h6>휴대폰 본인 인증</h6>
                           <span class="fs-13 color-light fw-400">현재 휴대폰 인증이 되어 있습니다.</span>
                         </div>

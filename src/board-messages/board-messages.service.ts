@@ -1,7 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board_Message } from 'src/_common/entities/board-message.entity';
-import { BoardMembersService } from 'src/board-members/board-members.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -11,16 +10,15 @@ export class BoardMessagesService {
   constructor(
     @InjectRepository(Board_Message)
     private boardMessageRepository: Repository<Board_Message>,
-    private boardsService: BoardsService,
     private usersService: UsersService,
-    private boardMembersService: BoardMembersService
+    private boardsService: BoardsService
   ) {}
 
   //보드 메세지 조회
   async GetBoardMessages(joinBoards: any): Promise<any> {
     return Promise.all(
-      joinBoards.map(async (board: any) => {
-        const messageInfos = await this.boardMessageRepository
+      joinBoards.map((board: any) => {
+        return this.boardMessageRepository
           .createQueryBuilder('message')
           .innerJoinAndSelect('message.user', 'user')
           .innerJoinAndSelect('message.board', 'board')
@@ -41,17 +39,20 @@ export class BoardMessagesService {
           .where('message.board_id = :boardId ', { boardId: board.board_id })
           .orderBy('message.created_at')
           .getRawMany();
-        return messageInfos;
       })
     );
   }
 
   //보드 메세지 생성
   async SaveBoardMessage(boardId: number, userId: number, message: string) {
+    const existBoard = await this.boardsService.GetBoard(boardId);
+    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.NOT_FOUND);
     return await this.boardMessageRepository.save({ message, user: { id: userId }, board: { id: boardId } });
   }
 
   async SaveBoardFile(userId: number, boardId: number, fileUrl: string, originalname: string) {
+    const existBoard = await this.boardsService.GetBoard(boardId);
+    if (!existBoard) throw new HttpException('해당 보드가 삭제되었습니다. ', HttpStatus.NOT_FOUND);
     return await this.boardMessageRepository.save({
       user: { id: userId },
       board: { id: boardId },
@@ -60,8 +61,11 @@ export class BoardMessagesService {
     });
   }
 
-  async deleteMessage(messageId: number) {
-    return await this.boardMessageRepository.delete({ id: messageId });
+  async deleteMessage(messageId: number): Promise<void> {
+    const existMessage = await this.boardMessageRepository.findOne({ where: { id: messageId } });
+    if (!existMessage) throw new HttpException({ message: '해당 메시지를 찾을 수 없습니다.' }, HttpStatus.NOT_FOUND);
+
+    await this.boardMessageRepository.delete({ id: messageId });
   }
 
   //보드 메세지 멘션 추출
