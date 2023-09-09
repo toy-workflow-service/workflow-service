@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { ViewModule } from './view/view.module';
 import { UsersModule } from './users/users.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
-import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
 import { BoardsModule } from './boards/boards.module';
 import { BoardColumnsModule } from './board-columns/board-columns.module';
 import { BoardMessagesModule } from './board-messages/board-messages.module';
@@ -42,7 +41,6 @@ import { CalendarModule } from './calendar/calendar.module';
     JwtModule,
     RedisCacheModule,
     WorkspacesModule,
-    WorkspaceMembersModule,
     BoardsModule,
     BoardMembersModule,
     BoardColumnsModule,
