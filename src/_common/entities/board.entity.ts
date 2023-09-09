@@ -27,6 +27,9 @@ export class Board {
   @Column({ nullable: true })
   deadline: Date;
 
+  @Column({ nullable: true })
+  start_date: Date;
+
   @CreateDateColumn()
   created_at: Date;
 

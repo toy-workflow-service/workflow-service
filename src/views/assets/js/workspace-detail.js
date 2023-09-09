@@ -643,6 +643,8 @@ async function inviteMember() {
   inviteBtn.style.display = 'none';
   sendingMessage.style.display = 'block';
 
+  let userId, workspaceName, date;
+
   try {
     await $.ajax({
       method: 'POST',
@@ -652,7 +654,10 @@ async function inviteMember() {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: () => {
+      success: (data) => {
+        userId = data.userId;
+        workspaceName = data.workspaceName;
+        date = data.date;
         sendingMessage.style.display = 'none';
         Swal.fire({
           customClass: {
@@ -683,6 +688,14 @@ async function inviteMember() {
     sendingMessage.style.display = 'none';
     inviteBtn.style.display = 'block';
   }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  date = new Date(new Date(date).getTime() - offset);
+
+  socket.emit('inviteWorkspace', {
+    userId,
+    workspaceName,
+    date,
+  });
 }
 
 // 워크스페이스 멤버역할 수정 모달열기

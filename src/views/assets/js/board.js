@@ -556,6 +556,9 @@ async function CardGet(columnId) {
 
 // card create api
 async function CardCreate(columnId, data) {
+  let updateUserList = [];
+  let boardId, cardName;
+  const date = new Date(Date.now());
   // url에서 쿼리가 필요한 경우 -> 예시 : url: `/board-columns?boardId=` + boardId,
   await $.ajax({
     type: 'POST',
@@ -567,6 +570,12 @@ async function CardCreate(columnId, data) {
     contentType: false,
     data: data,
     success: function (data) {
+      boardId = data.boardId;
+      cardName = data.cardName;
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
+
       Swal.fire({
         customClass: {
           container: 'my-swal',
@@ -589,6 +598,16 @@ async function CardCreate(columnId, data) {
       });
     },
   });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteCard', {
+        userId,
+        boardId,
+        cardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
 }
 
 // 코멘트 생성 함수
@@ -682,20 +701,23 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${comment.comment
-      }</textarea>
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+            comment.comment
+          }</textarea>
           
           <!-- 수정 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-primary edit-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">수정</button>`
+              : ''
+          }
           
           <!-- 삭제 버튼 -->
-          ${isCurrentUserComment
-        ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
-        : ''
-      }
+          ${
+            isCurrentUserComment
+              ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
+              : ''
+          }
       <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
         </div>
       </div>
@@ -1075,7 +1097,6 @@ function openUpdateCardModal(cardData, columnId, cardId) {
 document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'updateCardButton') {
     $('#updateCardModal').modal('show');
-
   }
 });
 
@@ -1099,7 +1120,6 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
-  console.log(filesArr, filesNameArr);
   // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
   // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
   // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
@@ -1142,6 +1162,9 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
 
 // card update api
 async function CardAllUpdate(columnId, cardId, data) {
+  let updateUserList = [];
+  let boardId, cardName;
+  const date = new Date(Date.now());
   // PATCH 요청을 보내기 전에 데이터 확인
   await $.ajax({
     type: 'PATCH',
@@ -1153,6 +1176,11 @@ async function CardAllUpdate(columnId, cardId, data) {
     contentType: false,
     data: data,
     success: function (data) {
+      boardId = data.boardId;
+      cardName = data.cardName;
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
       Swal.fire({
         customClass: {
           container: 'my-swal',
@@ -1175,6 +1203,16 @@ async function CardAllUpdate(columnId, cardId, data) {
       });
     },
   });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteCard', {
+        userId,
+        boardId,
+        cardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
 }
 
 // 함수 내에서 카드 삭제를 처리하는 로직

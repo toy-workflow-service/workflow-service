@@ -3297,6 +3297,10 @@ input.box-shadow-none {
   height: 36px;
 }
 
+.dropdown-item a:hover {
+  background-color: white;
+}
+
 a:hover h1,
 a:hover h2,
 a:hover h3,
@@ -5409,7 +5413,7 @@ body.top-menu .navbar-left .customizer-trigger + .top-menu {
 }
 .dropdown-default .dropdown-item:hover,
 .dropdown-menu .dropdown-item:hover {
-  background: rgba(var(--color-primary-rgba), 0.06);
+  background: white;
   color: var(--color-primary);
 }
 .dropdown-default .dropdown-item.disabled,

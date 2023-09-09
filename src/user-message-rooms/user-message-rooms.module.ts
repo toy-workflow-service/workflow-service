@@ -9,10 +9,13 @@ import { User_Message_Room } from 'src/_common/entities/user-message-room.entity
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entitiy';
 import { MailService } from 'src/_common/mail/mail.service';
+import { Direct_Message } from 'src/_common/entities/direct-message.entity';
+import { DirectMessagesService } from 'src/direct-messages/direct-messages.service';
 
 @Module({
-  imports: [RedisCacheModule, TypeOrmModule.forFeature([User_Message_Room, User])],
+  imports: [RedisCacheModule, TypeOrmModule.forFeature([User_Message_Room, User, Direct_Message])],
+  exports: [UserMessageRoomsModule],
   controllers: [UserMessageRoomsController],
-  providers: [UserMessageRoomsService, JwtStrategy, JwtService, UsersService, MailService],
+  providers: [UserMessageRoomsService, DirectMessagesService, JwtStrategy, JwtService, UsersService, MailService],
 })
 export class UserMessageRoomsModule {}

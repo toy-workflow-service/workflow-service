@@ -31,7 +31,6 @@ export class BoardMessagesController {
 
   //보드 메세지 조회
   @Get(':boardId')
-  @UseGuards(AuthGuard)
   async GetBoardMessages(@Param('boardId') boardId: number, @GetUser() user: AccessPayload, @Res() res: Response) {
     const joinBoards = await this.boardsService.GetJoinBoards(user.id);
 
@@ -47,7 +46,6 @@ export class BoardMessagesController {
 
     const boardMessageResults = await this.boardMessagesService.GetBoardMessages(joinBoards);
     const boardMembers = await this.boardsMemberService.FindBoardMembers(joinBoards);
-
     return res.status(HttpStatus.OK).json({
       boardMessageResults,
       boardMembers,
@@ -59,7 +57,6 @@ export class BoardMessagesController {
 
   //보드 메세지 저장
   @Post(':boardId')
-  @UseGuards(AuthGuard)
   async SaveBoardMessage(
     @Param('boardId') boardId: number,
     @GetUser() user: AccessPayload,
@@ -90,7 +87,6 @@ export class BoardMessagesController {
   }
 
   @Delete(':messageId')
-  @UseGuards(AuthGuard)
   async deleteMessage(@Param('messageId') messageId: number, @Res() res: Response): Promise<object> {
     await this.boardMessagesService.deleteMessage(messageId);
     return res.status(HttpStatus.OK).json({ message: '메시지를 삭제했습니다. ' });

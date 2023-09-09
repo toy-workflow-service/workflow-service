@@ -13,7 +13,6 @@ import { CardsModule } from './cards/cards.module';
 import { CommentsModule } from './comments/comments.module';
 import { MentionsModule } from './mentions/mentions.module';
 import { UserMessageRoomsModule } from './user-message-rooms/user-message-rooms.module';
-import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -28,6 +27,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { EventsModule } from './events/events.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 
 @Module({
   imports: [
@@ -50,13 +50,13 @@ import { AuditLogsModule } from './audit-logs/audit-logs.module';
     CommentsModule,
     MentionsModule,
     UserMessageRoomsModule,
-    DirectMessagesModule,
     RemindersModule,
     SocialLoginModule,
     PaymentsModule,
     MembershipsModule,
     EventsModule,
     AuditLogsModule,
+    DirectMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

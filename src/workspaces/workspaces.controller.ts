@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -80,9 +81,13 @@ export class WorkspacesController {
   async inviteWorkspaceMember(
     @Body() body: InvitationDto,
     @Param('workspaceId') workspaceId: number,
-    @GetUser() user: AccessPayload
-  ): Promise<IResult> {
-    return await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name, user.id);
+    @GetUser() user: AccessPayload,
+    @Res() res: Response
+  ): Promise<Object> {
+    const result = await this.workspaceService.inviteWorkspaceMember(body, workspaceId, user.name, user.id);
+    return res
+      .status(HttpStatus.OK)
+      .json({ userId: result.id, workspaceName: result.workspaceName, date: result.date });
   }
 
   // 워크스페이스 멤버 삭제
