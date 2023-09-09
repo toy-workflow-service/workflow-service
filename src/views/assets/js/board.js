@@ -561,7 +561,7 @@ async function CardCreate(columnId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message,
+        text: error.responseJSON.message[0],
       });
     },
   });
