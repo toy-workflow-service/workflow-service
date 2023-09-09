@@ -205,7 +205,7 @@ async function BoardColumns(data, search) {
     let cardHtml = '';
     for (let c of card) {
       if (!search) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
                       ${c.name}
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
@@ -224,7 +224,7 @@ async function BoardColumns(data, search) {
                     </div>
                 </li>`;
       } else if (c.name.search(search) > -1) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
                       ${c.name}
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
@@ -246,7 +246,7 @@ async function BoardColumns(data, search) {
     }
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
                                         <h3 class="list-title">${data[i].columnName}</h3>
@@ -261,7 +261,7 @@ async function BoardColumns(data, search) {
   
                                 </div>`;
     } else {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
                                         <h3 class="list-title">${data[i].columnName}</h3>

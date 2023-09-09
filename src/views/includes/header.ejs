@@ -440,44 +440,42 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
-              <div class="form-basic">
-                <div class="form-group mb-25">
-                  <label>워크스페이스 타이틀</label>
-                  <input
-                    class="form-control form-control-lg"
-                    type="text"
-                    id="create-title"
-                    placeholder="내용을 입력하세요."
-                  />
-                </div>
-                <div class="card card-default card-md mb-4">
-                  <label>워크스페이스 타입</label>
-                  <div class="dm-select-list d-flex">
-                    <div class="dm-select">
-                      <select name="select-search" id="select-search" class="form-control">
-                        <option>개발</option>
-                        <option>연구</option>
-                        <option>마케팅</option>
-                        <option>교육</option>
-                        <option>HRD</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group mb-25">
-                  <label for="description">워크스페이스 소개</label>
-                  <div class="position-relative">
-                    <textarea
-                      class="form-control form-control-lg"
-                      id="create-description"
-                      placeholder="내용을 입력하세요."
-                      style="resize: none"
-                    ></textarea>
+            <div class="form-basic">
+              <div class="form-group mb-25">
+                <label>워크스페이스 타이틀</label>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  id="create-title"
+                  placeholder="내용을 입력하세요."
+                />
+              </div>
+              <div class="card card-default card-md mb-4">
+                <label>워크스페이스 타입</label>
+                <div class="dm-select-list d-flex">
+                  <div class="dm-select">
+                    <select name="select-search" id="select-search" class="form-control">
+                      <option>개발</option>
+                      <option>연구</option>
+                      <option>마케팅</option>
+                      <option>교육</option>
+                      <option>HRD</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            </form>
+              <div class="form-group mb-25">
+                <label for="description">워크스페이스 소개</label>
+                <div class="position-relative">
+                  <textarea
+                    class="form-control form-control-lg"
+                    id="create-description"
+                    placeholder="내용을 입력하세요."
+                    style="resize: none"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary btn-sm" onclick="createWorkspace()">생성</button>
