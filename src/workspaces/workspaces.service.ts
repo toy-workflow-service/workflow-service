@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
+import { Board_Member } from 'src/_common/entities/board-member.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -220,6 +221,7 @@ export class WorkspacesService {
       where: { workspace: { id: workspaceId }, user: { id: userId } },
       relations: ['user'],
     });
+    const entityManager = this.workspaceMemberRepository.manager;
 
     const loginUserRole = await this.loginUserRole(loginUserId, workspaceId);
 
@@ -228,8 +230,17 @@ export class WorkspacesService {
     if (loginUserRole / 1 >= existMember.role)
       throw new HttpException('관리자 또는 어드민 계정은 삭제할 수 없습니다.', HttpStatus.BAD_REQUEST);
 
-    await this.workspaceMemberRepository.remove(existMember);
-    await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      await transactionEntityManager.remove(existMember);
+
+      const boardMember = await transactionEntityManager.find(Board_Member, {
+        where: { user: { id: existMember.user.id } },
+      });
+      if (boardMember) {
+        await transactionEntityManager.remove(Board_Member, boardMember);
+      }
+      await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    });
 
     return { result: true };
   }
@@ -308,6 +319,12 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
+    const checkUser = await this.workspaceMemberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: userId } },
+    });
+
+    if (!checkUser) return;
+
     const checkMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });

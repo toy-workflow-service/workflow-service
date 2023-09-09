@@ -71,6 +71,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
+let workspaceName = new URLSearchParams(window.location.search).get('workspaceName');
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -87,8 +88,9 @@ function init() {
   $('.kanban-items,.todo-task1 tbody')
     .sortable({
       containment: '.kanban-container',
+      items: '.align-items-center',
       connectWith: '.kanban-items,.todo-task1 tbody',
-      stack: '.kanban-items,.todo-task1 tbody',
+      // stack: '.kanban-items,.todo-task1 tbody',
       start: function (e, i) {
         // console.log('start : ', e, i);
       },
@@ -180,12 +182,12 @@ let cardIndex = 0;
 async function BoardColumns(data, search) {
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${workspaceName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
+                        <li class="breadcrumb-item active" aria-current="page">${workspaceName}</li>
                       </ol>
                   </nav>
                 </div>
@@ -204,9 +206,17 @@ async function BoardColumns(data, search) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
     for (let c of card) {
+      let members = '';
+      for (let m of c.cardMembers) {
+        let Img = '';
+        m.profile_url ? (Img = `${m.profile_url}`) : (Img = `/assets/img/favicon.png`);
+        members += `<li style="background-color:transparent; margin:0; padding:0;">
+                    <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}"/>
+                  </li>`;
+      }
       if (!search) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+        cardHtml += `<li class="d-flex justify-content-between row align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}       
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -221,11 +231,17 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>     
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
-      } else if (c.name.search(search) > -1) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+      } else if (c.cardInfo.name.search(search) > -1) {
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -240,16 +256,22 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>       
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
       }
     }
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
@@ -261,10 +283,10 @@ async function BoardColumns(data, search) {
   
                                 </div>`;
     } else {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" draggable="true" data-columnId=${data[i].columnId}>
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                         <div class="dropdown dropdown-click">
                                           <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                               <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -293,7 +315,7 @@ async function BoardColumns(data, search) {
     // Number(i) + 1 -> sequence
     const columnTitle = document.getElementById('columnTitle').value;
     console.log('BoardColumns in sequence, columTitle : ', a, Number(i) + 1, columnTitle);
-    BoardColumnsCreate(columnTitle, Number(i) + 1);
+    BoardColumnsCreate(columnTitle, Number(i));
   });
 
   // column create api
@@ -405,7 +427,7 @@ async function BoardColumns(data, search) {
     data.addEventListener('click', (e) => {
       const cardId = e.target.getAttribute('data-cardId');
       const columnId = e.target.getAttribute('data-columnId');
-
+      console.log(cardId, columnId);
       DetailCardGet(columnId, cardId);
     });
   });
@@ -560,7 +582,7 @@ async function CardCreate(columnId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message,
+        text: error.responseJSON.message[0],
       });
     },
   });

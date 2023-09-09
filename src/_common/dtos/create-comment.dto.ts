@@ -5,7 +5,7 @@ export class CreateCommentDto {
   @IsNumber()
   reply_id: number;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: '내용을 입력해주세요.' })
   @IsString()
   comment: string;
 }
