@@ -32,7 +32,7 @@ export class WorkspacesService {
           ...body,
           user: { id: userId },
         });
-        console.log(newWorkspace);
+
         await transactionEntityManager.save(Workspace, newWorkspace);
 
         const newMember = this.workspaceMemberRepository.create({
@@ -165,7 +165,8 @@ export class WorkspacesService {
     workspaceId: number,
     userName: string,
     userId: number
-  ): Promise<IResult> {
+  ): Promise<any> {
+    let inviteInfo: any;
     const existWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['memberships'],
@@ -187,24 +188,22 @@ export class WorkspacesService {
       throw new HttpException('관리자 권한을 줄 수 없습니다.', HttpStatus.BAD_REQUEST);
 
     const countMember = await this.workspaceMemberRepository.find({ where: { workspace: { id: workspaceId } } });
-
     if (countMember.length >= 5 && !hasMembership)
       throw new HttpException('무료 워크스페이스는 멤버를 5명까지만 초대 가능합니다.', HttpStatus.UNAUTHORIZED);
-
     if (existMember) throw new HttpException('이미 초대된 유저입니다.', HttpStatus.CONFLICT);
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
         await this.mailService.inviteProjectMail(body.email, userName, existWorkspace.name, workspaceId);
 
-        await transactionEntityManager.save(Workspace_Member, {
+        const Info = await transactionEntityManager.save(Workspace_Member, {
           workspace: { id: workspaceId },
           user: { id },
           role: body.role,
         });
-
+        inviteInfo = Info.createdAt;
         await this.auditLogService.inviteMemberLog(workspaceId, userId, userName, invitedUser.name);
       });
-      return { result: true };
+      return { id, workspaceName: existWorkspace.name, date: inviteInfo };
     } catch (err) {
       console.error(err);
     }

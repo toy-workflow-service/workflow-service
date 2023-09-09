@@ -261,7 +261,7 @@ async function getWorkspaceDetail() {
                                       </div>
                                     </div>
                                     <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize">메시지 전송</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${user.id} onclick="movePrivateChat(this)">메시지 전송</button>
                                       <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVoiceCall(this)">음성 통화</button>
                                       <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVideoCall(this)">영상 통화</button>
                                     </div>
@@ -643,6 +643,8 @@ async function inviteMember() {
   inviteBtn.style.display = 'none';
   sendingMessage.style.display = 'block';
 
+  let userId, workspaceName, date;
+
   try {
     await $.ajax({
       method: 'POST',
@@ -652,7 +654,10 @@ async function inviteMember() {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: () => {
+      success: (data) => {
+        userId = data.userId;
+        workspaceName = data.workspaceName;
+        date = data.date;
         sendingMessage.style.display = 'none';
         Swal.fire({
           customClass: {
@@ -683,6 +688,14 @@ async function inviteMember() {
     sendingMessage.style.display = 'none';
     inviteBtn.style.display = 'block';
   }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  date = new Date(new Date(date).getTime() - offset);
+
+  socket.emit('inviteWorkspace', {
+    userId,
+    workspaceName,
+    date,
+  });
 }
 
 // 워크스페이스 멤버역할 수정 모달열기
@@ -1174,4 +1187,19 @@ async function videoCall(url, callType, receiverId, receiverName) {
   const top = (window.screen.height - height) / 2;
   window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
   socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
+}
+
+function movePrivateChat(data) {
+  const userId = data.getAttribute('id');
+  $.ajax({
+    method: 'POST',
+    url: `/userMessageRooms/${userId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      const roomId = data.roomId;
+      window.location.href = `/chat?roomId=${roomId}`;
+    },
+  });
 }

@@ -6,6 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { String } from 'aws-sdk/clients/cloudwatchevents';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 
@@ -99,6 +100,34 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
+  @SubscribeMessage('chatPrivateMessage')
+  handleChatPrivateMessage(
+    client: Socket,
+    data: {
+      messageId: string;
+      message: string;
+      room: string;
+      roomName: string;
+      date: string;
+      profileUrl: string;
+      fileUpload: boolean;
+      receiverId: string;
+    }
+  ): void {
+    this.server.to(data.room).emit('chatPrivateMessage', {
+      userId: this.connectedClients[client.id],
+      userName: this.clientName[client.id],
+      messageId: data.messageId,
+      message: data.message,
+      room: data.room,
+      roomName: data.roomName,
+      date: data.date,
+      profileUrl: data.profileUrl,
+      fileUpload: data.fileUpload,
+      receiverId: data.receiverId,
+    });
+  }
+
   @SubscribeMessage('newMessage')
   announceNewMessage(
     client: Socket,
@@ -116,6 +145,107 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       boardName: data.boardName,
       date: data.date,
       profileUrl: data.profileUrl,
+    });
+  }
+
+  @SubscribeMessage('newPrivateMessage')
+  announceNewPrivateMessage(
+    client: Socket,
+    data: {
+      receiverId: string;
+      room: string;
+      userName: string;
+      date: string;
+    }
+  ): void {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.receiverId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('newPrivateMessage', { room: data.room, userName: data.userName, date: data.date });
+    });
+  }
+
+  @SubscribeMessage('inviteWorkspace')
+  inviteWorkspaceMessage(
+    client: Socket,
+    data: {
+      userId: string;
+      workspaceName: string;
+      date: string;
+    }
+  ): void {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.userId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('inviteWorkspaceMessage', { workspaceName: data.workspaceName, date: data.date });
+    });
+  }
+
+  @SubscribeMessage('inviteBoard')
+  inviteBoardMessage(
+    client: Socket,
+    data: {
+      userId: string;
+      workspaceId: string;
+      workspaceName: string;
+      boardName: string;
+      date: string;
+    }
+  ): void {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.userId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('inviteBoardMessage', {
+        workspaceId: data.workspaceId,
+        workspaceName: data.workspaceName,
+        boardName: data.boardName,
+        date: data.date,
+      });
+    });
+  }
+
+  @SubscribeMessage('inviteCard')
+  inviteCardMessage(
+    client: Socket,
+    data: {
+      userId: string;
+      boardId: string;
+      cardName: string;
+      date: string;
+    }
+  ): void {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.userId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('inviteCardMessage', {
+        boardId: data.boardId,
+        cardName: data.cardName,
+        date: data.date,
+      });
     });
   }
 

@@ -90,7 +90,7 @@ export class CardsService {
       }
     }
 
-    await this.cardRepository.insert({
+    const result = await this.cardRepository.save({
       board_column: column,
       ...cardInfo,
       file_url: files,
@@ -98,8 +98,9 @@ export class CardsService {
       file_size: fileSizes,
       members: memberIds,
     });
-
     await this.auditLogService.createCardLog(board.workspace.id, cardInfo.name, loginUserId, loginUserName);
+
+    return { boardId: board.id, cardName: result.name };
   }
 
   //카드 수정
@@ -114,6 +115,7 @@ export class CardsService {
     loginUserId: number,
     loginUserName: string
   ) {
+    let updateUserList = [];
     const column = await this.boardColumnService.findOneBoardColumnById(board_column_id); // BoardColumnService에서 컬럼 가져옴
     if (!column) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
@@ -145,7 +147,21 @@ export class CardsService {
 
     if (!memberIds) {
       memberIds = [];
+    } else {
+      if (existCard.members) {
+        if (memberIds.length === 1) {
+          memberIds = [memberIds[0]];
+        }
+        updateUserList = [...existCard.members];
+        updateUserList = memberIds.map((userId) => {
+          if (!updateUserList.includes(userId)) return userId;
+        });
+        updateUserList = updateUserList.filter((userId) => userId);
+      } else {
+        updateUserList = [...memberIds];
+      }
     }
+
     await this.cardRepository.update(
       { id },
       {
@@ -166,6 +182,7 @@ export class CardsService {
       loginUserId,
       loginUserName
     );
+    return { updateUserList, boardId: board.id, cardName: existCard.name };
   }
   //카드삭제
   async DeleteCard(board_column_id: number, id: number, loginUserId: number, loginUserName: string) {

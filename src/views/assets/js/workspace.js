@@ -363,7 +363,6 @@ document.querySelector('#create-board-btn').addEventListener('click', () => {
     document.querySelector('#create-selected-members').innerHTML = '';
     document.querySelector('#selected-members').innerHTML = '';
   }
-  console.log('보드 생성 버튼 클릭: ', selectedMemberId, selectedMembers);
 });
 
 createBoardBtn.addEventListener('click', async (event) => {
@@ -376,9 +375,7 @@ createBoardBtn.addEventListener('click', async (event) => {
 
     deadline = new Date(deadline);
     startline = new Date(startline);
-    console.log(deadline);
-    console.log(createTitle);
-    console.log(createDescription);
+
     await $.ajax({
       method: 'POST',
       url: `/boards?workspaceId=${workspaceId}`,
@@ -388,7 +385,6 @@ createBoardBtn.addEventListener('click', async (event) => {
       },
       data: JSON.stringify({ name: createTitle, description: createDescription, deadline, start_date: startline }),
       success: async (data) => {
-        console.log(data);
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
@@ -423,7 +419,9 @@ createBoardBtn.addEventListener('click', async (event) => {
 });
 
 // 보드멤버 생성
-async function createBoardMember(boardId, id) {
+async function createBoardMember(boardId, name) {
+  let userId, boardName;
+  const date = new Date(Date.now());
   try {
     await $.ajax({
       method: 'POST',
@@ -432,7 +430,11 @@ async function createBoardMember(boardId, id) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ userId: id }),
+      data: JSON.stringify({ name }),
+      success: (data) => {
+        userId = data.userId;
+        boardName = data.boardName;
+      },
       error: (err) => {
         Swal.fire({
           customClass: {
@@ -447,6 +449,14 @@ async function createBoardMember(boardId, id) {
   } catch (err) {
     console.error(err);
   }
+
+  socket.emit('inviteBoard', {
+    userId,
+    workspaceId,
+    workspaceName,
+    boardName,
+    date: new Date(new Date(date).getTime()),
+  });
 }
 
 // 보드 멤버 조회
@@ -501,7 +511,7 @@ function updateSelectedMembersUI(memberListSelector) {
   removeIcons.forEach((icon) => {
     icon.addEventListener('click', (e) => {
       const memberRemove = e.target.getAttribute('data-member');
-      console.log(memberRemove, 'id값이 들어와야해');
+
       selectedMembers = selectedMembers.filter((member) => member.id != memberRemove);
       selectedMemberId = selectedMemberId.filter((selected) => selected != memberRemove);
       updateSelectedMembersUI(memberListSelector);
@@ -599,22 +609,6 @@ async function openEditBoardModal(element) {
     console.error(err);
   }
 }
-// 보드 멤버 조회 - 같은 함수가 위에 존재
-// function getBoardMembers(boardId) {
-//   try {
-//     const response = $.ajax({
-//       method: 'GET',
-//       url: `/boards/${boardId}/members`,
-//       beforeSend: function (xhr) {
-//         xhr.setRequestHeader('Content-type', 'application/json');
-//         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-//       },
-//     });
-//     return response;
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
 
 // 보드 수정
 async function putBoard(boardId, name, description, deadline, startDate) {
@@ -637,6 +631,9 @@ async function putBoard(boardId, name, description, deadline, startDate) {
 
 //보드 멤버 수정
 async function putBoardMember(boardId, userIdArray) {
+  let updateUserList = [];
+  let boardName;
+  const date = new Date(Date.now());
   await $.ajax({
     type: 'PUT',
     url: `/boards/${boardId}/members`,
@@ -646,12 +643,27 @@ async function putBoardMember(boardId, userIdArray) {
     },
     data: JSON.stringify({ userIdArray }),
     success: (data) => {
+      if (data.updateUserList) {
+        updateUserList = [...data.updateUserList];
+      }
+      boardName = data.boardName;
       console.log(data.message);
     },
     error: (error) => {
       console.log(error);
     },
   });
+  if (updateUserList.length) {
+    updateUserList.forEach((userId) => {
+      socket.emit('inviteBoard', {
+        userId,
+        workspaceId,
+        workspaceName,
+        boardName,
+        date: new Date(new Date(date).getTime()),
+      });
+    });
+  }
 }
 
 // 삭제 확인 모달 출력

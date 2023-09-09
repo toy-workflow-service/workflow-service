@@ -68,7 +68,8 @@ export class BoardMembersService {
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (boardMember) throw new NotAcceptableException('이미 초대된 멤버입니다.');
 
-    await this.boardMemberRepository.insert({ user, board });
+    const result = await this.boardMemberRepository.save({ user: { id: user.id }, board: { id: board.id } });
+    return { userId: result.user.id, boardName: board.name };
   }
 
   //보드 멤버 제외
@@ -90,6 +91,7 @@ export class BoardMembersService {
 
   //보드 멤버 업데이트
   async UpdateBoardMember(boardId: number, users: number[]) {
+    let updateUserList = [];
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.filter((member) => {
@@ -110,7 +112,8 @@ export class BoardMembersService {
             const user = await this.usersService.findUserById(updateUsers[i]);
             if (!user) throw new NotFoundException('해당 유저는 존재하지 않습니다.');
             const newBoardMembers = this.boardMemberRepository.create({ board, user });
-            await transactionEntityManager.save(Board_Member, newBoardMembers);
+            const result = await transactionEntityManager.save(Board_Member, newBoardMembers);
+            updateUserList.push(result.user.id);
           }
         }
         if (deleteUsers.length > 0) {
@@ -120,7 +123,7 @@ export class BoardMembersService {
           }
         }
       });
-      return { result: true };
+      return { updateUserList, boardName: board.name };
     } catch (err) {
       console.error(err);
     }

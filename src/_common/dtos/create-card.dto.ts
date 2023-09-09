@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class CreateCardDto {
   @IsNotEmpty({ message: '카드명을 입력해주세요.' })
@@ -12,10 +12,6 @@ export class CreateCardDto {
   @IsNotEmpty()
   @IsNumber()
   sequence: number;
-
-  // @IsNotEmpty()
-  // @IsArray()
-  // members: any[];
 
   @IsNotEmpty({ message: '색을 입력해주세요.' })
   color: string;
