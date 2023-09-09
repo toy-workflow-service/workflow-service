@@ -94,7 +94,7 @@ async function getMyBoards(selectItem, search) {
         let button = '';
         let listResult = '';
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
+        document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
