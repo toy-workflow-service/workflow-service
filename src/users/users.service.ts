@@ -145,6 +145,10 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ name });
   }
 
+  async findUsersByName(name: string) {
+    return await this.usersRepository.findBy({ name });
+  }
+
   async deleteAccount(id: number, password: string): Promise<void> {
     const user = await this.usersRepository.findOne({ where: { id } });
     const validPassword = await comparePassword(password, user.password);
