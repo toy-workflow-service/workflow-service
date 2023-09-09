@@ -696,7 +696,14 @@ async function deleteBoard(boardId) {
       });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }
