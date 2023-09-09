@@ -8,41 +8,23 @@
     });
     // make the event draggable using jQuery UI
     // event.preventDefault();
-    const a = $(this).draggable({
+    $(this).draggable({
       zIndex: 999,
       revert: true, // will cause the event to go back to its
       revertDuration: 0, //  original position after the drag
     });
-    console.log(a);
   });
 
   let date = new Date();
 
-  // 이 밑으론 값을 넣으면 해당 변수들을 소스배열에 넣어 해당 캘린더에 뿌려주나보다.
-  // let familyEvents = {
-  //   id: 1,
-  //   events: [
-  //     {
-  //       id: '1',
-  //       start: moment().format('YYYY-MM-DD') + 'T08:30:00',
-  //       title: 'Family Events',
-  //     },
-  //     {
-  //       id: '2',
-  //       start: moment().format('YYYY-MM-DD') + 'T10:30:00',
-  //       end: moment().format('YYYY-MM-DD') + 'T12:00:00',
-  //       title: 'Dinner with Family',
-  //     },
-  //   ],
-  //   className: 'primary',
-  //   textColor: '#5F63F2',
-  // };
   document.addEventListener('DOMContentLoaded', async function () {
     let results = await GetCalendarApi();
     let resultArr = [];
+    console.log(results);
     for (let i = 0; i < results.length; i++) {
       let cName;
       let cColor;
+      // id값을 설정해도 가져올수 없어 class name 제일 마지막에 아이디값을 넣어줌
       if (results[i].type == 1) {
         cName = `secondary calendarId${results[i].calendarId}`;
         cColor = '#FF69A5';
@@ -56,31 +38,48 @@
         cName = `success calendarId${results[i].calendarId}`;
         cColor = '#20C997';
       }
-      const offset = new Date().getTimezoneOffset() * 60 * 1000;
-      let startDate = new Date(new Date(results[i].startDate).getTime() - offset).toLocaleString('ko-KR', {
-        year: '2-digit',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
-      console.log(results[i].startDate);
-      console.log(startDate);
+      let startTime = moment(results[i].startDate).format('HH:mm:ss');
+      startTime = startTime.split(':');
+      startTime = `${Number(startTime[0]) + 9}:${startTime[1]}:${startTime[2]}`;
+      let lastTime = moment(results[i].deadline).format('HH:mm:ss');
+      lastTime = lastTime.split(':');
+      lastTime = `${Number(lastTime[0]) + 9}:${lastTime[1]}:${lastTime[2]}`;
+
       // document.querySelector('.fc-event').attr('id', `calendarCardId${results[i].calendarId}`);
-      let product = {
-        id: i + 1,
-        events: [
-          {
-            id: results[i].calendarId,
-            start: moment(results[i].startDate).format('YYYY-MM-DD HH:mm:ss'),
-            end: moment(results[i].deadline).format('YYYY-MM-DD HH:mm:ss'),
-            title: results[i].title,
-          },
-        ],
-        className: cName,
-        textColor: cColor,
-      };
+      let product;
+      if (moment(results[i].startDate).format('YYYY-MM-DD') == moment(results[i].deadline).format('YYYY-MM-DD')) {
+        product = {
+          id: i + 1,
+          events: [
+            {
+              id: results[i].calendarId,
+              start: moment(results[i].startDate).format('YYYY-MM-DD') + `T${startTime}`,
+              end: moment(results[i].deadline).format('YYYY-MM-DD') + `T${lastTime}`,
+              title: results[i].title,
+            },
+          ],
+          className: cName,
+          textColor: cColor,
+        };
+      } else {
+        product = {
+          id: i + 1,
+          events: [
+            {
+              id: results[i].calendarId,
+              start: moment(results[i].startDate).format('YYYY-MM-DD') + `T${startTime}`,
+              title: '[start]' + results[i].title,
+            },
+            {
+              id: results[i].calendarId,
+              start: moment(results[i].deadline).format('YYYY-MM-DD') + `T${lastTime}`,
+              title: '[end]' + results[i].title,
+            },
+          ],
+          className: cName,
+          textColor: cColor,
+        };
+      }
 
       resultArr.push(product);
     }
@@ -108,22 +107,20 @@
         contentHeight: 800,
         //캘린더가 로드될 때의 초기 보기 - 'dayGridWeek', 'timeGridDay','listWeek'등이 있음
         initialView: 'timeGridDay',
+        // draggable false -> 드래그 없앤 이유: drop이나 stop 이후 수정이 되야하는데 해당 이벤트를 받을 수 없음. 위에서도 마찬가지.
         eventStartEditable: false,
-        drop: function (arg) {
-          console.log('??');
-          // if (document.getElementById('drop-remove').checked) {
-          //   // if so, remove the element from the "Draggable Events" list
-          //   arg.draggedEl.parentNode.removeChild(arg.draggedEl);
-          // }
-        },
+        //한국어 설정
+        locale: 'ko',
         //요소가 DOM에 추가된 직후 호출
         eventDidMount: function (view) {
           $('.fc-list-day').each(function () {});
         },
         //사용자가 이벤트를 클릭하면 트리거 - 상세 모달이 보여짐
         eventClick: async function (infoEvent) {
+          //하루 일정으로 볼 경우
           let lastName = infoEvent.el.classList[9];
           if (!lastName) {
+            //이부분은 한달 일정으로 볼 경우.
             lastName = infoEvent.el.classList[8];
           }
           const calendarId = lastName.replace('calendarId', '');
@@ -160,24 +157,17 @@
           } - ${'20' + deadline.substring(0, 10).replace('-', '.').replace('-', '.')}`;
           document.querySelector('#view-time').innerHTML = `${startTime} - ${deadTime}`;
           document.querySelector('#view-description').innerHTML = `${detailGet.description}`;
-          // 상세조회에서 받아온 값으로 넣은뒤 addEventListener로 수정값넣기 / 여기서 삭제api도 연결..?
+
+          // 상세보기 모달에서 삭제 버튼 클릭시
+          document.querySelector('#delete-event').addEventListener('click', () => {
+            console.log('여기에 지우는 api 넣자', calendarId);
+            deleteConfirmModal(calendarId, 'calendar');
+          });
         },
       });
 
-      //이부분은 옆 애들 끌어다가 놓던데.. 저장을 하려면.. 음.. 없앨까 카드만 옮기는건 따로 위에 있으니
-      let eventElement = document.getElementById('draggable-events');
-      let draggable = new FullCalendar.Draggable(eventElement, {
-        itemSelector: '.draggable-event-list__single',
-        eventData: function (eEl) {
-          console.log(eEl);
-
-          return {
-            title: eEl.innerText,
-            className: $(eEl).data('class'),
-          };
-        },
-      });
       calendar.render();
+      $('div').remove('.fc-event-resizer');
       $('.fc-button-group .fc-listMonth-button').prepend('<i class="las la-list"></i>');
     }
   });
@@ -200,10 +190,26 @@ async function CreateCalendarApi(data) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      console.log(data.message);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        location.reload();
+      });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }
@@ -250,7 +256,14 @@ async function GetCalendarApi() {
       return data;
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
 
@@ -270,7 +283,14 @@ async function DetailGetCalendarApi(calendarId) {
       return data;
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
 
@@ -287,35 +307,46 @@ async function DeleteCalendarApi(calendarId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      console.log(data.message);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        location.reload();
+      });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }
 
-//수정 api
-async function UpdateCalendarApi(calendarId, data) {
-  await $.ajax({
-    type: 'POST',
-    url: `/calendars/${calendarId}`,
-    data: JSON.stringify({
-      title: data.title,
-      description: data.description,
-      deadline: data.deadline,
-      start_date: data.startDate,
-      type: data.type,
-    }),
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
-    },
-    success: (data) => {
-      console.log(data.message);
-    },
-    error: (error) => {
-      console.log(error);
-    },
+// 삭제 확인 모달 출력
+function deleteConfirmModal(calendarId, targetType) {
+  const confirmModal = document.querySelector('#modal-info-confirmed');
+  $(confirmModal).modal('show');
+
+  const okBtn = confirmModal.querySelector('.btn-info');
+  const cancelBtn = confirmModal.querySelector('.btn-light');
+
+  okBtn.addEventListener('click', () => {
+    if (targetType === 'calendar') {
+      DeleteCalendarApi(calendarId);
+    }
+    $(confirmModal).modal('hide');
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    $(confirmModal).modal('hide');
   });
 }
