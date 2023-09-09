@@ -12,7 +12,7 @@ export class BoardMembersController {
   @Post('/boards/:boardId/members')
   @UseGuards(AuthGuard)
   async CreateBoardMember(@Param('boardId') boardId: number, @Body() data: CreateBoardMemberDto, @Res() res: Response) {
-    await this.boardMembersService.CreateBoardMember(boardId, data.name);
+    await this.boardMembersService.CreateBoardMember(boardId, data.userId);
     return res.status(HttpStatus.CREATED).json({ message: '보드에 멤버를 초대하였습니다.' });
   }
 

@@ -18,30 +18,34 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const selectedMemberList = document.querySelector(memberListSelector);
 
   updateSelectedMembersUI(selected);
-  memberInput.addEventListener('keyup', (e) => {
+  memberInput.addEventListener('keydown', (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const searchText = e.target.value;
       const encodedSearchText = encodeURIComponent(searchText);
 
       const results = await searchMembers(encodedSearchText);
-      if (results) {
-        selectedMemberList.innerHTML = '';
-        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+      console.log(results);
+      selectedMemberList.innerHTML = '';
+      for (let result of results) {
+        let Img = result.user.profile_url ? result.user.profile_url : '/assets/img/favicon.png';
         let data = `<li>
                         <a href="#">
-                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${result.user.name}">
                         </a>
-                        <span>${results.user.name}</span>
+                        <span>${result.user.name}</span>
                       </li>`;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMemberId.includes(results.user.id)) {
-            selectedMembers.push({ name: results.user.name, id: results.user.id });
-            selectedMemberId.push(results.user.id);
+          if (!selectedMemberId.includes(result.user.id)) {
+            selectedMembers.push({ name: result.user.name, id: result.user.id });
+            selectedMemberId.push(result.user.id);
             updateSelectedMembersUI(selected);
           }
         });
@@ -157,7 +161,7 @@ function boardHTML(board) {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardId=${board.boardId}">
+                              <a href="/board?boardId=${board.boardId}" style="width: fit-content;">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -372,7 +376,7 @@ createBoardBtn.addEventListener('click', async (event) => {
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
-          await createBoardMember(boardId, member.name);
+          await createBoardMember(boardId, member.id);
         }
 
         Swal.fire({
@@ -403,7 +407,7 @@ createBoardBtn.addEventListener('click', async (event) => {
 });
 
 // 보드멤버 생성
-async function createBoardMember(boardId, name) {
+async function createBoardMember(boardId, id) {
   try {
     await $.ajax({
       method: 'POST',
@@ -412,7 +416,7 @@ async function createBoardMember(boardId, name) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name }),
+      data: JSON.stringify({ userId: id }),
       error: (err) => {
         Swal.fire({
           customClass: {
