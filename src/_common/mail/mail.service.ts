@@ -43,7 +43,7 @@ export class MailService {
         to: email,
         from: process.env.EMAIL_USER,
         subject: `${workspace} 워크스페이스 초대 메일`,
-        html: `<form action="http://127.0.0.1:3000/workspaces/${workspaceId}/participation?email=${email}" method="POST">
+        html: `<form action="https:work-flow.online/workspaces/${workspaceId}/participation?email=${email}" method="POST">
                 <h2>${userName}님이 ${workspace}에 초대했습니다. 초대 받기 버튼을 눌러주세요.</h2>
                 <button>초대받기</button>
             </form>`,

@@ -14,14 +14,11 @@ export class Calendar {
   @Column({ nullable: false })
   deadline: Date;
 
-  @Column('time', { nullable: false })
-  deadline_time: Date;
-
   @Column({ nullable: false })
   start_date: Date;
 
-  @Column('time', { nullable: false })
-  start_date_time: Date;
+  @Column({ nullable: false })
+  type: number;
 
   @CreateDateColumn()
   created_at: Date;
