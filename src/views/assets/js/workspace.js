@@ -9,9 +9,21 @@ const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards('all');
+  equalHeight($('.board-description'));
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
   // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
+
+function equalHeight(group) {
+  tallest = 0;
+  group.each(function () {
+    thisHeight = $(this).height();
+    if (thisHeight > tallest) {
+      tallest = thisHeight;
+    }
+  });
+  group.height(tallest);
+}
 
 function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
@@ -82,7 +94,7 @@ async function getMyBoards(selectItem, search) {
         let button = '';
         let listResult = '';
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
+        document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
@@ -161,7 +173,9 @@ function boardHTML(board) {
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardId=${board.boardId}" style="width: fit-content;">
+                              <a href="/board?boardId=${
+                                board.boardId
+                              }&workspaceName=${workspaceName}" style="width: fit-content;">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -190,7 +204,7 @@ function boardHTML(board) {
                             </div>
                           </div>
                           <div class="user-group-people mt-15 text-capitalize">
-                            <p>${board.description}</p>
+                            <div class="board-description"><p>${board.description}</p></div>
                             <div class="user-group-project">
                               <div class="d-flex align-items-center user-group-progress-top">
                                 <div class="media-ui__start">
@@ -288,7 +302,9 @@ function boardListHTML(board) {
                       <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
                       <div class="contact_title">
                           <h6>
-                            <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
+                            <a href="/board?boardId=${board.boardId}&workspaceName=${workspaceName}">${
+                              board.boardName
+                            }</a>
                           </h6>
                       </div>
                     </div>
@@ -680,7 +696,14 @@ async function deleteBoard(boardId) {
       });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }

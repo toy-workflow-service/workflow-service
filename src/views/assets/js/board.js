@@ -71,6 +71,7 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
+let workspaceName = new URLSearchParams(window.location.search).get('workspaceName');
 // boardId = Number(boardId);
 // boardId = 65;
 
@@ -181,12 +182,12 @@ let cardIndex = 0;
 async function BoardColumns(data, search) {
   document.querySelector(
     '.breadcrumb-main'
-  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">work-flow Board</h4>
+  ).innerHTML = `<h4 class="text-capitalize breadcrumb-title">${workspaceName}</h4>
                 <div class="breadcrumb-action justify-content-center flex-wrap">
                   <nav aria-label="breadcrumb">
                       <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/"><i class="uil uil-estate"></i>Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">work-flow Board</li>
+                        <li class="breadcrumb-item active" aria-current="page">${workspaceName}</li>
                       </ol>
                   </nav>
                 </div>
@@ -270,7 +271,7 @@ async function BoardColumns(data, search) {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
@@ -285,7 +286,7 @@ async function BoardColumns(data, search) {
       kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
-                                        <h3 class="list-title">${data[i].columnName}</h3>
+                                        <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                         <div class="dropdown dropdown-click">
                                           <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                               <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -581,7 +582,7 @@ async function CardCreate(columnId, data) {
         },
         icon: 'error',
         title: 'Error',
-        text: error.responseJSON.message,
+        text: error.responseJSON.message[0],
       });
     },
   });
