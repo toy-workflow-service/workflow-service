@@ -26,6 +26,8 @@ import { BoardMembersService } from 'src/board-members/board-members.service';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
 import { Audit_log } from 'src/_common/entities/audit-log.entity';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
+import { Membership } from 'src/_common/entities/membership.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
       Workspace_Member,
       Board_Member,
       Audit_log,
+      Membership,
     ]),
   ],
   exports: [TypeOrmModule],
@@ -60,6 +63,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
     MailService,
     BoardMembersService,
     AuditLogsService,
+    MembershipsService,
   ],
 })
 export class MentionsModule {}

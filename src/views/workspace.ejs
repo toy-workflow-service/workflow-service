@@ -7,8 +7,8 @@
           <div class="breadcrumb-main user-member justify-content-sm-between">
             <div class="d-flex flex-wrap justify-content-center breadcrumb-main__wrapper">
               <div class="d-flex align-items-center user-member__title justify-content-center me-sm-25">
-                <h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title">Boards</h4>
-                <span class="sub-title ms-sm-25 ps-sm-25" id="running-boards">12 Running boards</span>
+                <h4 class="text-capitalize fw-500 breadcrumb-title" id="workspace-title"></h4>
+                <span class="sub-title ms-sm-25 ps-sm-25" id="running-boards"></span>
               </div>
             </div>
             <div class="action-btn">
@@ -18,7 +18,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#new-member"
               >
-                <i class="las la-plus fs-16"></i>보드 생성</a
+                보드 생성</a
               >
               <!-- 삭제 확인 모달 -->
               <div
@@ -116,6 +116,15 @@
                           </div>
                           <div class="d-flex new-member-calendar">
                             <div class="form-group w-100 me-sm-15 form-group-calender">
+                              <label for="datepicker4">시작일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker4" placeholder="mm/dd/yyyy" />
+                                <a>
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
+                            <div class="form-group w-100 form-group-calender">
                               <label for="datepicker">마감일</label>
                               <div class="position-relative">
                                 <input type="text" class="form-control" id="datepicker" placeholder="mm/dd/yyyy" />
@@ -212,6 +221,15 @@
                             ></ul>
                           </div>
                           <div class="d-flex new-member-calendar">
+                            <div class="form-group w-100 me-sm-15 form-group-calender">
+                              <label for="datepicker3" class="form-label">시작일</label>
+                              <div class="position-relative">
+                                <input type="text" class="form-control" id="datepicker3" placeholder="mm/dd/yyyy" />
+                                <a>
+                                  <img class="svg" src="./assets/img/svg/chevron-right.svg" alt="chevron-right.svg"
+                                /></a>
+                              </div>
+                            </div>
                             <div class="form-group w-100 form-group-calender">
                               <label for="datepicker2">마감일</label>
                               <div class="position-relative">
@@ -288,13 +306,13 @@
                 <div class="icon-list-social d-flex">
                   <a
                     class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center ms-xl-20 me-20 active"
-                    href="#"
+                    href="#" id="grid-icon"
                   >
                     <img class="svg" src="./assets/img/svg/grid.svg" alt="grid"
                   /></a>
                   <a
                     class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center"
-                    href="#"
+                    href="#" id="list-icon"
                   >
                     <img class="svg" src="./assets/img/svg/list.svg" alt="list"
                   /></a>
@@ -313,6 +331,100 @@
         </div>
       </div>
     </div>
+    <div class="col-12">
+      <div class="contact-list-wrap mb-25" style="display: none;" id="list-box">
+         <div class="contact-list radius-xl w-100">
+            <div class="table-responsive table-responsive--dynamic">
+
+               <table class="table mb-0 table-borderless table-rounded">
+                  <thead>
+                     <tr>
+                        <th>
+                           <div class="d-flex align-items-center">
+                              <div class="custom-checkbox  check-all">
+                                 <input class="checkbox" type="checkbox" id="check-33">
+                                 <label for="check-33">
+                                    <span class="checkbox-text userDatatable-title">보드 이름</span>
+                                 </label>
+                              </div>
+                           </div>
+                        </th>
+                        <th class="c-board-progress">
+                           <span>진행 상황</span>
+                        </th>
+                        <th class="c-board-startline">
+                           <span>시작일</span>
+                        </th>
+                        <th class="c-board-deadline">
+                           <span class="">마감일</span>
+                        </th>
+                        <th class="c-cards">
+                           <span class="">진행률</span>
+                        </th>
+                        <th class="c-memberCount">
+                           <span class="">참여자수</span>
+                        </th>
+                     </tr>
+                  </thead>
+                  <tbody id="board-list-box">
+                     <tr>
+                        <td>
+                           <div class="contact-item d-flex align-items-center">
+                              <div class="contact-personal-wrap">
+                                 <div class="checkbox-group-wrapper">
+                                    <div class="checkbox-group d-flex">
+                                       <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                          <input class="checkbox" type="checkbox" id="check-grp-c-4">
+                                          <label for="check-grp-c-4"></label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="contact-personal-info d-flex">
+                                 <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
+                                 <div class="contact_title">
+                                    <h6>
+                                       <a href="#">여기에 보드이름</a>
+                                    </h6>
+                                 </div>
+                              </div>
+
+                           </div>
+                        </td>
+                        <td>
+                          <span class="board-progress my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>
+                        </td>
+                        <td>
+                           <span class="board-startline">2023.09.09</span>
+                        </td>
+                        <td>
+                           <span class="board-deadline">2024.09.09</span>
+                        </td>
+                        <td>
+                           <span class="board-cardCount">53%</span>
+                        </td>
+                        <td>
+                           <div class="table-actions">
+                              <span class="board-memberCount" style="margin-right: 50%;">5</span>
+                              <div class="dropdown dropdown-click">
+                                 <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img class="svg" src="./assets/img/svg/more-vertical.svg" alt="more-vertical">
+                                 </button>
+                                 <div class="dropdown-default dropdown-menu dropdown-menu--dynamic">
+                                    <a class="dropdown-item" href="#">수정</a>
+                                    <a class="dropdown-item" href="#">삭제</a>
+                                 </div>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- ends: col-12 -->
   </div>
 </div>
 <script src="../assets/js/workspace.js" defer></script>

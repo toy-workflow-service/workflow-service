@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from 'src/_common/entities/card.entity';
@@ -7,6 +7,9 @@ import { CreateCardDto } from 'src/_common/dtos/create-card.dto';
 import { UpdateCardDto } from 'src/_common/dtos/update-card.dto';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { BoardsService } from 'src/boards/boards.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { MembershipsService } from 'src/memberships/memberships.service';
+import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class CardsService {
   constructor(
@@ -14,18 +17,34 @@ export class CardsService {
     private cardRepository: Repository<Card>,
     private readonly boardColumnService: BoardColumnsService,
     private readonly boardService: BoardsService,
-    private readonly auditLogService: AuditLogsService
+    private readonly auditLogService: AuditLogsService,
+    private readonly workspaceService: WorkspacesService,
+    private readonly membershipService: MembershipsService,
+    private readonly usersService: UsersService
   ) {}
   //카드 조회
   async GetCards(board_column_Id: number) {
-    const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+    let findCards = await this.cardRepository.find({ relations: ['board_column'] });
 
     findCards.sort((a, b) => {
       return a.sequence - b.sequence;
     });
-    return findCards.filter((card) => {
+    findCards = findCards.filter((card) => {
       return card.board_column.id == board_column_Id;
     });
+
+    const totalCard = [];
+    for (let i = 0; i < findCards.length; i++) {
+      const members = [];
+      if (findCards[i].members) {
+        for (let j = 0; j < findCards[i].members.length; j++) {
+          const member = await this.usersService.findUserById(Number(findCards[i].members[j]));
+          members.push(member);
+        }
+      }
+      totalCard.push({ cardInfo: findCards[i], cardMembers: members });
+    }
+    return totalCard;
   }
 
   //카드 상세 조회
@@ -49,6 +68,27 @@ export class CardsService {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
     const board = await this.boardService.GetBoardById(column.board.id);
+    const checkStorage = await this.workspaceService.caculateFileSizes(board.workspace.id);
+    const checkMembership = await this.membershipService.checkMembership(board.workspace.id);
+
+    let inputFileSize = 0;
+    if (fileSizes.length) {
+      fileSizes.forEach((size) => {
+        inputFileSize += parseInt(size);
+      });
+    }
+
+    if (checkMembership) {
+      const limitInGb = 10;
+      if (fileSizes.length && limitInGb <= (checkStorage + inputFileSize) / (1024 * 1024)) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      const limitInMb = 100;
+      if (fileSizes.length && limitInMb <= (checkStorage + inputFileSize) / 1024) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    }
 
     const result = await this.cardRepository.save({
       board_column: column,
@@ -70,7 +110,7 @@ export class CardsService {
     cardInfo: UpdateCardDto,
     files: string[],
     originalnames: string[],
-    filesSizes: string[],
+    fileSizes: string[],
     memberIds: string[],
     loginUserId: number,
     loginUserName: string
@@ -83,6 +123,27 @@ export class CardsService {
 
     const board = await this.boardService.GetBoardById(column.board.id);
     const existCard = await this.GetCardById(board_column_id, id);
+    const checkStorage = await this.workspaceService.caculateFileSizes(board.workspace.id);
+    const checkMembership = await this.membershipService.checkMembership(board.workspace.id);
+
+    let inputFileSize = 0;
+    if (fileSizes.length) {
+      fileSizes.forEach((size) => {
+        inputFileSize += parseInt(size);
+      });
+    }
+
+    if (checkMembership) {
+      const limitInGb = 10;
+      if (fileSizes.length && limitInGb <= (checkStorage + inputFileSize) / (1024 * 1024)) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      const limitInMb = 100;
+      if (fileSizes.length && limitInMb <= (checkStorage + inputFileSize) / 1024) {
+        throw new HttpException('워크스페이스 제한용량이 초과되어 업로드가 불가능합니다.', HttpStatus.BAD_REQUEST);
+      }
+    }
 
     if (!memberIds) {
       memberIds = [];
@@ -109,7 +170,7 @@ export class CardsService {
         color: cardInfo.color,
         file_url: files,
         file_original_name: originalnames,
-        file_size: filesSizes,
+        file_size: fileSizes,
         members: memberIds,
       }
     );

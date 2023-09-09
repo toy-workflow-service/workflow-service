@@ -19,10 +19,22 @@ import { JwtService } from 'src/_common/security/jwt/jwt.service';
 import { RedisCacheModule } from 'src/_common/cache/redis.module';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { Audit_log } from 'src/_common/entities/audit-log.entity';
+import { Membership } from 'src/_common/entities/membership.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 @Module({
   imports: [
     RedisCacheModule,
-    TypeOrmModule.forFeature([Card, Comment, Board_Column, Board, Workspace, Workspace_Member, User, Audit_log]), // Card 엔티티 등록
+    TypeOrmModule.forFeature([
+      Card,
+      Comment,
+      Board_Column,
+      Board,
+      Workspace,
+      Workspace_Member,
+      User,
+      Audit_log,
+      Membership,
+    ]),
   ],
   controllers: [CommentsController],
   providers: [
@@ -35,6 +47,7 @@ import { Audit_log } from 'src/_common/entities/audit-log.entity';
     MailService,
     JwtService,
     AuditLogsService,
+    MembershipsService,
   ],
 })
 export class CommentsModule {}

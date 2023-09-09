@@ -55,8 +55,8 @@ export class BoardMembersService {
   }
 
   //보드 멤버 초대
-  async CreateBoardMember(boardId: number, name: string) {
-    const user = await this.usersService.findUserByName(name);
+  async CreateBoardMember(boardId: number, userId: number) {
+    const user = await this.usersService.findUserById(userId);
     const board = await this.boardsService.GetBoardById(boardId);
     const boardMembers = await this.boardMemberRepository.find({ relations: ['user', 'board'] });
     const boardMember = boardMembers.find((member) => {

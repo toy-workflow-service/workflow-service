@@ -68,8 +68,8 @@ function updateUserInfo() {
   });
 }
 
-// 삭제 확인 모달 출력
-function deleteConfirmModal() {
+// 삭제 확인 모달
+function deleteConfirmModal(targetId, targetId2, targetType) {
   const confirmModal = document.querySelector('#modal-info-confirmed');
   $(confirmModal).modal('show');
 
@@ -77,7 +77,11 @@ function deleteConfirmModal() {
   const cancelBtn = confirmModal.querySelector('.btn-light');
 
   okBtn.addEventListener('click', () => {
-    deleteUser();
+    if (targetType === 'payment') {
+      cancelPayment(targetId, targetId2);
+    } else {
+      deleteUser();
+    }
     $(confirmModal).modal('hide');
   });
 
@@ -454,7 +458,7 @@ async function getPaymentHistory() {
           const workspaceId = btn.closest('tr').querySelector('[data-workspace-id]').getAttribute('data-workspace-id');
 
           btn.addEventListener('click', () => {
-            cancelPayment(paymentId, workspaceId);
+            deleteConfirmModal(paymentId, workspaceId, 'payment');
           });
         });
       },
@@ -466,8 +470,6 @@ async function getPaymentHistory() {
 
 // 결제 취소
 async function cancelPayment(paymentId, workspaceId) {
-  console.log(paymentId);
-  console.log(workspaceId);
   try {
     await $.ajax({
       method: 'DELETE',
@@ -477,7 +479,6 @@ async function cancelPayment(paymentId, workspaceId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data);
         Swal.fire({
           customClass: {
             container: 'my-swal',

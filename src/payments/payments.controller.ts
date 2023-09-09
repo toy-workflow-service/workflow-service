@@ -23,18 +23,6 @@ export class PaymentsController {
     return await this.paymentService.purchaseMembership(body, workspaceId, user.id);
   }
 
-  // // 결제 연장
-  // @Post('extension')
-  // @UseGuards(AuthGuard)
-  // @UseInterceptors(CheckAdminInterceptor)
-  // async extensionMembership(
-  //   @Body() body: MembershipDto,
-  //   @Param('workspaceId') workspaceId: number,
-  //   @GetUser() user: AccessPayload
-  // ): Promise<IResult> {
-  //   return await this.paymentService.extensionMembership(body, workspaceId, user.id);
-  // }
-
   // 결제 취소
   @Delete(':paymentId')
   @UseGuards(AuthGuard)

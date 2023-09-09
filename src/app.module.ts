@@ -28,6 +28,7 @@ import { MembershipsModule } from './memberships/memberships.module';
 import { EventsModule } from './events/events.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { DirectMessagesModule } from './direct-messages/direct-messages.module';
     BoardMessagesModule,
     CardsModule,
     CommentsModule,
+    CalendarModule,
     MentionsModule,
     UserMessageRoomsModule,
     RemindersModule,

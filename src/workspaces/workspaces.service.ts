@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
+import { Board_Member } from 'src/_common/entities/board-member.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -96,25 +97,29 @@ export class WorkspacesService {
   }
 
   // 워크스페이스 멤버조회
-  async searchMemberByName(workspaceId: number, name: string): Promise<Workspace_Member> {
-    const user = await this.userService.findUserByName(name);
-    if (!user) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+  async searchMemberByName(workspaceId: number, name: string): Promise<any> {
+    const users = await this.userService.findUsersByName(name);
+    if (!users) throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
-    const workspaceMember = await this.workspaceMemberRepository
-      .createQueryBuilder('workspace_member')
-      .innerJoinAndSelect('workspace_member.user', 'user')
-      .where('workspace_member.workspace = :workspaceId', { workspaceId })
-      .andWhere('workspace_member.user = :userId', { userId: user.id })
-      .select([
-        'workspace_member.id',
-        'workspace_member.role',
-        'workspace_member.participation',
-        'user.id',
-        'user.name',
-        'user.email',
-        'user.profile_url',
-      ])
-      .getOne();
+    const workspaceMember = [];
+    for (let i = 0; i < users.length; i++) {
+      const member = await this.workspaceMemberRepository
+        .createQueryBuilder('workspace_member')
+        .innerJoinAndSelect('workspace_member.user', 'user')
+        .where('workspace_member.workspace = :workspaceId', { workspaceId })
+        .andWhere('workspace_member.user = :userId', { userId: users[i].id })
+        .select([
+          'workspace_member.id',
+          'workspace_member.role',
+          'workspace_member.participation',
+          'user.id',
+          'user.name',
+          'user.email',
+          'user.profile_url',
+        ])
+        .getOne();
+      workspaceMember.push(member);
+    }
 
     return workspaceMember;
   }
@@ -215,6 +220,7 @@ export class WorkspacesService {
       where: { workspace: { id: workspaceId }, user: { id: userId } },
       relations: ['user'],
     });
+    const entityManager = this.workspaceMemberRepository.manager;
 
     const loginUserRole = await this.loginUserRole(loginUserId, workspaceId);
 
@@ -223,8 +229,17 @@ export class WorkspacesService {
     if (loginUserRole / 1 >= existMember.role)
       throw new HttpException('관리자 또는 어드민 계정은 삭제할 수 없습니다.', HttpStatus.BAD_REQUEST);
 
-    await this.workspaceMemberRepository.remove(existMember);
-    await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      await transactionEntityManager.remove(existMember);
+
+      const boardMember = await transactionEntityManager.find(Board_Member, {
+        where: { user: { id: existMember.user.id } },
+      });
+      if (boardMember) {
+        await transactionEntityManager.remove(Board_Member, boardMember);
+      }
+      await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
+    });
 
     return { result: true };
   }
@@ -337,14 +352,29 @@ export class WorkspacesService {
       .innerJoinAndSelect('board_columns.cards', 'cards')
       .where('workspace.id = :workspaceId', { workspaceId })
       .select([
-        'cards.id',
-        'cards.file_original_name',
-        'cards.file_url',
-        'cards.file_size',
-        'cards.created_at',
-        'cards.updated_at',
+        'cards.id as id',
+        'cards.file_original_name as file_original_name ',
+        'cards.file_url as file_url',
+        'cards.file_size as file_size',
+        'cards.created_at as created_at',
+        'cards.updated_at as updated_at',
       ])
       .getRawMany();
     return workspace;
+  }
+
+  // 전체파일 용량계산 (카드 생성제한용)
+  async caculateFileSizes(workspaceId: number): Promise<number> {
+    const allFiles = await this.getAllFiles(workspaceId);
+    let totalFileSize = 0;
+
+    allFiles.forEach((file) => {
+      const fileSizes = JSON.parse(file.file_size);
+      fileSizes.forEach((size) => {
+        totalFileSize += parseInt(size);
+      });
+    });
+
+    return totalFileSize;
   }
 }

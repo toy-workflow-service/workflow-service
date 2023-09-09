@@ -93,6 +93,24 @@ export class ViewController {
     return { title: 'Work-Flow', subtitle: '멤버십', header };
   }
 
+  @Get('support')
+  @UseGuards(ViewAuthGuard)
+  @Render('support.ejs')
+  async support(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '서포트', header };
+  }
+
+  @Get('calendar')
+  @UseGuards(ViewAuthGuard)
+  @Render('calendar.ejs')
+  async calendar(@Req() req: AccessPayload) {
+    const user: AccessPayload = req.user;
+    const header = await this.viewService.header(user);
+    return { title: 'Work-Flow', subtitle: '캘린더', header };
+  }
+
   /**No header & footer */
 
   @Get('signup')

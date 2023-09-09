@@ -9,39 +9,55 @@ const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards('all');
+  equalHeight($('.board-description'));
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
   // initializeMemberInput('#name48', '#edit-selected-members', '#update-selected-members');
 });
+
+function equalHeight(group) {
+  tallest = 0;
+  group.each(function () {
+    thisHeight = $(this).height();
+    if (thisHeight > tallest) {
+      tallest = thisHeight;
+    }
+  });
+  group.height(tallest);
+}
 
 function initializeMemberInput(inputSelector, memberListSelector, selected) {
   const memberInput = document.querySelector(inputSelector);
   const selectedMemberList = document.querySelector(memberListSelector);
 
   updateSelectedMembersUI(selected);
-  memberInput.addEventListener('keyup', (e) => {
+  memberInput.addEventListener('keydown', (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+    }
     clearTimeout(typingTimer);
     typingTimer = setTimeout(async () => {
       const searchText = e.target.value;
       const encodedSearchText = encodeURIComponent(searchText);
 
       const results = await searchMembers(encodedSearchText);
-      if (results) {
-        selectedMemberList.innerHTML = '';
-        let Img = results.user.profile_url ? results.user.profile_url : '/assets/img/favicon.png';
+      console.log(results);
+      selectedMemberList.innerHTML = '';
+      for (let result of results) {
+        let Img = result.user.profile_url ? result.user.profile_url : '/assets/img/favicon.png';
         let data = `<li>
                         <a href="#">
-                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${results.user.name}">
+                          <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}" alt="${result.user.name}">
                         </a>
-                        <span>${results.user.name}</span>
+                        <span>${result.user.name}</span>
                       </li>`;
         const li = document.createElement('li');
         li.innerHTML = data;
         selectedMemberList.appendChild(li);
 
         li.addEventListener('click', () => {
-          if (!selectedMemberId.includes(results.user.id)) {
-            selectedMembers.push({ name: results.user.name, id: results.user.id });
-            selectedMemberId.push(results.user.id);
+          if (!selectedMemberId.includes(result.user.id)) {
+            selectedMembers.push({ name: result.user.name, id: result.user.id });
+            selectedMemberId.push(result.user.id);
             updateSelectedMembersUI(selected);
           }
         });
@@ -50,6 +66,7 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
   });
 }
 const printBoard = document.querySelector('#board-box');
+const printListBoard = document.querySelector('#board-list-box');
 const printButton = document.querySelector('.nav-item');
 function changeSelect() {
   let selected = document.querySelector('#event-category');
@@ -75,28 +92,34 @@ async function getMyBoards(selectItem, search) {
         const boards = data.boards;
         let result = '';
         let button = '';
+        let listResult = '';
         document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
-        document.querySelector('#running-boards').innerHTML = `총 보드: ${boards.length}`;
+        document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
         for (const board of boards) {
           if (selectItem == 'all' && !search) {
             result += boardHTML(board);
+            listResult += boardListHTML(board);
           } else if (selectItem == 'ing' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count != 100) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             }
           } else if (selectItem == 'end' && !search) {
             const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
             if (count == 100) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             }
           } else {
             if (board.boardName.search(search) > -1) {
               result += boardHTML(board);
+              listResult += boardListHTML(board);
             } else {
               for (const member of board.boardMembers) {
                 if (member.name.search(search) > -1) {
                   result += boardHTML(board);
+                  listResult += boardListHTML(board);
                 }
               }
             }
@@ -112,6 +135,7 @@ async function getMyBoards(selectItem, search) {
                       >워크스페이스 디테일</a
                     >
                   </li>`;
+        printListBoard.innerHTML = listResult;
         printBoard.innerHTML = result;
         printButton.innerHTML = button;
       },
@@ -137,13 +161,21 @@ function boardHTML(board) {
     month: '2-digit',
     day: '2-digit',
   });
+
+  let startSendTime = new Date(new Date(board.startDate).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
   // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
   result += `<div class="col-xl-4 mb-25 col-md-6">
                       <div class="user-group radius-xl media-ui media-ui--early pt-30 pb-25">
                         <div class="border-bottom px-30">
                           <div class="media user-group-media d-flex justify-content-between">
                             <div class="media-body d-flex align-items-center flex-wrap text-capitalize my-sm-0 my-n2">
-                              <a href="/board?boardId=${board.boardId}">
+                              <a href="/board?boardId=${
+                                board.boardId
+                              }&workspaceName=${workspaceName}" style="width: fit-content;">
                                 <h6 class="mt-0 fw-500 user-group media-ui__title bg-transparent">${
                                   board.boardName
                                 }</h6>
@@ -172,15 +204,16 @@ function boardHTML(board) {
                             </div>
                           </div>
                           <div class="user-group-people mt-15 text-capitalize">
-                            <p>${board.description}</p>
+                            <div class="board-description"><p>${board.description}</p></div>
                             <div class="user-group-project">
                               <div class="d-flex align-items-center user-group-progress-top">
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">시작일</span>
-                                  <p class="fs-14 fw-500 color-dark mb-0">${board.createdAt
-                                    .substring(0, 10)
-                                    .replace('-', '.')
-                                    .replace('-', '.')}</p>
+                                  <p class="fs-14 fw-500 color-dark mb-0">${
+                                    board.startDate
+                                      ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      : '____.__.__'
+                                  }</p>
                                 </div>
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">마감일</span>
@@ -231,6 +264,95 @@ function boardHTML(board) {
   return result;
 }
 
+function boardListHTML(board) {
+  let check = '';
+  let result = '';
+  const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+  if (count == 100) {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
+  } else {
+    check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
+  }
+  const offset = new Date().getTimezoneOffset() * 60 * 1000;
+  let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  let startSendTime = new Date(new Date(board.startDate).getTime() - offset).toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  // 이부분에서 해당 보드 내의 column을 조회 -> 그 조회한 컬럼안에서 또card조회 해서 return.
+  result += `<tr>
+              <td>
+                <div class="contact-item d-flex align-items-center">
+                    <div class="contact-personal-wrap">
+                      <div class="checkbox-group-wrapper">
+                          <div class="checkbox-group d-flex">
+                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                                <input class="checkbox" type="checkbox" id="check-grp-c-4">
+                                <label for="check-grp-c-4"></label>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="contact-personal-info d-flex">
+                      <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
+                      <div class="contact_title">
+                          <h6>
+                            <a href="/board?boardId=${board.boardId}&workspaceName=${workspaceName}">${
+                              board.boardName
+                            }</a>
+                          </h6>
+                      </div>
+                    </div>
+
+                </div>
+              </td>
+              <td>
+                ${check}
+              </td>
+              <td>
+                <span class="board-startline">${
+                  board.startDate
+                    ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                    : '____.__.__'
+                }</span>
+              </td>
+              <td>
+                <span class="board-deadline">${
+                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.') : '____.__.__'
+                }</span>
+              </td>
+              <td>
+                <span class="board-cardCount">${
+                  Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0
+                }%</span>
+              </td>
+              <td>
+                <div class="table-actions">
+                    <span class="board-memberCount" style="margin-right: 50%;">${board.boardMembers.length}</span>
+                    <div class="dropdown dropdown-click">
+                      <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <img class="svg" src="./assets/img/svg/more-vertical.svg" alt="more-vertical">
+                      </button>
+                      <div class="dropdown-default dropdown-menu dropdown-menu--dynamic">
+                          <a class="dropdown-item" boardId="${
+                            board.boardId
+                          }" checkCards="${count}" onclick="openEditBoardModal(this)">수정</a>
+                          <a class="dropdown-item" boardId="${board.boardId}" onclick="deleteConfirmModal(${
+                            board.boardId
+                          }, 'board')">삭제</a>
+                      </div>
+                    </div>
+                </div>
+              </td>
+            </tr>`;
+  return result;
+}
+
 // 보드 생성
 const createBoardBtn = document.querySelector('#create-button');
 document.querySelector('#create-board-btn').addEventListener('click', () => {
@@ -249,8 +371,10 @@ createBoardBtn.addEventListener('click', async (event) => {
     const createTitle = document.querySelector('#create-board-title').value;
     const createDescription = document.querySelector('#create-board-desc').value;
     let deadline = document.querySelector('#datepicker').value;
+    let startline = document.querySelector('#datepicker4').value;
 
     deadline = new Date(deadline);
+    startline = new Date(startline);
 
     await $.ajax({
       method: 'POST',
@@ -259,12 +383,12 @@ createBoardBtn.addEventListener('click', async (event) => {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      data: JSON.stringify({ name: createTitle, description: createDescription, deadline }),
+      data: JSON.stringify({ name: createTitle, description: createDescription, deadline, start_date: startline }),
       success: async (data) => {
         const boardId = data.newBoard.identifiers[0].id;
 
         for (const member of selectedMembers) {
-          await createBoardMember(boardId, member.name);
+          await createBoardMember(boardId, member.id);
         }
 
         Swal.fire({
@@ -426,8 +550,14 @@ async function openEditBoardModal(element) {
     const titleInput = editModal.querySelector('input[type="text"]');
     const descriptionInput = editModal.querySelector('textarea');
     const deadlineInput = document.querySelector('#datepicker2');
+    const startlineInput = document.querySelector('#datepicker3');
     const offset = new Date().getTimezoneOffset() * 60 * 1000;
     let sendTime = new Date(new Date(board.deadline).getTime() - offset).toLocaleString('ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    let startSendTime = new Date(new Date(board.start_date).getTime() - offset).toLocaleString('Ko-KR', {
       year: '2-digit',
       month: '2-digit',
       day: '2-digit',
@@ -436,6 +566,7 @@ async function openEditBoardModal(element) {
     titleInput.value = board.name;
     descriptionInput.value = board.description;
     deadlineInput.value = board.deadline ? '20' + sendTime : '';
+    startlineInput.value = board.start_date ? '20' + startSendTime : '';
 
     const { boardMembers } = await getBoardMembers(boardId);
     selectedMemberId = [];
@@ -454,7 +585,13 @@ async function openEditBoardModal(element) {
       members.forEach((icon) => {
         editMembers.push(icon.getAttribute('data-id'));
       });
-      await putBoard(boardId, titleInput.value, descriptionInput.value, new Date(deadlineInput.value));
+      await putBoard(
+        boardId,
+        titleInput.value,
+        descriptionInput.value,
+        new Date(deadlineInput.value),
+        new Date(startlineInput.value)
+      );
       await putBoardMember(boardId, selectedMemberId);
       Swal.fire({
         customClass: {
@@ -472,25 +609,9 @@ async function openEditBoardModal(element) {
     console.error(err);
   }
 }
-// 보드 멤버 조회 - 같은 함수가 위에 존재
-// function getBoardMembers(boardId) {
-//   try {
-//     const response = $.ajax({
-//       method: 'GET',
-//       url: `/boards/${boardId}/members`,
-//       beforeSend: function (xhr) {
-//         xhr.setRequestHeader('Content-type', 'application/json');
-//         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-//       },
-//     });
-//     return response;
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
 
 // 보드 수정
-async function putBoard(boardId, name, description, deadline) {
+async function putBoard(boardId, name, description, deadline, startDate) {
   await $.ajax({
     type: 'PUT',
     url: `boards/${boardId}?workspaceId=${workspaceId}`,
@@ -498,7 +619,7 @@ async function putBoard(boardId, name, description, deadline) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    data: JSON.stringify({ name, description, deadline }),
+    data: JSON.stringify({ name, description, deadline, start_date: startDate }),
     success: (data) => {
       console.log(data.message);
     },
@@ -587,7 +708,14 @@ async function deleteBoard(boardId) {
       });
     },
     error: (error) => {
-      console.log(error);
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }
@@ -599,6 +727,14 @@ let searchInput = '';
 document.querySelector('.search-form-topMenu').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#header-search').value;
+  document.querySelector('.search-form-topMenu').classList.remove('show');
+  document.querySelector('.search-toggle').classList.remove('active');
+  if (searchInput) {
+    document.querySelector('.search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.search-result').innerHTML = '';
+  }
+  document.querySelector('#header-search').value = '';
   getMyBoards('all', searchInput);
 });
 
@@ -606,5 +742,33 @@ document.querySelector('.search-form-topMenu').addEventListener('submit', (event
 document.querySelector('.search-form').addEventListener('submit', (event) => {
   event.preventDefault();
   searchInput = document.querySelector('#search-form').value;
+  document.querySelector('.mobile-search').classList.remove('show');
+  document.querySelector('.btn-search').classList.remove('search-active');
+  document.querySelector('#search-form').value = '';
+  if (searchInput) {
+    document.querySelector('.mobile-search-result').innerHTML = `검색 결과: ${searchInput}`;
+  } else {
+    document.querySelector('.mobile-search-result').innerHTML = '';
+  }
   getMyBoards('all', searchInput);
+});
+
+//grid or list button
+
+document.querySelector('#grid-icon').addEventListener('click', (event) => {
+  event.preventDefault();
+  console.log('확인해보고 있어요.');
+  document.querySelector('#grid-icon').classList.add('active');
+  document.querySelector('#list-icon').classList.remove('active');
+  $('#list-box').hide();
+  $('#board-box').show();
+});
+
+document.querySelector('#list-icon').addEventListener('click', (event) => {
+  event.preventDefault();
+  console.log('확인해보고 있어요.');
+  document.querySelector('#list-icon').classList.add('active');
+  document.querySelector('#grid-icon').classList.remove('active');
+  $('#list-box').show();
+  $('#board-box').hide();
 });
