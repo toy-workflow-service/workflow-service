@@ -9,6 +9,7 @@ import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class CardsService {
   constructor(
@@ -18,18 +19,32 @@ export class CardsService {
     private readonly boardService: BoardsService,
     private readonly auditLogService: AuditLogsService,
     private readonly workspaceService: WorkspacesService,
-    private readonly membershipService: MembershipsService
+    private readonly membershipService: MembershipsService,
+    private readonly usersService: UsersService
   ) {}
   //카드 조회
   async GetCards(board_column_Id: number) {
-    const findCards = await this.cardRepository.find({ relations: ['board_column'] });
+    let findCards = await this.cardRepository.find({ relations: ['board_column'] });
 
     findCards.sort((a, b) => {
       return a.sequence - b.sequence;
     });
-    return findCards.filter((card) => {
+    findCards = findCards.filter((card) => {
       return card.board_column.id == board_column_Id;
     });
+
+    const totalCard = [];
+    for (let i = 0; i < findCards.length; i++) {
+      const members = [];
+      if (findCards[i].members) {
+        for (let j = 0; j < findCards[i].members.length; j++) {
+          const member = await this.usersService.findUserById(Number(findCards[i].members[j]));
+          members.push(member);
+        }
+      }
+      totalCard.push({ cardInfo: findCards[i], cardMembers: members });
+    }
+    return totalCard;
   }
 
   //카드 상세 조회

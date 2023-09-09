@@ -205,9 +205,17 @@ async function BoardColumns(data, search) {
     const card = await CardGet(data[i].columnId);
     let cardHtml = '';
     for (let c of card) {
+      let members = '';
+      for (let m of c.cardMembers) {
+        let Img = '';
+        m.profile_url ? (Img = `${m.profile_url}`) : (Img = `/assets/img/favicon.png`);
+        members += `<li style="background-color:transparent; margin:0; padding:0;">
+                    <img class="rounded-circle wh-34 bg-opacity-secondary" src="${Img}"/>
+                  </li>`;
+      }
       if (!search) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+        cardHtml += `<li class="d-flex justify-content-between row align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}       
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -222,11 +230,17 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>     
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
-      } else if (c.name.search(search) > -1) {
-        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.id} style="border:1px solid ${c.color}; background-color: ${c.color}10; font-weight: bold">
-                      ${c.name}
+      } else if (c.cardInfo.name.search(search) > -1) {
+        cardHtml += `<li class="d-flex justify-content-between align-items-center " draggable="true" id="card-list-item" data-columnId=${data[i].columnId} data-cardId=${c.cardInfo.id} style="border:1px solid ${c.cardInfo.color}; background-color: ${c.cardInfo.color}10; font-weight: bold">
+                      ${c.cardInfo.name}
                     <button class="open-popup-modal" type="button">
                       <img src="./assets/img/svg/edit-2.svg" alt="edit-2" class="svg">
                     </button>
@@ -241,6 +255,12 @@ async function BoardColumns(data, search) {
                           </div>
                           <div class="overlay-close"></div>
                       </div>
+                    </div>       
+                    <div style="pointer-events: none; min-height: 65px;">                          
+                      <p class="fs-13 color-light mb-10">참여 멤버</p>
+                        <ul class="d-flex flex-wrap">
+                        ${members}
+                        </ul>
                     </div>
                 </li>`;
       }
@@ -406,7 +426,7 @@ async function BoardColumns(data, search) {
     data.addEventListener('click', (e) => {
       const cardId = e.target.getAttribute('data-cardId');
       const columnId = e.target.getAttribute('data-columnId');
-
+      console.log(cardId, columnId);
       DetailCardGet(columnId, cardId);
     });
   });
