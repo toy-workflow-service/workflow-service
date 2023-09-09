@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWorkspaceDto, InvitationDto, SetRoleDto, UpdateWorkspaceDto } from 'src/_common/dtos/workspace.dto';
 import { Board_Member } from 'src/_common/entities/board-member.entity';
+import { Board } from 'src/_common/entities/board.entity';
+import { Card } from 'src/_common/entities/card.entity';
 import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -239,6 +241,31 @@ export class WorkspacesService {
       if (boardMember) {
         await transactionEntityManager.remove(Board_Member, boardMember);
       }
+
+      const board = await transactionEntityManager.find(Board, {
+        where: { workspace: { id: workspaceId } },
+        relations: ['board_columns'],
+      });
+
+      for (const column of board) {
+        const columns = column.board_columns;
+        for (const id of columns) {
+          const columnId = id.id;
+          const cards = await transactionEntityManager.find(Card, {
+            where: { board_column: { id: columnId } },
+          });
+          for (const card of cards) {
+            if (typeof card.members === 'string') {
+              card.members = [];
+              await transactionEntityManager.save(Card, card);
+            } else if (Array.isArray(card.members)) {
+              card.members = card.members.filter((memberId) => memberId !== existMember.user.id.toString());
+              await transactionEntityManager.save(Card, card);
+            }
+          }
+        }
+      }
+
       await this.auditLogService.deleteMemberLog(workspaceId, loginUserId, loginUserName, existMember.user.name);
     });
 
