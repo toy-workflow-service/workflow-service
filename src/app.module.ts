@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ViewModule } from './view/view.module';
@@ -28,6 +28,7 @@ import { EventsModule } from './events/events.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { BlockingIpMiddleWare } from './_common/middlewares/blocking-ip-middleware';
 
 @Module({
   imports: [
@@ -61,4 +62,14 @@ import { CalendarModule } from './calendar/calendar.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(BlockingIpMiddleWare)
+      .forRoutes(
+        { path: '*', method: RequestMethod.POST },
+        { path: '*', method: RequestMethod.PATCH },
+        { path: '*', method: RequestMethod.PUT }
+      );
+  }
+}
