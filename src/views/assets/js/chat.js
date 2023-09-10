@@ -1652,23 +1652,7 @@ function movePrivateChat(data) {
   });
 }
 
-function searchChatRoomEvent() {
-  // const searchInput = document.querySelector('#searchChatRoom');
-  // console.log(myBoardIds);
-  // console.log(myBoardNames);
-  // console.log('-------------------');
-  // console.log(privateRoomIdList);
-  // console.log(privateRoomNameList);
-  // searchInput.addEventListener('keyup', () => {
-  //   if (myBoardIds.length) {
-  //     let searchResultsBoard = myBoardNames.map((boardName, idx) => {
-  //       if (searchInput.value.includes(boardName)) {
-  //         console.log('호에에에에엥????????');
-  //       }
-  //     });
-  //   }
-  // });
-}
+function searchChatRoomEvent() {}
 
 $('#searchRoom').addEventListener('submit', function (e) {
   e.preventDefault();
