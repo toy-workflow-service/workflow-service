@@ -288,6 +288,19 @@ async function getWorkspaceDetail() {
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
       },
+      error: (error) => {
+        console.error(error);
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/';
+        });
+      },
     });
   } catch (err) {
     console.error(err);

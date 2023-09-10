@@ -1,7 +1,8 @@
-import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Render, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { ViewAuthGuard } from 'src/_common/security/view-auth.guard';
+import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 
 @Controller()
 export class ViewController {

@@ -41,7 +41,6 @@ export class WorkspacesController {
   // 워크스페이스 전체 조회
   @Get()
   @UseGuards(AuthGuard)
-  @UseInterceptors(CheckMemberInterceptor)
   async getMyWorkspaces(@GetUser() user: AccessPayload): Promise<Workspace[]> {
     return await this.workspaceService.getMyWorkspaces(user.id);
   }

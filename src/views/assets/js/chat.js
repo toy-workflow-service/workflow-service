@@ -6,6 +6,7 @@ const offset = new Date().getTimezoneOffset() * 60 * 1000;
 let boardId = params.get('boardId');
 let privateRoomId = params.get('roomId');
 let myBoardIds = [];
+let myBoardNames = [];
 let loginUserId, loginProfileUrl;
 let memberNameList = [];
 let memberIdList = [];
@@ -13,6 +14,7 @@ let memberPhoneList = [];
 let memberEmailList = [];
 let memberProfileUrlList = [];
 let privateRoomIdList = [];
+let privateRoomNameList = [];
 if (!boardId) boardId = 0;
 if (!privateRoomId) privateRoomId = 0;
 
@@ -73,6 +75,8 @@ $(document).ready(async () => {
 
   boardChatList.style.overflow = 'auto';
   privateChatList.style.overflow = 'auto';
+
+  searchChatRoomEvent();
 });
 
 async function getChatRooms() {
@@ -97,7 +101,6 @@ async function getChatRooms() {
       const messageList = data.boardMessageResults;
       loginUserId = data.userId;
       loginProfileUrl = data.userProfileUrl ? data.userProfileUrl : '../assets/img/favicon.png';
-
       boardMembers.forEach((result, idx) => {
         result.forEach((member) => {
           if (memberIdList.includes(member.user_id)) return;
@@ -109,6 +112,7 @@ async function getChatRooms() {
           memberProfileUrlList.push(member.user_profile_url);
         });
         myBoardIds.push(result[0].board_id);
+        myBoardNames.push(result[0].board_name);
         let active, ariaSelected;
         if (idx === 0 && !privateRoomId) {
           active = `nav-link active`;
@@ -1288,6 +1292,7 @@ async function getPrivateChatRooms() {
           let messageInfos = [];
           const lastMessageInfo = messages[idx][messages[idx].length - 1];
           const userName = room.sender_id === loginUserId ? room.receiver_name : room.sender_name;
+          privateRoomNameList.push(userName);
           let sendTime, sendTimeDiv, img, lastMessage, active, ariaSelected, activeMessage;
           if (lastMessageInfo) {
             lastMessage = lastMessageInfo.message_file_url
@@ -1646,3 +1651,26 @@ function movePrivateChat(data) {
     },
   });
 }
+
+function searchChatRoomEvent() {
+  // const searchInput = document.querySelector('#searchChatRoom');
+  // console.log(myBoardIds);
+  // console.log(myBoardNames);
+  // console.log('-------------------');
+  // console.log(privateRoomIdList);
+  // console.log(privateRoomNameList);
+  // searchInput.addEventListener('keyup', () => {
+  //   if (myBoardIds.length) {
+  //     let searchResultsBoard = myBoardNames.map((boardName, idx) => {
+  //       if (searchInput.value.includes(boardName)) {
+  //         console.log('호에에에에엥????????');
+  //       }
+  //     });
+  //   }
+  // });
+}
+
+$('#searchRoom').addEventListener('submit', function (e) {
+  e.preventDefault();
+  console.log('젭알');
+});

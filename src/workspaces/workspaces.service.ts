@@ -96,6 +96,10 @@ export class WorkspacesService {
       where: { user: { id: userId }, workspace: { id: workspaceId } },
     });
 
+    if (!loginUserRole.role) {
+      throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+    }
+
     return loginUserRole.role;
   }
 
@@ -348,16 +352,15 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
-    const checkUser = await this.workspaceMemberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: userId } },
-    });
+    // const checkUser = await this.workspaceMemberRepository.findOne({
+    //   where: { workspace: { id: workspaceId }, user: { id: userId } },
+    // });
 
-    if (!checkUser) return;
+    // if (!checkUser) return;
 
     const checkMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
-
     if (!checkMember) throw new HttpException('워크스페이스 멤버가 아닙니다.', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
