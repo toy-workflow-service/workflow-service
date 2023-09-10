@@ -22,7 +22,6 @@
   document.addEventListener('DOMContentLoaded', async function () {
     let results = await GetCalendarApi();
     let resultArr = [];
-    console.log(results);
     for (let i = 0; i < results.length; i++) {
       let cName;
       let cColor;
@@ -120,18 +119,18 @@
         //사용자가 이벤트를 클릭하면 트리거 - 상세 모달이 보여짐
         eventClick: async function (infoEvent) {
           //하루 일정으로 볼 경우
-          let lastName = infoEvent.el.classList[9];
+          let lastName = infoEvent.el.classList[8];
           if (!lastName) {
             //이부분은 한달 일정으로 볼 경우.
-            lastName = infoEvent.el.classList[8];
+            lastName = infoEvent.el.classList[7];
           }
           const calendarId = lastName.replace('calendarId', '');
           // 이부분에 상세조회api
           const detailGet = await DetailGetCalendarApi(calendarId);
-          console.log(detailGet);
+
           let infoModal = $('#e-info-modal');
           infoModal.modal('show');
-          console.log(infoModal.find('.e-info-title'));
+
           infoModal.find('.e-info-title').text(infoEvent.event.title);
           const offset = new Date().getTimezoneOffset() * 60 * 1000;
           let startDate = new Date(new Date(detailGet.startDate).getTime() - offset).toLocaleString('ko-KR', {
@@ -162,14 +161,12 @@
 
           // 상세보기 모달에서 삭제 버튼 클릭시
           document.querySelector('#delete-event').addEventListener('click', () => {
-            console.log('여기에 지우는 api 넣자', calendarId);
             deleteConfirmModal(calendarId, 'calendar');
           });
         },
       });
 
       calendar.render();
-      $('div').remove('.fc-event-resizer');
       $('.fc-button-group .fc-listMonth-button').prepend('<i class="las la-list"></i>');
     }
   });
@@ -234,8 +231,18 @@ document.querySelector('#save-button').addEventListener('click', () => {
   }
   let passDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
   let passTime = /^(0[0-9]|1[0-9]|2[0-3]):(0[1-9]|[0-5][0-9])$/;
+  let compareDate = [startDate.replaceAll('-', ''), deadline.replaceAll('-', '')];
 
-  if (!passDate.test(startDate) || !passDate.test(deadline)) {
+  if (Number(compareDate[0]) > Number(compareDate[1])) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '종료날짜는 시작날짜보다 앞에 올 수 없습니다.',
+    });
+  } else if (!passDate.test(startDate) || !passDate.test(deadline)) {
     Swal.fire({
       customClass: {
         container: 'my-swal',
