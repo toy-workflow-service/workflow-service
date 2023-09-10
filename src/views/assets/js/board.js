@@ -457,6 +457,7 @@ async function BoardColumns(data, search) {
       filesArr = [];
       fileNo = 0;
       filesNameArr = [];
+      filesSizeArr = [];
       document.querySelector('.file-list').innerHTML = '';
     });
   });
@@ -1056,17 +1057,32 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   fileNo = 0;
   document.querySelector('#edit-card-file').innerHTML = '';
   if (cardData.file_url) {
-    for (let i = 0; i < cardData.file_url.length; i++) {
+    if (cardData.file_url.length > 1) {
+      for (let i = 0; i < cardData.file_url.length; i++) {
+        // 목록 추가
+        let htmlData = '';
+        htmlData += '<div id="file' + fileNo + '" class="filebox">';
+        htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+        htmlData +=
+          '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
+        htmlData += '</div>';
+        $('.file-list').append(htmlData);
+        filesArr.push(cardData.file_url[i]);
+        filesNameArr.push(cardData.file_original_name[i]);
+        filesSizeArr.push(cardData.file_size[i]);
+        fileNo++;
+      }
+    } else {
       // 목록 추가
       let htmlData = '';
       htmlData += '<div id="file' + fileNo + '" class="filebox">';
-      htmlData += '   <p class="name">' + cardData.file_original_name[i] + '</p>';
+      htmlData += '   <p class="name">' + cardData.file_original_name + '</p>';
       htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><i class="far fa-minus-square"></i></a>';
       htmlData += '</div>';
       $('.file-list').append(htmlData);
-      filesArr.push(cardData.file_url[i]);
-      filesNameArr.push(cardData.file_original_name[i]);
-      filesSizeArr.push(cardData.file_size[i]);
+      filesArr.push(cardData.file_url[0]);
+      filesNameArr.push(cardData.file_original_name);
+      filesSizeArr.push(cardData.file_size[0]);
       fileNo++;
     }
   }
