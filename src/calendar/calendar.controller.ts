@@ -5,13 +5,12 @@ import {
   Param,
   Post,
   Delete,
-  Put,
   Res,
   HttpStatus,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateCalendarDto, UpdateCalendarDto } from 'src/_common/dtos/calendar.dto';
+import { CreateCalendarDto } from 'src/_common/dtos/calendar.dto';
 import { CalendarsService } from './calendar.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
@@ -43,15 +42,6 @@ export class CalendarController {
     await this.calendarsService.PostCalendar(user.id, data);
 
     return res.status(HttpStatus.CREATED).json({ message: '생성하였습니다.' });
-  }
-
-  //캘린더 수정
-  @Put(':calendarId')
-  @UseGuards(AuthGuard)
-  async UpdateCalendar(@Param('calendarId') calendarId: number, @Body() data: UpdateCalendarDto, @Res() res: Response) {
-    await this.calendarsService.UpdateCalendar(calendarId, data);
-
-    return res.status(HttpStatus.OK).json({ message: '수정하였습니다.' });
   }
 
   //캘린더 삭제

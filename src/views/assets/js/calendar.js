@@ -15,7 +15,9 @@
     });
   });
 
-  let date = new Date();
+  $('.ui-datepicker-calendar').css({ 'pointer-events': 'none' });
+  $('.ui-datepicker-prev').css({ display: 'none' });
+  $('.ui-datepicker-next').css({ display: 'none' });
 
   document.addEventListener('DOMContentLoaded', async function () {
     let results = await GetCalendarApi();
@@ -26,11 +28,11 @@
       let cColor;
       // id값을 설정해도 가져올수 없어 class name 제일 마지막에 아이디값을 넣어줌
       if (results[i].type == 1) {
-        cName = `secondary calendarId${results[i].calendarId}`;
-        cColor = '#FF69A5';
-      } else if (results[i].type == 2) {
         cName = `primary calendarId${results[i].calendarId}`;
         cColor = '#5F63F2';
+      } else if (results[i].type == 2) {
+        cName = `warning calendarId${results[i].calendarId}`;
+        cColor = '#FA8B0C';
       } else if (results[i].type == 3) {
         cName = `success calendarId${results[i].calendarId}`;
         cColor = '#20C997';
@@ -223,24 +225,45 @@ document.querySelector('#save-button').addEventListener('click', () => {
   const startTime = document.querySelector('#start-time').value;
   const deadTime = document.querySelector('#dead-time').value;
   let type = document.querySelector('#type');
-  // console.dir(type);
+
   for (let i = 0; i < 3; i++) {
     if (type.children[i].children[0].checked) {
       type = Number(type.children[i].children[0].value);
       break;
     }
   }
-  // console.log(new Date(startDate + 'T' + startTime));
-  // console.log(moment(new Date(deadline + 'T' + deadTime)).format('HH:mm:ss'));
-  const data = {
-    title,
-    description,
-    deadline: new Date(deadline + 'T' + deadTime),
-    startDate: new Date(startDate + 'T' + startTime),
-    type,
-  };
-  console.log(data);
-  CreateCalendarApi(data);
+  let passDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
+  let passTime = /^(0[0-9]|1[0-9]|2[0-3]):(0[1-9]|[0-5][0-9])$/;
+
+  if (!passDate.test(startDate) || !passDate.test(deadline)) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '날짜 형식이 일치하지 않습니다.',
+    });
+  } else if (!passTime.test(startTime) || !passTime.test(deadTime)) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '시간 형식이 일치하지 않습니다.',
+    });
+  } else {
+    const data = {
+      title,
+      description,
+      deadline: new Date(deadline + 'T' + deadTime),
+      startDate: new Date(startDate + 'T' + startTime),
+      type,
+    };
+
+    CreateCalendarApi(data);
+  }
 });
 
 // 조회 api
