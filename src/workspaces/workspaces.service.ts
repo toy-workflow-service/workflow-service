@@ -352,12 +352,6 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
-    // const checkUser = await this.workspaceMemberRepository.findOne({
-    //   where: { workspace: { id: workspaceId }, user: { id: userId } },
-    // });
-
-    // if (!checkUser) return;
-
     const checkMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });

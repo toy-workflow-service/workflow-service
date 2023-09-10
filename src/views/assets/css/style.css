@@ -16160,7 +16160,7 @@ table.fc-scrollgrid thead .fc-scroller-harness .fc-scroller {
 }
 
 .fc-timegrid-event .fc-event-resizer {
-  display: block !important;
+  display: none !important;
 }
 .fc-timegrid-event .fc-event-resizer.fc-event-resizer-end {
   position: relative;

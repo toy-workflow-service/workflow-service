@@ -292,18 +292,7 @@ function boardListHTML(board) {
   result += `<tr>
               <td>
                 <div class="contact-item d-flex align-items-center">
-                    <div class="contact-personal-wrap">
-                      <div class="checkbox-group-wrapper">
-                          <div class="checkbox-group d-flex">
-                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                <input class="checkbox" type="checkbox" id="check-grp-c-4">
-                                <label for="check-grp-c-4"></label>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
                     <div class="contact-personal-info d-flex">
-                      <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
                       <div class="contact_title">
                           <h6>
                             <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
@@ -318,14 +307,12 @@ function boardListHTML(board) {
               </td>
               <td>
                 <span class="board-startline">${
-                  board.startDate
-                    ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
-                    : '____.__.__'
+                  board.startDate ? '20' + startSendTime.substring(0, 10).replace('-', '.') : '____.__.__'
                 }</span>
               </td>
               <td>
                 <span class="board-deadline">${
-                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.') : '____.__.__'
+                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.') : '____.__.__'
                 }</span>
               </td>
               <td>
@@ -405,16 +392,29 @@ createBoardBtn.addEventListener('click', async (event) => {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -440,16 +440,29 @@ async function createBoardMember(boardId, saveUserId) {
         boardName = data.boardName;
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -628,8 +641,31 @@ async function putBoard(boardId, name, description, deadline, startDate) {
     success: (data) => {
       console.log(data.message);
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
 }
@@ -654,8 +690,31 @@ async function putBoardMember(boardId, userIdArray) {
       boardName = data.boardName;
       console.log(data.message);
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
   if (updateUserList.length) {

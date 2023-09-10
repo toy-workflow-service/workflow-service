@@ -137,4 +137,10 @@ export class ViewController {
   async call() {
     return { title: 'Work-Flow', subtitle: '음성/영상 통화' };
   }
+
+  @Get('block')
+  @Render('block.ejs')
+  async block() {
+    return { title: 'Work-Flow', subtitle: 'IP 차단' };
+  }
 }
