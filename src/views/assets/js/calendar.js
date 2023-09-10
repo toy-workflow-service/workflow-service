@@ -79,7 +79,7 @@
       }
       startTime = 'T' + startTime[1];
 
-      if (moment(results[i].startDate).format('YYYY-MM-DD') == moment(results[i].deadline).format('YYYY-MM-DD')) {
+      if (startSendDate == lastSendDate) {
         let product = {
           id: i + 1,
           events: [
