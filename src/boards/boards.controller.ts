@@ -19,6 +19,7 @@ import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
+import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 
 @Controller('boards')
 export class BoardsController {
@@ -27,6 +28,7 @@ export class BoardsController {
   //보드 조회
   @Get()
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
   async GetBoards(@Query('workspaceId') workspaceId: number, @Res() res: Response) {
     const result = await this.boardsService.GetBoards(workspaceId);
 
@@ -36,6 +38,7 @@ export class BoardsController {
   //보드 상세 조회
   @Get('/:boardId')
   @UseGuards(AuthGuard)
+  @UseInterceptors(CheckMemberInterceptor)
   async GetBoardById(@Query('workspaceId') workspaceId: number, @Param('boardId') id: number, @Res() res: Response) {
     const board = await this.boardsService.GetBoard(id);
     return res.status(HttpStatus.OK).json({ board });

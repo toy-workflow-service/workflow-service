@@ -163,17 +163,17 @@ function announceInviteMessage(workspaceName, date) {
   document.getElementById('notificationAlarm').className = 'nav-item-toggle icon-active';
 }
 
-function announceBoardParticipationMessage(workspaceId, workspaceName, boardName, date) {
+function announceBoardParticipationMessage(workspaceId, boardName, date) {
   const notificationDetail = document.getElementById('notificationDetail');
 
-  localStorage.setItem(`notification-paticipateBoard`, `${workspaceId}!@#${workspaceName}!@#${boardName}!@#${date}`);
+  localStorage.setItem(`notification-paticipateBoard`, `${workspaceId}!@#${boardName}!@#${date}`);
   const notificationHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
                               <div class="nav-notification__type nav-notification__type--primary">
                                 <img class="svg" src="../assets/img/svg/user-check.svg" alt="inbox" />
                               </div>
                               <div class="nav-notification__details">
                                 <p>
-                                  <a href="/workspace?workspaceId=${workspaceId}&workspaceName=${workspaceName}" class="subject stretched-link text-truncate" style="max-width: 180px; font-weight: bold">${boardName}</a>
+                                  <a href="/workspace?workspaceId=${workspaceId}" class="subject stretched-link text-truncate" style="max-width: 180px; font-weight: bold">${boardName}</a>
                                   <span>보드에 참여되었습니다. </span>
                                 </p>
                                 <p>
@@ -225,8 +225,8 @@ socket.on('inviteWorkspaceMessage', ({ workspaceName, date }) => {
   announceInviteMessage(workspaceName, date);
 });
 
-socket.on('inviteBoardMessage', ({ workspaceId, workspaceName, boardName, date }) => {
-  announceBoardParticipationMessage(workspaceId, workspaceName, boardName, date);
+socket.on('inviteBoardMessage', ({ workspaceId, boardName, date }) => {
+  announceBoardParticipationMessage(workspaceId, boardName, date);
 });
 
 socket.on('inviteCardMessage', ({ boardId, cardName, date }) => {

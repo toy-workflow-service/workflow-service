@@ -24,7 +24,6 @@ import { Workspace } from 'src/_common/entities/workspace.entity';
 import { CheckMemberInterceptor } from 'src/_common/interceptors/check-member-interceptors';
 import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-interceptors';
 import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
-import { Workspace_Member } from 'src/_common/entities/workspace-member.entity';
 import { CheckPhoneAuthInterceptor } from 'src/_common/interceptors/check-phone-auth-interceptors';
 
 @Controller('workspaces')
@@ -42,7 +41,6 @@ export class WorkspacesController {
   // 워크스페이스 전체 조회
   @Get()
   @UseGuards(AuthGuard)
-  @UseInterceptors(CheckMemberInterceptor)
   async getMyWorkspaces(@GetUser() user: AccessPayload): Promise<Workspace[]> {
     return await this.workspaceService.getMyWorkspaces(user.id);
   }

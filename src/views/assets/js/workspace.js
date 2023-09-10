@@ -459,7 +459,6 @@ async function createBoardMember(boardId, saveUserId) {
   socket.emit('inviteBoard', {
     userId,
     workspaceId,
-    workspaceName,
     boardName,
     date: new Date(new Date(date).getTime()),
   });

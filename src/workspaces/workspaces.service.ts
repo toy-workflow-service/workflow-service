@@ -9,7 +9,6 @@ import { Workspace } from 'src/_common/entities/workspace.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MailService } from 'src/_common/mail/mail.service';
 import { AuditLogsService } from 'src/audit-logs/audit-logs.service';
-import { CardsService } from 'src/cards/cards.service';
 import { UsersService } from 'src/users/users.service';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -85,6 +84,7 @@ export class WorkspacesService {
       .leftJoin('workspace_members.user', 'user')
       .leftJoinAndSelect('workspace.memberships', 'membership')
       .where('workspace.id = :id', { id: workspaceId })
+      .andWhere('workspace_members.participation = :participation', { participation: true })
       .getOne();
 
     return existWorkspace;
@@ -95,6 +95,10 @@ export class WorkspacesService {
     const loginUserRole = await this.workspaceMemberRepository.findOne({
       where: { user: { id: userId }, workspace: { id: workspaceId } },
     });
+
+    if (!loginUserRole.role) {
+      throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+    }
 
     return loginUserRole.role;
   }
@@ -121,7 +125,9 @@ export class WorkspacesService {
           'user.profile_url',
         ])
         .getOne();
-      workspaceMember.push(member);
+      if (member.participation) {
+        workspaceMember.push(member);
+      }
     }
 
     return workspaceMember;
@@ -346,16 +352,15 @@ export class WorkspacesService {
 
   // 워크스페이스 멤버체크
   async checkMember(workspaceId: number, userId: number): Promise<IResult> {
-    const checkUser = await this.workspaceMemberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: userId } },
-    });
+    // const checkUser = await this.workspaceMemberRepository.findOne({
+    //   where: { workspace: { id: workspaceId }, user: { id: userId } },
+    // });
 
-    if (!checkUser) return;
+    // if (!checkUser) return;
 
     const checkMember = await this.workspaceMemberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: userId }, participation: true },
     });
-
     if (!checkMember) throw new HttpException('워크스페이스 멤버가 아닙니다.', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
