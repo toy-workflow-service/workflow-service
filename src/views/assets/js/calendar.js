@@ -233,16 +233,7 @@ document.querySelector('#save-button').addEventListener('click', () => {
   let passTime = /^(0[0-9]|1[0-9]|2[0-3]):(0[1-9]|[0-5][0-9])$/;
   let compareDate = [startDate.replaceAll('-', ''), deadline.replaceAll('-', '')];
 
-  if (Number(compareDate[0]) > Number(compareDate[1])) {
-    Swal.fire({
-      customClass: {
-        container: 'my-swal',
-      },
-      icon: 'error',
-      title: 'Error',
-      text: '종료날짜는 시작날짜보다 앞에 올 수 없습니다.',
-    });
-  } else if (!passDate.test(startDate) || !passDate.test(deadline)) {
+  if (!passDate.test(startDate) || !passDate.test(deadline)) {
     Swal.fire({
       customClass: {
         container: 'my-swal',
@@ -259,6 +250,15 @@ document.querySelector('#save-button').addEventListener('click', () => {
       icon: 'error',
       title: 'Error',
       text: '시간 형식이 일치하지 않습니다.',
+    });
+  } else if (Number(compareDate[0]) > Number(compareDate[1])) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '종료날짜는 시작날짜보다 앞에 올 수 없습니다.',
     });
   } else {
     const data = {
