@@ -292,18 +292,7 @@ function boardListHTML(board) {
   result += `<tr>
               <td>
                 <div class="contact-item d-flex align-items-center">
-                    <div class="contact-personal-wrap">
-                      <div class="checkbox-group-wrapper">
-                          <div class="checkbox-group d-flex">
-                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                <input class="checkbox" type="checkbox" id="check-grp-c-4">
-                                <label for="check-grp-c-4"></label>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
                     <div class="contact-personal-info d-flex">
-                      <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
                       <div class="contact_title">
                           <h6>
                             <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
