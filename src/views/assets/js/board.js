@@ -337,8 +337,31 @@ async function BoardColumns(data, search) {
       success: function (data) {
         location.reload();
       },
-      error: (error) => {
-        console.log(error);
+      error: (err) => {
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+        console.log(err);
       },
     });
   }
@@ -350,25 +373,6 @@ async function BoardColumns(data, search) {
       deleteConfirmModal(columnId);
     });
   });
-
-  // column delete api
-  async function BoardColumnDelete(columnId) {
-    $.ajax({
-      type: 'DELETE',
-      url: `/board-columns/${columnId}?boardId=` + boardId,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      success: (data) => {
-        ColumnListReorder();
-        location.reload();
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
-  }
 
   //모달창이 열리면 해당 모달창에 value값으로 columnId값을 보내거나 받아와야함
   let columnId;
@@ -505,8 +509,31 @@ async function BoardColumnNameUpdate(columnId, name) {
     success: (data) => {
       location.reload();
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
 }
@@ -565,15 +592,30 @@ async function CardCreate(columnId, data) {
         location.reload();
       });
     },
-    error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message[0],
-      });
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
   if (updateUserList.length) {
@@ -610,8 +652,31 @@ function createComment(columnId, cardId) {
         // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
         DetailCardGet(columnId, cardId);
       },
-      error: (error) => {
-        console.log(error);
+      error: (err) => {
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+        console.log(err);
       },
     });
   }
@@ -1186,15 +1251,30 @@ async function CardAllUpdate(columnId, cardId, data) {
         location.reload();
       });
     },
-    error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
   if (updateUserList.length) {
@@ -1228,6 +1308,25 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
 
   cancelBtn.addEventListener('click', () => {
     $(confirmModal).modal('hide');
+  });
+}
+
+// column delete api
+async function BoardColumnDelete(columnId) {
+  $.ajax({
+    type: 'DELETE',
+    url: `/board-columns/${columnId}?boardId=` + boardId,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      ColumnListReorder();
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
   });
 }
 
@@ -1315,6 +1414,31 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
+      error: (err) => {
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      },
     });
 
     // 업데이트 응답 결과 확인
@@ -1370,8 +1494,31 @@ function createreply(columnId, cardId, reply_id, replayComment) {
     success: (data) => {
       // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
 }

@@ -53,6 +53,17 @@ function updateUserInfo() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -176,6 +187,17 @@ function changePassword() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -231,6 +253,17 @@ function send() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -270,14 +303,29 @@ function send() {
           });
         },
         error: (error) => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON.message,
-          });
+          if (error.status === 308) {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'error',
+              title: 'error',
+              text: error.responseJSON.message,
+            }).then(() => {
+              window.location.href = '/block';
+            });
+          } else {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'error',
+              title: 'error',
+              text: error.responseJSON.message,
+            }).then(() => {
+              window.location.reload();
+            });
+          }
         },
       });
     } else if (verifyCode !== code && Date.now() < expireTime) {
@@ -339,16 +387,29 @@ async function changeProfileImage() {
     },
     error: (error) => {
       console.error(error);
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON,
-      }).then(() => {
-        window.location.reload();
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
       return;
     },
   });
