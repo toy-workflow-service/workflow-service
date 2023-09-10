@@ -1652,9 +1652,32 @@ function movePrivateChat(data) {
   });
 }
 
-function searchChatRoomEvent() {}
+function searchChatRoomEvent() {
+  const searchForm = document.querySelector('#searchRoom');
+  const searchInput = document.querySelector('#searchChatRoom');
+  searchForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const keyword = searchInput.value;
+    if (myBoardNames.length) {
+      myBoardNames.forEach((title, idx) => {
+        const chatList = document.querySelector(`#chat-list-room${myBoardIds[idx]}-tab`);
+        if (title.includes(keyword)) {
+          chatList.style.display = 'block';
+        } else {
+          chatList.style.display = 'none';
+        }
+      });
+    }
 
-$('#searchRoom').addEventListener('submit', function (e) {
-  e.preventDefault();
-  console.log('젭알');
-});
+    if (privateRoomNameList.length) {
+      privateRoomNameList.forEach((title, idx) => {
+        const privateChatList = document.querySelector(`#chat-list-privateRoom${privateRoomIdList[idx]}-tab`);
+        if (title.includes(keyword)) {
+          privateChatList.style.display = 'block';
+        } else {
+          privateChatList.style.display = 'none';
+        }
+      });
+    }
+  });
+}
