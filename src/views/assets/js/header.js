@@ -88,6 +88,18 @@ async function getWorkspaces() {
           workspaceListTop.innerHTML += topResult;
         });
       },
+      error: (error) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/';
+        });
+      },
     });
   } catch (err) {
     console.error(err);

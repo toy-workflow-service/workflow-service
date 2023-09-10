@@ -1,6 +1,9 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './user.entitiy';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 93a69eb06ceaba3351fbbff643cec23d378124bc
 @Entity('calendars')
 export class Calendar {
   @PrimaryGeneratedColumn({ type: 'bigint' })
