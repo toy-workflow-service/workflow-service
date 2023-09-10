@@ -199,7 +199,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       userId: string;
       workspaceId: string;
-      workspaceName: string;
       boardName: string;
       date: string;
     }
@@ -215,7 +214,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     user.forEach((sock) => {
       this.server.to(sock).emit('inviteBoardMessage', {
         workspaceId: data.workspaceId,
-        workspaceName: data.workspaceName,
         boardName: data.boardName,
         date: data.date,
       });

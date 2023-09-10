@@ -19,6 +19,7 @@ import { Mention } from './mention.entity';
 import { Payment } from './payment.entity';
 import { Audit_log } from './audit-log.entity';
 import { User_Message_Room } from './user-message-room.entity';
+import { Calendar } from './calendar.entity';
 
 @Entity('users')
 export class User {
@@ -118,4 +119,9 @@ export class User {
     nullable: false,
   })
   receiver_ids: User_Message_Room[];
+
+  @OneToMany(() => Calendar, (calendar) => calendar.user, {
+    cascade: true,
+  })
+  calendars: Calendar[];
 }
