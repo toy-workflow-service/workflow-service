@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-
+import { User } from './user.entitiy';
 @Entity('calendars')
 export class Calendar {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -25,4 +25,10 @@ export class Calendar {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => User, (user) => user.calendars, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  user: User;
 }

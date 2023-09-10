@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateCalendarDto, UpdateCalendarDto } from 'src/_common/dtos/calendar.dto';
+import { CreateCalendarDto } from 'src/_common/dtos/calendar.dto';
 import { Calendar } from 'src/_common/entities/calendar.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -14,7 +14,11 @@ export class CalendarsService {
   ) {}
 
   async GetCalendars(userId: number) {
-    const calendars = await this.calendarRepository.find();
+    // const calendars = await this.calendarRepository.find();
+    let calendars = await this.calendarRepository.find({ relations: ['user'] });
+    calendars = calendars.filter((calendar) => {
+      return calendar.user.id == userId;
+    });
     return calendars.map((c) => {
       return {
         calendarId: c.id,
@@ -43,15 +47,8 @@ export class CalendarsService {
   async PostCalendar(userId: number, data: CreateCalendarDto) {
     const user = this.userService.findUserById(userId);
     if (!user) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
-
-    await this.calendarRepository.insert({ ...data });
-  }
-
-  async UpdateCalendar(id: number, data: UpdateCalendarDto) {
-    const calendar = this.calendarRepository.findOneBy({ id });
-    if (!calendar) throw new HttpException('해당 정보를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
-
-    await this.calendarRepository.update({ id }, { ...data });
+    await this.calendarRepository.insert({ ...data, user: { id: userId } });
+    // await this.calendarRepository.insert({ ...data });
   }
 
   async DeleteCalendar(id: number) {
