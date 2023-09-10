@@ -133,6 +133,7 @@ export class UsersService {
   async findUserById(id: number): Promise<User> {
     const existUser = await this.usersRepository.findOne({
       where: { id },
+      relations: ['workspace_members'],
     });
 
     if (!existUser) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
