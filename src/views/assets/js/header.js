@@ -88,17 +88,30 @@ async function getWorkspaces() {
           workspaceListTop.innerHTML += topResult;
         });
       },
-      error: (error) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'Error',
-          text: error.responseJSON.message,
-        }).then(() => {
-          window.location.href = '/';
-        });
+      error: (err) => {
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/';
+          });
+        }
       },
     });
   } catch (err) {

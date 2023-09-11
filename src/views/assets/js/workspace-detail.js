@@ -585,14 +585,29 @@ async function updateWorkspace() {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -751,14 +766,29 @@ async function setMemberRole() {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
