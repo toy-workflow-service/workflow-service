@@ -434,6 +434,9 @@ async function BoardColumns(data, search) {
       fileNo = 0;
       filesNameArr = [];
       filesSizeArr = [];
+
+      selectedMembers = [];
+      selectedMemberNumber = [];
       document.querySelector('.file-list').innerHTML = '';
     });
   });
