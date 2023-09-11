@@ -1,15 +1,6 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './user.entitiy';
 import { User_Message_Room } from './user-message-room.entity';
-import { Mention } from './mention.entity';
 
 @Entity('direct_messages')
 export class Direct_Message {
@@ -42,7 +33,4 @@ export class Direct_Message {
     nullable: false,
   })
   user_message_room: User_Message_Room;
-
-  @OneToOne(() => Mention, (mention) => mention.direct_message)
-  mention: Mention;
 }

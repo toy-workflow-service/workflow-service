@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Board_Column } from './board-column.entity';
 import { Comment } from './comment.entity';
-import { Audit_log } from './audit-log.entity';
 
 @Entity('cards')
 export class Card {

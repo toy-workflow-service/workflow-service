@@ -1,67 +1,35 @@
 const socket = io.connect('/');
 
-socket.on('response', (data) => {
-  responseAlert(data.callerName, data.receiverName);
-});
-
-function responseAlert(callerName, receiverName) {
-  const messageHtml = `${callerName}님이 대화에 초대했습니다. <br />
-  <button type="button" class="accept" data-dismiss="alert" aria-label="accpet">수락</button>
-  <button type="button" class="refuse" data-dismiss="alert" aria-label="refuse">거절</button>
-  <span aria-hidden="true"></span>`;
-
-  const alt = document.getElementById('customerAlert');
-  if (alt) {
-    alt.innerHTML = messageHtml;
-  } else {
-    const htmlTemp = `<div class="alert alert-sparta alert-dismissible show fade" role="alert" id="customerAlert">${messageHtml}</div>`;
-    document.body.insertAdjacentHTML('beforeend', htmlTemp);
-  }
-
-  const acceptBtn = document.querySelector('.accept');
-  const refuseBtn = document.querySelector('.refuse');
-
-  acceptBtn.addEventListener('click', () => {
-    acceptCall(callerName, receiverName);
-    acceptBtn.style.display = 'none';
-    refuseBtn.style.display = 'none';
-  });
-
-  refuseBtn.addEventListener('click', () => {
-    refuseBtn.style.display = 'none';
-    acceptBtn.style.display = 'none';
-  });
-
-  setTimeout(() => {
-    refuseBtn.style.display = 'none';
-    acceptBtn.style.display = 'none';
-  }, 60000);
-}
-
-// 응답 버튼을 누를 때 호출되는 함수
-function acceptCall(callerName, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-
-  // 새 창을 열어서 WebRTC 연결을 설정
-  const callWindow = window.open(
-    `/call?callerName=${callerName}&receiverName=${receiverName}`,
-    `width=${width},height=${height},left=${left},top=${top}`
-  );
-  callWindow.onload = () => {};
-}
-
-function existUpdateRecentMessage(message, room, date) {
+function existUpdateRecentMessage(message, room, date, profileUrl) {
   const existSave = localStorage.getItem(`existSave-${room}`);
 
   if (!existSave) {
+    if (!localStorage.getItem(`recentMessage-${room}`) || !localStorage.getItem(`recentProfileUrl-${room}`)) {
+      localStorage.setItem(`recentMessage-${room}`, `${message}!@#${date}`);
+      localStorage.setItem(`recentProfileUrl-${room}`, profileUrl);
+    } else {
+      const recentMessage = localStorage.getItem(`recentMessage-${room}`).split('!@#');
+      if (recentMessage[0] !== message || recentMessage[1] !== date) {
+        localStorage.setItem(`recentMessage-${room}`, `${message}!@#${date}`);
+        localStorage.setItem(`recentProfileUrl-${room}`, profileUrl);
+      }
+    }
     localStorage.setItem(`existSave-${room}`, `${message}!@#${date}`);
     return true;
   }
 
   if (existSave.split('!@#')[0] === message && existSave.split('!@#')[1] === date) return false;
+
+  if (!localStorage.getItem(`recentMessage-${room}`) || !localStorage.getItem(`recentProfileUrl-${room}`)) {
+    localStorage.setItem(`recentMessage-${room}`, `${message}!@#${date}`);
+    localStorage.setItem(`recentProfileUrl-${room}`, profileUrl);
+  } else {
+    const recentMessage = localStorage.getItem(`recentMessage-${room}`).split('!@#');
+    if (recentMessage[0] !== message || recentMessage[1] !== date) {
+      localStorage.setItem(`recentMessage-${room}`, `${message}!@#${date}`);
+      localStorage.setItem(`recentProfileUrl-${room}`, profileUrl);
+    }
+  }
 
   localStorage.setItem(`existSave-${room}`, `${message}!@#${date}`);
   return true;
@@ -83,36 +51,36 @@ function announceMessage(message, room, boardName, date, profileUrl) {
   if (recentMessageList) {
     const recentMessageHtml = `<div class="user-avater">
                                 <img src="${profileUrl}" alt="">
-                            </div>
-                            <div class="user-message">
-                                <p>
-                                    <a href="/chat?boardId=${boardId}" class="subject stretched-link text-truncate" style="max-width: 180px;">${boardName}</a>
-                                    <span class="time-posted">${sendTime}</span>
-                                </p>
-                                <p>
-                                    <span class="desc text-truncate" style="max-width: 215px;">${message}</span>
-                                </p>
-                            </div>`;
+                              </div>
+                              <div class="user-message">
+                                  <p>
+                                      <a href="/chat?boardId=${boardId}" class="subject stretched-link text-truncate" style="max-width: 180px;">${boardName}</a>
+                                      <span class="time-posted">${sendTime}</span>
+                                  </p>
+                                  <p>
+                                      <span class="desc text-truncate" style="max-width: 215px;">${message}</span>
+                                  </p>
+                              </div>`;
     recentMessageList.innerHTML = recentMessageHtml;
   } else {
     const recentMessageHtml = `<li class="author-online has-new-message" id="recentMessage-room${boardId}">
-                                    <div class="user-avater">
-                                    <img src="${profileUrl}" alt="">
-                                    </div>                      
-                                    <div class="user-message">
-                                    <p>
-                                        <a href="/chat?boardId=${boardId}" class="subject stretched-link text-truncate" style="max-width: 180px"
-                                        >${boardName}</a
-                                        >
-                                        <span class="time-posted">${sendTime}</span>
-                                    </p>
-                                    <p> 
-                                        <span class="desc text-truncate" style="max-width: 215px"
-                                        >${message}</span
-                                        >
-                                    </p>
-                                    </div>
-                                </li>`;
+                                <div class="user-avater">
+                                 <img src="${profileUrl}" alt="">
+                                </div>                      
+                                <div class="user-message">
+                                  <p>
+                                    <a href="/chat?boardId=${boardId}" class="subject stretched-link text-truncate" style="max-width: 180px"
+                                    >${boardName}</a
+                                    >
+                                    <span class="time-posted">${sendTime}</span>
+                                  </p>
+                                  <p> 
+                                    <span class="desc text-truncate" style="max-width: 215px"
+                                    >${message}</span
+                                    >
+                                  </p>
+                                </div>
+                               </li>`;
     recentChatList.innerHTML += recentMessageHtml;
   }
   document.getElementById('messageAlarm').className = 'nav-item-toggle icon-active';
@@ -207,11 +175,79 @@ function announceCardParticipationMessage(boardId, cardName, date) {
   document.getElementById('notificationAlarm').className = 'nav-item-toggle icon-active';
 }
 
+function acceptVideoCall(data) {
+  const callRoomId = data.getAttribute('callRoomId');
+  const senderId = data.getAttribute('senderId');
+  const senderName = data.getAttribute('senderName');
+  const receiverId = data.getAttribute('receiverId');
+  const receiverName = data.getAttribute('receiverName');
+
+  window.open(
+    `/videoCall?senderId=${senderId}&senderName=${senderName}&receiverId=${receiverId}&receiverName=${receiverName}&callRoomId=${callRoomId}`,
+    '_blank',
+    'width=860, height=730'
+  );
+}
+
+function refuseVideoCall(data) {
+  const callRoomId = data.getAttribute('callRoomId');
+  const senderId = data.getAttribute('senderId');
+
+  socket.emit('refuseVideoCall', { callRoomId, senderId });
+  window.location.reload();
+}
+
+function announceInviteVideoCall(callRoomId, senderId, senderName, receiverId, receiverName) {
+  const inviteCallAlarmList = document.getElementById('inviteCallAlarmList');
+
+  const inviteCallHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
+                            <div class="nav-notification__type nav-notification__type--primary">
+                              <img class="svg" src="../assets/img/svg/user-check.svg" alt="inbox" />
+                            </div>
+                            <div class="nav-notification__details">
+                              <p>
+                                <span style="max-width: 180px; font-weight: bold">${senderName}</span>
+                                <span>님이 영상통화를 걸었습니다. </span>
+                              </p>
+                              <div>
+                                <button callRoomId="${callRoomId}" senderId="${senderId}" senderName="${senderName}" receiverId="${receiverId}" receiverName="${receiverName}" onclick="acceptVideoCall(this)">수락하기</button>
+                                <button callRoomId="${callRoomId}" senderId="${senderId}" onclick="refuseVideoCall(this)">거절하기</button>
+                              </div>
+                            </div>
+                          </li>`;
+
+  inviteCallAlarmList.innerHTML += inviteCallHtml;
+  document.getElementById('inviteCallRoom').className = 'nav-item-toggle icon-active';
+}
+
+function announceRefuseVideoCall(receiverName) {
+  if (document.getElementById('notificationDetail')) {
+    const notificationDetail = document.getElementById('notificationDetail');
+
+    const notificationHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
+                                <div class="nav-notification__type nav-notification__type--primary">
+                                  <img class="svg" src="../assets/img/svg/x-circle.svg" alt="inbox" />
+                                </div>
+                                <div class="nav-notification__details">
+                                  <p>
+                                  <span class="subject stretched-link text-truncate color-primary" style="max-width: 180px; font-weight: bold">${receiverName}</span>
+                                    <span>님이 영상통화를 거절하셨습니다. </span>
+                                  </p>
+                                  <p>
+                                  <span class="time-posted">방금 전</span>
+                                  </p>
+                                </div>
+                              </li>`;
+    notificationDetail.innerHTML += notificationHtml;
+    document.getElementById('notificationAlarm').className = 'nav-item-toggle icon-active';
+  }
+}
+
 socket.on('newMessage', ({ message, room, boardName, date, profileUrl }) => {
   const myMessage = localStorage.getItem('myMessage');
   if (myMessage === 'true') return;
 
-  const result = existUpdateRecentMessage(message, room, date);
+  const result = existUpdateRecentMessage(message, room, date, profileUrl);
   if (result === false) return;
 
   announceMessage(message, room, boardName, date, profileUrl);
@@ -231,4 +267,12 @@ socket.on('inviteBoardMessage', ({ workspaceId, boardName, date }) => {
 
 socket.on('inviteCardMessage', ({ boardId, cardName, date }) => {
   announceCardParticipationMessage(boardId, cardName, date);
+});
+
+socket.on('inviteVideoCall', ({ callRoomId, senderId, senderName, receiverId, receiverName }) => {
+  announceInviteVideoCall(callRoomId, senderId, senderName, receiverId, receiverName);
+});
+
+socket.on('refuseVideoCall', ({ receiverName }) => {
+  announceRefuseVideoCall(receiverName);
 });
