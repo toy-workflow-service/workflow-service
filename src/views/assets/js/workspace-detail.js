@@ -379,7 +379,6 @@ async function purchaseMembership() {
     const selectedPeriod = document.querySelector('#period-select-text').textContent;
     const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
     const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
-
     await $.ajax({
       method: 'POST',
       url: `/workspaces/${workspaceId}/payments`,
@@ -422,7 +421,6 @@ function openPaymentModal(element) {
   let paymentModal = document.querySelector('#modal-basic5');
 
   paymentModal.innerHTML = `
-  <form>
   <div class="modal-dialog modal-md" role="document">
     <div class="modal-content modal-bg-white">
       <div class="modal-header">
@@ -451,7 +449,6 @@ function openPaymentModal(element) {
       </div>
     </div>
   </div>
-  </form>
   `;
 
   let membershipItems = document.querySelectorAll('.dropdown-default .dropdown-item');
@@ -1115,28 +1112,75 @@ function printFilesHtml(fileName, imgSrc, fileSize, fileUrl) {
 }
 
 // 활동로그 조회
+let allLogs = [];
 async function getWorkspaceActivity() {
   try {
-    await $.ajax({
+    const response = await $.ajax({
       method: 'GET',
       url: `/workspaces/${workspaceId}/getLogs`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: (data) => {
-        let result = '';
-
-        data.forEach((log) => {
-          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
-        });
-        printActivity.innerHTML = result;
-      },
     });
+
+    allLogs = response;
+    filterActivity('전체');
   } catch (err) {
     console.error(err);
   }
 }
+
+// 전체로그를 필터링 해주는 함수
+function filterActivity(filter) {
+  let result = '';
+  const filterButton = document.querySelector('#filter-button');
+
+  allLogs.forEach((log) => {
+    switch (filter) {
+      case '전체':
+        result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        break;
+      case '생성':
+        if (log.actions === 'CREATE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '수정':
+        if (log.actions === 'UPDATE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '삭제':
+        if (log.actions === 'DELETE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '역할변경':
+        if (log.actions === 'ROLE_CHANGE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '멤버초대':
+        if (log.actions === 'INVITE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+    }
+  });
+
+  printActivity.innerHTML = result;
+  filterButton.innerText = filter;
+}
+
+// 분류버튼에 이벤트리스너 등록
+const filterButtons = document.querySelectorAll('.dropdown-item[data-filter]');
+filterButtons.forEach((button) => {
+  button.addEventListener('click', function () {
+    const filter = this.innerText;
+    filterActivity(filter);
+  });
+});
 
 // 활동로그 출력
 function printActivityhtml(details, createdAt, actions, profile) {
@@ -1197,39 +1241,6 @@ function printActivityhtml(details, createdAt, actions, profile) {
               </div>
             </div>
           </div>`;
-}
-
-// 음성 통화 시작
-function startVoiceCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting voice call...');
-  voiceCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '음성 통화', receiverId, receiverName);
-}
-
-async function voiceCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
-}
-
-function startVideoCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting video call...');
-  videoCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '영상 통화', receiverId, receiverName);
-}
-
-async function videoCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
 }
 
 function movePrivateChat(data) {

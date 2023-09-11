@@ -10,7 +10,7 @@ export class Payment {
   @Column({ default: true })
   status: boolean;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   workspaceId: number;
 
   @CreateDateColumn()

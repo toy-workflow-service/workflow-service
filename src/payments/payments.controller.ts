@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { AuthGuard } from 'src/_common/security/auth.guard';
 import { CheckAdminInterceptor } from 'src/_common/interceptors/check-admin-interceptors';
@@ -11,7 +11,7 @@ import { MembershipDto } from 'src/_common/dtos/membership.dto';
 export class PaymentsController {
   constructor(private readonly paymentService: PaymentsService) {}
 
-  // 결제
+  // 멤버십결제
   @Post()
   @UseGuards(AuthGuard)
   @UseInterceptors(CheckAdminInterceptor)

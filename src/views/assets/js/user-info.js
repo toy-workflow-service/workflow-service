@@ -1,6 +1,8 @@
 $(document).ready(async () => {
   await getPaymentHistory();
 });
+let userName;
+let userEmail;
 
 const updateUserInfoBtn = document.querySelector('#updateUserBtn');
 const deleteUserBtn = document.querySelector('#deleteUserBtn');
@@ -457,14 +459,17 @@ async function getPaymentHistory() {
 
     await $.ajax({
       method: 'GET',
-      url: `/users/payments/history`,
+      url: `/users/payments/membership/history`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
+        const payment = data.data;
+        userName = data.userName;
+        userEmail = data.userEmail;
         result = '';
-        data.forEach((history) => {
+        payment.forEach((history) => {
           const paymentDate = new Date(history.paymentCreatedAt);
           if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
             if (history.workspaceName === null) {
@@ -529,7 +534,100 @@ async function getPaymentHistory() {
   }
 }
 
-// 결제 취소
+// 포인트 충전 모달 열기
+const chargePointBtn = document.querySelector('#point-charge-btn');
+chargePointBtn.addEventListener('click', () => {
+  const chargeModal = document.querySelector('#modal-basic6');
+  $(chargeModal).modal('show');
+});
+
+// 포인트 충전
+const chargeBtn = document.querySelector('#charge-btn');
+chargeBtn.addEventListener('click', () => {
+  requestPay();
+});
+
+const requestPay = () => {
+  const amount = document.querySelector('#payment-amount-input').value;
+  if (!amount) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'error',
+      text: '결제금액을 입력해주세요',
+    });
+  } else if (amount > 100000) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'error',
+      text: '1회 최대 결제금액은 100,000원입니다.',
+    });
+  }
+  IMP.init('imp55657547');
+
+  IMP.request_pay(
+    {
+      pg: 'kakaopay',
+      pay_method: 'card',
+      name: '크레딧 결제',
+      amount,
+      buyer_email: userEmail,
+      buyer_name: userName,
+      buyer_tel: '010-1234-5678',
+      buyer_addr: '서울특별시 강남구 삼성동',
+      buyer_postcode: '123-456',
+    },
+    function (rsp) {
+      if (rsp.success) {
+        $.ajax({
+          method: 'POST',
+          url: `/users/point/charge`,
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+          },
+          data: JSON.stringify({ amount }),
+          success: () => {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'success',
+              title: 'Success!',
+              text: '결제 성공!',
+            }).then(() => {
+              window.location.reload();
+            });
+          },
+          error: (err) => {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'error',
+              title: 'error',
+              text: err.responseJSON.message,
+            });
+          },
+        });
+      }
+    }
+  );
+};
+
+// 포인트 충전 취소 모달열기
+const cancelChargeBtn = document.querySelector('#cancel-charge-btn');
+cancelChargeBtn.addEventListener('click', () => {
+  const cancelModal = document.querySelector('#modal-basic7');
+  $(cancelModal).modal('show');
+});
+
+// 멤버십 결제 취소
 async function cancelPayment(paymentId, workspaceId) {
   try {
     await $.ajax({
