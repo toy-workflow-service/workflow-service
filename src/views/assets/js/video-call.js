@@ -6,7 +6,6 @@ const receiverName = params.get('receiverName');
 
 let localVideo = document.getElementById('localVideo');
 let remoteVideo = document.getElementById('remoteVideo');
-const cameraSelect = document.getElementById('camera-select');
 const audioBtn = document.getElementById('audio');
 const cameraBtn = document.getElementById('camera');
 
@@ -40,7 +39,6 @@ const getMedia = async () => {
 
     localStream = stream;
     localVideo.srcObject = stream;
-    await getCamera();
   } catch (error) {
     console.log(error);
   }
@@ -77,46 +75,6 @@ const makePeerConnect = async (userId) => {
     await peerInfo[userId].peerConnection.addTrack(track, localStream);
   }
 };
-
-// 카메라 변경
-async function handleCameraChange() {
-  try {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: { deviceId: { exact: cameraSelect.value } }, // 선택한 카메라 deviceId를 사용
-    });
-    console.log(localStream.getVideoTracks());
-    localStream.getVideoTracks()[0].stop();
-    localStream.removeTrack(localStream.getVideoTracks()[0]);
-
-    const newVideoTrack = newStream.getVideoTracks()[0];
-    localStream.addTrack(newVideoTrack);
-
-    const videoSender = peerConnection.getSenders().find((sender) => sender.track.kind === 'video');
-    videoSender.replaceTrack(newVideoTrack);
-
-    localVideo.srcObject = localStream;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// 카메라 설정
-async function getCamera() {
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter((device) => device.kind === 'videoinput');
-
-    cameras.forEach((camera) => {
-      const option = document.createElement('option');
-      option.value = camera.deviceId;
-      option.innerText = camera.label;
-      cameraSelect.appendChild(option);
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
 
 function handleAudioClick() {
   localStream.getAudioTracks().forEach((track) => (track.enabled = !track.enabled));
@@ -187,6 +145,5 @@ socket.on('callIceCandidate', async ({ userId, candidate }) => {
   }
 });
 
-cameraSelect.addEventListener('change', handleCameraChange);
 audioBtn.addEventListener('click', handleAudioClick);
 cameraBtn.addEventListener('click', handleCameraClick);
