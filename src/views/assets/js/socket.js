@@ -187,6 +187,7 @@ function acceptVideoCall(data) {
     '_blank',
     'width=860, height=730'
   );
+  window.location.reload();
 }
 
 function refuseVideoCall(data) {
