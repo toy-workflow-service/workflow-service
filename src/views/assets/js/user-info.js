@@ -444,11 +444,13 @@ if (cancelAuthBtn2) {
     window.location.reload();
   });
 }
-editBtn.addEventListener('click', () => {
-  document.querySelector('#phoneNumberInput').readOnly = false;
-  document.querySelector('#editBtnDiv').style.display = 'none';
-  sendBtn.style.display = 'block';
-});
+if (editBtn) {
+  editBtn.addEventListener('click', () => {
+    document.querySelector('#phoneNumberInput').readOnly = false;
+    document.querySelector('#editBtnDiv').style.display = 'none';
+    sendBtn.style.display = 'block';
+  });
+}
 
 // 결제내역 조회
 async function getPaymentHistory() {

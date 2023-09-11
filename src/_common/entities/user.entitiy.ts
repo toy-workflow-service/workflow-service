@@ -1,13 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Workspace } from './workspace.entity';
 import { Workspace_Member } from './workspace-member.entity';
 import { Board_Member } from './board-member.entity';
@@ -15,7 +6,6 @@ import { Board_Message } from './board-message.entity';
 import { Comment } from './comment.entity';
 import { Direct_Message } from './direct-message.entity';
 import { Reminder } from './reminder.entity';
-import { Mention } from './mention.entity';
 import { Payment } from './payment.entity';
 import { Audit_log } from './audit-log.entity';
 import { User_Message_Room } from './user-message-room.entity';
@@ -87,15 +77,6 @@ export class User {
     cascade: true,
   })
   reminders: Reminder[];
-
-  @OneToOne(() => Mention, (mention) => mention.send_id)
-  @JoinColumn()
-  mention_send: Mention;
-
-  @OneToMany(() => Mention, (mention) => mention.receive_id, {
-    cascade: true,
-  })
-  mention_receives: Mention[];
 
   @OneToMany(() => Payment, (payment) => payment.user, {
     nullable: true,

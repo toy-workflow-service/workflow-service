@@ -1,15 +1,6 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './user.entitiy';
 import { Board } from './board.entity';
-import { Mention } from './mention.entity';
 
 @Entity('board_messages')
 export class Board_Message {
@@ -42,7 +33,4 @@ export class Board_Message {
     nullable: false,
   })
   board: Board;
-
-  @OneToOne(() => Mention, (mention) => mention.board_message)
-  mention: Mention;
 }

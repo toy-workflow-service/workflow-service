@@ -270,13 +270,13 @@ async function BoardColumns(data, search) {
     }
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}>
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}">
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
                                         <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
                                     </div>
                                   </div>  
-                                  <div id="cardListItems${data[i].columnId}">
+                                  <div id="cardListItems${data[i].columnId}" >
                                     <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
@@ -342,14 +342,29 @@ async function BoardColumns(data, search) {
         });
       },
       error: (error) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'Error',
-          text: error.responseJSON.message[0],
-        });
+        if (error.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: error.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: error.responseJSON.message[0],
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   }
@@ -513,14 +528,29 @@ async function BoardColumnNameUpdate(columnId, name) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message[0],
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
 }
@@ -580,14 +610,29 @@ async function CardCreate(columnId, data) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message[0],
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
   if (updateUserList.length) {
@@ -628,14 +673,29 @@ function createComment(columnId, cardId) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
 }
@@ -1143,14 +1203,29 @@ async function CardAllUpdate(columnId, cardId, data) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
   if (updateUserList.length) {
@@ -1269,14 +1344,29 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
 }
@@ -1342,14 +1432,29 @@ function createreply(columnId, cardId, reply_id, replayComment) {
       });
     },
     error: (error) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON.message,
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message[0],
+        }).then(() => {
+          window.location.reload();
+        });
+      }
     },
   });
 }
