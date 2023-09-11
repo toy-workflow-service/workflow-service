@@ -71,11 +71,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 let workspaceName;
-// boardId = Number(boardId);
-// boardId = 65;
-
-// $(init);
-// $(BoardColumnsGet);
 
 $(document).ready(() => {
   BoardColumnsGet('');
@@ -409,22 +404,6 @@ async function BoardColumns(data, search) {
       DetailCardGet(columnId, cardId);
     });
   });
-
-  // 댓글 모달창이 열리면 해당하는 대댓글과 댓글 값 뿌려주기
-  // document.querySelectorAll('#commentDetail').forEach((data) => {
-  //   data.addEventListener('click', (e) => {
-  //     const cardId = e.target.getAttribute('data-cardId');
-  //     const commentId = e.target.getAttribute('data-commentId');
-  //     columnId = e.target.getAttribute('data-columnId');
-  //   });
-  // });
-
-  // CardUpdateBtn 버튼 클릭 시
-  // document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
-  //   // 수정 된값이 db로 넘어가야함.
-  //   console.log('update btn check');
-  //   // await CardAllUpdate(columnId, cardId, data)
-  // });
 
   // cardDeleteBtn 클릭 시
   document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
@@ -877,13 +856,6 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   $('#exampleModal').modal('show');
 }
 
-// 카드 세부 정보 모달을 열기 위한 함수 - 사용하지 않는 함수.
-// function openCardDetailModal(columnId, cardId) {
-//   // 카드 세부 정보를 서버에서 가져오는 API 호출
-//   DetailCardGet(columnId, cardId);
-//   CardGet(columnId, cardId);
-// }
-
 // 멤버 찾기 workspace에서 붙여옴
 let typingTimer;
 let selectedMembers = [];
@@ -1037,10 +1009,7 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   // 컬럼 아이디와 카드 아이디를 모달의 data 속성에 설정
   document.getElementById('updateCardButton').setAttribute('data-column-id', columnId);
   document.getElementById('updateCardButton').setAttribute('data-card-id', cardId);
-  // 파일 박스 안에 값을 넣어주기.
-  // 들어도 가고 지우기도 가능하나, db에서 가져오는 file_url값과 입력하는 file값은 다르기때문에
-  // 다른 방안이 필요할듯 함.
-  // console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+
   // 초기화
   document.querySelector('#edit-card-input').value = '';
   filesArr = [];
@@ -1094,22 +1063,14 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   // 업데이트할 데이터 수집
   const updatedCardName = document.getElementById('cardTitleUpdate').value;
   const updatedCardContent = document.getElementById('cardContentUpdate').value;
-  // 파일 업로드를 위한 코드 추가
-  // const updatedCardFileInput = document.getElementById('cardfileUpdate');
-  // const updatedCardFile = updatedCardFileInput.files[0];
 
   // 멤버는 이미 선택된 것을 사용하므로 selectedMemberNumber를 그대로 사용
-  // const updatedCardMembers = selectedMemberNumber;
   const updatedCardColor = document.getElementById('cardColorUpdate').value;
 
   // 폼데이터 담기
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
-  // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
-  // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
-  // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
-  // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
   let i = 0;
   let count = 0;
   if (filesNameArr) {
