@@ -46,12 +46,11 @@ export class CommentsService {
     const findComment = await this.commentRepository.findOne({
       where: { id },
       relations: ['card', 'user'], // 'user' 관계를 추가하여 작성자 정보를 가져옵니다.
-      select: ['id', 'comment'], // 원하는 속성을 여기에 명시합니다.
     });
 
     if (!findComment) {
       // 코멘트가 없으면 null을 반환하거나 적절한 에러 처리를 수행합니다.
-      throw new Error('Comment not found');
+      throw new Error('댓글을 찾을 수 없습니다.');
     }
 
     const commentDetailWithUser = {
