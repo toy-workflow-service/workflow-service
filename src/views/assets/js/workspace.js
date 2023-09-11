@@ -870,6 +870,7 @@ document.querySelector('#grid-icon').addEventListener('click', (event) => {
   document.querySelector('#list-icon').classList.remove('active');
   $('#list-box').hide();
   $('#board-box').show();
+  changeSelect();
 });
 
 document.querySelector('#list-icon').addEventListener('click', (event) => {
