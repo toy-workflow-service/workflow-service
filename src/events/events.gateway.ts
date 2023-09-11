@@ -246,43 +246,92 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     });
   }
-
   /////////////////////////////////////////////////////////////////////////////////////////////
-  @SubscribeMessage('invite')
-  handleInvite(client: Socket, data: any): void {
+  @SubscribeMessage('inviteVideoCall')
+  handleAcceptCall(
+    client: Socket,
+    data: { senderId: string; senderName: string; receiverId: string; receiverName: string }
+  ) {
+    const room = `callRoom${data.senderId}`;
+    this.clientName[client.id] = data.senderName;
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+    this.roomUsers[room].push(this.clientName[client.id]);
+
     let user = [];
     for (let key in this.connectedClients) {
-      if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
+      if (this.connectedClients[key] === Number(data.receiverId)) {
+        user.push(key);
+      }
     }
+
     user.forEach((sock) => {
-      this.server.to(sock).emit('response', {
-        callerId: client.id,
-        callerName: data.callerName,
+      this.server.to(sock).emit('inviteVideoCall', {
+        callRoomId: room,
+        senderId: data.senderId,
+        senderName: data.senderName,
         receiverId: data.receiverId,
         receiverName: data.receiverName,
       });
     });
   }
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, data: any): void {
-    const roomName = data.callerName;
-    client.join(roomName);
-    this.server.to(roomName).emit('welcome', roomName);
+  @SubscribeMessage('refuseVideoCall')
+  handleRefuseVideoCall(client: Socket, data: { callRoomId: string; senderId: string }) {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.senderId)) {
+        user.push(key);
+      }
+    }
+
+    this.roomUsers[data.callRoomId] = [];
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('refuseVideoCall', {
+        receiverName: this.clientName[client.id],
+      });
+    });
   }
 
-  @SubscribeMessage('sendOffer')
-  handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
-    this.server.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+  @SubscribeMessage('callRoomJoin')
+  handleJoinMessage(
+    client: Socket,
+    data: { callRoomId: string; senderId: string; senderName: string; receiverId: string; receiverName: string }
+  ) {
+    const room = data.callRoomId;
+    this.clientName[client.id] = data.senderName;
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+    this.roomUsers[room].push(this.clientName[client.id]);
+
+    client.broadcast.to(room).emit('callRoomEnter', {
+      userId: client.id,
+      callRoomId: data.callRoomId,
+    });
   }
 
-  @SubscribeMessage('sendAnswer')
-  handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
-    this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
+  @SubscribeMessage('callOffer')
+  handleOfferMessage(client: Socket, data: { offer: any; callRoomId: string }) {
+    client.broadcast
+      .to(data.callRoomId)
+      .emit('callRoomOffer', { userId: client.id, offer: data.offer, callRoomId: data.callRoomId });
   }
 
-  @SubscribeMessage('sendIce')
-  handleSendIce(client: Socket, data: any): void {
-    this.server.to(data.roomName).emit('receiveIce', data);
+  @SubscribeMessage('callAnswer')
+  handleAnswerMessage(client: Socket, data: { answer: any; toUserId: string; callRoomId: string }) {
+    client.broadcast
+      .to(data.callRoomId)
+      .emit('callRoomAnswer', { userId: client.id, answer: data.answer, toUserId: data.toUserId });
+  }
+
+  @SubscribeMessage('callIceCandidate')
+  handleCandidateMessage(client: Socket, data: { candidate: any; callRoomId: string }) {
+    client.broadcast.to(data.callRoomId).emit('callIceCandidate', { userId: client.id, candidate: data.candidate });
   }
 }

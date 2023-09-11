@@ -1199,39 +1199,6 @@ function printActivityhtml(details, createdAt, actions, profile) {
           </div>`;
 }
 
-// 음성 통화 시작
-function startVoiceCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting voice call...');
-  voiceCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '음성 통화', receiverId, receiverName);
-}
-
-async function voiceCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
-}
-
-function startVideoCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting video call...');
-  videoCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '영상 통화', receiverId, receiverName);
-}
-
-async function videoCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
-}
-
 function movePrivateChat(data) {
   const userId = data.getAttribute('id');
   $.ajax({
