@@ -52,10 +52,7 @@ function recordRequest(clientIp: string, res: Response) {
     const blockEndTime = new Date(Date.now() + duration);
     ipBlockList.set(clientIp, blockEndTime);
     requestCount.delete(clientIp);
-    res
-      .status(HttpStatus.PERMANENT_REDIRECT)
-
-      .json({ message: '비정상적인 접근으로 IP 접근을 제한합니다.' });
+    res.status(HttpStatus.PERMANENT_REDIRECT).json({ message: '비정상적인 접근으로 IP 접근을 제한합니다.' });
     return;
   }
 }

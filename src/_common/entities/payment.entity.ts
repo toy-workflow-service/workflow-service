@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './user.entitiy';
-import { Workspace } from './workspace.entity';
 
 @Entity('payment')
 export class Payment {
@@ -10,7 +9,7 @@ export class Payment {
   @Column({ default: true })
   status: boolean;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   workspaceId: number;
 
   @CreateDateColumn()
@@ -23,9 +22,4 @@ export class Payment {
     nullable: false,
   })
   user: User;
-
-  // @ManyToOne(() => Workspace, (workspace) => workspace.payments, {
-  //   nullable: false,
-  // })
-  // workspace: Workspace;
 }

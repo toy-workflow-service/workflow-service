@@ -16,7 +16,7 @@
               id="edit-button"
               onclick="openEditWorkspaceModal()"
             >
-              <img src="./assets/img/svg/edit-3.svg" alt="edit-3" class="svg" />edit
+              <img src="./assets/img/svg/edit-3.svg" alt="edit-3" class="svg" />수정
             </button>
             <button
               type="button"
@@ -24,7 +24,7 @@
               id="remove-button"
               onclick="deleteConfirmModal()"
             >
-              <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash-2" />remove
+              <img class="svg" src="./assets/img/svg/trash-2.svg" alt="trash-2" />삭제
             </button>
           </div>
         </div>
@@ -218,7 +218,7 @@
         <!-- ends: col -->
         <div class="col-xxl-8 mb-25">
           <div class="card">
-            <div class="card-header p-0">
+            <div class="card-header p-0 d-flex justify-content-between align-items-center">
               <ul class="nav px-25 ap-tab-main app-ui-tab" id="project-ap-tab" role="tablist">
                 <li class="nav-item">
                   <a
@@ -232,6 +232,28 @@
                   >
                 </li>
               </ul>
+              <div class="dropdown dropdown-click" style="margin-right: 20px">
+                <div class="btn-group dropleft">
+                  <button class="btn btn-outline-lighten btn-sm" id="filter-button">분류</button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-lighten btn-sm dropdown-toggle-split"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
+                  </button>
+                  <div class="dropdown-default dropdown-menu">
+                    <a class="dropdown-item" data-filter="ALL" style="cursor: pointer">전체</a>
+                    <a class="dropdown-item" data-filter="INVITE" style="cursor: pointer">멤버초대</a>
+                    <a class="dropdown-item" data-filter="ROLE_CHANGE" style="cursor: pointer">역할변경</a>
+                    <a class="dropdown-item" data-filter="CREATE" style="cursor: pointer">생성</a>
+                    <a class="dropdown-item" data-filter="UPDATE" style="cursor: pointer">수정</a>
+                    <a class="dropdown-item" data-filter="DELETE" style="cursor: pointer">삭제</a>
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               class="tab-content w-100"
