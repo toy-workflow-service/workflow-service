@@ -71,11 +71,6 @@ var cols = document.querySelectorAll('.drag-drop .draggable');
 // -----------------여기서부터 작업함--------------------
 let boardId = new URLSearchParams(window.location.search).get('boardId');
 let workspaceName;
-// boardId = Number(boardId);
-// boardId = 65;
-
-// $(init);
-// $(BoardColumnsGet);
 
 $(document).ready(() => {
   BoardColumnsGet('');
@@ -282,7 +277,7 @@ async function BoardColumns(data, search) {
                                     </div>
                                   </div>  
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -307,7 +302,7 @@ async function BoardColumns(data, search) {
                                   </div>
   
                                   <div id="cardListItems${data[i].columnId}">
-                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="min-height: 50px; max-height: 600px;" data-columnId="${data[i].columnId}">
+                                    <ul class="kanban-items list-items  drag-drop " id="card-item${data[i].columnId}" style="height: 600px;" data-columnId="${data[i].columnId}">
                                     ${cardHtml}       
                                     </ul>
                                     <button class="add-card-btn" data-bs-toggle="modal" data-bs-target="#createCardModal" id="createCard" data-columnId="${data[i].columnId}" data-index="${cardIndex}"><img src="./assets/img/svg/plus.svg" alt="plus" class="svg">카드 추가</button>
@@ -334,34 +329,27 @@ async function BoardColumns(data, search) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       data: JSON.stringify({ name, sequence }),
-      success: function (data) {
-        location.reload();
+      success: (data) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'success',
+          title: 'Success',
+          text: data.message,
+        }).then(() => {
+          location.reload();
+        });
       },
-      error: (err) => {
-        if (err.status === 308) {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.href = '/block';
-          });
-        } else {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
-          });
-        }
-        console.log(err);
+      error: (error) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: error.responseJSON.message[0],
+        });
       },
     });
   }
@@ -370,7 +358,7 @@ async function BoardColumns(data, search) {
   document.querySelectorAll('#ColumnDeleteBtn').forEach((data) => {
     data.addEventListener('click', async (e) => {
       const columnId = e.target.getAttribute('value');
-      deleteConfirmModal(columnId);
+      deleteConfirmModal(columnId, '', 'column');
     });
   });
 
@@ -385,9 +373,9 @@ async function BoardColumns(data, search) {
     });
   });
 
-  document.getElementById('ColumnUpdateNameBtn').addEventListener('click', async () => {
+  document.getElementById('ColumnUpdateNameBtn').addEventListener('click', () => {
     const columnTitle = document.getElementById('columnTitleUpdate').value;
-    await BoardColumnNameUpdate(columnId, columnTitle);
+    BoardColumnNameUpdate(columnId, columnTitle);
   });
 
   // 카드 생성 멤버 추가 버튼 클릭 시
@@ -416,22 +404,6 @@ async function BoardColumns(data, search) {
       DetailCardGet(columnId, cardId);
     });
   });
-
-  // 댓글 모달창이 열리면 해당하는 대댓글과 댓글 값 뿌려주기
-  document.querySelectorAll('#commentDetail').forEach((data) => {
-    data.addEventListener('click', (e) => {
-      const cardId = e.target.getAttribute('data-cardId');
-      const commentId = e.target.getAttribute('data-commentId');
-      columnId = e.target.getAttribute('data-columnId');
-    });
-  });
-
-  // CardUpdateBtn 버튼 클릭 시
-  // document.getElementById('CardUpdateBtn').addEventListener('click', async () => {
-  //   // 수정 된값이 db로 넘어가야함.
-  //   console.log('update btn check');
-  //   // await CardAllUpdate(columnId, cardId, data)
-  // });
 
   // cardDeleteBtn 클릭 시
   document.getElementById('cardDeleteBtn').addEventListener('click', async () => {
@@ -462,6 +434,9 @@ async function BoardColumns(data, search) {
       fileNo = 0;
       filesNameArr = [];
       filesSizeArr = [];
+
+      selectedMembers = [];
+      selectedMemberNumber = [];
       document.querySelector('.file-list').innerHTML = '';
     });
   });
@@ -496,9 +471,28 @@ async function BoardColumns(data, search) {
   });
 }
 
+// column delete api
+async function BoardColumnDelete(columnId) {
+  await $.ajax({
+    type: 'DELETE',
+    url: `/board-columns/${columnId}?boardId=` + boardId,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      ColumnListReorder();
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
 // column name update api
 async function BoardColumnNameUpdate(columnId, name) {
-  $.ajax({
+  await $.ajax({
     type: 'PUT',
     url: `/board-columns/${columnId}?boardId=` + boardId,
     beforeSend: function (xhr) {
@@ -507,33 +501,26 @@ async function BoardColumnNameUpdate(columnId, name) {
     },
     data: JSON.stringify({ name }),
     success: (data) => {
-      location.reload();
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: data.message,
+      }).then(() => {
+        location.reload();
+      });
     },
-    error: (err) => {
-      if (err.status === 308) {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.href = '/block';
-        });
-      } else {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
-      }
-      console.log(err);
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message[0],
+      });
     },
   });
 }
@@ -592,30 +579,15 @@ async function CardCreate(columnId, data) {
         location.reload();
       });
     },
-    error: (err) => {
-      if (err.status === 308) {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.href = '/block';
-        });
-      } else {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
-        });
-      }
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message[0],
+      });
     },
   });
   if (updateUserList.length) {
@@ -633,53 +605,39 @@ async function CardCreate(columnId, data) {
 // 코멘트 생성 함수
 function createComment(columnId, cardId) {
   const commentInput = document.getElementById('commentInput').value;
-
-  // 코멘트 입력란이 비어있지 않은 경우에만 처리
-  if (commentInput.trim() !== '') {
-    const comment = {
-      comment: commentInput,
-    };
-
-    $.ajax({
-      type: 'POST',
-      url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
-      data: JSON.stringify(comment),
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
-      },
-      success: (data) => {
-        // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
-        DetailCardGet(columnId, cardId);
-      },
-      error: (err) => {
-        if (err.status === 308) {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.href = '/block';
-          });
-        } else {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
-          });
-        }
-        console.log(err);
-      },
-    });
-  }
+  console.log(commentInput);
+  $.ajax({
+    type: 'POST',
+    url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
+    data: JSON.stringify({ comment: commentInput }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+    },
+    success: (data) => {
+      // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: '댓글을 생성했습니다.',
+      }).then(() => {
+        location.reload();
+      });
+    },
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
+    },
+  });
 }
 
 // "Add Comment" 버튼 클릭 이벤트 처리
@@ -714,6 +672,7 @@ function openCommentDetailModal(columnId, cardId, commentId) {
 
 function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
+  console.log('확인', commentDetail);
   $('#commentDetailModalLabel').text('댓글');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
@@ -728,8 +687,8 @@ function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
 
 function createReplyModal(filteredComments) {
   // 코멘트 목록을 초기화
-  const commentList = $('#commentDetailModal .kanban-modal__list ul');
-  commentList.empty(); // 목록 초기화
+  const commentList = document.querySelector('#detailCommentBox');
+  commentList.innerHTML = ''; // 목록 초기화
 
   // commentsData를 사용하여 코멘트 목록을 처리
   for (const comment of filteredComments) {
@@ -742,7 +701,7 @@ function createReplyModal(filteredComments) {
           <label class="strikethrough" style="color: black;">
             ${comment.user.name}
           </label>
-          <textarea class="form-control" rows="3" readonly="" id="replyUpdate" style="resize :none">${
+          <textarea class="form-control" rows="3" readonly="" id="replyUpdate${comment.id}" style="resize :none">${
             comment.comment
           }</textarea>
           
@@ -759,57 +718,65 @@ function createReplyModal(filteredComments) {
               ? `<button class="btn btn-sm btn-danger delete-comment" data-card-id="${comment.card.id}" data-comment-id="${comment.id}">삭제</button>`
               : ''
           }
-      <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn" style="display: none;">확인</button>
+      <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="replyConfirmBtn${
+        comment.id
+      }" style="display: none;">확인</button>
         </div>
       </div>
     `;
 
     // 코멘트 목록에 추가
-    commentList.append(commentHTML);
+    commentList.innerHTML += commentHTML;
   }
 
   // 모달을 표시
-  $('#commentDetailModal').modal('show');
+  // $('#commentDetailModal').modal('show');
 
-  $('.edit-comment').click(function () {
-    // textarea를 편집 가능하게 변경
-    const replyTextarea = $('#replyUpdate'); // 수정된 부분
-    replyTextarea.removeAttr('readonly');
-    // 확인 버튼을 보이게 함
-    document.getElementById('replyConfirmBtn').style.display = 'inline-block';
+  document.querySelectorAll('.edit-comment').forEach((data) => {
+    data.addEventListener('click', (comment) => {
+      const commentId = comment.target.getAttribute('data-comment-id');
+      const cardId = comment.target.getAttribute('data-card-id');
+      // // textarea를 편집 가능하게 변경
+      const replyTextarea = $(`#replyUpdate${commentId}`); // 수정된 부분
+      replyTextarea.removeAttr('readonly');
+      // 확인 버튼을 보이게 함
+      document.getElementById(`replyConfirmBtn${commentId}`).style.display = 'inline-block';
+
+      // 확인 버튼 클릭 이벤트 처리
+      document.getElementById(`replyConfirmBtn${commentId}`).addEventListener('click', function () {
+        const columnId = document.getElementById('commentUpdateBtn').getAttribute('data-column-id');
+        // textarea를 읽기 전용으로 변경
+        const replyTextarea = $(`#replyUpdate${commentId}`); // 수정된 부분
+        const updatedReply = replyTextarea.val(); // 수정된 부분
+        replyTextarea.attr('readonly', 'readonly'); // 수정된 부분
+        // 확인 버튼을 숨김
+        $(`.replyConfirmBtn${commentId}`).hide();
+
+        CommentUpdate(commentId, columnId, cardId, { comment: updatedReply });
+      });
+    });
   });
 
-  $('.delete-comment').click(function () {
-    const cardId = $(this).data('card-id');
-    const commentId = $(this).data('comment-id');
+  document.querySelectorAll('.delete-comment').forEach((data) => {
+    data.addEventListener('click', (comment) => {
+      const commentId = comment.target.getAttribute('data-comment-id');
+      const cardId = comment.target.getAttribute('data-card-id');
 
-    deleteComment(commentId, cardId);
-  });
-
-  // 확인 버튼 클릭 이벤트 처리
-  document.getElementById('replyConfirmBtn').addEventListener('click', function () {
-    const commentId = $(this).prevAll('.edit-comment').data('comment-id');
-    const cardId = $(this).prevAll('.edit-comment').data('card-id');
-    const columnId = document.getElementById('commentUpdateBtn').getAttribute('data-column-id');
-    // textarea를 읽기 전용으로 변경
-    const replyTextarea = $('#replyUpdate'); // 수정된 부분
-    const updatedReply = replyTextarea.val(); // 수정된 부분
-    replyTextarea.attr('readonly', 'readonly'); // 수정된 부분
-    // 확인 버튼을 숨김
-    $('.replyConfirmBtn').hide();
-
-    CommentUpdate(commentId, columnId, cardId, { comment: updatedReply });
+      console.log(cardId, commentId);
+      deleteConfirmModal(commentId, cardId, 'comment');
+    });
   });
 }
 
 document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'commentDetail') {
+    $('#exampleModal').modal('hide');
+    document.querySelector('#detailCommentBox').innerHTML = '';
     const commentId = event.target.getAttribute('data-commentId');
     const cardId = event.target.getAttribute('data-cardId');
     const columnId = document.getElementById('updateCardButton').getAttribute('data-column-id');
     Getcomment(cardId, commentId);
     openCommentDetailModal(columnId, cardId, commentId);
-    $('#commentDetailModal').modal('show');
   }
 });
 
@@ -848,14 +815,14 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
       const commentId = comment.id;
 
       commentHTML += `
-        <div class="checkbox-group d-flex" id="commentDetail"
-          data-cardId="${cardId}" data-commentId="${commentId}">
+        <div class="checkbox-group d-flex">
           <div class="checkbox-group__single d-flex row">
             <label class="strikethrough" style="color: black;">
               ${comment.user.name}
             </label>
             <p> ${comment.comment} </p>
           </div>
+          <button class="add-card-btn" id="commentDetail" data-cardId="${cardId}" data-commentId="${commentId}">상세 보기</button>
         </div> `;
     }
   }
@@ -869,88 +836,27 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
       fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
     }
   }
-
-  const modalContentHTML = `
-  <div class=" kanban-modal__header-wrapper">
-  <div class="kanban-modal__header">
-     <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
-  </div>
-  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
-        id="updateCardButton"
-        data-column-id="${columnId}"
-        data-card-id="${cardData.id}"
-        data-bs-dismiss="modal">수정</button>
+  const buttons = `<div class="kanban-modal__header">
+    <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
+ </div>
+ <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
+       id="updateCardButton"
+       data-column-id="${columnId}"
+       data-card-id="${cardData.id}"
+       data-bs-dismiss="modal">수정</button>
 <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary"
 id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" onclick="deleteConfirmModal(${columnId}, ${cardData.id}, 'card')">삭제</button>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <img src="./assets/img/svg/x.svg" alt="x" class="svg">
-</button>
-</div>
-<div class="modal-body kanban-modal__body">
-  <div class="kanban-modal__form ">
-     <div class="mb-30">
-        <label for="exampleFormControlTextarea1111" class="form-label">카드 설명</label>
-        <textarea class="form-control" readonly rows="3" id="cardDetailDescription">${cardData.content}</textarea>
-     </div>
-     <div class="row">
-        <label>파일</label>
-        <div id="cardDetailImgFile">
-           ${fileHTML}
-        </div>
-     </div>
-     <!-- <button class="btn btn-primary btn-sm btn-squared  rounded"><img src="./assets/img/svg/check-square.svg" alt="check-square" class="svg"> Add Checklist</button> -->
-  </div>
-
-    <div class="kanban-modal__research mt-30">
-      <h6>참여자</h6>
-    </div>
-    <div class="kanban-modal__list">
-      <ul id="cardDetailMembers">
-        ${membersHTML}
-      </ul>
-    </div>
-    <div class="kanban-modal__list">
-    <div class="mb-30">
-      <label for="exampleFormControlTextarea1111" class="form-label">댓글</label>
-      <textarea class="form-control" id="commentInput" rows="3"
-        placeholder="내용을 작성해주세요…" style="resize :none"></textarea>
-    </div>
-    <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" data-bs-dismiss="modal" id="addCommentButton">댓글 추가...</button>
-      
-      <ul id="commentDetail">
-        <!-- 코멘트 목록이 여기에 추가될 것입니다. -->
-        ${commentHTML}
-      </ul>
-    </div>
-    `;
-
-  // 새로운 모달을 생성
-  const modal = document.createElement('div');
-  modal.className = 'modal fade kanban-modal__card kanban__modal';
-  modal.id = 'exampleModal';
-  modal.tabIndex = '-1';
-  modal.setAttribute('aria-labelledby', 'exampleModalLabel');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        ${modalContentHTML}
-      </div>
-    </div>
-    `;
-
-  // 모달을 body에 추가
-  document.body.appendChild(modal);
+</button>`;
+  document.querySelector('#commentBox').innerHTML = commentHTML;
+  document.querySelector('#cardDetailMembers').innerHTML = membersHTML;
+  document.querySelector('#cardDetailImgFile').innerHTML = fileHTML;
+  document.querySelector('#cardDetailDescription').value = cardData.content;
+  document.querySelector('#cardDetailButtons').innerHTML = buttons;
 
   // 모달을 화면에 표시
-  $(modal).modal('show');
-}
-
-// 카드 세부 정보 모달을 열기 위한 함수 - 사용하지 않는 함수.
-function openCardDetailModal(columnId, cardId) {
-  // 카드 세부 정보를 서버에서 가져오는 API 호출
-  DetailCardGet(columnId, cardId);
-  CardGet(columnId, cardId);
+  $('#exampleModal').modal('show');
 }
 
 // 멤버 찾기 workspace에서 붙여옴
@@ -1035,51 +941,47 @@ function updateSelectedMembersUI(selected) {
 
 // 카드 세부 정보와 코멘트를 가져오는 함수
 async function DetailCardGet(columnId, cardId) {
-  try {
-    // 카드 세부 정보를 가져오는 API 호출
-    const cardResponse = await $.ajax({
+  // 카드 세부 정보를 가져오는 API 호출
+  const cardResponse = await $.ajax({
+    type: 'GET',
+    url: `/cards/${cardId}?board_column_Id=${columnId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+    },
+  });
+
+  // 카드 세부 정보 응답
+  const cardData = cardResponse;
+
+  const users = [];
+  for (let i in cardData.members) {
+    const { boardMembers } = await $.ajax({
       type: 'GET',
-      url: `/cards/${cardId}?board_column_Id=${columnId}`,
+      url: `/boards/${boardId}/members/${cardData.members[i]}`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
       },
+      success: (data) => {},
     });
-
-    // 카드 세부 정보 응답
-    const cardData = cardResponse;
-
-    const users = [];
-    for (let i in cardData.members) {
-      const { boardMembers } = await $.ajax({
-        type: 'GET',
-        url: `/boards/${boardId}/members/${cardData.members[i]}`,
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('Content-type', 'application/json');
-          xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
-        },
-        success: (data) => {},
-      });
-      users.push(boardMembers);
-    }
-
-    // 카드에 대한 코멘트를 가져오는 API 호출
-    const commentsResponse = await $.ajax({
-      type: 'GET',
-      url: `/comments?cardId=${cardId}`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
-      },
-    });
-
-    // 코멘트 응답
-    const commentsData = commentsResponse;
-    createCardDetailModal(cardData, commentsData, columnId, cardId, users);
-    openUpdateCardModal(cardData, columnId, cardId);
-  } catch (error) {
-    console.log(error);
+    users.push(boardMembers);
   }
+
+  // 카드에 대한 코멘트를 가져오는 API 호출
+  const commentsResponse = await $.ajax({
+    type: 'GET',
+    url: `/comments?cardId=${cardId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
+    },
+  });
+
+  // 코멘트 응답
+  const commentsData = commentsResponse;
+  createCardDetailModal(cardData, commentsData, columnId, cardId, users);
+  openUpdateCardModal(cardData, columnId, cardId);
 }
 
 // card sequence update api
@@ -1110,10 +1012,7 @@ function openUpdateCardModal(cardData, columnId, cardId) {
   // 컬럼 아이디와 카드 아이디를 모달의 data 속성에 설정
   document.getElementById('updateCardButton').setAttribute('data-column-id', columnId);
   document.getElementById('updateCardButton').setAttribute('data-card-id', cardId);
-  // 파일 박스 안에 값을 넣어주기.
-  // 들어도 가고 지우기도 가능하나, db에서 가져오는 file_url값과 입력하는 file값은 다르기때문에
-  // 다른 방안이 필요할듯 함.
-  // console.log('업데이트 모달 파일 확인: ', cardData.file_url);
+
   // 초기화
   document.querySelector('#edit-card-input').value = '';
   filesArr = [];
@@ -1137,7 +1036,7 @@ function openUpdateCardModal(cardData, columnId, cardId) {
         filesSizeArr.push(cardData.file_size[i]);
         fileNo++;
       }
-    } else {
+    } else if (cardData.file_url.length == 1) {
       // 목록 추가
       let htmlData = '';
       htmlData += '<div id="file' + fileNo + '" class="filebox">';
@@ -1167,22 +1066,14 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   // 업데이트할 데이터 수집
   const updatedCardName = document.getElementById('cardTitleUpdate').value;
   const updatedCardContent = document.getElementById('cardContentUpdate').value;
-  // 파일 업로드를 위한 코드 추가
-  // const updatedCardFileInput = document.getElementById('cardfileUpdate');
-  // const updatedCardFile = updatedCardFileInput.files[0];
 
   // 멤버는 이미 선택된 것을 사용하므로 selectedMemberNumber를 그대로 사용
-  // const updatedCardMembers = selectedMemberNumber;
   const updatedCardColor = document.getElementById('cardColorUpdate').value;
 
   // 폼데이터 담기
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
 
-  // 파일 데이터를 넣고 싶어도 이미 저장된 파일 url은 값이 다름.
-  // s3에서 가져온 file_url은 파일 저장 url만 있지만, 새로 입력한 file_url은 날짜와 시간등 다른 정보도 포함됨.
-  // s3에서 변경된 값을 file_url에 저장되니 다시 불러와서 다시 저장하지 못함.
-  // 이부분은 상의가 필요할듯함. (일단 저장된 값을 모달에 뿌려주는것은 가능. 해놨음)
   let i = 0;
   let count = 0;
   if (filesNameArr) {
@@ -1251,30 +1142,15 @@ async function CardAllUpdate(columnId, cardId, data) {
         location.reload();
       });
     },
-    error: (err) => {
-      if (err.status === 308) {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.href = '/block';
-        });
-      } else {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
-      }
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
   if (updateUserList.length) {
@@ -1300,49 +1176,10 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
   okBtn.addEventListener('click', async () => {
     if (targetType === 'card') {
       deleteCard(targetId, targetId2);
-    } else {
-      await BoardColumnDelete(targetId);
-    }
-    $(confirmModal).modal('hide');
-  });
-
-  cancelBtn.addEventListener('click', () => {
-    $(confirmModal).modal('hide');
-  });
-}
-
-// column delete api
-async function BoardColumnDelete(columnId) {
-  $.ajax({
-    type: 'DELETE',
-    url: `/board-columns/${columnId}?boardId=` + boardId,
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-    },
-    success: (data) => {
-      ColumnListReorder();
-      location.reload();
-    },
-    error: (error) => {
-      console.log(error);
-    },
-  });
-}
-
-// 삭제 확인 모달 출력
-function deleteConfirmModal(targetId, targetId2, targetType) {
-  const confirmModal = document.querySelector('#modal-info-confirmed');
-  $(confirmModal).modal('show');
-
-  const okBtn = confirmModal.querySelector('.btn-info');
-  const cancelBtn = confirmModal.querySelector('.btn-light');
-
-  okBtn.addEventListener('click', async () => {
-    if (targetType === 'card') {
-      deleteCard(targetId, targetId2);
-    } else {
-      await BoardColumnDelete(targetId);
+    } else if (targetType === 'column') {
+      BoardColumnDelete(targetId);
+    } else if (targetType === 'comment') {
+      deleteComment(targetId, targetId2);
     }
     $(confirmModal).modal('hide');
   });
@@ -1382,8 +1219,16 @@ function deleteComment(commentId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      // 삭제 성공 후, 페이지 새로고침
-      location.reload();
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: '댓글을 삭제하였습니다.',
+      }).then(() => {
+        location.reload();
+      });
     },
     error: (error) => {
       console.log(error);
@@ -1395,56 +1240,45 @@ document.addEventListener('click', function (event) {
   if (event.target && event.target.id === 'commentDeleteBtn') {
     const commentId = document.getElementById('commentDeleteBtn').getAttribute('data-comment-id');
     const cardId = document.getElementById('commentDeleteBtn').getAttribute('data-card-id');
-    deleteComment(commentId, cardId);
+    deleteConfirmModal(commentId, cardId, 'comment');
   }
 });
 
 // comment update api
 async function CommentUpdate(commentId, columnId, cardId, data) {
-  try {
-    // PATCH 요청을 보내기 전에 데이터 확인
-
-    const response = await $.ajax({
-      type: 'PATCH',
-      url: `/comments/${commentId}?board_column_id=${columnId}&cardId=${cardId}`,
-      data: JSON.stringify({
-        comment: data.comment,
-      }),
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      error: (err) => {
-        if (err.status === 308) {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.href = '/block';
-          });
-        } else {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'error',
-            text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
-          });
-        }
-      },
-    });
-
-    // 업데이트 응답 결과 확인
-  } catch (error) {
-    console.log(error);
-  }
+  await $.ajax({
+    type: 'PATCH',
+    url: `/comments/${commentId}?boardColumnId=${columnId}&cardId=${cardId}`,
+    data: JSON.stringify({
+      comment: data.comment,
+    }),
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: function (data) {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: '댓글을 수정하였습니다.',
+      }).then(() => {
+        location.reload();
+      });
+    },
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
+    },
+  });
 }
 
 // 업데이트 버튼 클릭 시 호출되는 함수
@@ -1492,33 +1326,30 @@ function createreply(columnId, cardId, reply_id, replayComment) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      // 코멘트 생성 후 코멘트 목록을 다시 불러와 화면에 표시
+      // 입력란 비우고 숨김
+      document.getElementById('replayComment').value = '';
+      const commentAddBox = document.getElementById('commentAddBox');
+      commentAddBox.style.display = 'none';
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'success',
+        title: 'Success',
+        text: '댓글을 생성하였습니다.',
+      }).then(() => {
+        location.reload();
+      });
     },
-    error: (err) => {
-      if (err.status === 308) {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.href = '/block';
-        });
-      } else {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
-      }
-      console.log(err);
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
     },
   });
 }
@@ -1535,11 +1366,6 @@ document.getElementById('replayCommentButton').addEventListener('click', functio
 
   // 댓글 작성을 원하는 commentId와 replayComment 데이터를 사용하여 댓글을 추가하는 함수 호출
   createreply(columnId, cardId, reply_id, replayComment);
-
-  // 입력란 비우고 숨김
-  document.getElementById('replayComment').value = '';
-  const commentAddBox = document.getElementById('commentAddBox');
-  commentAddBox.style.display = 'none';
 });
 
 function Getcomment(cardId, commentId) {
