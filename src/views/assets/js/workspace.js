@@ -8,7 +8,7 @@ const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
   await getMyBoards('all');
-  equalHeight($('.board-description'));
+  // equalHeight($('.board-description'));
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
 });
 
@@ -135,6 +135,8 @@ async function getMyBoards(selectItem, search) {
       printListBoard.innerHTML = listResult;
       printBoard.innerHTML = result;
       printButton.innerHTML = button;
+
+      equalHeight($('.board-description'));
     },
     error: (error) => {
       Swal.fire({
