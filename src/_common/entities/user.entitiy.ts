@@ -44,7 +44,7 @@ export class User {
   @Column({ nullable: true })
   profile_url: string;
 
-  @Column({ default: 1000000 })
+  @Column()
   points: number;
 
   @CreateDateColumn()
