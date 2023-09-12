@@ -287,7 +287,7 @@
           <div class="project-top-right d-flex flex-wrap">
             <div class="project-category">
               <div class="d-flex align-items-center">
-                <p class="mb-0 me-10 fs-14 color-light">sort by:</p>
+                <p class="mb-0 me-10 fs-14 color-light">분류:</p>
                 <div class="project-category__select">
                   <select
                     class="js-example-basic-single js-states form-control"
@@ -306,13 +306,15 @@
                 <div class="icon-list-social d-flex">
                   <a
                     class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center ms-xl-20 me-20 active"
-                    href="#" id="grid-icon"
+                    href="#"
+                    id="grid-icon"
                   >
                     <img class="svg" src="./assets/img/svg/grid.svg" alt="grid"
                   /></a>
                   <a
                     class="icon-list-social__link rounded-circle icon-list-social__style justify-content-center"
-                    href="#" id="list-icon"
+                    href="#"
+                    id="list-icon"
                   >
                     <img class="svg" src="./assets/img/svg/list.svg" alt="list"
                   /></a>
@@ -332,99 +334,109 @@
       </div>
     </div>
     <div class="col-12">
-      <div class="contact-list-wrap mb-25" style="display: none;" id="list-box">
-         <div class="contact-list radius-xl w-100">
-            <div class="table-responsive table-responsive--dynamic">
-
-               <table class="table mb-0 table-borderless table-rounded">
-                  <thead>
-                     <tr>
-                        <th>
-                           <div class="d-flex align-items-center">
-                              <div class="custom-checkbox  check-all">
-                                 <input class="checkbox" type="checkbox" id="check-33">
-                                 <label for="check-33">
-                                    <span class="checkbox-text userDatatable-title">보드 이름</span>
-                                 </label>
-                              </div>
-                           </div>
-                        </th>
-                        <th class="c-board-progress">
-                           <span>진행 상황</span>
-                        </th>
-                        <th class="c-board-startline">
-                           <span>시작일</span>
-                        </th>
-                        <th class="c-board-deadline">
-                           <span class="">마감일</span>
-                        </th>
-                        <th class="c-cards">
-                           <span class="">진행률</span>
-                        </th>
-                        <th class="c-memberCount">
-                           <span class="">참여자수</span>
-                        </th>
-                     </tr>
-                  </thead>
-                  <tbody id="board-list-box">
-                     <tr>
-                        <td>
-                           <div class="contact-item d-flex align-items-center">
-                              <div class="contact-personal-wrap">
-                                 <div class="checkbox-group-wrapper">
-                                    <div class="checkbox-group d-flex">
-                                       <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                          <input class="checkbox" type="checkbox" id="check-grp-c-4">
-                                          <label for="check-grp-c-4"></label>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div class="contact-personal-info d-flex">
-                                 <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
-                                 <div class="contact_title">
-                                    <h6>
-                                       <a href="#">여기에 보드이름</a>
-                                    </h6>
-                                 </div>
-                              </div>
-
-                           </div>
-                        </td>
-                        <td>
-                          <span class="board-progress my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>
-                        </td>
-                        <td>
-                           <span class="board-startline">2023.09.09</span>
-                        </td>
-                        <td>
-                           <span class="board-deadline">2024.09.09</span>
-                        </td>
-                        <td>
-                           <span class="board-cardCount">53%</span>
-                        </td>
-                        <td>
-                           <div class="table-actions">
-                              <span class="board-memberCount" style="margin-right: 50%;">5</span>
-                              <div class="dropdown dropdown-click">
-                                 <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img class="svg" src="./assets/img/svg/more-vertical.svg" alt="more-vertical">
-                                 </button>
-                                 <div class="dropdown-default dropdown-menu dropdown-menu--dynamic">
-                                    <a class="dropdown-item" href="#">수정</a>
-                                    <a class="dropdown-item" href="#">삭제</a>
-                                 </div>
-                              </div>
-                           </div>
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-            </div>
-         </div>
+      <div class="contact-list-wrap mb-25" style="display: none" id="list-box">
+        <div class="contact-list radius-xl w-100">
+          <div class="table-responsive table-responsive--dynamic">
+            <table class="table mb-0 table-borderless table-rounded">
+              <thead>
+                <tr>
+                  <th>
+                    <div class="d-flex align-items-center">
+                      <div class="custom-checkbox check-all">
+                        <label for="check-33">
+                          <span class="checkbox-text userDatatable-title">보드 이름</span>
+                        </label>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="c-board-progress">
+                    <span>진행 상황</span>
+                  </th>
+                  <th class="c-board-startline">
+                    <span>시작일</span>
+                  </th>
+                  <th class="c-board-deadline">
+                    <span class="">마감일</span>
+                  </th>
+                  <th class="c-cards">
+                    <span class="">진행률</span>
+                  </th>
+                  <th class="c-memberCount">
+                    <span class="">참여자수</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="board-list-box">
+                <tr>
+                  <td>
+                    <div class="contact-item d-flex align-items-center">
+                      <div class="contact-personal-wrap">
+                        <div class="checkbox-group-wrapper">
+                          <div class="checkbox-group d-flex">
+                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                              <input class="checkbox" type="checkbox" id="check-grp-c-4" />
+                              <label for="check-grp-c-4"></label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="contact-personal-info d-flex">
+                        <a
+                          href="#"
+                          class="profile-image rounded-circle d-block m-0 wh-38"
+                          style="background-image: url('img/tm3.png'); background-size: cover"
+                        ></a>
+                        <div class="contact_title">
+                          <h6>
+                            <a href="#">여기에 보드이름</a>
+                          </h6>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      class="board-progress my-sm-0 my-2 media-badge text-uppercase color-white"
+                      style="background-color: green"
+                      >진행중</span
+                    >
+                  </td>
+                  <td>
+                    <span class="board-startline">2023.09.09</span>
+                  </td>
+                  <td>
+                    <span class="board-deadline">2024.09.09</span>
+                  </td>
+                  <td>
+                    <span class="board-cardCount">53%</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <span class="board-memberCount" style="margin-right: 50%">5</span>
+                      <div class="dropdown dropdown-click">
+                        <button
+                          class="btn-link border-0 bg-transparent p-0"
+                          data-bs-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <img class="svg" src="./assets/img/svg/more-vertical.svg" alt="more-vertical" />
+                        </button>
+                        <div class="dropdown-default dropdown-menu dropdown-menu--dynamic">
+                          <a class="dropdown-item" href="#">수정</a>
+                          <a class="dropdown-item" href="#">삭제</a>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-   </div>
-   <!-- ends: col-12 -->
+    </div>
+    <!-- ends: col-12 -->
   </div>
 </div>
 <script src="../assets/js/workspace.js" defer></script>

@@ -30,6 +30,7 @@ import { deletePasswordDTO } from 'src/_common/dtos/delete-password.dto';
 import { PhoneNumberDTO } from 'src/_common/dtos/phone.dto';
 import { Payment } from 'src/_common/entities/payment.entity';
 import { PaymentsService } from 'src/payments/payments.service';
+import { IResult } from 'src/_common/interfaces/result.interface';
 
 @Controller('users')
 export class UsersController {
@@ -169,11 +170,38 @@ export class UsersController {
     return res.status(HttpStatus.OK).json({ message: '휴대폰 본인 인증에 성공하셨습니다. ' });
   }
 
-  // 결제내역 조회
-  @Get('payments/history')
+  // 포인트충전
+  @Post('point/charge')
   @UseGuards(AuthGuard)
-  async getMyPayments(@GetUser() user: AccessPayload): Promise<Payment[]> {
-    return await this.paymentService.getMyPayments(user.id);
+  async chargePoint(@Body('amount') amount: number, @GetUser() user: AccessPayload): Promise<IResult> {
+    return await this.paymentService.chargePoint(amount, user.id);
+  }
+
+  // 멤버십 결제내역 조회
+  @Get('payments/membership/history')
+  @UseGuards(AuthGuard)
+  async getMyMembershipHistory(@GetUser() user: AccessPayload): Promise<Object> {
+    const result = await this.paymentService.getMyMembershipHistory(user.id);
+    return { data: result, userName: user.name, userEmail: user.email };
+  }
+
+  // 포인트 결제내역 조회
+  @Get('payments/point/history')
+  @UseGuards(AuthGuard)
+  async getMyPointHistory(@GetUser() user: AccessPayload): Promise<Payment[]> {
+    return await this.paymentService.getMyPointHistory(user.id);
+  }
+
+  // 포인트 결제 취소
+  @Delete('payments/point/:paymentId')
+  @UseGuards(AuthGuard)
+  async cancelChargePoint(
+    @Body('amount') amount: number,
+    @Param('paymentId') paymentId: number,
+    @GetUser() user: AccessPayload
+  ): Promise<IResult> {
+    console.log(amount);
+    return await this.paymentService.cancelChargePoint(amount, user.id, paymentId);
   }
 
   @Get('searchEmail/:email')

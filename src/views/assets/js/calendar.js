@@ -15,73 +15,105 @@
     });
   });
 
-  let date = new Date();
+  $('.ui-datepicker-calendar').css({ 'pointer-events': 'none' });
+  $('.ui-datepicker-prev').css({ display: 'none' });
+  $('.ui-datepicker-next').css({ display: 'none' });
 
   document.addEventListener('DOMContentLoaded', async function () {
     let results = await GetCalendarApi();
     let resultArr = [];
-    console.log(results);
     for (let i = 0; i < results.length; i++) {
       let cName;
       let cColor;
       // id값을 설정해도 가져올수 없어 class name 제일 마지막에 아이디값을 넣어줌
       if (results[i].type == 1) {
-        cName = `secondary calendarId${results[i].calendarId}`;
-        cColor = '#FF69A5';
-      } else if (results[i].type == 2) {
         cName = `primary calendarId${results[i].calendarId}`;
         cColor = '#5F63F2';
+      } else if (results[i].type == 2) {
+        cName = `warning calendarId${results[i].calendarId}`;
+        cColor = '#FA8B0C';
       } else if (results[i].type == 3) {
         cName = `success calendarId${results[i].calendarId}`;
         cColor = '#20C997';
-      } else {
-        cName = `success calendarId${results[i].calendarId}`;
-        cColor = '#20C997';
       }
-      let startTime = moment(results[i].startDate).format('HH:mm:ss');
-      startTime = startTime.split(':');
-      startTime = `${Number(startTime[0]) + 9}:${startTime[1]}:${startTime[2]}`;
-      let lastTime = moment(results[i].deadline).format('HH:mm:ss');
-      lastTime = lastTime.split(':');
-      lastTime = `${Number(lastTime[0]) + 9}:${lastTime[1]}:${lastTime[2]}`;
 
-      // document.querySelector('.fc-event').attr('id', `calendarCardId${results[i].calendarId}`);
-      let product;
-      if (moment(results[i].startDate).format('YYYY-MM-DD') == moment(results[i].deadline).format('YYYY-MM-DD')) {
-        product = {
+      const offset = new Date().getTimezoneOffset() * 60 * 1000;
+      let startSendDate = new Date(new Date(results[i].startDate).getTime() - offset).toLocaleString('ko-KR', {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      let lastSendDate = new Date(new Date(results[i].deadline).getTime() - offset).toLocaleString('ko-KR', {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      let lastTime = lastSendDate.substring(12).split(' ');
+
+      lastSendDate = ('20' + lastSendDate.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
+      let lastArrTime = lastTime[1].split(':');
+      if (lastTime[0] == '오후' && Number(lastArrTime[0]) < 12) {
+        let sum = Number(lastArrTime[0]) + 9;
+        lastTime[1] = `${sum}:${lastArrTime[1]}:${lastArrTime[2]}`;
+      } else if (lastTime[0] == '오전' && Number(lastArrTime[0]) == 12) {
+        lastTime[1] = `00:${lastArrTime[1]}:${lastArrTime[2]}`;
+      }
+      lastTime = 'T' + lastTime[1];
+
+      let startTime = startSendDate.substring(12).split(' ');
+
+      startSendDate = ('20' + startSendDate.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
+
+      let arrTime = startTime[1].split(':');
+      if (startTime[0] == '오후' && Number(arrTime[0]) < 12) {
+        let sum = Number(arrTime[0]) + 9;
+        startTime[1] = `${sum}:${arrTime[1]}:${arrTime[2]}`;
+      } else if (startTime[0] == '오전' && Number(arrTime[0]) == 12) {
+        startTime[1] = `00:${arrTime[1]}:${arrTime[2]}`;
+      }
+      startTime = 'T' + startTime[1];
+
+      if (startSendDate == lastSendDate) {
+        let product = {
           id: i + 1,
           events: [
             {
               id: results[i].calendarId,
-              start: moment(results[i].startDate).format('YYYY-MM-DD') + `T${startTime}`,
-              end: moment(results[i].deadline).format('YYYY-MM-DD') + `T${lastTime}`,
+              start: startSendDate + startTime,
+              end: lastSendDate + lastTime,
               title: results[i].title,
             },
           ],
           className: cName,
           textColor: cColor,
         };
+        resultArr.push(product);
       } else {
-        product = {
+        let familyEvents = {
           id: i + 1,
           events: [
             {
               id: results[i].calendarId,
-              start: moment(results[i].startDate).format('YYYY-MM-DD') + `T${startTime}`,
+              start: startSendDate + startTime,
               title: '[start]' + results[i].title,
             },
             {
               id: results[i].calendarId,
-              start: moment(results[i].deadline).format('YYYY-MM-DD') + `T${lastTime}`,
+              start: lastSendDate + lastTime,
               title: '[end]' + results[i].title,
             },
           ],
           className: cName,
           textColor: cColor,
         };
+        resultArr.push(familyEvents);
       }
-
-      resultArr.push(product);
     }
 
     var fullCalendar = document.getElementById('full-calendar');
@@ -119,17 +151,21 @@
         eventClick: async function (infoEvent) {
           //하루 일정으로 볼 경우
           let lastName = infoEvent.el.classList[9];
-          if (!lastName) {
+          if (!lastName || lastName.search('calendarId') < 0) {
             //이부분은 한달 일정으로 볼 경우.
             lastName = infoEvent.el.classList[8];
+          }
+          if (!lastName || lastName.search('calendarId') < 0) {
+            //이부분은 한달 일정으로 볼 경우.
+            lastName = infoEvent.el.classList[7];
           }
           const calendarId = lastName.replace('calendarId', '');
           // 이부분에 상세조회api
           const detailGet = await DetailGetCalendarApi(calendarId);
-          console.log(detailGet);
+
           let infoModal = $('#e-info-modal');
           infoModal.modal('show');
-          console.log(infoModal.find('.e-info-title'));
+
           infoModal.find('.e-info-title').text(infoEvent.event.title);
           const offset = new Date().getTimezoneOffset() * 60 * 1000;
           let startDate = new Date(new Date(detailGet.startDate).getTime() - offset).toLocaleString('ko-KR', {
@@ -146,28 +182,42 @@
             hour: '2-digit',
             minute: '2-digit',
           });
-          startDate = startDate.split(' ');
-          let startTime = startDate[3] + startDate[4];
-          startDate = startDate[0] + startDate[1] + startDate[2];
-          deadline = deadline.split(' ');
-          let deadTime = deadline[3] + deadline[4];
-          deadline = deadline[0] + deadline[1] + deadline[2];
-          document.querySelector('#view-date').innerHTML = `${
-            '20' + startDate.substring(0, 10).replace('-', '.').replace('-', '.')
-          } - ${'20' + deadline.substring(0, 10).replace('-', '.').replace('-', '.')}`;
-          document.querySelector('#view-time').innerHTML = `${startTime} - ${deadTime}`;
+          let deadlineTime = deadline.substring(12).split(' ');
+
+          deadline = ('20' + deadline.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
+          let lastArrTime = deadlineTime[1].split(':');
+          if (deadlineTime[0] == '오후' && Number(lastArrTime[0]) < 12) {
+            let sum = Number(lastArrTime[0]) + 9;
+            deadlineTime[1] = `${sum}:${lastArrTime[1]}`;
+          } else if (deadlineTime[0] == '오전' && Number(lastArrTime[0]) == 12) {
+            deadlineTime[1] = `00:${lastArrTime[1]}`;
+          }
+          deadlineTime = deadlineTime[1];
+
+          let startTime = startDate.substring(12).split(' ');
+
+          startDate = ('20' + startDate.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
+
+          let arrTime = startTime[1].split(':');
+          if (startTime[0] == '오후' && Number(arrTime[0]) < 12) {
+            let sum = Number(arrTime[0]) + 9;
+            startTime[1] = `${sum}:${arrTime[1]}`;
+          } else if (startTime[0] == '오전' && Number(arrTime[0]) == 12) {
+            startTime[1] = `00:${arrTime[1]}`;
+          }
+          startTime = startTime[1];
+          document.querySelector('#view-date').innerHTML = `${startDate} - ${deadline}`;
+          document.querySelector('#view-time').innerHTML = `${startTime} - ${deadlineTime}`;
           document.querySelector('#view-description').innerHTML = `${detailGet.description}`;
 
           // 상세보기 모달에서 삭제 버튼 클릭시
           document.querySelector('#delete-event').addEventListener('click', () => {
-            console.log('여기에 지우는 api 넣자', calendarId);
             deleteConfirmModal(calendarId, 'calendar');
           });
         },
       });
 
       calendar.render();
-      $('div').remove('.fc-event-resizer');
       $('.fc-button-group .fc-listMonth-button').prepend('<i class="las la-list"></i>');
     }
   });
@@ -223,24 +273,65 @@ document.querySelector('#save-button').addEventListener('click', () => {
   const startTime = document.querySelector('#start-time').value;
   const deadTime = document.querySelector('#dead-time').value;
   let type = document.querySelector('#type');
-  // console.dir(type);
+
   for (let i = 0; i < 3; i++) {
     if (type.children[i].children[0].checked) {
       type = Number(type.children[i].children[0].value);
       break;
     }
   }
-  // console.log(new Date(startDate + 'T' + startTime));
-  // console.log(moment(new Date(deadline + 'T' + deadTime)).format('HH:mm:ss'));
-  const data = {
-    title,
-    description,
-    deadline: new Date(deadline + 'T' + deadTime),
-    startDate: new Date(startDate + 'T' + startTime),
-    type,
-  };
-  console.log(data);
-  CreateCalendarApi(data);
+  let passDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
+  let passTime = /^(0[0-9]|1[0-9]|2[0-3]):(0[1-9]|[0-5][0-9])$/;
+  let compareDate = [startDate.replaceAll('-', ''), deadline.replaceAll('-', '')];
+  let compareTime = [startTime.replaceAll(':', ''), deadTime.replaceAll(':', '')];
+
+  if (!passDate.test(startDate) || !passDate.test(deadline)) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '날짜 형식이 일치하지 않습니다.',
+    });
+  } else if (!passTime.test(startTime) || !passTime.test(deadTime)) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '시간 형식이 일치하지 않습니다.',
+    });
+  } else if (Number(compareDate[0]) == Number(compareDate[1]) && Number(compareTime[0]) > Number(compareTime[1])) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '종료시간은 시작시간보다 앞에 올 수 없습니다.',
+    });
+  } else if (Number(compareDate[0]) > Number(compareDate[1])) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '종료날짜는 시작날짜보다 앞에 올 수 없습니다.',
+    });
+  } else {
+    const data = {
+      title,
+      description,
+      deadline: new Date(deadline + 'T' + deadTime),
+      startDate: new Date(startDate + 'T' + startTime),
+      type,
+    };
+
+    CreateCalendarApi(data);
+  }
 });
 
 // 조회 api

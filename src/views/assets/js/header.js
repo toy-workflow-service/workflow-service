@@ -1,16 +1,28 @@
 const logoutBtn = document.querySelector('#logoutBtn');
 const workspaceList = document.querySelector('.workspace-list');
 const workspaceListTop = document.querySelector('#workspace-list-top');
-const accessToken = document.cookie.split(';')[0].split('=')[1];
+let accessToken;
 let boardIds = [];
 let boardNames = [];
 
 $(document).ready(async () => {
+  getAccessToken();
   await getWorkspaces();
   await getRecentMessage();
   getMyBoardMessage();
   getNotification();
 });
+
+function getAccessToken() {
+  const regExp = new RegExp(/^[accessToken=]/);
+  document.cookie.split(' ').forEach((value) => {
+    if (regExp.exec(value)) {
+      accessToken = value;
+      accessToken = accessToken.replace('accessToken=', '');
+      accessToken = accessToken.replace(';', '');
+    }
+  });
+}
 
 function logout() {
   $.ajax({
@@ -88,6 +100,31 @@ async function getWorkspaces() {
           workspaceListTop.innerHTML += topResult;
         });
       },
+      error: (err) => {
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/';
+          });
+        }
+      },
     });
   } catch (err) {
     console.error(err);
@@ -158,9 +195,10 @@ async function getRecentMessage() {
     success: (data) => {
       const results = data.joinBoards;
       name = data.userName;
+      localStorage.removeItem('myMessage');
       results.forEach((array) => {
         if (localStorage.getItem(`recentMessage-room${array.board_id}`)) {
-          const recentMessage = localStorage.getItem(`recentMessage-room${array.board_id}`);
+          const recentMessage = localStorage.getItem(`recentMessage-room${array.board_id}`).split('!@#')[0];
           const profileUrl = localStorage.getItem(`recentProfileUrl-room${array.board_id}`);
           let time;
           if (localStorage.getItem(`existSave-room${array.board_id}`))
@@ -295,7 +333,7 @@ function getNotification() {
 
   if (localStorage.getItem('notification-paticipateBoard')) {
     let notificationParticipation = localStorage.getItem('notification-paticipateBoard').split('!@#');
-    let [workspaceId, workspaceName, boardName, date] = [...notificationParticipation];
+    let [workspaceId, boardName, date] = [...notificationParticipation];
 
     const now = new Date().getTime();
     date = now - new Date(date).getTime();
@@ -312,7 +350,7 @@ function getNotification() {
                                       </div>
                                       <div class="nav-notification__details">
                                         <p>
-                                          <a href="/workspace?workspaceId=${workspaceId}&workspaceName=${workspaceName}" class="subject stretched-link text-truncate" style="max-width: 180px; font-weight: bold">${boardName}</a>
+                                          <a href="/workspace?workspaceId=${workspaceId}" class="subject stretched-link text-truncate" style="max-width: 180px; font-weight: bold">${boardName}</a>
                                           <span>보드에 참여되었습니다. </span>
                                         </p>
                                         <p>

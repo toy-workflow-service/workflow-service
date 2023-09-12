@@ -6,7 +6,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { String } from 'aws-sdk/clients/cloudwatchevents';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 
@@ -24,8 +23,16 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
     const authorization = client.request.headers.cookie;
     if (!authorization) return;
+    let regExp = new RegExp(/^[refreshToken=]/);
+    let token: string;
 
-    let token = authorization.split(' ')[1].split('=')[1];
+    authorization.split(' ').forEach((value) => {
+      if (regExp.exec(value)) {
+        token = value;
+        token = token.replace('refreshToken=', '');
+        token = token.replace(';', '');
+      }
+    });
 
     const decode = this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
     this.connectedClients[client.id] = Number(decode.id);
@@ -41,19 +48,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const index = this.roomUsers[room]?.indexOf(this.clientName[client.id]);
       if (index !== -1) {
         this.roomUsers[room] = this.roomUsers[room].slice(0, index).concat(this.roomUsers[room].slice(index + 1));
-        this.server.to(room).emit('userLeft', { userId: this.clientName[client.id], room });
-        this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
+        this.server.to(room).emit('leaveRoom');
       }
     });
     delete this.clientName[client.id];
-
-    //모든 방의 유저 목록을 업데이트해 emit
-    Object.keys(this.roomUsers).forEach((room) => {
-      this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
-    });
-
-    //연결된 클라이언트 목록을 업데이트해 emit
-    this.server.emit('userList', { room: null, userLiset: Object.keys(this.connectedClients) });
   }
 
   @SubscribeMessage('join')
@@ -199,7 +197,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       userId: string;
       workspaceId: string;
-      workspaceName: string;
       boardName: string;
       date: string;
     }
@@ -215,7 +212,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     user.forEach((sock) => {
       this.server.to(sock).emit('inviteBoardMessage', {
         workspaceId: data.workspaceId,
-        workspaceName: data.workspaceName,
         boardName: data.boardName,
         date: data.date,
       });
@@ -248,43 +244,133 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     });
   }
-
   /////////////////////////////////////////////////////////////////////////////////////////////
-  @SubscribeMessage('invite')
-  handleInvite(client: Socket, data: any): void {
+  @SubscribeMessage('existUser')
+  handleExistUserMessage(client: Socket, data: { senderId: string }) {
+    const room = `callRoom${data.senderId}`;
+    let result: boolean;
+
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+    if (this.roomUsers[room].includes(String(this.connectedClients[client.id]))) {
+      result = true;
+    } else result = false;
+
+    this.server.to(client.id).emit('duplicateEntry', { result });
+  }
+
+  @SubscribeMessage('inviteVideoCall')
+  handleAcceptCall(
+    client: Socket,
+    data: { senderId: string; senderName: string; receiverId: string; receiverName: string }
+  ) {
+    const room = `callRoom${data.senderId}`;
+    this.clientName[client.id] = data.senderId;
+
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    this.roomUsers[room].push(this.clientName[client.id]);
+
     let user = [];
     for (let key in this.connectedClients) {
-      if (this.connectedClients[key] === data.receiverId / 1) user.push(key);
+      if (this.connectedClients[key] === Number(data.receiverId)) {
+        user.push(key);
+      }
     }
+
     user.forEach((sock) => {
-      this.server.to(sock).emit('response', {
-        callerId: client.id,
-        callerName: data.callerName,
+      this.server.to(sock).emit('inviteVideoCall', {
+        callRoomId: room,
+        senderId: data.senderId,
+        senderName: data.senderName,
         receiverId: data.receiverId,
         receiverName: data.receiverName,
       });
     });
   }
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, data: any): void {
-    const roomName = data.callerName;
-    client.join(roomName);
-    this.server.to(roomName).emit('welcome', roomName);
+  @SubscribeMessage('refuseVideoCall')
+  handleRefuseVideoCall(client: Socket, data: { callRoomId: string; senderId: string }) {
+    let user = [];
+
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.senderId)) {
+        user.push(key);
+      }
+    }
+
+    this.roomUsers[data.callRoomId] = [];
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('refuseVideoCall', {
+        receiverName: this.clientName[client.id],
+      });
+    });
   }
 
-  @SubscribeMessage('sendOffer')
-  handleSendOffer(client: Socket, payload: { offer: any; roomName: string }): void {
-    this.server.to(payload.roomName).emit('receiveOffer', { payload: payload.offer, roomName: payload.roomName });
+  @SubscribeMessage('callRoomJoin')
+  handleJoinMessage(
+    client: Socket,
+    data: { callRoomId: string; senderId: string; senderName: string; receiverId: string; receiverName: string }
+  ) {
+    const room = data.callRoomId;
+    this.clientName[client.id] = data.senderId;
+    if (client.rooms.has(room)) return;
+
+    client.join(room);
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+    this.roomUsers[room].push(this.clientName[client.id]);
+
+    client.broadcast.to(room).emit('callRoomEnter', {
+      userId: client.id,
+      callRoomId: data.callRoomId,
+    });
   }
 
-  @SubscribeMessage('sendAnswer')
-  handleSendAnswer(client: Socket, payload: { answer: any; roomName: string }): void {
-    this.server.to(payload.roomName).emit('receiveAnswer', payload.answer);
+  @SubscribeMessage('callOffer')
+  handleOfferMessage(client: Socket, data: { offer: any; callRoomId: string }) {
+    client.broadcast
+      .to(data.callRoomId)
+      .emit('callRoomOffer', { userId: client.id, offer: data.offer, callRoomId: data.callRoomId });
   }
 
-  @SubscribeMessage('sendIce')
-  handleSendIce(client: Socket, data: any): void {
-    this.server.to(data.roomName).emit('receiveIce', data);
+  @SubscribeMessage('callAnswer')
+  handleAnswerMessage(client: Socket, data: { answer: any; toUserId: string; callRoomId: string }) {
+    client.broadcast
+      .to(data.callRoomId)
+      .emit('callRoomAnswer', { userId: client.id, answer: data.answer, toUserId: data.toUserId });
+  }
+
+  @SubscribeMessage('callIceCandidate')
+  handleCandidateMessage(client: Socket, data: { candidate: any; callRoomId: string }) {
+    client.broadcast.to(data.callRoomId).emit('callIceCandidate', { userId: client.id, candidate: data.candidate });
+  }
+
+  @SubscribeMessage('shareScreen')
+  handleShareScreenMessage(client: Socket, data: { captureStream: any; callRoomId: string; userId: string }) {
+    let user = [];
+    console.log(data.captureStream);
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.userId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('shareScreen', {
+        captureStream: data.captureStream,
+      });
+    });
+  }
+
+  @SubscribeMessage('leaveRoom')
+  handleLeaveRoomMessage(client: Socket, data: { callRoomId: string }) {
+    //소켓 연결이 끊기면 자동으로 방도 나가지는 로직이 있기에 추가 로직은 작성x
+    client.broadcast.to(data.callRoomId).emit('leaveRoom');
+  }
+
+  @SubscribeMessage('refreshRoom')
+  handleRefreshRoomMessage(client: Socket, data: { callRoomId: string }) {
+    client.broadcast.to(data.callRoomId).emit('refreshRoom');
   }
 }

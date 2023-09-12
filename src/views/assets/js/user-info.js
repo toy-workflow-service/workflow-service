@@ -1,6 +1,8 @@
 $(document).ready(async () => {
-  await getPaymentHistory();
+  await getMembershipHistory();
 });
+let userName;
+let userEmail;
 
 const updateUserInfoBtn = document.querySelector('#updateUserBtn');
 const deleteUserBtn = document.querySelector('#deleteUserBtn');
@@ -14,7 +16,8 @@ const phoneAuthBtn = document.querySelector('#phoneAuthBtn');
 const cancelAuthBtn = document.querySelector('#cancelAuthBtn');
 const editBtn = document.querySelector('#editBtn');
 const cancelAuthBtn2 = document.querySelector('#cancelAuthBtn2');
-const paymentHistory = document.querySelector('#payment-history-table');
+const membershipHistory = document.querySelector('#payment-history-table');
+const pointHistory = document.querySelector('#point-history');
 
 function updateUserInfo() {
   const email = document.querySelector('#email45').value;
@@ -53,6 +56,17 @@ function updateUserInfo() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -77,8 +91,10 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
   const cancelBtn = confirmModal.querySelector('.btn-light');
 
   okBtn.addEventListener('click', () => {
-    if (targetType === 'payment') {
-      cancelPayment(targetId, targetId2);
+    if (targetType === 'membership') {
+      cancelMembership(targetId, targetId2);
+    } else if (targetType === 'point') {
+      cancelPoint(targetId, targetId2);
     } else {
       deleteUser();
     }
@@ -176,6 +192,17 @@ function changePassword() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -231,6 +258,17 @@ function send() {
           title: 'Error',
           text: error.responseJSON.message[0],
         });
+      } else if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
       } else {
         Swal.fire({
           customClass: {
@@ -270,14 +308,29 @@ function send() {
           });
         },
         error: (error) => {
-          Swal.fire({
-            customClass: {
-              container: 'my-swal',
-            },
-            icon: 'error',
-            title: 'Error',
-            text: error.responseJSON.message,
-          });
+          if (error.status === 308) {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'error',
+              title: 'error',
+              text: error.responseJSON.message,
+            }).then(() => {
+              window.location.href = '/block';
+            });
+          } else {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'error',
+              title: 'error',
+              text: error.responseJSON.message,
+            }).then(() => {
+              window.location.reload();
+            });
+          }
         },
       });
     } else if (verifyCode !== code && Date.now() < expireTime) {
@@ -339,16 +392,29 @@ async function changeProfileImage() {
     },
     error: (error) => {
       console.error(error);
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'error',
-        title: 'Error',
-        text: error.responseJSON,
-      }).then(() => {
-        window.location.reload();
-      });
+      if (error.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
       return;
     },
   });
@@ -381,14 +447,16 @@ if (cancelAuthBtn2) {
     window.location.reload();
   });
 }
-editBtn.addEventListener('click', () => {
-  document.querySelector('#phoneNumberInput').readOnly = false;
-  document.querySelector('#editBtnDiv').style.display = 'none';
-  sendBtn.style.display = 'block';
-});
+if (editBtn) {
+  editBtn.addEventListener('click', () => {
+    document.querySelector('#phoneNumberInput').readOnly = false;
+    document.querySelector('#editBtnDiv').style.display = 'none';
+    sendBtn.style.display = 'block';
+  });
+}
 
 // 결제내역 조회
-async function getPaymentHistory() {
+async function getMembershipHistory() {
   try {
     const currentDate = new Date();
     const oneMonthAgo = new Date();
@@ -396,14 +464,17 @@ async function getPaymentHistory() {
 
     await $.ajax({
       method: 'GET',
-      url: `/users/payments/history`,
+      url: `/users/payments/membership/history`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
+        const payment = data.data;
+        userName = data.userName;
+        userEmail = data.userEmail;
         result = '';
-        data.forEach((history) => {
+        payment.forEach((history) => {
           const paymentDate = new Date(history.paymentCreatedAt);
           if (paymentDate >= oneMonthAgo && paymentDate <= currentDate) {
             if (history.workspaceName === null) {
@@ -450,7 +521,7 @@ async function getPaymentHistory() {
                         </tbody>`;
           }
         });
-        paymentHistory.innerHTML += result;
+        membershipHistory.innerHTML += result;
 
         const cancelPaymentBtn = document.querySelectorAll('#cancel-payment-btn');
         cancelPaymentBtn.forEach((btn) => {
@@ -458,7 +529,7 @@ async function getPaymentHistory() {
           const workspaceId = btn.closest('tr').querySelector('[data-workspace-id]').getAttribute('data-workspace-id');
 
           btn.addEventListener('click', () => {
-            deleteConfirmModal(paymentId, workspaceId, 'payment');
+            deleteConfirmModal(paymentId, workspaceId, 'membership');
           });
         });
       },
@@ -468,8 +539,220 @@ async function getPaymentHistory() {
   }
 }
 
-// 결제 취소
-async function cancelPayment(paymentId, workspaceId) {
+// 포인트 충전 모달 열기
+const chargePointBtn = document.querySelector('#point-charge-btn');
+chargePointBtn.addEventListener('click', () => {
+  const chargeModal = document.querySelector('#modal-basic6');
+  $(chargeModal).modal('show');
+});
+
+// 포인트 충전
+const chargeBtn = document.querySelector('#charge-btn');
+chargeBtn.addEventListener('click', () => {
+  requestPay();
+});
+
+// 카카오 API
+const requestPay = () => {
+  const amount = document.querySelector('#payment-amount-input').value;
+  if (!amount) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'error',
+      text: '결제금액을 입력해주세요',
+    });
+  } else if (amount > 100000) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'error',
+      text: '1회 최대 결제금액은 100,000원입니다.',
+    });
+  }
+  IMP.init('imp55657547');
+
+  IMP.request_pay(
+    {
+      pg: 'kakaopay',
+      pay_method: 'card',
+      name: '크레딧 결제',
+      amount,
+      buyer_email: userEmail,
+      buyer_name: userName,
+      buyer_tel: '010-1234-5678',
+      buyer_addr: '서울특별시 강남구 삼성동',
+      buyer_postcode: '123-456',
+    },
+    function (rsp) {
+      if (rsp.success) {
+        $.ajax({
+          method: 'POST',
+          url: `/users/point/charge`,
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+          },
+          data: JSON.stringify({ amount }),
+          success: () => {
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              icon: 'success',
+              title: 'Success!',
+              text: '결제 성공!',
+            }).then(() => {
+              window.location.reload();
+            });
+          },
+          error: (err) => {
+            if (err.status === 308) {
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                icon: 'error',
+                title: 'error',
+                text: err.responseJSON.message,
+              }).then(() => {
+                window.location.href = '/block';
+              });
+            } else {
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                icon: 'error',
+                title: 'error',
+                text: err.responseJSON.message,
+              }).then(() => {
+                window.location.reload();
+              });
+            }
+          },
+        });
+      }
+    }
+  );
+};
+
+// 포인트 충전 취소 모달열기
+const cancelChargeBtn = document.querySelector('#cancel-charge-btn');
+cancelChargeBtn.addEventListener('click', () => {
+  const cancelModal = document.querySelector('#modal-basic7');
+  getMyPointHistory();
+  $(cancelModal).modal('show');
+});
+
+// 포인트 결제 내역 조회
+async function getMyPointHistory() {
+  try {
+    await $.ajax({
+      method: 'GET',
+      url: `/users/payments/point/history`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: (data) => {
+        console.log(data);
+        let result = '';
+        data.forEach((history) => {
+          if (history.status === false) {
+            result += `<li class="list-group-item">
+                        <label class="form-check-label" >
+                          <input type="radio" class="form-check-input" name="selected-payment" disabled>
+                          <span class="fw-bold" style="text-decoration: line-through;">충전일자:</span> ${history.created_at
+                            .substring(0, 10)
+                            .replace('-', '.')}
+                          <span class="fw-bold ms-3" style="text-decoration: line-through;">충전금액:</span> ${
+                            history.amount
+                          }원
+                          <span class="fw-bold" style="color: red;">취소된 결제입니다.</span>
+                          </label>
+                        </li>`;
+          } else {
+            result += `<li class="list-group-item">
+                        <label class="form-check-label" >
+                          <input type="radio" class="form-check-input" name="selected-payment" data-payment-id=${
+                            history.id
+                          } data-amount=${history.amount}>
+                          <span class="fw-bold">충전일자:</span> ${history.created_at
+                            .substring(0, 10)
+                            .replace('-', '.')}
+                          <span class="fw-bold ms-3">충전금액:</span> ${history.amount}원
+                         </label>
+                        </li>`;
+          }
+        });
+        result += `<div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" id="cancel-btn">충전 취소</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+                  </div>`;
+        pointHistory.innerHTML = result;
+
+        const cancelBtn = document.querySelector('#cancel-btn');
+        cancelBtn.addEventListener('click', () => {
+          const selected = document.querySelector('input[name="selected-payment"]:checked');
+          if (selected) {
+            const paymentId = selected.getAttribute('data-payment-id');
+            const amount = selected.getAttribute('data-amount');
+            deleteConfirmModal(paymentId, amount, 'point');
+          }
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 포인트 결제 취소
+async function cancelPoint(paymentId, amount) {
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `users/payments/point/${paymentId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ amount }),
+      success: () => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'success',
+          title: 'Success!',
+          text: '충전 취소 성공!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 멤버십 결제 취소
+async function cancelMembership(paymentId, workspaceId) {
   try {
     await $.ajax({
       method: 'DELETE',

@@ -7,7 +7,7 @@ import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UsersService } from 'src/users/users.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, LessThan, Repository } from 'typeorm';
 
 @Injectable()
 export class PaymentsService {
@@ -42,7 +42,27 @@ export class PaymentsService {
     return { result: true };
   }
 
-  // 결제 취소
+  // 포인트 충전
+  async chargePoint(amount: number, userId: number): Promise<IResult> {
+    const entityManager = this.paymentRepository.manager;
+    const user = await this.userService.findUserById(userId);
+    if (!user) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      user.points += Number(amount);
+      await transactionEntityManager.save(user);
+
+      const newPayment = this.paymentRepository.create({
+        amount,
+        workspaceId: 0,
+        user: { id: user.id },
+      });
+      await transactionEntityManager.save(newPayment);
+    });
+    return { result: true };
+  }
+
+  // 멤버십결제 취소
   async cancelPurchase(workspaceId: number, paymentId: number, userId: number): Promise<Object> {
     const entityManager = this.paymentRepository.manager;
 
@@ -82,8 +102,40 @@ export class PaymentsService {
     return { remainingDays, roundedRefundPrice };
   }
 
-  // 나의 결제내역 조회
-  async getMyPayments(userId: number): Promise<Payment[]> {
+  // 유저 포인트 결제 취소
+  async cancelChargePoint(amount: number, userId: number, paymentId: number): Promise<IResult> {
+    const entityManager = this.paymentRepository.manager;
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const targetPayment = await this.paymentRepository.findOne({
+        where: { id: paymentId, user: { id: userId } },
+      });
+      if (!targetPayment) throw new HttpException('해당 결제 내역을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
+      targetPayment.status = false;
+      await transactionEntityManager.save(targetPayment);
+
+      const user = await this.userService.findUserById(userId);
+      const refundPoint = Number(amount);
+      user.points -= refundPoint;
+      await transactionEntityManager.save(user);
+    });
+
+    return { result: true };
+  }
+
+  // 포인트 결제 내역
+  async getMyPointHistory(userId: number): Promise<Payment[]> {
+    const payment = await this.paymentRepository.find({
+      where: { user: { id: userId }, workspaceId: 0 },
+      relations: ['user'],
+      order: { created_at: 'DESC' },
+    });
+
+    return payment;
+  }
+
+  // 멤버십 결제내역 조회
+  async getMyMembershipHistory(userId: number): Promise<Payment[]> {
     const payments = await this.paymentRepository.find({
       where: { user: { id: userId } },
       relations: ['user'],
@@ -93,6 +145,11 @@ export class PaymentsService {
     for (const payment of payments) {
       const workspaceId = payment.workspaceId;
       const status = payment.status;
+
+      if (workspaceId === 0) {
+        continue;
+      }
+
       const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
 
       if (workspace) {
@@ -128,5 +185,22 @@ export class PaymentsService {
       }
     }
     return paymentHistory;
+  }
+
+  // 결제일로부터 7개월이 지난 결제내역 삭제
+  async deletePaymentHistory(): Promise<IResult> {
+    const currentDate = new Date();
+    const sevenMonthAgo = new Date();
+    sevenMonthAgo.setMonth(currentDate.getMonth() - 7);
+
+    const paymentHistory = await this.paymentRepository.find({
+      where: {
+        created_at: LessThan(sevenMonthAgo),
+      },
+    });
+
+    await this.paymentRepository.remove(paymentHistory);
+
+    return { result: true };
   }
 }

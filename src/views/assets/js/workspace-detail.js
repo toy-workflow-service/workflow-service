@@ -66,7 +66,7 @@ async function getWorkspaceDetail() {
                           </div>
                           <ul class="d-flex text-capitalize">
                             <li>
-                              <span class="color-light fs-13">워크스페이스생성자</span>
+                              <span class="color-light fs-13">워크스페이스 생성자</span>
                               <p class="color-dark fs-14 mt-1 mb-0 fw-500" id="workspace-owner">${
                                 data.workspace_members[0].user.name
                               }</p>
@@ -122,18 +122,20 @@ async function getWorkspaceDetail() {
           const user = member.user;
           let Img = '';
           user.profile_url ? (Img = `${user.profile_url}`) : (Img = `./assets/img/favicon.png`);
-          user.phone_number;
-          if (user.phone_number.length === 11) {
-            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
-              3,
-              7
-            )} - ${user.phone_number.substring(7, 11)}`;
-          } else {
-            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
-              3,
-              6
-            )} - ${user.phone_number.substring(6, 10)}`;
-          }
+          if (user.phone_number) {
+            if (user.phone_number.length === 11) {
+              user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+                3,
+                7
+              )} - ${user.phone_number.substring(7, 11)}`;
+            } else {
+              user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+                3,
+                6
+              )} - ${user.phone_number.substring(6, 10)}`;
+            }
+          } else user.phone_number = '번호 등록 안됨';
+
           let html1;
           if (results.loginUserRole === 1 || results.loginUserRole === 2) {
             html1 = `                <div class="files-area__right">
@@ -180,14 +182,14 @@ async function getWorkspaceDetail() {
                                           <div class="ap-nameAddress pb-3" >                                                                                     
                                             <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
                                             <div style="display: inline-flex; margin-top:5%">
-                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                                 <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text">
                                                 ${user.phone_number}
                                                 </p>
                                               </div>  
-                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                                 <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text" >
@@ -241,14 +243,14 @@ async function getWorkspaceDetail() {
                                           <div class="ap-nameAddress pb-3" >                                                                                     
                                             <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
                                             <div style="display: inline-flex; margin-top:5%">
-                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                                 <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text">
                                                 ${user.phone_number}
                                                 </p>
                                               </div>  
-                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                                 <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text" >
@@ -262,8 +264,7 @@ async function getWorkspaceDetail() {
                                     </div>
                                     <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                       <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${user.id} onclick="movePrivateChat(this)">메시지 전송</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVoiceCall(this)">음성 통화</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVideoCall(this)">영상 통화</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${user.id} name=${user.name} onclick="inviteVideoCall(this)">영상 통화</button>
                                     </div>
                                   </div>
                                 </div>
@@ -288,113 +289,17 @@ async function getWorkspaceDetail() {
         printTotal.innerHTML = totalData;
         printMember.innerHTML = memberHtml;
       },
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// 멤버십 결제 모달열기
-function openPaymentModal(element) {
-  const workspaceId = element.getAttribute('data-workspace-id');
-  let paymentModal = document.querySelector('#modal-basic5');
-
-  paymentModal.innerHTML = `
-  <form>
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content modal-bg-white">
-      <div class="modal-header">
-        <h6 class="modal-title">멤버십 결제</h6>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
-        </button>
-      </div>
-      <div class="modal-body">
-        <p><strong>멤버십 타입:</strong> <span id="membership-type">Premium</span></p>
-        <p><strong>결제금액:</strong> <span id="membership-price"></span><span>원</span></p>
-        <div class="dropdown dropdown-hover">
-        <a style="cursor:pointer;">
-        <span><strong>이용기간</strong> : <span id="period-select-text">선택</span></span>
-          <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
-        </a>
-        <div class="dropdown-default dropdown-clickEvent">
-        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
-        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
-        </div>
-       </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-sm" data-workspace-id="${workspaceId} "id="payment-btn">결제</button>
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
-      </div>
-    </div>
-  </div>
-  </form>
-  `;
-
-  let membershipItems = document.querySelectorAll('.dropdown-default .dropdown-item');
-  membershipItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      let selected = item.textContent;
-      document.querySelector('#period-select-text').textContent = selected;
-      const membershipPrice = document.querySelector('#membership-price');
-
-      switch (selected) {
-        case '30일':
-          membershipPrice.textContent = '6,500';
-          break;
-        case '180일':
-          membershipPrice.textContent = '31,000';
-          break;
-      }
-    });
-  });
-  const paymentBtn = document.querySelector('#payment-btn');
-  paymentBtn.addEventListener('click', () => {
-    purchaseMembership();
-  });
-
-  $(paymentModal).modal('show');
-}
-
-// 멤버십 결제
-async function purchaseMembership() {
-  try {
-    let membershipType = document.querySelector('#membership-type').textContent;
-    if (membershipType === 'Premium') membershipType = 1;
-    const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
-    const selectedPeriod = document.querySelector('#period-select-text').textContent;
-    const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
-    const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
-
-    await $.ajax({
-      method: 'POST',
-      url: `/workspaces/${workspaceId}/payments`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
-      success: () => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'success!',
-          text: '멤버십 결제 완료!',
-        }).then(() => {
-          window.location.reload();
-        });
-      },
-      error: (err) => {
+      error: (error) => {
+        console.error(error);
         Swal.fire({
           customClass: {
             container: 'my-swal',
           },
           icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
+          title: 'Error',
+          text: error.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/';
         });
       },
     });
@@ -475,7 +380,6 @@ async function purchaseMembership() {
     const selectedPeriod = document.querySelector('#period-select-text').textContent;
     const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
     const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
-
     await $.ajax({
       method: 'POST',
       url: `/workspaces/${workspaceId}/payments`,
@@ -572,14 +476,29 @@ async function updateWorkspace() {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -738,14 +657,29 @@ async function setMemberRole() {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -1072,28 +1006,75 @@ function printFilesHtml(fileName, imgSrc, fileSize, fileUrl) {
 }
 
 // 활동로그 조회
+let allLogs = [];
 async function getWorkspaceActivity() {
   try {
-    await $.ajax({
+    const response = await $.ajax({
       method: 'GET',
       url: `/workspaces/${workspaceId}/getLogs`,
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Content-type', 'application/json');
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
-      success: (data) => {
-        let result = '';
-
-        data.forEach((log) => {
-          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
-        });
-        printActivity.innerHTML = result;
-      },
     });
+
+    allLogs = response;
+    filterActivity('전체');
   } catch (err) {
     console.error(err);
   }
 }
+
+// 전체로그를 필터링 해주는 함수
+function filterActivity(filter) {
+  let result = '';
+  const filterButton = document.querySelector('#filter-button');
+
+  allLogs.forEach((log) => {
+    switch (filter) {
+      case '전체':
+        result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        break;
+      case '생성':
+        if (log.actions === 'CREATE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '수정':
+        if (log.actions === 'UPDATE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '삭제':
+        if (log.actions === 'DELETE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '역할변경':
+        if (log.actions === 'ROLE_CHANGE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+      case '멤버초대':
+        if (log.actions === 'INVITE') {
+          result += printActivityhtml(log.details, log.created_at, log.actions, log.user_profile_url);
+        }
+        break;
+    }
+  });
+
+  printActivity.innerHTML = result;
+  filterButton.innerText = filter;
+}
+
+// 분류버튼에 이벤트리스너 등록
+const filterButtons = document.querySelectorAll('.dropdown-item[data-filter]');
+filterButtons.forEach((button) => {
+  button.addEventListener('click', function () {
+    const filter = this.innerText;
+    filterActivity(filter);
+  });
+});
 
 // 활동로그 출력
 function printActivityhtml(details, createdAt, actions, profile) {
@@ -1156,39 +1137,6 @@ function printActivityhtml(details, createdAt, actions, profile) {
           </div>`;
 }
 
-// 음성 통화 시작
-function startVoiceCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting voice call...');
-  voiceCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '음성 통화', receiverId, receiverName);
-}
-
-async function voiceCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
-}
-
-function startVideoCall(element) {
-  const receiverId = element.getAttribute('id');
-  const receiverName = element.getAttribute('name');
-  console.log('Starting video call...');
-  videoCall(`/call?callerName=${userName}&receiverName=${receiverName}`, '영상 통화', receiverId, receiverName);
-}
-
-async function videoCall(url, callType, receiverId, receiverName) {
-  const width = 800;
-  const height = 900;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open(url, callType, `width=${width},height=${height},left=${left},top=${top}`);
-  socket.emit('invite', { callerName: userName, callerId, receiverId, receiverName });
-}
-
 function movePrivateChat(data) {
   const userId = data.getAttribute('id');
   $.ajax({
@@ -1202,4 +1150,15 @@ function movePrivateChat(data) {
       window.location.href = `/chat?roomId=${roomId}`;
     },
   });
+}
+
+function inviteVideoCall(data) {
+  const receiverId = data.getAttribute('id');
+  const receiverName = data.getAttribute('name');
+
+  window.open(
+    `/videoCall?senderId=${callerId}&senderName=${userName}&receiverId=${receiverId}&receiverName=${receiverName}`,
+    '_blank',
+    'width=860, height=730'
+  );
 }

@@ -7,8 +7,7 @@ let typingTimer, workspaceName;
 const doneTypingInterval = 5000;
 
 $(document).ready(async () => {
-  await getMyBoards('all');
-  equalHeight($('.board-description'));
+  await getMyBoards();
   initializeMemberInput('#name47', '#selected-members', '#create-selected-members');
 });
 
@@ -65,18 +64,45 @@ function initializeMemberInput(inputSelector, memberListSelector, selected) {
 const printBoard = document.querySelector('#board-box');
 const printListBoard = document.querySelector('#board-list-box');
 const printButton = document.querySelector('.nav-item');
+let boardData;
 function changeSelect() {
   let selected = document.querySelector('#event-category');
+  let listResult = '';
+  let result = '';
   if (selected.value == 'all') {
-    getMyBoards(selected.value, '');
+    printBoard.innerHTML = '';
+    printListBoard.innerHTML = '';
+    for (const board of boardData) {
+      result += boardHTML(board);
+      listResult += boardListHTML(board);
+    }
   } else if (selected.value == 'ing') {
-    getMyBoards(selected.value, '');
+    printBoard.innerHTML = '';
+    printListBoard.innerHTML = '';
+    for (const board of boardData) {
+      const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+      if (count != 100) {
+        result += boardHTML(board);
+        listResult += boardListHTML(board);
+      }
+    }
   } else {
-    getMyBoards(selected.value, '');
+    printBoard.innerHTML = '';
+    printListBoard.innerHTML = '';
+    for (const board of boardData) {
+      const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
+      if (count == 100) {
+        result += boardHTML(board);
+        listResult += boardListHTML(board);
+      }
+    }
   }
+  printListBoard.innerHTML = listResult;
+  printBoard.innerHTML = result;
+  equalHeight($('.board-description'));
 }
 // 보드 전체 조회
-async function getMyBoards(selectItem, search) {
+async function getMyBoards() {
   await $.ajax({
     method: 'GET',
     url: `/boards?workspaceId=${workspaceId}`,
@@ -92,35 +118,10 @@ async function getMyBoards(selectItem, search) {
       let listResult = '';
       document.querySelector('#workspace-title').innerHTML = `${workspaceName}`;
       document.querySelector('#running-boards').innerHTML = `전체 보드 개수 : ${boards.length}`;
+      boardData = boards;
       for (const board of boards) {
-        if (selectItem == 'all' && !search) {
-          result += boardHTML(board);
-          listResult += boardListHTML(board);
-        } else if (selectItem == 'ing' && !search) {
-          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-          if (count != 100) {
-            result += boardHTML(board);
-            listResult += boardListHTML(board);
-          }
-        } else if (selectItem == 'end' && !search) {
-          const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-          if (count == 100) {
-            result += boardHTML(board);
-            listResult += boardListHTML(board);
-          }
-        } else {
-          if (board.boardName.search(search) > -1) {
-            result += boardHTML(board);
-            listResult += boardListHTML(board);
-          } else {
-            for (const member of board.boardMembers) {
-              if (member.name.search(search) > -1) {
-                result += boardHTML(board);
-                listResult += boardListHTML(board);
-              }
-            }
-          }
-        }
+        result += boardHTML(board);
+        listResult += boardListHTML(board);
       }
       button += `<li class="nav-item">
                     <a
@@ -135,6 +136,8 @@ async function getMyBoards(selectItem, search) {
       printListBoard.innerHTML = listResult;
       printBoard.innerHTML = result;
       printButton.innerHTML = button;
+
+      equalHeight($('.board-description'));
     },
     error: (error) => {
       Swal.fire({
@@ -292,18 +295,7 @@ function boardListHTML(board) {
   result += `<tr>
               <td>
                 <div class="contact-item d-flex align-items-center">
-                    <div class="contact-personal-wrap">
-                      <div class="checkbox-group-wrapper">
-                          <div class="checkbox-group d-flex">
-                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
-                                <input class="checkbox" type="checkbox" id="check-grp-c-4">
-                                <label for="check-grp-c-4"></label>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
                     <div class="contact-personal-info d-flex">
-                      <a href="#" class="profile-image rounded-circle d-block m-0 wh-38" style="background-image:url('img/tm3.png'); background-size: cover;"></a>
                       <div class="contact_title">
                           <h6>
                             <a href="/board?boardId=${board.boardId}">${board.boardName}</a>
@@ -318,14 +310,12 @@ function boardListHTML(board) {
               </td>
               <td>
                 <span class="board-startline">${
-                  board.startDate
-                    ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
-                    : '____.__.__'
+                  board.startDate ? '20' + startSendTime.substring(0, 10).replace('-', '.') : '____.__.__'
                 }</span>
               </td>
               <td>
                 <span class="board-deadline">${
-                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.') : '____.__.__'
+                  board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.') : '____.__.__'
                 }</span>
               </td>
               <td>
@@ -405,16 +395,29 @@ createBoardBtn.addEventListener('click', async (event) => {
         });
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -440,16 +443,29 @@ async function createBoardMember(boardId, saveUserId) {
         boardName = data.boardName;
       },
       error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        if (err.status === 308) {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.href = '/block';
+          });
+        } else {
+          Swal.fire({
+            customClass: {
+              container: 'my-swal',
+            },
+            icon: 'error',
+            title: 'error',
+            text: err.responseJSON.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
       },
     });
   } catch (err) {
@@ -459,7 +475,6 @@ async function createBoardMember(boardId, saveUserId) {
   socket.emit('inviteBoard', {
     userId,
     workspaceId,
-    workspaceName,
     boardName,
     date: new Date(new Date(date).getTime()),
   });
@@ -629,8 +644,31 @@ async function putBoard(boardId, name, description, deadline, startDate) {
     success: (data) => {
       console.log(data.message);
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
 }
@@ -655,8 +693,31 @@ async function putBoardMember(boardId, userIdArray) {
       boardName = data.boardName;
       console.log(data.message);
     },
-    error: (error) => {
-      console.log(error);
+    error: (err) => {
+      if (err.status === 308) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.href = '/block';
+        });
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(err);
     },
   });
   if (updateUserList.length) {
@@ -741,7 +802,28 @@ document.querySelector('.search-form-topMenu').addEventListener('submit', (event
     document.querySelector('.search-result').innerHTML = '';
   }
   document.querySelector('#header-search').value = '';
-  getMyBoards('all', searchInput);
+
+  printBoard.innerHTML = '';
+  printListBoard.innerHTML = '';
+  let result = '',
+    listResult = '';
+  for (const board of boardData) {
+    if (board.boardName.search(searchInput) > -1) {
+      result += boardHTML(board);
+      listResult += boardListHTML(board);
+    } else {
+      for (const member of board.boardMembers) {
+        if (member.name.search(searchInput) > -1) {
+          result += boardHTML(board);
+          listResult += boardListHTML(board);
+        }
+      }
+    }
+  }
+  printBoard.innerHTML = result;
+  printListBoard.innerHTML = listResult;
+
+  equalHeight($('.board-description'));
 });
 
 //화면을 줄이면 이부분을 사용함
@@ -756,7 +838,27 @@ document.querySelector('.search-form').addEventListener('submit', (event) => {
   } else {
     document.querySelector('.mobile-search-result').innerHTML = '';
   }
-  getMyBoards('all', searchInput);
+  printBoard.innerHTML = '';
+  printListBoard.innerHTML = '';
+  let result = '',
+    listResult = '';
+  for (const board of boardData) {
+    if (board.boardName.search(searchInput) > -1) {
+      result += boardHTML(board);
+      listResult += boardListHTML(board);
+    } else {
+      for (const member of board.boardMembers) {
+        if (member.name.search(searchInput) > -1) {
+          result += boardHTML(board);
+          listResult += boardListHTML(board);
+        }
+      }
+    }
+  }
+  printBoard.innerHTML = result;
+  printListBoard.innerHTML = listResult;
+
+  equalHeight($('.board-description'));
 });
 
 //grid or list button
@@ -768,6 +870,7 @@ document.querySelector('#grid-icon').addEventListener('click', (event) => {
   document.querySelector('#list-icon').classList.remove('active');
   $('#list-box').hide();
   $('#board-box').show();
+  changeSelect();
 });
 
 document.querySelector('#list-icon').addEventListener('click', (event) => {

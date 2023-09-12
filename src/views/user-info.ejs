@@ -19,6 +19,49 @@
               </div>
             </div>
           </div>
+          <!-- 포인트 충전모달 -->
+          <div class="modal-basic modal fade show" id="modal-basic6" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+              <div class="modal-content modal-bg-white">
+                <div class="modal-header">
+                  <h6 class="modal-title">포인트 충전</h6>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>1회 최대 결제 금액:</strong> 100,000원</p>
+                  <label>결제금액:</label>
+                  <input id="payment-amount-input" placeholder="금액을 입력하세요" />
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary btn-sm" id="charge-btn">
+                    <img src="./assets/img/kakao-logo.png" alt="kaka-logo" class="img" />
+                    카카오페이 결제
+                  </button>
+                  <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 포인트 충전모달 끝 -->
+          <!-- 포인트 충전 취소모달 -->
+          <div class="modal-basic modal fade show" id="modal-basic7" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+              <div class="modal-content modal-bg-white">
+                <div class="modal-header">
+                  <h6 class="modal-title">포인트 충전 취소</h6>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <ul class="list-group" id="point-history"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 포인트 충전 취소모달 끝 -->
           <!-- 결제취소 확인 모달 -->
           <div
             class="modal-info-confirmed modal fade show"
@@ -79,7 +122,7 @@
                       role="tab"
                       aria-selected="false"
                     >
-                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />결제내역</a
+                      <img src="./assets/img/svg/user.svg" alt="user" class="svg" />멤버십 결제내역</a
                     >
                     <a
                       class="nav-link"
@@ -129,11 +172,27 @@
                     <div>
                       <p>이름 : <%= header.name %></p>
                       <p style="margin-top: 3%">이메일 : <%= header.email %></p>
-                      <p style="margin-top: 3%">잔여포인트 : <%= header.points %></p>
+                      <div style="display: inline-flex; width: 100%">
+                        <p style="margin-top: 1.5%">잔여포인트 : <%= header.points %></p>
+                        <button
+                          class="btn btn-primary btn-sm btn-squared"
+                          style="margin-left: 2%"
+                          id="point-charge-btn"
+                        >
+                          포인트 충전
+                        </button>
+                        <button
+                          class="btn btn-secondary btn-sm btn-squared"
+                          style="margin-left: 2%"
+                          id="cancel-charge-btn"
+                        >
+                          충전 취소
+                        </button>
+                      </div>
                       <% if(header.phoneAuthentication) { %>
                       <div style="display: inline-flex; width: 100%">
                         <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
-                        <button class="btn btn-success btn-sm btn-squared" style="margin-left: 2%">인증 완료</button>
+                        <button class="btn btn-primary btn-sm btn-squared" style="margin-left: 2%">인증 완료</button>
                       </div>
                       <% } else { %>
                       <div style="display: inline-flex; width: 100%">
@@ -154,11 +213,11 @@
                 <div class="tab-pane fade" id="v-pills-payment" role="tabpanel" aria-labelledby="v-pills-payment-tab">
                   <div class="card mt-25 mb-40" style="max-height: 500px; overflow-y: auto">
                     <div class="card-header text-capitalize px-md-25 px-3">
-                      <h6>결제내역 <span class="subtitle">최근 한 달 이내만 출력됩니다.</span></h6>
+                      <h6>멤버십 결제내역 <span class="subtitle">최근 한 달 이내만 출력됩니다.</span></h6>
                     </div>
                     <div class="card-body p-0">
                       <div class="ap-product">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="height: 300px">
                           <table class="table">
                             <thead>
                               <tr>

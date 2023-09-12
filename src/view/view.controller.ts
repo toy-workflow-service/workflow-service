@@ -131,9 +131,15 @@ export class ViewController {
     return { title: 'Work-Flow', subtitle: '비밀번호 찾기' };
   }
 
-  @Get('call')
-  @Render('web-rtc.ejs')
+  @Get('videoCall')
+  @Render('video-call.ejs')
   async call() {
-    return { title: 'Work-Flow', subtitle: '음성/영상 통화' };
+    return { title: 'Work-Flow', subtitle: '영상 통화' };
+  }
+
+  @Get('block')
+  @Render('block.ejs')
+  async block() {
+    return { title: 'Work-Flow', subtitle: 'IP 차단' };
   }
 }

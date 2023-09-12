@@ -68,6 +68,8 @@ export class BoardMembersService {
     if (!board) throw new NotFoundException('해당 보드는 존재하지 않습니다.');
     if (boardMember) throw new NotAcceptableException('이미 초대된 멤버입니다.');
 
+    // if (!user.workspace_members[0].participation)
+    //   throw new HttpException('워크스페이스에 참여된 멤버가 아닙니다.', HttpStatus.BAD_REQUEST);
     const result = await this.boardMemberRepository.save({ user: { id: user.id }, board: { id: board.id } });
     return { userId: result.user.id, boardName: board.name };
   }
@@ -147,6 +149,7 @@ export class BoardMembersService {
           ])
           .where('member.board_id = :boardId ', { boardId: board.board_id })
           .getRawMany();
+
         return boardMembers;
       })
     );

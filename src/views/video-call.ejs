@@ -1,17 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="kr">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>회의</title>
-    <link rel="stylesheet" href="https://unpkg.com/mvp.css" />
+    <title><%= title %> | <%= subtitle %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script
       src="https://cdn.socket.io/4.3.2/socket.io.min.js"
       integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
       crossorigin="anonymous"
     ></script>
-
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png" />
+    <script src="./assets/js/socket.js" defer></script>
+    <script src="./assets/js/video-call.js" defer></script>
     <style>
       body {
         display: flex;
@@ -23,7 +28,7 @@
       }
 
       main {
-        max-width: 800px;
+        max-width: 850px;
         width: 100%;
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -125,39 +130,37 @@
   </head>
   <body>
     <main>
-      <div id="call-room">
+      <div>
+        <img src="./assets/img/favicon.png" alt="img" width="30" height="28" style="padding-top: 10px" />
+        <span style="font-size: 30px; font-weight: bold"> Work-Flow</span>
+      </div>
+      <div id="container" style="margin-top: 20px">
         <div class="user-screen">
           <div id="my-stream">
-            <h2 id="my-name"></h2>
-            <video id="my-video" autoplay playinline width="400" height="400"></video>
+            <h3 id="myName" style="margin-left: 30%; font-size: 20px; align-content: center">
+              <span style="color: darkviolet">내 정보 : </span>
+            </h3>
+            <video id="localVideo" autoplay playinline width="400" height="400"></video>
           </div>
           <div id="peer-stream">
-            <h2 id="peer-name"></h2>
-            <video id="peer-video" autoplay playinline width="400" height="400"></video>
+            <h3 id="peerName" style="margin-left: 30%; font-size: 20px; align-content: center">
+              <span style="color: darkviolet">상대 정보 : </span>
+            </h3>
+            <video id="remoteVideo" autoplay playinline width="400" height="400"></video>
           </div>
         </div>
-        <div class="button-group">
+        <div
+          class="button-group"
+          style="margin-top: 2.5%; margin-bottom: 2.5%; display: inline-flex; margin-left: 22.5%; margin-right: auto"
+        >
           <button id="audio">음소거</button>
           <button id="camera">카메라 끄기</button>
           <button id="screen-share">화면 공유</button>
-          <div id="screen-stream" style="display: none">
-            <h2>화면 공유</h2>
-            <video id="screen-video" autoplay playinline width="800" height="600"></video>
-          </div>
           <button id="leave-room">통화 종료</button>
-        </div>
-        <select id="camera-select"></select>
-        <div id="chat-container">
-          <h2>Chat 💬</h2>
-          <ul id="messages"></ul>
-          <form id="chat">
-            <input type="text" placeholder="메세지를 입력하세요" />
-            <button>Send</button>
-          </form>
         </div>
       </div>
     </main>
-    <script src="./assets/js/socket.js" defer></script>
-    <script src="./assets/js/web-rtc.js" defer></script>
   </body>
+  <script src="../assets/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+  <script src="../assets/vendor_assets/js/jquery/jquery-ui.js"></script>
 </html>

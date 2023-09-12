@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ViewModule } from './view/view.module';
@@ -10,7 +10,6 @@ import { BoardMessagesModule } from './board-messages/board-messages.module';
 import { BoardMembersModule } from './board-members/board-members.module';
 import { CardsModule } from './cards/cards.module';
 import { CommentsModule } from './comments/comments.module';
-import { MentionsModule } from './mentions/mentions.module';
 import { UserMessageRoomsModule } from './user-message-rooms/user-message-rooms.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { ConfigModule } from '@nestjs/config';
@@ -28,12 +27,15 @@ import { EventsModule } from './events/events.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { BlockingIpMiddleWare } from './_common/middlewares/blocking-ip-middleware';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    ScheduleModule.forRoot(),
     ViewModule,
     UsersModule,
     MailModule,
@@ -48,7 +50,6 @@ import { CalendarModule } from './calendar/calendar.module';
     CardsModule,
     CommentsModule,
     CalendarModule,
-    MentionsModule,
     UserMessageRoomsModule,
     RemindersModule,
     SocialLoginModule,
@@ -61,4 +62,14 @@ import { CalendarModule } from './calendar/calendar.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(BlockingIpMiddleWare)
+      .forRoutes(
+        { path: '*', method: RequestMethod.POST },
+        { path: '*', method: RequestMethod.PATCH },
+        { path: '*', method: RequestMethod.PUT }
+      );
+  }
+}

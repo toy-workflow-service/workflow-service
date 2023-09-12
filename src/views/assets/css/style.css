@@ -16160,7 +16160,7 @@ table.fc-scrollgrid thead .fc-scroller-harness .fc-scroller {
 }
 
 .fc-timegrid-event .fc-event-resizer {
-  display: block !important;
+  display: none !important;
 }
 .fc-timegrid-event .fc-event-resizer.fc-event-resizer-end {
   position: relative;
@@ -27480,6 +27480,19 @@ body:after {
 .dark-trigger ul li a:hover::before {
   transform: scale(1.1);
   box-shadow: 0 0 15px var(--color-warning);
+}
+
+.customCallBtn {
+  background-color: darkviolet;
+  color: white;
+  border: none;
+  width: 60px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 /* Header */

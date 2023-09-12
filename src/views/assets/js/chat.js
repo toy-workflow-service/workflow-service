@@ -6,13 +6,19 @@ const offset = new Date().getTimezoneOffset() * 60 * 1000;
 let boardId = params.get('boardId');
 let privateRoomId = params.get('roomId');
 let myBoardIds = [];
-let loginUserId, loginProfileUrl;
+let myBoardNames = [];
+let loginUserId, loginUserName, loginProfileUrl;
 let memberNameList = [];
 let memberIdList = [];
 let memberPhoneList = [];
 let memberEmailList = [];
 let memberProfileUrlList = [];
+let privateMemberIdList = [];
 let privateRoomIdList = [];
+let privateRoomNameList = [];
+let privateRoomProfileUrlList = [];
+let privateRoomEmailList = [];
+let privateRoomPhoneList = [];
 if (!boardId) boardId = 0;
 if (!privateRoomId) privateRoomId = 0;
 
@@ -73,6 +79,8 @@ $(document).ready(async () => {
 
   boardChatList.style.overflow = 'auto';
   privateChatList.style.overflow = 'auto';
+
+  searchChatRoomEvent();
 });
 
 async function getChatRooms() {
@@ -96,19 +104,20 @@ async function getChatRooms() {
       const boardMembers = data.boardMembers;
       const messageList = data.boardMessageResults;
       loginUserId = data.userId;
+      loginUserName = data.userName;
       loginProfileUrl = data.userProfileUrl ? data.userProfileUrl : '../assets/img/favicon.png';
-
       boardMembers.forEach((result, idx) => {
         result.forEach((member) => {
           if (memberIdList.includes(member.user_id)) return;
-
+          let phoneNumber = member.user_phone_number ? member.user_phone_number : '번호 등록 안됨';
           memberIdList.push(member.user_id);
           memberNameList.push(member.user_name);
-          memberPhoneList.push(member.user_phone_number);
+          memberPhoneList.push(phoneNumber);
           memberEmailList.push(member.user_email);
           memberProfileUrlList.push(member.user_profile_url);
         });
         myBoardIds.push(result[0].board_id);
+        myBoardNames.push(result[0].board_name);
         let active, ariaSelected;
         if (idx === 0 && !privateRoomId) {
           active = `nav-link active`;
@@ -234,52 +243,6 @@ async function getChatRooms() {
                                                   >
                                                     <div class="d-flex justify-content-between align-items-center w-100 flex-wrap">
                                                       <div class="flex-1 d-flex align-items-center chat-type-text__write ms-0">
-                                                        <div class="emotions">
-                                                          <div class="dropdown dropdown-click">
-                                                            <button
-                                                              class="btn-link border-0 bg-transparent p-0"
-                                                              data-bs-toggle="dropdown"
-                                                              aria-haspopup="true"
-                                                              aria-expanded="false"
-                                                            >
-                                                              <img class="svg" src="../assets/img/svg/smile.svg" alt="smile" />
-                                                            </button>
-                                                            <div class="dropdown-default dropdown-bottomLeft dropdown-menu-left dropdown-menu">
-                                                              <ul class="emotions__parent d-flex">
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/cool.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/happy2.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/happy.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/shocked.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/like.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/heart.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                              </ul>
-                                                            </div>
-                                                          </div>
-                                                        </div>
                                                         <input class="form-control border-0 bg-transparent" id="room${boardMembers[idx][0].board_id}-messageInput" boardName="${boardMembers[idx][0].board_name}" placeholder="메시지를 입력해 주세요. " />
                                                       </div>
                                                       <div class="chat-type-text__btn">                                                      
@@ -419,53 +382,7 @@ async function getChatRooms() {
                                                   >
                                                     <div class="d-flex justify-content-between align-items-center w-100 flex-wrap">
                                                       <div class="flex-1 d-flex align-items-center chat-type-text__write ms-0">
-                                                        <div class="emotions">
-                                                          <div class="dropdown dropdown-click">
-                                                            <button
-                                                              class="btn-link border-0 bg-transparent p-0"
-                                                              data-bs-toggle="dropdown"
-                                                              aria-haspopup="true"
-                                                              aria-expanded="false"
-                                                            >
-                                                              <img class="svg" src="../assets/img/svg/smile.svg" alt="smile" />
-                                                            </button>
-                                                            <div class="dropdown-default dropdown-bottomLeft dropdown-menu-left dropdown-menu">
-                                                              <ul class="emotions__parent d-flex">
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/cool.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/happy2.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/happy.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/shocked.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/like.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                                <li>
-                                                                  <a class="" href="#">
-                                                                    <img src="../assets/img/svg/heart.png" alt="emotions" />
-                                                                  </a>
-                                                                </li>
-                                                              </ul>
-                                                            </div>
-                                                          </div>
-                                                        </div>
-                                                        <input class="form-control border-0 bg-transparent" id="room${boardMembers[idx][0].board_id}-messageInput" boardName="${boardMembers[idx][0].board_name}" placeholder="메시지를 입력해 주세요. " />
+                                                        <input class="form-control border-0 bg-transparent w-100" id="room${boardMembers[idx][0].board_id}-messageInput" boardName="${boardMembers[idx][0].board_name}" placeholder="메시지를 입력해 주세요. " />
                                                       </div>
                                                       <div class="chat-type-text__btn">
                                                         <button  class="border-0 btn-deep color-light wh-50 p-10 rounded-circle">
@@ -873,7 +790,7 @@ function appendMessage(
   } else {
     //최근 메시지는 로컬스토리지에 저장
     message = `<p>${userName} : ${message}</p>`;
-    localStorage.setItem(`recentMessage-${room}`, message);
+    localStorage.setItem(`recentMessage-${room}`, `${message}!@#${date}`);
   }
   localStorage.setItem(`recentProfileUrl-${room}`, profileUrl);
 
@@ -1173,6 +1090,20 @@ function createUserInfoModal() {
     memberIdList.forEach((id, idx) => {
       if (id === loginUserId) return;
       const img = memberProfileUrlList[idx] ? memberProfileUrlList[idx] : '../assets/img/favicon.png';
+      let phoneNumber;
+      if (memberPhoneList[idx] !== '번호 등록 안됨') {
+        if (memberPhoneList[idx].length === 11) {
+          phoneNumber = `${memberPhoneList[idx].substring(0, 3)} - ${memberPhoneList[idx].substring(
+            3,
+            7
+          )} - ${memberPhoneList[idx].substring(7, 11)}`;
+        } else {
+          phoneNumber = `${memberPhoneList[idx].substring(0, 3)} - ${memberPhoneList[idx].substring(
+            3,
+            6
+          )} - ${memberPhoneList[idx].substring(6, 10)}`;
+        }
+      } else phoneNumber = '번호 등록 안됨';
 
       const modalHtml = ` <!-- Modal -->
                           <div class="modal fade show new-member new-member__2" id="new-member${id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -1195,14 +1126,14 @@ function createUserInfoModal() {
                                         <div class="ap-nameAddress pb-3" >
                                           <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${memberNameList[idx]}</h2>
                                           <div style="display: inline-flex; margin-top:5%">
-                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                               <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text">
-                                              ${memberPhoneList[idx]}
+                                              ${phoneNumber}
                                               </p>
                                             </div>
-                                            <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                               <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text" >
@@ -1216,8 +1147,80 @@ function createUserInfoModal() {
                                   </div>
                                   <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                     <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${id} onclick="movePrivateChat(this)">메시지 전송</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="startVoiceCall(this)">음성 통화</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="startVideoCall(this)">영상 통화</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${id} name=${memberNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Modal -->`;
+      main.innerHTML += modalHtml;
+    });
+  }
+
+  if (privateMemberIdList.length > 0) {
+    privateMemberIdList.forEach((id, idx) => {
+      if (id === loginUserId) return;
+      if (document.querySelector(`#new-member${id}`)) return;
+      const img = privateRoomProfileUrlList[idx] ? privateRoomProfileUrlList[idx] : '../assets/img/favicon.png';
+
+      let phoneNumber;
+      if (privateRoomPhoneList[idx] !== '번호 등록 안됨') {
+        if (privateRoomPhoneList[idx].length === 11) {
+          phoneNumber = `${privateRoomPhoneList[idx].substring(0, 3)} - ${privateRoomPhoneList[idx].substring(
+            3,
+            7
+          )} - ${privateRoomPhoneList[idx].substring(7, 11)}`;
+        } else {
+          phoneNumber = `${privateRoomPhoneList[idx].substring(0, 3)} - ${privateRoomPhoneList[idx].substring(
+            3,
+            6
+          )} - ${privateRoomPhoneList[idx].substring(6, 10)}`;
+        }
+      } else phoneNumber = '번호 등록 안됨';
+      const modalHtml = ` <!-- Modal -->
+                          <div class="modal fade show new-member new-member__2" id="new-member${id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content  radius-xl">
+                                <div class="modal-header">
+                                  <h5 class="modal-title fw-500" id="staticBackdropLabel" style="font-weight:bold">프로필 정보</h5>
+                                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" >
+                                    <img src="./assets/img/svg/x.svg" alt="x" class="svg">
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="new-member-modal">
+                                    <div class="card position-relative user-member-card">
+                                      <div class="card-body text-center p-30">
+                                        <div class="ap-img d-flex justify-content-center">
+                                          <!-- Profile picture image-->
+                                          <img class="ap-img__main rounded-circle mb-20 bg-opacity-primary wh-150" src="${img}" alt="profile">
+                                        </div>
+                                        <div class="ap-nameAddress pb-3" >
+                                          <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${privateRoomNameList[idx]}</h2>
+                                          <div style="display: inline-flex; margin-top:5%">
+                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
+                                              <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
+                                              <br/>
+                                              <p class="c-info-item-text">
+                                              ${phoneNumber}
+                                              </p>
+                                            </div>
+                                            <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
+                                              <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
+                                              <br/>
+                                              <p class="c-info-item-text" >
+                                                ${privateRoomEmailList[idx]}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${id} onclick="movePrivateChat(this)">메시지 전송</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${id} name=${privateRoomNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
                                   </div>
                                 </div>
                               </div>
@@ -1284,10 +1287,30 @@ async function getPrivateChatRooms() {
       loginUserName = data.userName;
       if (rooms) {
         rooms.forEach((room, idx) => {
-          privateRoomIdList.push(room.room_id);
+          let userId, userName, userEmail, userPhoneNumber, userProfileUrl;
           let messageInfos = [];
           const lastMessageInfo = messages[idx][messages[idx].length - 1];
-          const userName = room.sender_id === loginUserId ? room.receiver_name : room.sender_name;
+
+          if (room.sender_id === loginUserId) {
+            userId = room.receiver_id;
+            userName = room.receiver_name;
+            userEmail = room.receiver_email;
+            userPhoneNumber = room.receiver_phone_number ? room.receiver_phone_number : '번호 등록 안됨';
+            userProfileUrl = room.receiver_profile_url;
+          } else {
+            userId = room.sender_id;
+            userName = room.sender_name;
+            userEmail = room.sender_email;
+            userPhoneNumber = room.sender_phone_number ? room.sender_phone_number : '번호 등록 안됨';
+            userProfileUrl = room.sender_profile_url;
+          }
+          privateRoomIdList.push(room.room_id);
+          privateMemberIdList.push(userId);
+          privateRoomNameList.push(userName);
+          privateRoomEmailList.push(userEmail);
+          privateRoomPhoneList.push(userPhoneNumber);
+          privateRoomProfileUrlList.push(userProfileUrl);
+
           let sendTime, sendTimeDiv, img, lastMessage, active, ariaSelected, activeMessage;
           if (lastMessageInfo) {
             lastMessage = lastMessageInfo.message_file_url
@@ -1481,52 +1504,6 @@ async function getPrivateChatRooms() {
                                                 >
                                                   <div class="d-flex justify-content-between align-items-center w-100 flex-wrap">
                                                     <div class="flex-1 d-flex align-items-center chat-type-text__write ms-0">
-                                                      <div class="emotions">
-                                                        <div class="dropdown dropdown-click">
-                                                          <button
-                                                            class="btn-link border-0 bg-transparent p-0"
-                                                            data-bs-toggle="dropdown"
-                                                            aria-haspopup="true"
-                                                            aria-expanded="false"
-                                                          >
-                                                            <img class="svg" src="../assets/img/svg/smile.svg" alt="smile" />
-                                                          </button>
-                                                          <div class="dropdown-default dropdown-bottomLeft dropdown-menu-left dropdown-menu">
-                                                            <ul class="emotions__parent d-flex">
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/cool.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/happy2.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/happy.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/shocked.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/like.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                              <li>
-                                                                <a class="" href="#">
-                                                                  <img src="../assets/img/svg/heart.png" alt="emotions" />
-                                                                </a>
-                                                              </li>
-                                                            </ul>
-                                                          </div>
-                                                        </div>
-                                                      </div>
                                                       <input class="form-control border-0 bg-transparent" id="privateRoom${rooms[idx].room_id}-messageInput" roomName="${userName}" placeholder="메시지를 입력해 주세요. " />
                                                     </div>
                                                     <div class="chat-type-text__btn">
@@ -1645,4 +1622,46 @@ function movePrivateChat(data) {
       window.location.href = `/chat?roomId=${roomId}`;
     },
   });
+}
+
+function searchChatRoomEvent() {
+  const searchForm = document.querySelector('#searchRoom');
+  const searchInput = document.querySelector('#searchChatRoom');
+
+  searchForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const keyword = searchInput.value;
+    if (myBoardNames.length) {
+      myBoardNames.forEach((title, idx) => {
+        const chatList = document.querySelector(`#chat-list-room${myBoardIds[idx]}-tab`);
+        if (title.includes(keyword)) {
+          chatList.style.display = 'block';
+        } else {
+          chatList.style.display = 'none';
+        }
+      });
+    }
+
+    if (privateRoomNameList.length) {
+      privateRoomNameList.forEach((title, idx) => {
+        const privateChatList = document.querySelector(`#chat-list-privateRoom${privateRoomIdList[idx]}-tab`);
+        if (title.includes(keyword)) {
+          privateChatList.style.display = 'block';
+        } else {
+          privateChatList.style.display = 'none';
+        }
+      });
+    }
+  });
+}
+
+function inviteVideoCall(data) {
+  const receiverId = data.getAttribute('id');
+  const receiverName = data.getAttribute('name');
+
+  window.open(
+    `/videoCall?senderId=${loginUserId}&senderName=${loginUserName}&receiverId=${receiverId}&receiverName=${receiverName}`,
+    '_blank',
+    'width=860, height=730'
+  );
 }
