@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          run: export NODE_OPTIONS=--max_old_space_size=2048
+          run: export NODE_OPTIONS=--max_old_space_size=4096
 
       - name: Ec2 deploy
         uses: appleboy/ssh-action@master
