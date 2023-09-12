@@ -149,8 +149,8 @@ async function getWorkspaceDetail() {
                                       <img src="./assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg"/>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu--dynamic">
-                                      <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">edit</a>
-                                      <a class="dropdown-item" onclick="deleteConfirmModal(${user.id}, 'member')">delete</a>
+                                      <a class="dropdown-item" data-rid-id="${user.id}" onclick="openEditMemberModal(this)">수정</a>
+                                      <a class="dropdown-item" onclick="deleteConfirmModal(${user.id}, 'member')">삭제</a>
                                     </div>
                                   </div>
                                 </div>`;
