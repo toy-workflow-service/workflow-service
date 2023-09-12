@@ -192,13 +192,22 @@
                       <% if(header.phoneAuthentication) { %>
                       <div style="display: inline-flex; width: 100%">
                         <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
-                        <button class="btn btn-primary btn-sm btn-squared" style="margin-left: 2%">인증 완료</button>
+                        <button
+                          class="btn btn-primary btn-sm btn-squared"
+                          style="margin-left: 0.8%; pointer-events: none"
+                        >
+                          인증 완료
+                        </button>
                       </div>
                       <% } else { %>
                       <div style="display: inline-flex; width: 100%">
                         <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
-                        <button class="btn btn-secondary btn-sm btn-squared" style="margin-left: 2%">
-                          인증 되지 않음
+                        <button
+                          class="btn btn-primary btn-sm btn-squared"
+                          id="v-pills-settings-tab2"
+                          style="margin-left: 0.8%"
+                        >
+                          인증되지 않음
                         </button>
                       </div>
                       <% } %>
