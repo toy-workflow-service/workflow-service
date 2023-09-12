@@ -33,7 +33,9 @@ jobs:
             git pull origin main
             npm install
             npm run build
+            ls -la
             cd dist
+            ls -la
             pm2 restart main.js
       
       - name: Run script to check memory usage
