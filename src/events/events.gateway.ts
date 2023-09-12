@@ -48,19 +48,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const index = this.roomUsers[room]?.indexOf(this.clientName[client.id]);
       if (index !== -1) {
         this.roomUsers[room] = this.roomUsers[room].slice(0, index).concat(this.roomUsers[room].slice(index + 1));
-        this.server.to(room).emit('userLeft', { userId: this.clientName[client.id], room });
-        this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
+        this.server.to(room).emit('leaveRoom');
       }
     });
     delete this.clientName[client.id];
-
-    //모든 방의 유저 목록을 업데이트해 emit
-    Object.keys(this.roomUsers).forEach((room) => {
-      this.server.to(room).emit('userList', { room, userList: this.roomUsers[room] });
-    });
-
-    //연결된 클라이언트 목록을 업데이트해 emit
-    this.server.emit('userList', { room: null, userLiset: Object.keys(this.connectedClients) });
   }
 
   @SubscribeMessage('join')
@@ -254,17 +245,30 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   /////////////////////////////////////////////////////////////////////////////////////////////
+  @SubscribeMessage('existUser')
+  handleExistUserMessage(client: Socket, data: { senderId: string }) {
+    const room = `callRoom${data.senderId}`;
+    let result: boolean;
+
+    if (!this.roomUsers[room]) this.roomUsers[room] = [];
+    if (this.roomUsers[room].includes(String(this.connectedClients[client.id]))) {
+      result = true;
+    } else result = false;
+
+    this.server.to(client.id).emit('duplicateEntry', { result });
+  }
+
   @SubscribeMessage('inviteVideoCall')
   handleAcceptCall(
     client: Socket,
     data: { senderId: string; senderName: string; receiverId: string; receiverName: string }
   ) {
     const room = `callRoom${data.senderId}`;
-    this.clientName[client.id] = data.senderName;
+    this.clientName[client.id] = data.senderId;
+
     if (client.rooms.has(room)) return;
 
     client.join(room);
-    if (!this.roomUsers[room]) this.roomUsers[room] = [];
     this.roomUsers[room].push(this.clientName[client.id]);
 
     let user = [];
@@ -310,7 +314,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: { callRoomId: string; senderId: string; senderName: string; receiverId: string; receiverName: string }
   ) {
     const room = data.callRoomId;
-    this.clientName[client.id] = data.senderName;
+    this.clientName[client.id] = data.senderId;
     if (client.rooms.has(room)) return;
 
     client.join(room);
@@ -340,5 +344,33 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('callIceCandidate')
   handleCandidateMessage(client: Socket, data: { candidate: any; callRoomId: string }) {
     client.broadcast.to(data.callRoomId).emit('callIceCandidate', { userId: client.id, candidate: data.candidate });
+  }
+
+  @SubscribeMessage('shareScreen')
+  handleShareScreenMessage(client: Socket, data: { captureStream: any; callRoomId: string; userId: string }) {
+    let user = [];
+    console.log(data.captureStream);
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.userId)) {
+        user.push(key);
+      }
+    }
+
+    user.forEach((sock) => {
+      this.server.to(sock).emit('shareScreen', {
+        captureStream: data.captureStream,
+      });
+    });
+  }
+
+  @SubscribeMessage('leaveRoom')
+  handleLeaveRoomMessage(client: Socket, data: { callRoomId: string }) {
+    //소켓 연결이 끊기면 자동으로 방도 나가지는 로직이 있기에 추가 로직은 작성x
+    client.broadcast.to(data.callRoomId).emit('leaveRoom');
+  }
+
+  @SubscribeMessage('refreshRoom')
+  handleRefreshRoomMessage(client: Socket, data: { callRoomId: string }) {
+    client.broadcast.to(data.callRoomId).emit('refreshRoom');
   }
 }

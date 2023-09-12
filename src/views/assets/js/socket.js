@@ -200,25 +200,26 @@ function refuseVideoCall(data) {
 
 function announceInviteVideoCall(callRoomId, senderId, senderName, receiverId, receiverName) {
   const inviteCallAlarmList = document.getElementById('inviteCallAlarmList');
-
-  const inviteCallHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
-                            <div class="nav-notification__type nav-notification__type--primary">
-                              <img class="svg" src="../assets/img/svg/user-check.svg" alt="inbox" />
-                            </div>
-                            <div class="nav-notification__details">
-                              <p>
-                                <span style="max-width: 180px; font-weight: bold">${senderName}</span>
-                                <span>님이 영상통화를 걸었습니다. </span>
-                              </p>
-                              <div>
-                                <button callRoomId="${callRoomId}" senderId="${senderId}" senderName="${senderName}" receiverId="${receiverId}" receiverName="${receiverName}" onclick="acceptVideoCall(this)">수락하기</button>
-                                <button callRoomId="${callRoomId}" senderId="${senderId}" onclick="refuseVideoCall(this)">거절하기</button>
+  if (inviteCallAlarmList) {
+    const inviteCallHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">
+                              <div class="nav-notification__type nav-notification__type--primary">
+                                <img class="svg" src="../assets/img/svg/user-check.svg" alt="inbox" />
                               </div>
-                            </div>
-                          </li>`;
+                              <div class="nav-notification__details">
+                                <p>
+                                  <span style="max-width: 180px; font-weight: bold">${senderName}</span>
+                                  <span>님이 영상통화를 걸었습니다. </span>
+                                </p>
+                                <div>
+                                  <button class="customCallBtn" callRoomId="${callRoomId}" senderId="${senderId}" senderName="${senderName}" receiverId="${receiverId}" receiverName="${receiverName}" onclick="acceptVideoCall(this)">수락</button>
+                                  <button class="customCallBtn" callRoomId="${callRoomId}" senderId="${senderId}" onclick="refuseVideoCall(this)">거절</button>
+                                </div>
+                              </div>
+                            </li>`;
 
-  inviteCallAlarmList.innerHTML += inviteCallHtml;
-  document.getElementById('inviteCallRoom').className = 'nav-item-toggle icon-active';
+    inviteCallAlarmList.innerHTML += inviteCallHtml;
+    document.getElementById('inviteCallRoom').className = 'nav-item-toggle icon-active';
+  }
 }
 
 function announceRefuseVideoCall(receiverName) {

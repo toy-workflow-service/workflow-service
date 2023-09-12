@@ -122,18 +122,20 @@ async function getWorkspaceDetail() {
           const user = member.user;
           let Img = '';
           user.profile_url ? (Img = `${user.profile_url}`) : (Img = `./assets/img/favicon.png`);
-          user.phone_number;
-          if (user.phone_number.length === 11) {
-            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
-              3,
-              7
-            )} - ${user.phone_number.substring(7, 11)}`;
-          } else {
-            user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
-              3,
-              6
-            )} - ${user.phone_number.substring(6, 10)}`;
-          }
+          if (user.phone_number) {
+            if (user.phone_number.length === 11) {
+              user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+                3,
+                7
+              )} - ${user.phone_number.substring(7, 11)}`;
+            } else {
+              user.phone_number = `${user.phone_number.substring(0, 3)} - ${user.phone_number.substring(
+                3,
+                6
+              )} - ${user.phone_number.substring(6, 10)}`;
+            }
+          } else user.phone_number = '번호 등록 안됨';
+
           let html1;
           if (results.loginUserRole === 1 || results.loginUserRole === 2) {
             html1 = `                <div class="files-area__right">
@@ -180,14 +182,14 @@ async function getWorkspaceDetail() {
                                           <div class="ap-nameAddress pb-3" >                                                                                     
                                             <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
                                             <div style="display: inline-flex; margin-top:5%">
-                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                                 <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text">
                                                 ${user.phone_number}
                                                 </p>
                                               </div>  
-                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                                 <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text" >
@@ -241,14 +243,14 @@ async function getWorkspaceDetail() {
                                           <div class="ap-nameAddress pb-3" >                                                                                     
                                             <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${user.name}</h2>
                                             <div style="display: inline-flex; margin-top:5%">
-                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                                 <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text">
                                                 ${user.phone_number}
                                                 </p>
                                               </div>  
-                                              <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                              <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                                 <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                                 <br/>
                                                 <p class="c-info-item-text" >
@@ -262,8 +264,7 @@ async function getWorkspaceDetail() {
                                     </div>
                                     <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                       <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${user.id} onclick="movePrivateChat(this)">메시지 전송</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVoiceCall(this)">음성 통화</button>
-                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${user.id} name=${user.name} onclick="startVideoCall(this)">영상 통화</button>
+                                      <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${user.id} name=${user.name} onclick="inviteVideoCall(this)">영상 통화</button>
                                     </div>
                                   </div>
                                 </div>
@@ -1149,4 +1150,15 @@ function movePrivateChat(data) {
       window.location.href = `/chat?roomId=${roomId}`;
     },
   });
+}
+
+function inviteVideoCall(data) {
+  const receiverId = data.getAttribute('id');
+  const receiverName = data.getAttribute('name');
+
+  window.open(
+    `/videoCall?senderId=${callerId}&senderName=${userName}&receiverId=${receiverId}&receiverName=${receiverName}`,
+    '_blank',
+    'width=860, height=730'
+  );
 }

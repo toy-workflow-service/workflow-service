@@ -109,10 +109,10 @@ async function getChatRooms() {
       boardMembers.forEach((result, idx) => {
         result.forEach((member) => {
           if (memberIdList.includes(member.user_id)) return;
-
+          let phoneNumber = member.user_phone_number ? member.user_phone_number : '번호 등록 안됨';
           memberIdList.push(member.user_id);
           memberNameList.push(member.user_name);
-          memberPhoneList.push(member.user_phone_number);
+          memberPhoneList.push(phoneNumber);
           memberEmailList.push(member.user_email);
           memberProfileUrlList.push(member.user_profile_url);
         });
@@ -1090,6 +1090,20 @@ function createUserInfoModal() {
     memberIdList.forEach((id, idx) => {
       if (id === loginUserId) return;
       const img = memberProfileUrlList[idx] ? memberProfileUrlList[idx] : '../assets/img/favicon.png';
+      let phoneNumber;
+      if (memberPhoneList[idx] !== '번호 등록 안됨') {
+        if (memberPhoneList[idx].length === 11) {
+          phoneNumber = `${memberPhoneList[idx].substring(0, 3)} - ${memberPhoneList[idx].substring(
+            3,
+            7
+          )} - ${memberPhoneList[idx].substring(7, 11)}`;
+        } else {
+          phoneNumber = `${memberPhoneList[idx].substring(0, 3)} - ${memberPhoneList[idx].substring(
+            3,
+            6
+          )} - ${memberPhoneList[idx].substring(6, 10)}`;
+        }
+      } else phoneNumber = '번호 등록 안됨';
 
       const modalHtml = ` <!-- Modal -->
                           <div class="modal fade show new-member new-member__2" id="new-member${id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -1112,14 +1126,14 @@ function createUserInfoModal() {
                                         <div class="ap-nameAddress pb-3" >
                                           <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${memberNameList[idx]}</h2>
                                           <div style="display: inline-flex; margin-top:5%">
-                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                               <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text">
-                                              ${memberPhoneList[idx]}
+                                              ${phoneNumber}
                                               </p>
                                             </div>
-                                            <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                               <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text" >
@@ -1133,8 +1147,7 @@ function createUserInfoModal() {
                                   </div>
                                   <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                     <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${id} onclick="movePrivateChat(this)">메시지 전송</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="startVoiceCall(this)">음성 통화</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${memberNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${id} name=${memberNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
                                   </div>
                                 </div>
                               </div>
@@ -1151,6 +1164,20 @@ function createUserInfoModal() {
       if (document.querySelector(`#new-member${id}`)) return;
       const img = privateRoomProfileUrlList[idx] ? privateRoomProfileUrlList[idx] : '../assets/img/favicon.png';
 
+      let phoneNumber;
+      if (privateRoomPhoneList[idx] !== '번호 등록 안됨') {
+        if (privateRoomPhoneList[idx].length === 11) {
+          phoneNumber = `${privateRoomPhoneList[idx].substring(0, 3)} - ${privateRoomPhoneList[idx].substring(
+            3,
+            7
+          )} - ${privateRoomPhoneList[idx].substring(7, 11)}`;
+        } else {
+          phoneNumber = `${privateRoomPhoneList[idx].substring(0, 3)} - ${privateRoomPhoneList[idx].substring(
+            3,
+            6
+          )} - ${privateRoomPhoneList[idx].substring(6, 10)}`;
+        }
+      } else phoneNumber = '번호 등록 안됨';
       const modalHtml = ` <!-- Modal -->
                           <div class="modal fade show new-member new-member__2" id="new-member${id}" role="dialog" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -1172,14 +1199,14 @@ function createUserInfoModal() {
                                         <div class="ap-nameAddress pb-3" >
                                           <h2 class="ap-nameAddress__title" style="font-weight:bold; padding-top:10px">${privateRoomNameList[idx]}</h2>
                                           <div style="display: inline-flex; margin-top:5%">
-                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:50px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-right: 20px; margin-left:20px; padding-top:10px">
                                               <img src="./assets/img/svg/phone.svg" alt="phone" class="svg" style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text">
-                                              ${privateRoomPhoneList[idx]}
+                                              ${phoneNumber}
                                               </p>
                                             </div>
-                                            <div class="c-info-item-icon" style="margin-left: 30px; padding-top:10px">
+                                            <div class="c-info-item-icon" style="margin-left: 20px; padding-top:10px">
                                               <img src="./assets/img/svg/mail.svg" alt="mail" class="svg"style="padding-bottom:10px" />
                                               <br/>
                                               <p class="c-info-item-text" >
@@ -1193,8 +1220,7 @@ function createUserInfoModal() {
                                   </div>
                                   <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top:4%">
                                     <button class="btn btn-primary btn-default btn-squared text-capitalize" id=${id} onclick="movePrivateChat(this)">메시지 전송</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${privateRoomNameList[idx]} onclick="startVoiceCall(this)">음성 통화</button>
-                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:20px" id=${id} name=${privateRoomNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
+                                    <button class="btn btn-primary btn-default btn-squared text-capitalize" style="margin-left:30px" id=${id} name=${privateRoomNameList[idx]} onclick="inviteVideoCall(this)">영상 통화</button>
                                   </div>
                                 </div>
                               </div>
