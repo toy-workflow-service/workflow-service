@@ -1,16 +1,29 @@
 const logoutBtn = document.querySelector('#logoutBtn');
 const workspaceList = document.querySelector('.workspace-list');
 const workspaceListTop = document.querySelector('#workspace-list-top');
-const accessToken = document.cookie.split(';')[0].split('=')[1];
+
+let accessToken;
 let boardIds = [];
 let boardNames = [];
 
 $(document).ready(async () => {
+  getAccessToken();
   await getWorkspaces();
   await getRecentMessage();
   getMyBoardMessage();
   getNotification();
 });
+
+function getAccessToken() {
+  const regExp = new RegExp(/^[accessToken=]/);
+  document.cookie.split(' ').forEach((value) => {
+    if (regExp.exec(value)) {
+      accessToken = value;
+      accessToken = accessToken.replace('accessToken=', '');
+      accessToken = accessToken.replace(';', '');
+    }
+  });
+}
 
 function logout() {
   $.ajax({

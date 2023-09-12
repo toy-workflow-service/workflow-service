@@ -28,7 +28,7 @@
       }
 
       main {
-        max-width: 800px;
+        max-width: 850px;
         width: 100%;
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -130,25 +130,32 @@
   </head>
   <body>
     <main>
-      <div id="container">
+      <div>
+        <img src="./assets/img/favicon.png" alt="img" width="30" height="28" style="padding-top: 10px" />
+        <span style="font-size: 30px; font-weight: bold"> Work-Flow</span>
+      </div>
+      <div id="container" style="margin-top: 20px">
         <div class="user-screen">
           <div id="my-stream">
-            <h2 id="myName"></h2>
+            <h3 id="myName" style="margin-left: 30%; font-size: 20px; align-content: center">
+              <span style="color: darkviolet">내 정보 : </span>
+            </h3>
             <video id="localVideo" autoplay playinline width="400" height="400"></video>
           </div>
           <div id="peer-stream">
-            <h2 id="peerName"></h2>
+            <h3 id="peerName" style="margin-left: 30%; font-size: 20px; align-content: center">
+              <span style="color: darkviolet">상대 정보 : </span>
+            </h3>
             <video id="remoteVideo" autoplay playinline width="400" height="400"></video>
           </div>
         </div>
-        <div class="button-group">
+        <div
+          class="button-group"
+          style="margin-top: 2.5%; margin-bottom: 2.5%; display: inline-flex; margin-left: 22.5%; margin-right: auto"
+        >
           <button id="audio">음소거</button>
           <button id="camera">카메라 끄기</button>
           <button id="screen-share">화면 공유</button>
-          <div id="screen-stream" style="display: none">
-            <h2>화면 공유</h2>
-            <video id="screen-video" autoplay playinline width="800" height="600"></video>
-          </div>
           <button id="leave-room">통화 종료</button>
         </div>
       </div>
