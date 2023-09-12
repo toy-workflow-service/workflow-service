@@ -85,11 +85,8 @@ function init() {
       items: '.align-items-center',
       connectWith: '.kanban-items,.todo-task1 tbody',
       // stack: '.kanban-items,.todo-task1 tbody',
-      start: function (e, i) {
-        // console.log('start : ', e, i);
-      },
+      start: function (e, i) {},
       stop: function (e, i) {
-        // console.log('stop : ', e, i);
         CardListReorder();
       },
     })
@@ -98,11 +95,8 @@ function init() {
     .sortable({
       connectWith: '.kanban-container,.todo-task2 tbody ',
       stack: '.kanban-container,.todo-task2 tbody',
-      start: function (e, i) {
-        // console.log('start : ', e, i);
-      },
+      start: function (e, i) {},
       stop: function (e, i) {
-        // console.log('stop : ', e, i);
         ColumnListReorder();
       },
     })
@@ -120,7 +114,6 @@ function ColumnListReorder() {
       await BoardColumnSequenceUpdate(columnId, sequence);
     }
   });
-  // console.dir($('.kanban-list'));
 }
 
 function CardListReorder() {
@@ -130,7 +123,6 @@ function CardListReorder() {
     const cardId = card.getAttribute('data-cardId');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
-  // console.dir($('.list-items'));
 }
 
 // put column sequence API

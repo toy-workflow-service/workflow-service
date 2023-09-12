@@ -666,7 +666,7 @@ async function putBoard(boardId, name, description, deadline, startDate) {
           window.location.reload();
         });
       }
-      console.log(err);
+      console.error(err);
     },
   });
 }

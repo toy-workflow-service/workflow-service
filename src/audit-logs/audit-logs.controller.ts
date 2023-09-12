@@ -18,7 +18,6 @@ export class AuditLogsController {
   // 생성일로부터 1개월이 지난 로그 삭제
   @Cron('0 0 * * *')
   async deleteLogs(): Promise<IResult> {
-    console.log('생성일로부터 1개월이 지난 로그들이 삭제되었습니다.');
     return await this.auditLogService.deleteLogs();
   }
 }

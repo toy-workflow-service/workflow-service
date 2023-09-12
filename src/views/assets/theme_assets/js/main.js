@@ -607,40 +607,40 @@
   }
 
   /* Select */
-  $('#countryOption,#cityOption,#skillsOption,#exampleFormControlSelect1,#select-countryOption').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'Please Select',
-    allowClear: true,
-  });
-  $('#event-category').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'Project Category',
-    allowClear: true,
-  });
-  $('#category-member').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'Project Category',
-    dropdownCssClass: 'category-member',
-    allowClear: true,
-  });
-  $('#cupon').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'Select Coupon',
-    dropdownCssClass: 'cupon',
-    allowClear: true,
-  });
-  $('#month').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'MM',
-    dropdownCssClass: 'month',
-    allowClear: true,
-  });
-  $('#year').select2({
-    minimumResultsForSearch: Infinity,
-    placeholder: 'yy',
-    dropdownCssClass: 'year',
-    allowClear: true,
-  });
+  // $('#countryOption,#cityOption,#skillsOption,#exampleFormControlSelect1,#select-countryOption').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'Please Select',
+  //   allowClear: true,
+  // });
+  // $('#event-category').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'Project Category',
+  //   allowClear: true,
+  // });
+  // $('#category-member').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'Project Category',
+  //   dropdownCssClass: 'category-member',
+  //   allowClear: true,
+  // });
+  // $('#cupon').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'Select Coupon',
+  //   dropdownCssClass: 'cupon',
+  //   allowClear: true,
+  // });
+  // $('#month').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'MM',
+  //   dropdownCssClass: 'month',
+  //   allowClear: true,
+  // });
+  // $('#year').select2({
+  //   minimumResultsForSearch: Infinity,
+  //   placeholder: 'yy',
+  //   dropdownCssClass: 'year',
+  //   allowClear: true,
+  // });
 
   /* clock  */
   $('#clock').countdown('2030/10/10', function (event) {
@@ -775,19 +775,19 @@
   });
 
   /* Embedded Spin */
-  $('#switch-spin').on('change', function () {
-    if ($(this).is(':checked')) {
-      $('.spin-embadded').addClass('spin-active');
-    } else {
-      $('.spin-embadded').removeClass('spin-active');
-    }
-  });
+  // $('#switch-spin').on('change', function () {
+  //   if ($(this).is(':checked')) {
+  //     $('.spin-embadded').addClass('spin-active');
+  //   } else {
+  //     $('.spin-embadded').removeClass('spin-active');
+  //   }
+  // });
 
-  $('.kb__select-wrapper select,.tagSelect-rtl select').select2({
-    dir: 'rtl',
-    dropdownAutoWidth: true,
-    dropdownParent: $('.kb__select-wrapper .select2,.tagSelect-rtl .select2'),
-  });
+  // $('.kb__select-wrapper select,.tagSelect-rtl select').select2({
+  //   dir: 'rtl',
+  //   dropdownAutoWidth: true,
+  //   dropdownParent: $('.kb__select-wrapper .select2,.tagSelect-rtl .select2'),
+  // });
 
   /* Uploads Basic */
   const imageUpload = document.querySelector('.upload-one');
@@ -1070,65 +1070,65 @@
   mobileMenu('.menu-collapsable .dm-menu__link', '.dm-submenu');
 
   /* Select */
-  $('#select-component').select2({
-    minimumResultsForSearch: Infinity,
-  });
+  // $('#select-component').select2({
+  //   minimumResultsForSearch: Infinity,
+  // });
 
-  $('#id_label_single').select2({
-    placeholder: 'All',
-    dropdownCssClass: 'category-member',
-    allowClear: true,
-  });
+  // $('#id_label_single').select2({
+  //   placeholder: 'All',
+  //   dropdownCssClass: 'category-member',
+  //   allowClear: true,
+  // });
 
-  $('#select-search,.kb__select,.select-search').select2({
-    placeholder: 'Search a person',
-    dropdownCssClass: 'category-member',
-    allowClear: true,
-  });
-  $('#select-alerts2').select2({
-    placeholder: 'Alerts',
-    dropdownCssClass: 'alert2',
-    allowClear: true,
-  });
-  $('#select-option2').select2({
-    placeholder: 'Select an option...',
-    dropdownCssClass: 'option2',
-    allowClear: true,
-  });
+  // $('#select-search,.kb__select,.select-search').select2({
+  //   placeholder: 'Search a person',
+  //   dropdownCssClass: 'category-member',
+  //   allowClear: true,
+  // });
+  // $('#select-alerts2').select2({
+  //   placeholder: 'Alerts',
+  //   dropdownCssClass: 'alert2',
+  //   allowClear: true,
+  // });
+  // $('#select-option2').select2({
+  //   placeholder: 'Select an option...',
+  //   dropdownCssClass: 'option2',
+  //   allowClear: true,
+  // });
 
-  $('#select-tag,#select-tag2').select2({
-    placeholder: 'Tags Mode',
-    dropdownCssClass: 'tag',
-    tags: ['red', 'green', 'blue'],
-    allowClear: true,
-  });
-
-  /* Mail Compose Rich-text*/
-  $('#mail-message, #mail-reply-message').trumbowyg({
-    svgPath: typeof env !== 'undefined' && env.editorIconUrl ? env.editorIconUrl : 'img/ui/icons.svg',
-    btns: [
-      ['viewHTML'],
-      ['formatting'],
-      ['strong', 'em', 'del'],
-      ['superscript', 'subscript'],
-      ['link'],
-      ['image'], // Our fresh created dropdown
-      ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-      ['unorderedList', 'orderedList'],
-      ['horizontalRule'],
-      ['removeformat'],
-      ['fullscreen'],
-    ],
-  });
+  // $('#select-tag,#select-tag2').select2({
+  //   placeholder: 'Tags Mode',
+  //   dropdownCssClass: 'tag',
+  //   tags: ['red', 'green', 'blue'],
+  //   allowClear: true,
+  // });
 
   /* Mail Compose Rich-text*/
-  $('#mail-reply-message2,#mail-reply-message3').trumbowyg({
-    svgPath: typeof env !== 'undefined' && env.editorIconUrl ? env.editorIconUrl : 'img/ui/icons.svg',
-    btns: [
-      ['formatting', 'strong', 'em', 'superscript', 'subscript', 'link'],
-      ['unorderedList', 'orderedList'],
-    ],
-  });
+  // $('#mail-message, #mail-reply-message').trumbowyg({
+  //   svgPath: typeof env !== 'undefined' && env.editorIconUrl ? env.editorIconUrl : 'img/ui/icons.svg',
+  //   btns: [
+  //     ['viewHTML'],
+  //     ['formatting'],
+  //     ['strong', 'em', 'del'],
+  //     ['superscript', 'subscript'],
+  //     ['link'],
+  //     ['image'], // Our fresh created dropdown
+  //     ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+  //     ['unorderedList', 'orderedList'],
+  //     ['horizontalRule'],
+  //     ['removeformat'],
+  //     ['fullscreen'],
+  //   ],
+  // });
+
+  /* Mail Compose Rich-text*/
+  // $('#mail-reply-message2,#mail-reply-message3').trumbowyg({
+  //   svgPath: typeof env !== 'undefined' && env.editorIconUrl ? env.editorIconUrl : 'img/ui/icons.svg',
+  //   btns: [
+  //     ['formatting', 'strong', 'em', 'superscript', 'subscript', 'link'],
+  //     ['unorderedList', 'orderedList'],
+  //   ],
+  // });
 
   /* Input password toggle */
   function eye_pass() {
@@ -1172,10 +1172,10 @@
   }
   eye_confirm_pass();
 
-  $('#mail-to,#reply-to,#reply-to2').select2({
-    placeholder: '',
-    dropdownCssClass: 'mail-to',
-  });
+  // $('#mail-to,#reply-to,#reply-to2').select2({
+  //   placeholder: '',
+  //   dropdownCssClass: 'mail-to',
+  // });
 
   /* mailbar Toggle */
   $('.mailbar-toggle').on('click', function () {
@@ -1347,21 +1347,21 @@
     closelabel.addEventListener('click', removeBox);
   }
 
-  let start = moment().subtract(6, 'days');
-  let end = moment();
-  $('input[name="date-ranger"]').daterangepicker({
-    singleDatePicker: false,
-    startDate: start,
-    endDate: end,
-    autoUpdateInput: false,
-    ranges: {
-      Today: [moment(), moment()],
-      Yesterday: [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-      'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-      'This Month': [moment().startOf('month'), moment().endOf('month')],
-      'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-    },
-  });
+  // let start = moment().subtract(6, 'days');
+  // let end = moment();
+  // $('input[name="date-ranger"]').daterangepicker({
+  //   singleDatePicker: false,
+  //   startDate: start,
+  //   endDate: end,
+  //   autoUpdateInput: false,
+  //   ranges: {
+  //     Today: [moment(), moment()],
+  //     Yesterday: [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+  //     'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+  //     'This Month': [moment().startOf('month'), moment().endOf('month')],
+  //     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+  //   },
+  // });
 
   /* Custom Input Number */
   function customQuantity() {

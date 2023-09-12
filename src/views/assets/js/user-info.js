@@ -669,7 +669,9 @@ async function getMyPointHistory() {
                           <span class="fw-bold" style="text-decoration: line-through;">충전일자:</span> ${history.created_at
                             .substring(0, 10)
                             .replace('-', '.')}
-                          <span class="fw-bold ms-3" style="text-decoration: line-through;">충전금액:</span> ${history.amount.toLocaleString()}원
+                          <span class="fw-bold ms-3" style="text-decoration: line-through;">충전금액:</span> ${
+                            history.amount
+                          }원
                           <span class="fw-bold" style="color: red;">취소된 결제입니다.</span>
                           </label>
                         </li>`;
