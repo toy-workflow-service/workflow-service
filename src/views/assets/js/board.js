@@ -650,7 +650,6 @@ async function CardCreate(columnId, data) {
 // 코멘트 생성 함수
 function createComment(columnId, cardId) {
   const commentInput = document.getElementById('commentInput').value;
-  console.log(commentInput);
   $.ajax({
     type: 'POST',
     url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
@@ -732,7 +731,6 @@ function openCommentDetailModal(columnId, cardId, commentId) {
 
 function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
-  console.log('확인', commentDetail);
   $('#commentDetailModalLabel').text('댓글');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
@@ -822,7 +820,6 @@ function createReplyModal(filteredComments) {
       const commentId = comment.target.getAttribute('data-comment-id');
       const cardId = comment.target.getAttribute('data-card-id');
 
-      console.log(cardId, commentId);
       deleteConfirmModal(commentId, cardId, 'comment');
     });
   });
