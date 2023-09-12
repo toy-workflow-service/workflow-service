@@ -1,0 +1,47 @@
+name : Build and Deploy to EC2
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  AUTO_DEPLOY:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Ec2 deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.HOST }}
+          username: ${{secrets.USERNAME }}
+          password: ${{secrets.PASSWORD }}
+          port: ${{secrets.PORT }}
+          timeout: 40s
+          script: |
+            cd workflow-service
+            git add .
+            git commit -m "chore : minor"
+            export NODE_OPTIONS=--max_old_space_size=2048
+            git pull origin main
+            npm install
+            npm run build
+            cd dist
+            pm2 restart main.js
+      
+      - name: Run script to check memory usage
+        uses: actions/github-script@0.6.0
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const result = execSync('ps aux | grep node', { encoding: 'utf8' });
+            console.log(result);
