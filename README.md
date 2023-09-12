@@ -2,7 +2,7 @@
 
 ### Work - Flow
 
-![제목을 입력하세요](https://github.com/toy-workflow-service/workflow-service/assets/133616786/7dbc3ddf-4f50-464c-8ae0-549f4d0ea06f)
+![제목을 입력하세요](./src/views/assets/img/main.png)
 
 Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 자신의 작업 공간에 팀원들 초대해서 함께 작업하고 서로 의견을 나눠보세요.
