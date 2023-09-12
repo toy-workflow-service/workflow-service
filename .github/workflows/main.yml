@@ -33,9 +33,13 @@ jobs:
             git pull origin main
             npm install
             npm run build
+
+      - name: Restart server
+        with:
+          script: |
             cd dist
             pm2 restart main.js
-
+      
       - name: Run script to check memory usage
         uses: actions/github-script@0.6.0
         with:
