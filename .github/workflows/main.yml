@@ -28,9 +28,19 @@ jobs:
           password: ${{secrets.PASSWORD }}
           port: ${{secrets.PORT }}
           timeout: 40s
-          run : |
-           cd workflow-service
-           git pull origin main
-           npm install
-           npm run build
-           pm2 restart
+          run: cd workflow-service
+
+      - name: Pull main
+        run: git pull origin main,
+        
+      - name: Install dependencies
+        run : npm install
+
+      - name: Build script     
+        run: npm run build
+
+      - name: Move to Dist
+        run: cd dist
+
+      - name : Restart Server
+        run: pm2 restart main.js
