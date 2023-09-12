@@ -20,14 +20,13 @@ export class BoardsService {
   // 보드 조회
   async GetBoards(workspaceId: number) {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const findBoards = await this.boardRepository.find({ relations: ['workspace', 'board_members.user'] });
+    const findBoards = await this.boardRepository.find({
+      where: { workspace: { id: workspaceId } },
+      relations: ['board_members.user'],
+    });
     if (!workspace) throw new NotFoundException('해당 워크스페이스는 존재하지 않습니다.');
 
-    const boards = findBoards.filter((board) => {
-      return board.workspace.id == workspaceId;
-    });
-
-    const boardInfo = boards.map((board) => {
+    const boardInfo = findBoards.map((board) => {
       const boardMembers = board.board_members.map((boardMember) => ({
         id: boardMember.user.id,
         name: boardMember.user.name,
@@ -37,7 +36,7 @@ export class BoardsService {
       }));
 
       return {
-        workspaceId: board.workspace.id,
+        workspaceId,
         workspaceName: workspace.name,
         boardId: board.id,
         boardName: board.name,

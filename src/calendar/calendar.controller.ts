@@ -1,22 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Delete,
-  Res,
-  HttpStatus,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Delete, Res, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateCalendarDto } from 'src/_common/dtos/calendar.dto';
 import { CalendarsService } from './calendar.service';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { Response } from 'express';
 import { AuthGuard } from 'src/_common/security/auth.guard';
-import { CheckAuthInterceptor } from 'src/_common/interceptors/check-auth-interceptors';
 
 @Controller('calendars')
 export class CalendarController {
@@ -40,7 +28,6 @@ export class CalendarController {
   @UseGuards(AuthGuard)
   async PostCalendar(@GetUser() user: AccessPayload, @Body() data: CreateCalendarDto, @Res() res: Response) {
     await this.calendarsService.PostCalendar(user.id, data);
-
     return res.status(HttpStatus.CREATED).json({ message: '생성하였습니다.' });
   }
 

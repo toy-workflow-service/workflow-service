@@ -175,6 +175,7 @@
             hour: '2-digit',
             minute: '2-digit',
           });
+
           let deadline = new Date(new Date(detailGet.deadline).getTime() - offset).toLocaleString('ko-KR', {
             year: '2-digit',
             month: '2-digit',
@@ -182,6 +183,7 @@
             hour: '2-digit',
             minute: '2-digit',
           });
+
           let deadlineTime = deadline.substring(12).split(' ');
 
           deadline = ('20' + deadline.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
