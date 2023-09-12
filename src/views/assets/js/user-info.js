@@ -1,5 +1,20 @@
+const authBtn = document.getElementById('v-pills-settings-tab2');
+const authSettings = document.getElementById('v-pills-settings');
+
 $(document).ready(async () => {
   await getMembershipHistory();
+
+  authSettings.className = 'tab-pane fade';
+  authBtn.addEventListener('click', () => {
+    document.getElementById('v-pills-payment').className = 'tab-pane fade';
+    document.getElementById('v-pills-profile').className = 'tab-pane fade';
+    document.getElementById('v-pills-messages').className = 'tab-pane fade';
+    if (authSettings.classList.contains('show')) {
+      authSettings.className = 'tab-pane fade';
+    } else {
+      authSettings.className = 'tab-pane fade show active';
+    }
+  });
 });
 let userName;
 let userEmail;

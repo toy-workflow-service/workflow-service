@@ -58,7 +58,7 @@ export class UsersController {
     const { accessToken, refreshToken, userName } = await this.usersService.login(LoginDTO);
 
     res.cookie('accessToken', accessToken);
-    res.cookie('refreshToken', refreshToken);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
     return res.status(HttpStatus.OK).json({ message: `${userName}님 환영합니다. ` });
   }
