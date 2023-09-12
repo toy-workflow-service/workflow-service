@@ -18,15 +18,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          run: export NODE_OPTIONS=--max_old_space_size=6000
-
-      - name: Run script to check memory usage
-        uses: actions/github-script@0.6.0
-        with:
-          script: |
-            const { execSync } = require('child_process');
-            const result = execSync('ps aux | grep node', { encoding: 'utf8' });
-            console.log(result);
 
       - name: Ec2 deploy
         uses: appleboy/ssh-action@master
@@ -38,8 +29,17 @@ jobs:
           timeout: 40s
           script: |
             cd workflow-service
+            export NODE_OPTIONS=--max_old_space_size=2048
             git pull origin main
             npm install
             npm run build
             cd dist
             # pm2 restart main.js
+
+      - name: Run script to check memory usage
+        uses: actions/github-script@0.6.0
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const result = execSync('ps aux | grep node', { encoding: 'utf8' });
+            console.log(result);
