@@ -1,7 +1,6 @@
 const logoutBtn = document.querySelector('#logoutBtn');
 const workspaceList = document.querySelector('.workspace-list');
 const workspaceListTop = document.querySelector('#workspace-list-top');
-
 let accessToken;
 let boardIds = [];
 let boardNames = [];

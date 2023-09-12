@@ -66,7 +66,7 @@ async function getWorkspaceDetail() {
                           </div>
                           <ul class="d-flex text-capitalize">
                             <li>
-                              <span class="color-light fs-13">워크스페이스생성자</span>
+                              <span class="color-light fs-13">워크스페이스 생성자</span>
                               <p class="color-dark fs-14 mt-1 mb-0 fw-500" id="workspace-owner">${
                                 data.workspace_members[0].user.name
                               }</p>
@@ -380,113 +380,6 @@ async function purchaseMembership() {
     const selectedPeriod = document.querySelector('#period-select-text').textContent;
     const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
     const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
-    await $.ajax({
-      method: 'POST',
-      url: `/workspaces/${workspaceId}/payments`,
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('Content-type', 'application/json');
-        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
-      },
-      data: JSON.stringify({ packageType: membershipType, packagePrice: membershipPrice, servicePeriod }),
-      success: () => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'success!',
-          text: '멤버십 결제 완료!',
-        }).then(() => {
-          window.location.reload();
-        });
-      },
-      error: (err) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'error',
-          title: 'error',
-          text: err.responseJSON.message,
-        });
-      },
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// 멤버십 결제 모달열기
-function openPaymentModal(element) {
-  const workspaceId = element.getAttribute('data-workspace-id');
-  let paymentModal = document.querySelector('#modal-basic5');
-
-  paymentModal.innerHTML = `
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content modal-bg-white">
-      <div class="modal-header">
-        <h6 class="modal-title">멤버십 결제</h6>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
-        </button>
-      </div>
-      <div class="modal-body">
-        <p><strong>멤버십 타입:</strong> <span id="membership-type">Premium</span></p>
-        <p><strong>결제금액:</strong> <span id="membership-price"></span><span>원</span></p>
-        <div class="dropdown dropdown-hover">
-        <a style="cursor:pointer;">
-        <span><strong>이용기간</strong> : <span id="period-select-text">선택</span></span>
-          <img src="./assets/img/svg/chevron-down.svg" alt="chevron-down" class="svg" />
-        </a>
-        <div class="dropdown-default dropdown-clickEvent">
-        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">30</span><span>일</span></p>
-        <p class="dropdown-item" style="cursor:pointer;"><span id="service-period" style="cursor:pointer;">180</span><span>일</span></p>
-        </div>
-       </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-sm" data-workspace-id="${workspaceId} "id="payment-btn">결제</button>
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
-      </div>
-    </div>
-  </div>
-  `;
-
-  let membershipItems = document.querySelectorAll('.dropdown-default .dropdown-item');
-  membershipItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      let selected = item.textContent;
-      document.querySelector('#period-select-text').textContent = selected;
-      const membershipPrice = document.querySelector('#membership-price');
-
-      switch (selected) {
-        case '30일':
-          membershipPrice.textContent = '6,500';
-          break;
-        case '180일':
-          membershipPrice.textContent = '31,000';
-          break;
-      }
-    });
-  });
-  const paymentBtn = document.querySelector('#payment-btn');
-  paymentBtn.addEventListener('click', () => {
-    purchaseMembership();
-  });
-
-  $(paymentModal).modal('show');
-}
-
-// 멤버십 결제
-async function purchaseMembership() {
-  try {
-    let membershipType = document.querySelector('#membership-type').textContent;
-    if (membershipType === 'Premium') membershipType = 1;
-    const membershipPrice = document.querySelector('#membership-price').textContent.replace(',', '') / 1;
-    const selectedPeriod = document.querySelector('#period-select-text').textContent;
-    const servicePeriod = parseInt(selectedPeriod.match(/\d+/)[0], 10);
-    const workspaceId = document.querySelector('#payment-btn').getAttribute('data-workspace-id');
-
     await $.ajax({
       method: 'POST',
       url: `/workspaces/${workspaceId}/payments`,

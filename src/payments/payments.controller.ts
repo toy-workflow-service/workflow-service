@@ -6,6 +6,7 @@ import { GetUser } from 'src/_common/decorators/get-user.decorator';
 import { AccessPayload } from 'src/_common/interfaces/access-payload.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipDto } from 'src/_common/dtos/membership.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Controller('workspaces/:workspaceId/payments')
 export class PaymentsController {
@@ -33,5 +34,12 @@ export class PaymentsController {
     @GetUser() user: AccessPayload
   ): Promise<Object> {
     return await this.paymentService.cancelPurchase(workspaceId, paymentId, user.id);
+  }
+
+  // 결제일로부터 7개월이 지난 결제내역 삭제
+  @Cron('0 0 * * *')
+  async deletePaymentHistory(): Promise<IResult> {
+    console.log('결제일로부터 7개월이 지난 결제내역이 삭제되었습니다.');
+    return await this.paymentService.deletePaymentHistory();
   }
 }

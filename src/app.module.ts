@@ -28,12 +28,14 @@ import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { BlockingIpMiddleWare } from './_common/middlewares/blocking-ip-middleware';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    ScheduleModule.forRoot(),
     ViewModule,
     UsersModule,
     MailModule,

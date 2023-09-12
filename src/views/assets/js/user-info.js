@@ -1,5 +1,5 @@
 $(document).ready(async () => {
-  await getPaymentHistory();
+  await getMembershipHistory();
 });
 let userName;
 let userEmail;
@@ -16,7 +16,8 @@ const phoneAuthBtn = document.querySelector('#phoneAuthBtn');
 const cancelAuthBtn = document.querySelector('#cancelAuthBtn');
 const editBtn = document.querySelector('#editBtn');
 const cancelAuthBtn2 = document.querySelector('#cancelAuthBtn2');
-const paymentHistory = document.querySelector('#payment-history-table');
+const membershipHistory = document.querySelector('#payment-history-table');
+const pointHistory = document.querySelector('#point-history');
 
 function updateUserInfo() {
   const email = document.querySelector('#email45').value;
@@ -90,8 +91,10 @@ function deleteConfirmModal(targetId, targetId2, targetType) {
   const cancelBtn = confirmModal.querySelector('.btn-light');
 
   okBtn.addEventListener('click', () => {
-    if (targetType === 'payment') {
-      cancelPayment(targetId, targetId2);
+    if (targetType === 'membership') {
+      cancelMembership(targetId, targetId2);
+    } else if (targetType === 'point') {
+      cancelPoint(targetId, targetId2);
     } else {
       deleteUser();
     }
@@ -453,7 +456,7 @@ if (editBtn) {
 }
 
 // 결제내역 조회
-async function getPaymentHistory() {
+async function getMembershipHistory() {
   try {
     const currentDate = new Date();
     const oneMonthAgo = new Date();
@@ -518,7 +521,7 @@ async function getPaymentHistory() {
                         </tbody>`;
           }
         });
-        paymentHistory.innerHTML += result;
+        membershipHistory.innerHTML += result;
 
         const cancelPaymentBtn = document.querySelectorAll('#cancel-payment-btn');
         cancelPaymentBtn.forEach((btn) => {
@@ -526,7 +529,7 @@ async function getPaymentHistory() {
           const workspaceId = btn.closest('tr').querySelector('[data-workspace-id]').getAttribute('data-workspace-id');
 
           btn.addEventListener('click', () => {
-            deleteConfirmModal(paymentId, workspaceId, 'payment');
+            deleteConfirmModal(paymentId, workspaceId, 'membership');
           });
         });
       },
@@ -549,6 +552,7 @@ chargeBtn.addEventListener('click', () => {
   requestPay();
 });
 
+// 카카오 API
 const requestPay = () => {
   const amount = document.querySelector('#payment-amount-input').value;
   if (!amount) {
@@ -607,14 +611,29 @@ const requestPay = () => {
             });
           },
           error: (err) => {
-            Swal.fire({
-              customClass: {
-                container: 'my-swal',
-              },
-              icon: 'error',
-              title: 'error',
-              text: err.responseJSON.message,
-            });
+            if (err.status === 308) {
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                icon: 'error',
+                title: 'error',
+                text: err.responseJSON.message,
+              }).then(() => {
+                window.location.href = '/block';
+              });
+            } else {
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                icon: 'error',
+                title: 'error',
+                text: err.responseJSON.message,
+              }).then(() => {
+                window.location.reload();
+              });
+            }
           },
         });
       }
@@ -626,11 +645,114 @@ const requestPay = () => {
 const cancelChargeBtn = document.querySelector('#cancel-charge-btn');
 cancelChargeBtn.addEventListener('click', () => {
   const cancelModal = document.querySelector('#modal-basic7');
+  getMyPointHistory();
   $(cancelModal).modal('show');
 });
 
+// 포인트 결제 내역 조회
+async function getMyPointHistory() {
+  try {
+    await $.ajax({
+      method: 'GET',
+      url: `/users/payments/point/history`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      success: (data) => {
+        console.log(data);
+        let result = '';
+        data.forEach((history) => {
+          if (history.status === false) {
+            result += `<li class="list-group-item">
+                        <label class="form-check-label" >
+                          <input type="radio" class="form-check-input" name="selected-payment" disabled>
+                          <span class="fw-bold" style="text-decoration: line-through;">충전일자:</span> ${history.created_at
+                            .substring(0, 10)
+                            .replace('-', '.')}
+                          <span class="fw-bold ms-3" style="text-decoration: line-through;">충전금액:</span> ${
+                            history.amount
+                          }원
+                          <span class="fw-bold" style="color: red;">취소된 결제입니다.</span>
+                          </label>
+                        </li>`;
+          } else {
+            result += `<li class="list-group-item">
+                        <label class="form-check-label" >
+                          <input type="radio" class="form-check-input" name="selected-payment" data-payment-id=${
+                            history.id
+                          } data-amount=${history.amount}>
+                          <span class="fw-bold">충전일자:</span> ${history.created_at
+                            .substring(0, 10)
+                            .replace('-', '.')}
+                          <span class="fw-bold ms-3">충전금액:</span> ${history.amount}원
+                         </label>
+                        </li>`;
+          }
+        });
+        result += `<div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" id="cancel-btn">충전 취소</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+                  </div>`;
+        pointHistory.innerHTML = result;
+
+        const cancelBtn = document.querySelector('#cancel-btn');
+        cancelBtn.addEventListener('click', () => {
+          const selected = document.querySelector('input[name="selected-payment"]:checked');
+          if (selected) {
+            const paymentId = selected.getAttribute('data-payment-id');
+            const amount = selected.getAttribute('data-amount');
+            deleteConfirmModal(paymentId, amount, 'point');
+          }
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// 포인트 결제 취소
+async function cancelPoint(paymentId, amount) {
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `users/payments/point/${paymentId}`,
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+      },
+      data: JSON.stringify({ amount }),
+      success: () => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'success',
+          title: 'Success!',
+          text: '충전 취소 성공!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: err.responseJSON.message,
+        });
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 // 멤버십 결제 취소
-async function cancelPayment(paymentId, workspaceId) {
+async function cancelMembership(paymentId, workspaceId) {
   try {
     await $.ajax({
       method: 'DELETE',
