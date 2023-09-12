@@ -14,11 +14,9 @@ export class CalendarsService {
   ) {}
 
   async GetCalendars(userId: number) {
-    // const calendars = await this.calendarRepository.find();
-    let calendars = await this.calendarRepository.find({ relations: ['user'] });
-    calendars = calendars.filter((calendar) => {
-      return calendar.user.id == userId;
-    });
+    let calendars = await this.calendarRepository.find({ where: { user: { id: userId } } });
+
+    console.log(calendars);
     return calendars.map((c) => {
       return {
         calendarId: c.id,
@@ -48,7 +46,6 @@ export class CalendarsService {
     const user = this.userService.findUserById(userId);
     if (!user) throw new HttpException('해당 유저를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
     await this.calendarRepository.insert({ ...data, user: { id: userId } });
-    // await this.calendarRepository.insert({ ...data });
   }
 
   async DeleteCalendar(id: number) {
