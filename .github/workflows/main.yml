@@ -33,10 +33,6 @@ jobs:
             git pull origin main
             npm install
             npm run build
-
-      - name: Restart server
-        with:
-          script: |
             cd dist
             pm2 restart main.js
       
