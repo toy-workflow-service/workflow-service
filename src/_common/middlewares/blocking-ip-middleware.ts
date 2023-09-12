@@ -48,7 +48,7 @@ function recordRequest(clientIp: string, res: Response) {
   const count = requestCount.get(clientIp);
 
   if (count >= limit) {
-    const duration = 1 * 60 * 1000;
+    const duration = 10 * 60 * 1000;
     const blockEndTime = new Date(Date.now() + duration);
     ipBlockList.set(clientIp, blockEndTime);
     requestCount.delete(clientIp);

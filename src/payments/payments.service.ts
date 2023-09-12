@@ -7,7 +7,7 @@ import { IResult } from 'src/_common/interfaces/result.interface';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { UsersService } from 'src/users/users.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, LessThan, Repository } from 'typeorm';
 
 @Injectable()
 export class PaymentsService {
@@ -53,6 +53,8 @@ export class PaymentsService {
       await transactionEntityManager.save(user);
 
       const newPayment = this.paymentRepository.create({
+        amount,
+        workspaceId: 0,
         user: { id: user.id },
       });
       await transactionEntityManager.save(newPayment);
@@ -132,7 +134,7 @@ export class PaymentsService {
     return payment;
   }
 
-  // 나의 결제내역 조회
+  // 멤버십 결제내역 조회
   async getMyMembershipHistory(userId: number): Promise<Payment[]> {
     const payments = await this.paymentRepository.find({
       where: { user: { id: userId } },
@@ -183,5 +185,22 @@ export class PaymentsService {
       }
     }
     return paymentHistory;
+  }
+
+  // 결제일로부터 7개월이 지난 결제내역 삭제
+  async deletePaymentHistory(): Promise<IResult> {
+    const currentDate = new Date();
+    const sevenMonthAgo = new Date();
+    sevenMonthAgo.setMonth(currentDate.getMonth() - 7);
+
+    const paymentHistory = await this.paymentRepository.find({
+      where: {
+        created_at: LessThan(sevenMonthAgo),
+      },
+    });
+
+    await this.paymentRepository.remove(paymentHistory);
+
+    return { result: true };
   }
 }

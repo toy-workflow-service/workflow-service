@@ -30,13 +30,22 @@
     <link rel="stylesheet" href="../assets/vendor_assets/css/wickedpicker.min.css" />
     <link rel="stylesheet" href="../assets/css/style.css" />
     <!-- endinject -->
-
     <script
       src="https://cdn.socket.io/4.3.2/socket.io.min.js"
       integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MXVWBPB4D4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-MXVWBPB4D4');
+    </script>
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png" />
     <script src="../assets/js/header.js" defer></script>
     <!-- Fonts -->
@@ -246,13 +255,13 @@
                           <a href="/userInfo"> <i class="uil uil-user"></i> Profile</a>
                         </li>
                         <li>
-                          <a href="">
+                          <a href="/maintenance">
                             <i class="uil uil-setting"></i>
                             Settings</a
                           >
                         </li>
                         <li>
-                          <a href=""> <i class="uil uil-key-skeleton"></i> Billing</a>
+                          <a href="/maintenance"> <i class="uil uil-key-skeleton"></i> Billing</a>
                         </li>
                       </ul>
                       <!-- <a class="nav-author__signout"> -->
