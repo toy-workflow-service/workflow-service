@@ -66,7 +66,7 @@ async function getWorkspaceDetail() {
                           </div>
                           <ul class="d-flex text-capitalize">
                             <li>
-                              <span class="color-light fs-13">워크스페이스생성자</span>
+                              <span class="color-light fs-13">워크스페이스 생성자</span>
                               <p class="color-dark fs-14 mt-1 mb-0 fw-500" id="workspace-owner">${
                                 data.workspace_members[0].user.name
                               }</p>
