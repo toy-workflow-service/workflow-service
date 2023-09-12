@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-          run: export NODE_OPTIONS=--max_old_space_size=4096
+          run: export NODE_OPTIONS=--max_old_space_size=6000
 
       - name: Ec2 deploy
         uses: appleboy/ssh-action@master
@@ -34,4 +34,4 @@ jobs:
             npm install
             npm run build
             cd dist
-            pm2 restart main.js
+            # pm2 restart main.js
