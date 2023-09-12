@@ -1,7 +1,0 @@
-
-// Designed for preventing `:hover`
-@mixin dashboard-hover() {
-    &:hover{
-        @content;
-    }
-}

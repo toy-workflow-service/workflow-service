@@ -249,12 +249,12 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleExistUserMessage(client: Socket, data: { senderId: string }) {
     const room = `callRoom${data.senderId}`;
     let result: boolean;
-    console.log(this.roomUsers);
+
     if (!this.roomUsers[room]) this.roomUsers[room] = [];
     if (this.roomUsers[room].includes(String(this.connectedClients[client.id]))) {
       result = true;
     } else result = false;
-    console.log(result);
+
     this.server.to(client.id).emit('duplicateEntry', { result, callRoomId: room });
   }
 
@@ -349,7 +349,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('shareScreen')
   handleShareScreenMessage(client: Socket, data: { captureStream: any; callRoomId: string; userId: string }) {
     let user = [];
-    console.log(data.captureStream);
+
     for (let key in this.connectedClients) {
       if (this.connectedClients[key] === Number(data.userId)) {
         user.push(key);

@@ -48,9 +48,7 @@ export class MailService {
                 <button>초대받기</button>
             </form>`,
       })
-      .then((result: any) => {
-        console.log(result);
-      })
+      .then((result: any) => {})
       .catch((err: any) => {
         console.log(err);
         throw new HttpException(['메일 전송에 실패했습니다.'], HttpStatus.CONFLICT);
