@@ -262,7 +262,7 @@ async function BoardColumns(data, search) {
     }
     cardIndex += Number(card.length);
     if (data[i].columnName == '완료') {
-      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId=${data[i].columnId}">
+      kanbanList.innerHTML += `<div class="list kanban-list draggable" data-columnId="${data[i].columnId}">
                                   <div class="kanban-tops list-tops">
                                     <div class="d-flex justify-content-between align-items-center py-10">
                                         <h3 class="list-title" style="font-weight: bold">${data[i].columnName}</h3>
