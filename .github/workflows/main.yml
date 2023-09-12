@@ -34,6 +34,7 @@ jobs:
             npm install
             npm run build
             cd dist
+            pm2 restart main.js
       
       - name: Run script to check memory usage
         uses: actions/github-script@0.6.0
