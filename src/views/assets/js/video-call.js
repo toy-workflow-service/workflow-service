@@ -29,7 +29,7 @@ $(document).ready(async () => {
       },
       icon: 'error',
       title: '비정상적인 접근',
-      text: `잘못된 접근 방식입니다.  `,
+      text: `잘못된 접근입니다.  `,
     }).then(() => {
       window.close();
     });
@@ -47,12 +47,32 @@ $(document).ready(async () => {
     await socket.emit('existUser', { senderId });
   }
 
-  if (document.readyState === 'complete') {
-    if (!roomId) {
-      socket.emit('refreshRoom', { callRoomId: `callRoom${senderId}` });
-    }
-  } else if (document.readyState === 'loading') {
+  if (document.readyState === 'loading') {
     socket.emit('leaveRoom', { callRoomId: `callRoom${senderId}` });
+  }
+});
+
+$(document).keydown(function (e) {
+  // F5, ctrl + F5, ctrl + r 새로고침 막기
+  var allowPageList = new Array('/a.php', '/b.php');
+  var bBlockF5Key = true;
+  for (number in allowPageList) {
+    var regExp = new RegExp('^' + allowPageList[number] + '.*', 'i');
+    if (regExp.test(document.location.pathname)) {
+      bBlockF5Key = false;
+      break;
+    }
+  }
+
+  if (bBlockF5Key) {
+    if (e.which === 116) {
+      if (typeof event == 'object') {
+        event.keyCode = 0;
+      }
+      return false;
+    } else if (e.which === 82 && e.ctrlKey) {
+      return false;
+    }
   }
 });
 
@@ -184,8 +204,8 @@ socket.on('duplicateEntry', async ({ result }) => {
         container: 'my-swal',
       },
       icon: 'error',
-      title: '중복 입장 오류',
-      text: `이미 영상채팅 방에 들어와 있습니다. `,
+      title: '비정상적인 접근',
+      text: `잘못된 접근입니다. `,
     }).then(() => {
       window.close();
     });
