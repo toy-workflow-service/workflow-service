@@ -641,9 +641,7 @@ async function putBoard(boardId, name, description, deadline, startDate) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ name, description, deadline, start_date: startDate }),
-    success: (data) => {
-      console.log(data.message);
-    },
+    success: () => {},
     error: (err) => {
       if (err.status === 308) {
         Swal.fire({
@@ -668,7 +666,7 @@ async function putBoard(boardId, name, description, deadline, startDate) {
           window.location.reload();
         });
       }
-      console.log(err);
+      console.error(err);
     },
   });
 }
@@ -691,7 +689,6 @@ async function putBoardMember(boardId, userIdArray) {
         updateUserList = [...data.updateUserList];
       }
       boardName = data.boardName;
-      console.log(data.message);
     },
     error: (err) => {
       if (err.status === 308) {
@@ -865,7 +862,6 @@ document.querySelector('.search-form').addEventListener('submit', (event) => {
 
 document.querySelector('#grid-icon').addEventListener('click', (event) => {
   event.preventDefault();
-  console.log('확인해보고 있어요.');
   document.querySelector('#grid-icon').classList.add('active');
   document.querySelector('#list-icon').classList.remove('active');
   $('#list-box').hide();
@@ -875,7 +871,6 @@ document.querySelector('#grid-icon').addEventListener('click', (event) => {
 
 document.querySelector('#list-icon').addEventListener('click', (event) => {
   event.preventDefault();
-  console.log('확인해보고 있어요.');
   document.querySelector('#list-icon').classList.add('active');
   document.querySelector('#grid-icon').classList.remove('active');
   $('#list-box').show();

@@ -124,7 +124,6 @@ export class CommentsService {
       .getOne();
 
     if (!existingComment) {
-      console.log(userId);
       throw new NotFoundException('코멘트를 찾을 수 없거나 권한이 없습니다.');
     }
 
@@ -139,7 +138,6 @@ export class CommentsService {
       .getOne();
 
     if (!existingComment) {
-      console.log(userId);
       throw new NotFoundException('코멘트를 찾을 수 없거나 권한이 없습니다.');
     }
 

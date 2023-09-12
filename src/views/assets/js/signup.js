@@ -54,7 +54,7 @@ async function sendMail() {
       return;
     },
     error: (error) => {
-      console.log(error);
+      console.error(error);
       sendingMessage.style.display = 'none';
       if (error.responseJSON.message) {
         Swal.fire({
@@ -189,7 +189,7 @@ function signup() {
       });
     },
     error: (error) => {
-      console.log(error);
+      console.error(error);
       if (error.responseJSON.message) {
         Swal.fire({
           customClass: {

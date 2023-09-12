@@ -167,14 +167,27 @@ async function createWorkspace() {
       },
     });
   } catch (err) {
-    Swal.fire({
-      customClass: {
-        container: 'my-swal',
-      },
-      icon: 'error',
-      title: 'error',
-      text: err.responseJSON.message,
-    });
+    if (err.responseJSON.message === '핸드폰 인증이 필요한 서비스입니다. ') {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: err.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/userInfo';
+      });
+    } else {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'error',
+        text: err.responseJSON.message,
+      });
+    }
   }
 }
 

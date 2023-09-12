@@ -39,7 +39,6 @@ export class PaymentsController {
   // 결제일로부터 7개월이 지난 결제내역 삭제
   @Cron('0 0 * * *')
   async deletePaymentHistory(): Promise<IResult> {
-    console.log('결제일로부터 7개월이 지난 결제내역이 삭제되었습니다.');
     return await this.paymentService.deletePaymentHistory();
   }
 }

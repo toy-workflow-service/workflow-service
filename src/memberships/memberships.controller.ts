@@ -13,7 +13,6 @@ export class MembershipsController {
   // Task Schheduling, 매일 자정에 아래의 api가 백엔드에서 자동 실행
   @Cron('0 0 * * *')
   async deleteExpiredMembership(): Promise<IResult> {
-    console.log('기간이 만료된 멤버십이 삭제되었습니다.');
     return await this.membershipService.deleteExpiredMembership();
   }
 

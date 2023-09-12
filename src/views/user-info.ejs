@@ -173,7 +173,7 @@
                       <p>이름 : <%= header.name %></p>
                       <p style="margin-top: 3%">이메일 : <%= header.email %></p>
                       <div style="display: inline-flex; width: 100%">
-                        <p style="margin-top: 1.5%">잔여포인트 : <%= header.points %></p>
+                        <p style="margin-top: 1.5%">잔여포인트 : <%= header.points.toLocaleString() %></p>
                         <button
                           class="btn btn-primary btn-sm btn-squared"
                           style="margin-left: 2%"
@@ -197,7 +197,7 @@
                       <% } else { %>
                       <div style="display: inline-flex; width: 100%">
                         <p style="padding-top: 1.5%">휴대폰 번호 : <%= header.phoneNumber %></p>
-                        <button class="btn btn-warning btn-sm btn-squared" style="margin-left: 2%">
+                        <button class="btn btn-secondary btn-sm btn-squared" style="margin-left: 2%">
                           인증 되지 않음
                         </button>
                       </div>
