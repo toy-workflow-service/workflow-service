@@ -36,6 +36,7 @@ jobs:
             npm install
             npm run build
             cd dist
+            npm list -g
             pm2 restart main.js
       
       - name: Run script to check memory usage
