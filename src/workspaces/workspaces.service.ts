@@ -154,13 +154,11 @@ export class WorkspacesService {
     if (!existWorkspace) throw new HttpException('해당 워크스페이스가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
 
     const entityManager = this.workspaceRepository.manager;
-
     try {
       await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
         const members = await this.workspaceMemberRepository.find({ where: { id: workspaceId } });
-
-        await transactionEntityManager.remove(Workspace_Member, members);
-        await transactionEntityManager.remove(Workspace, existWorkspace);
+        await transactionEntityManager.remove(members);
+        await transactionEntityManager.remove(existWorkspace);
       });
       return { result: true };
     } catch (err) {

@@ -9,6 +9,9 @@ export class Payment {
   @Column({ default: true })
   status: boolean;
 
+  @Column()
+  amount: number;
+
   @Column({ nullable: true })
   workspaceId: number;
 

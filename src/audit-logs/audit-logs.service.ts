@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Audit_log } from 'src/_common/entities/audit-log.entity';
+import { IResult } from 'src/_common/interfaces/result.interface';
 import ActionType from 'src/_common/utils/action-type';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 
 @Injectable()
 export class AuditLogsService {
@@ -227,5 +228,21 @@ export class AuditLogsService {
       details: `${userName}님이 ${cardName} 카드를 삭제하였습니다.`,
     });
     return await this.auditLogRepository.save(newLog);
+  }
+
+  async deleteLogs(): Promise<IResult> {
+    const currentDate = new Date();
+    const monthAgo = new Date();
+    monthAgo.setMonth(currentDate.getMonth() - 1);
+
+    const getLogs = await this.auditLogRepository.find({
+      where: {
+        created_at: LessThan(monthAgo),
+      },
+    });
+
+    await this.auditLogRepository.remove(getLogs);
+
+    return { result: true };
   }
 }

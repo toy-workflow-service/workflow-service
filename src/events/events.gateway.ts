@@ -6,7 +6,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { String } from 'aws-sdk/clients/cloudwatchevents';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from 'src/_common/security/jwt/jwt.service';
 
@@ -26,8 +25,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!authorization) return;
 
     let token = authorization.split(' ')[1].split('=')[1];
-
+    token = token.replace(';', '');
     const decode = this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
+
     this.connectedClients[client.id] = Number(decode.id);
     console.log(this.connectedClients);
   }
