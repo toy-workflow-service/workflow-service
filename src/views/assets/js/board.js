@@ -85,11 +85,8 @@ function init() {
       items: '.align-items-center',
       connectWith: '.kanban-items,.todo-task1 tbody',
       // stack: '.kanban-items,.todo-task1 tbody',
-      start: function (e, i) {
-        // console.log('start : ', e, i);
-      },
+      start: function (e, i) {},
       stop: function (e, i) {
-        // console.log('stop : ', e, i);
         CardListReorder();
       },
     })
@@ -98,11 +95,8 @@ function init() {
     .sortable({
       connectWith: '.kanban-container,.todo-task2 tbody ',
       stack: '.kanban-container,.todo-task2 tbody',
-      start: function (e, i) {
-        // console.log('start : ', e, i);
-      },
+      start: function (e, i) {},
       stop: function (e, i) {
-        // console.log('stop : ', e, i);
         ColumnListReorder();
       },
     })
@@ -120,7 +114,6 @@ function ColumnListReorder() {
       await BoardColumnSequenceUpdate(columnId, sequence);
     }
   });
-  // console.dir($('.kanban-list'));
 }
 
 function CardListReorder() {
@@ -130,7 +123,6 @@ function CardListReorder() {
     const cardId = card.getAttribute('data-cardId');
     await CardSequenceUpdate(columnId, cardId, index + 1);
   });
-  // console.dir($('.list-items'));
 }
 
 // put column sequence API
@@ -650,7 +642,6 @@ async function CardCreate(columnId, data) {
 // 코멘트 생성 함수
 function createComment(columnId, cardId) {
   const commentInput = document.getElementById('commentInput').value;
-  console.log(commentInput);
   $.ajax({
     type: 'POST',
     url: `/comments?boardColumnId=${columnId}&cardId=${cardId}`,
@@ -732,7 +723,6 @@ function openCommentDetailModal(columnId, cardId, commentId) {
 
 function createCommentDetailModal(commentDetail, columnId, cardId, commentId) {
   // 모달 내용을 업데이트
-  console.log('확인', commentDetail);
   $('#commentDetailModalLabel').text('댓글');
   $('#commentAuthor').text(commentDetail.commentData.user.name); // 모달 제목 업데이트
   $('#commentUpdate').val(commentDetail.commentData.comment); // 코멘트 내용 업데이트
@@ -822,7 +812,6 @@ function createReplyModal(filteredComments) {
       const commentId = comment.target.getAttribute('data-comment-id');
       const cardId = comment.target.getAttribute('data-card-id');
 
-      console.log(cardId, commentId);
       deleteConfirmModal(commentId, cardId, 'comment');
     });
   });

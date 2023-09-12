@@ -200,7 +200,6 @@ export class UsersController {
     @Param('paymentId') paymentId: number,
     @GetUser() user: AccessPayload
   ): Promise<IResult> {
-    console.log(amount);
     return await this.paymentService.cancelChargePoint(amount, user.id, paymentId);
   }
 

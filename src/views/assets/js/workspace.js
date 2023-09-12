@@ -641,7 +641,7 @@ async function putBoard(boardId, name, description, deadline, startDate) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     data: JSON.stringify({ name, description, deadline, start_date: startDate }),
-    success: (data) => {},
+    success: () => {},
     error: (err) => {
       if (err.status === 308) {
         Swal.fire({

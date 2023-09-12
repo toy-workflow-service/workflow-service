@@ -508,7 +508,6 @@ async function updateWorkspace() {
 
 // 워크스페이스 삭제
 async function deleteWorkspace() {
-  console.log(workspaceId);
   try {
     await $.ajax({
       method: 'DELETE',

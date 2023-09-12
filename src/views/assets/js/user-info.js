@@ -660,7 +660,6 @@ async function getMyPointHistory() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        console.log(data);
         let result = '';
         data.forEach((history) => {
           if (history.status === false) {
