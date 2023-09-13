@@ -32,7 +32,6 @@ export class UploadImageMiddleware implements NestMiddleware {
             !file.mimetype.startsWith('image/')
           ) {
             const errorMessage = ['이미지 파일만 업로드가 가능합니다.'];
-            // const errorResponse = { message: errorMessage } ;
             return res.status(400).json(errorMessage);
           }
 

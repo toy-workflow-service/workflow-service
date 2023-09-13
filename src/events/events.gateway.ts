@@ -277,16 +277,19 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         user.push(key);
       }
     }
-
-    user.forEach((sock) => {
-      this.server.to(sock).emit('inviteVideoCall', {
-        callRoomId: room,
-        senderId: data.senderId,
-        senderName: data.senderName,
-        receiverId: data.receiverId,
-        receiverName: data.receiverName,
+    if (user.length) {
+      user.forEach((sock) => {
+        this.server.to(sock).emit('inviteVideoCall', {
+          callRoomId: room,
+          senderId: data.senderId,
+          senderName: data.senderName,
+          receiverId: data.receiverId,
+          receiverName: data.receiverName,
+        });
       });
-    });
+    } else {
+      this.server.to(client.id).emit('notLogIn');
+    }
   }
 
   @SubscribeMessage('refuseVideoCall')
@@ -367,10 +370,5 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleLeaveRoomMessage(client: Socket, data: { callRoomId: string }) {
     //소켓 연결이 끊기면 자동으로 방도 나가지는 로직이 있기에 추가 로직은 작성x
     client.broadcast.to(data.callRoomId).emit('leaveRoom');
-  }
-
-  @SubscribeMessage('refreshRoom')
-  handleRefreshRoomMessage(client: Socket, data: { callRoomId: string }) {
-    client.broadcast.to(data.callRoomId).emit('refreshRoom');
   }
 }
