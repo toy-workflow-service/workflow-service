@@ -125,11 +125,13 @@ export class WorkspacesService {
           'user.profile_url',
         ])
         .getOne();
-      if (member.participation) {
-        workspaceMember.push(member);
+
+      if (member) {
+        if (member.participation) {
+          workspaceMember.push(member);
+        }
       }
     }
-
     return workspaceMember;
   }
 
