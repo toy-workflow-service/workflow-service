@@ -16,7 +16,6 @@ export class CalendarsService {
   async GetCalendars(userId: number) {
     let calendars = await this.calendarRepository.find({ where: { user: { id: userId } } });
 
-    console.log(calendars);
     return calendars.map((c) => {
       return {
         calendarId: c.id,
