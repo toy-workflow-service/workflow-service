@@ -30,7 +30,7 @@ export class UploadFileMiddleware implements NestMiddleware {
         },
         acl: 'public-read-write',
       }),
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 10 * 1024 * 1024 },
     });
 
     upload.single('newFile')(req, res, (err: any) => {
@@ -38,7 +38,7 @@ export class UploadFileMiddleware implements NestMiddleware {
         if (err.message == 'Unexpected field')
           return res.status(400).json({ message: '파일의 최대 업로드 개수는 1개 입니다.' });
         else if (err.message == 'File too large')
-          return res.status(400).json({ message: '파일의 최대 크기는 5MB 입니다.' });
+          return res.status(400).json({ message: '파일의 최대 크기는 10MB 입니다.' });
         else {
           return res.status(500).json({ message: '파일 업로드를 실패 했습니다.' });
         }

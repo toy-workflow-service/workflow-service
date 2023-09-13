@@ -19,8 +19,17 @@
   $('.ui-datepicker-prev').css({ display: 'none' });
   $('.ui-datepicker-next').css({ display: 'none' });
 
-  $(document).ready(async function () {
-    let results = await GetCalendarApi();
+  document.addEventListener('DOMContentLoaded', async function () {
+    let accessToken;
+    const regExp = new RegExp(/^[accessToken=]/);
+    document.cookie.split(' ').forEach((value) => {
+      if (regExp.exec(value)) {
+        accessToken = value;
+        accessToken = accessToken.replace('accessToken=', '');
+        accessToken = accessToken.replace(';', '');
+      }
+    });
+    let results = await GetCalendarApi(accessToken);
     let resultArr = [];
     for (let i = 0; i < results.length; i++) {
       let cName;
@@ -37,7 +46,7 @@
         cColor = '#20C997';
       }
 
-      const offset = new Date().getTimezoneOffset() * 60 * 1000;
+      const offset = new Date().getTimezoneOffset() * 60 * 1000 - 3 * 60 * 60 * 1000;
       let startSendDate = new Date(new Date(results[i].startDate).getTime() - offset).toLocaleString('ko-KR', {
         year: '2-digit',
         month: '2-digit',
@@ -167,7 +176,7 @@
           infoModal.modal('show');
 
           infoModal.find('.e-info-title').text(infoEvent.event.title);
-          const offset = new Date().getTimezoneOffset() * 60 * 1000;
+          const offset = new Date().getTimezoneOffset() * 60 * 1000 - 3 * 60 * 60 * 1000;
           let startDate = new Date(new Date(detailGet.startDate).getTime() - offset).toLocaleString('ko-KR', {
             year: '2-digit',
             month: '2-digit',
@@ -274,14 +283,21 @@ document.querySelector('#save-button').addEventListener('click', () => {
   const deadline = document.querySelector('#deadline').value;
   const startTime = document.querySelector('#start-time').value;
   const deadTime = document.querySelector('#dead-time').value;
-  let type = document.querySelector('#type');
 
-  for (let i = 0; i < 3; i++) {
-    if (type.children[i].children[0].checked) {
-      type = Number(type.children[i].children[0].value);
-      break;
-    }
+  const type = $('input[type=radio][name=radio-e-type]:checked').val();
+
+  if (!type) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '이벤트 타입을 선택해 주세요. ',
+    });
+    return;
   }
+
   let passDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
   let passTime = /^(0[0-9]|1[0-9]|2[0-3]):(0[1-9]|[0-5][0-9])$/;
   let compareDate = [startDate.replaceAll('-', ''), deadline.replaceAll('-', '')];
@@ -337,7 +353,7 @@ document.querySelector('#save-button').addEventListener('click', () => {
 });
 
 // 조회 api
-async function GetCalendarApi() {
+async function GetCalendarApi(accessToken) {
   const results = await $.ajax({
     type: 'GET',
     url: '/calendars',
@@ -356,6 +372,8 @@ async function GetCalendarApi() {
         icon: 'error',
         title: 'Error',
         text: error.responseJSON.message,
+      }).then(() => {
+        window.location.href = '/';
       });
     },
   });

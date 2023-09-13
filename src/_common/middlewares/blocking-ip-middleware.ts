@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 const ipBlockList = new Map<string, Date>();
 const requestCount = new Map<string, number>();
 const requestTimestamp = new Map<string, number>();
-const limit = 60;
+const limit = 120;
 
 @Injectable()
 export class BlockingIpMiddleWare implements NestMiddleware {
