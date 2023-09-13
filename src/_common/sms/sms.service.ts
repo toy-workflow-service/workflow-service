@@ -57,12 +57,11 @@ export class SMSService {
         },
       ],
     };
-
     await axios
       .post(`https://sens.apigw.ntruss.com/sms/v2/services/${SERVICE_ID}/messages`, body, { headers })
       .catch(async (err) => {
         console.error(err.response.data);
-        throw new InternalServerErrorException('메일 전송 중 오류가 발생 했습니다.');
+        throw new InternalServerErrorException(['메일 전송 중 오류가 발생 했습니다.']);
       });
 
     return { code, expireTime };

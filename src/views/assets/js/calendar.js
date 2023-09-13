@@ -46,7 +46,7 @@
         cColor = '#20C997';
       }
 
-      const offset = new Date().getTimezoneOffset() * 60 * 1000 - 3 * 60 * 60 * 1000;
+      const offset = new Date().getTimezoneOffset() * 60 * 1000;
       let startSendDate = new Date(new Date(results[i].startDate).getTime() - offset).toLocaleString('ko-KR', {
         year: '2-digit',
         month: '2-digit',
@@ -176,7 +176,7 @@
           infoModal.modal('show');
 
           infoModal.find('.e-info-title').text(infoEvent.event.title);
-          const offset = new Date().getTimezoneOffset() * 60 * 1000 - 3 * 60 * 60 * 1000;
+          const offset = new Date().getTimezoneOffset() * 60 * 1000;
           let startDate = new Date(new Date(detailGet.startDate).getTime() - offset).toLocaleString('ko-KR', {
             year: '2-digit',
             month: '2-digit',
