@@ -68,7 +68,7 @@
       lastSendDate = ('20' + lastSendDate.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
       let lastArrTime = lastTime[1].split(':');
       if (lastTime[0] == '오후' && Number(lastArrTime[0]) < 12) {
-        let sum = Number(lastArrTime[0]) + 12;
+        let sum = Number(lastArrTime[0]);
         lastTime[1] = `${sum}:${lastArrTime[1]}:${lastArrTime[2]}`;
       } else if (lastTime[0] == '오전' && Number(lastArrTime[0]) == 12) {
         lastTime[1] = `00:${lastArrTime[1]}:${lastArrTime[2]}`;
@@ -81,7 +81,7 @@
 
       let arrTime = startTime[1].split(':');
       if (startTime[0] == '오후' && Number(arrTime[0]) < 12) {
-        let sum = Number(arrTime[0]) + 12;
+        let sum = Number(arrTime[0]);
         startTime[1] = `${sum}:${arrTime[1]}:${arrTime[2]}`;
       } else if (startTime[0] == '오전' && Number(arrTime[0]) == 12) {
         startTime[1] = `00:${arrTime[1]}:${arrTime[2]}`;
@@ -198,7 +198,7 @@
           deadline = ('20' + deadline.substring(0, 10).replace('.', '-').replace('.', '-')).replaceAll(' ', '');
           let lastArrTime = deadlineTime[1].split(':');
           if (deadlineTime[0] == '오후' && Number(lastArrTime[0]) < 12) {
-            let sum = Number(lastArrTime[0]) + 12;
+            let sum = Number(lastArrTime[0]);
             deadlineTime[1] = `${sum}:${lastArrTime[1]}`;
           } else if (deadlineTime[0] == '오전' && Number(lastArrTime[0]) == 12) {
             deadlineTime[1] = `00:${lastArrTime[1]}`;
@@ -211,7 +211,7 @@
 
           let arrTime = startTime[1].split(':');
           if (startTime[0] == '오후' && Number(arrTime[0]) < 12) {
-            let sum = Number(arrTime[0]) + 12;
+            let sum = Number(arrTime[0]);
             startTime[1] = `${sum}:${arrTime[1]}`;
           } else if (startTime[0] == '오전' && Number(arrTime[0]) == 12) {
             startTime[1] = `00:${arrTime[1]}`;
