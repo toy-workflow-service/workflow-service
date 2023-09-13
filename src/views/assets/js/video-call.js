@@ -18,7 +18,6 @@ let peerInfo = {};
 let selectedCandidate = {};
 let muted = false;
 let cameraOff = false;
-let tempLocalStream, tempRemoteStream;
 let loginUserId;
 
 $(document).ready(async () => {
@@ -88,7 +87,6 @@ const getMedia = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     localStream = stream;
     localVideo.srcObject = stream;
-    tempLocalStream = stream;
   } catch (error) {
     console.log(error);
   }
@@ -107,7 +105,6 @@ const icecandidate = (data) => {
 const addStream = (data) => {
   remoteVideo.autoplay = true;
   remoteVideo.srcObject = data.stream;
-  tempRemoteStream = data.stream;
 };
 
 const makePeerConnect = async (userId) => {
@@ -154,27 +151,39 @@ function handleCameraClick() {
 async function screenShare() {
   try {
     if (screenShareBtn.innerText === '화면 공유') {
-      screenShareBtn.innerText = '화면 공유 중';
-
-      navigator.mediaDevices
-        .getDisplayMedia({ video: { cursor: 'always' }, audio: { echoCancellation: true, noiseSuppression: true } })
-        .then(async (stream) => {
-          localVideo.srcObject = stream;
-          const videoTrack = stream.getVideoTracks()[0];
-          peerInfo[loginUserId].peerConnection
-            .getSenders()
-            .find((sender) => sender.track.kind === videoTrack.kind)
-            .replaceTrack(videoTrack);
-          videoTrack.onended = () => {
-            const screenTrack = localStream.getVideoTracks()[0];
+      if (loginUserId) {
+        navigator.mediaDevices
+          .getDisplayMedia({ video: { cursor: 'always' }, audio: { echoCancellation: true, noiseSuppression: true } })
+          .then(async (stream) => {
+            localVideo.srcObject = stream;
+            const videoTrack = stream.getVideoTracks()[0];
             peerInfo[loginUserId].peerConnection
               .getSenders()
-              .find((sender) => sender.track.kind === screenTrack.kind)
-              .replaceTrack(screenTrack);
-            stream.getTracks().forEach((track) => track.stop());
-            localVideo.srcObject = tempLocalStream;
-          };
+              .find((sender) => sender.track.kind === videoTrack.kind)
+              .replaceTrack(videoTrack);
+            videoTrack.onended = () => {
+              localVideo.srcObject = localStream;
+              const screenTrack = localStream.getVideoTracks()[0];
+              peerInfo[loginUserId].peerConnection
+                .getSenders()
+                .find((sender) => sender.track.kind === screenTrack.kind)
+                .replaceTrack(screenTrack);
+              stream.getTracks().forEach((track) => track.stop());
+              screenShareBtn.innerText = '화면 공유';
+            };
+          });
+
+        screenShareBtn.innerText = '화면 공유 중';
+      } else {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'warning',
+          title: '영상 통화 연결 중',
+          text: `아직 상대방이 수락하지 않아 이용하실 수 없습니다. `,
         });
+      }
     } else {
       screenShareBtn.innerText = '화면 공유';
       const screenTrack = localStream.getVideoTracks()[0];
@@ -183,7 +192,7 @@ async function screenShare() {
         .find((sender) => sender.track.kind === screenTrack.kind)
         .replaceTrack(screenTrack);
       localVideo.srcObject.getTracks().forEach((track) => track.stop());
-      localVideo.srcObject = tempLocalStream;
+      localVideo.srcObject = localStream;
     }
   } catch (err) {
     console.error(err);
@@ -274,8 +283,17 @@ socket.on('leaveRoom', () => {
   });
 });
 
-socket.on('refreshRoom', () => {
-  window.location.reload();
+socket.on('notLogIn', () => {
+  Swal.fire({
+    customClass: {
+      container: 'my-swal',
+    },
+    icon: 'warning',
+    title: '영상통화 연결 실패',
+    text: `상대방이 접속해 있지 않습니다. `,
+  }).then(() => {
+    window.close();
+  });
 });
 
 audioBtn.addEventListener('click', handleAudioClick);
