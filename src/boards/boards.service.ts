@@ -95,7 +95,7 @@ export class BoardsService {
     loginUserId: number
   ): Promise<Object> {
     const workspace = await this.workspaceService.getWorkspaceDetail(workspaceId);
-    const boardCount: any = await this.GetBoards(workspaceId);
+    const boardCount: any = await this.boardRepository.find({ where: { workspace: { id: workspaceId } } });
     const hasMembership = workspace.memberships.length > 0;
 
     if (boardCount.length >= 3 && !hasMembership)
