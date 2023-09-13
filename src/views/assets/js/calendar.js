@@ -19,7 +19,7 @@
   $('.ui-datepicker-prev').css({ display: 'none' });
   $('.ui-datepicker-next').css({ display: 'none' });
 
-  $(document).ready(async function () {
+  document.addEventListener('DOMContentLoaded', async function () {
     let results = await GetCalendarApi();
     let resultArr = [];
     for (let i = 0; i < results.length; i++) {

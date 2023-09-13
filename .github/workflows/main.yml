@@ -27,9 +27,7 @@ jobs:
           timeout: 40s
           script: |
             cd workflow-service
-            git add .
-            git commit -m "chore : minor"
-            export NODE_OPTIONS=--max_old_space_size=2048
+            export NODE_OPTIONS=--max-old-space-size=4096
             git pull origin main
             npm install
             npm run build
