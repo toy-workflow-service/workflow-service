@@ -517,16 +517,7 @@ async function deleteWorkspace() {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: () => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success!',
-          text: '워크스페이스 삭제 완료',
-        }).then(() => {
-          window.location.href = '/';
-        });
+        window.location.href = '/';
       },
       error: (err) => {
         Swal.fire({
@@ -719,16 +710,7 @@ function deleteMember(userId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: () => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success!',
-          text: '멤버 삭제 완료!',
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
       },
       error: (err) => {
         Swal.fire({

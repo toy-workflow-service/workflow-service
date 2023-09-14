@@ -1283,16 +1283,7 @@ function deleteComment(commentId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success',
-        text: '댓글을 삭제하였습니다.',
-      }).then(() => {
-        location.reload();
-      });
+      location.reload();
     },
     error: (error) => {
       console.log(error);

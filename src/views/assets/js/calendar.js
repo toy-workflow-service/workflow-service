@@ -418,16 +418,7 @@ async function DeleteCalendarApi(calendarId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success',
-        text: data.message,
-      }).then(() => {
-        location.reload();
-      });
+      location.reload();
     },
     error: (error) => {
       Swal.fire({

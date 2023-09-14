@@ -760,16 +760,7 @@ async function deleteBoard(boardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success!',
-        text: data.message,
-      }).then(() => {
-        window.location.reload();
-      });
+      window.location.reload();
     },
     error: (error) => {
       Swal.fire({
