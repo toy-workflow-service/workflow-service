@@ -353,8 +353,6 @@ async function BoardColumns(data, search) {
             icon: 'error',
             title: 'error',
             text: error.responseJSON.message[0],
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -539,8 +537,6 @@ async function BoardColumnNameUpdate(columnId, name) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -621,8 +617,6 @@ async function CardCreate(columnId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -683,8 +677,6 @@ function createComment(columnId, cardId) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1211,8 +1203,6 @@ async function CardAllUpdate(columnId, cardId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1343,8 +1333,6 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1431,8 +1419,6 @@ function createreply(columnId, cardId, reply_id, replayComment) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
