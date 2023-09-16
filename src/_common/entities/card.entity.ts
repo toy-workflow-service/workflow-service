@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Board_Column } from './board-column.entity';
 import { Comment } from './comment.entity';
-
 @Entity('cards')
 export class Card {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -35,6 +34,9 @@ export class Card {
 
   @Column({ type: 'json', nullable: true })
   members: string[];
+
+  @Column({ type: 'json', nullable: true })
+  check_list: string[];
 
   @Column()
   color: string;
