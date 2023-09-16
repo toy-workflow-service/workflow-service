@@ -11,7 +11,6 @@ import { BoardMembersModule } from './board-members/board-members.module';
 import { CardsModule } from './cards/cards.module';
 import { CommentsModule } from './comments/comments.module';
 import { UserMessageRoomsModule } from './user-message-rooms/user-message-rooms.module';
-import { RemindersModule } from './reminders/reminders.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormConfig } from './_common/configs/orm.config';
@@ -51,7 +50,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     CommentsModule,
     CalendarModule,
     UserMessageRoomsModule,
-    RemindersModule,
     SocialLoginModule,
     PaymentsModule,
     MembershipsModule,
