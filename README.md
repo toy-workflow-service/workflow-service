@@ -1,11 +1,15 @@
 ## 프로젝트 소개
 
-### Work - Flow
+### Work-Flow
 
 ![메인이미지](./src/views/assets/img/main.png)
 
 Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 자신의 작업 공간에 팀원들 초대해서 함께 작업하고 서로 의견을 나눠보세요.
+
+### [Work-Flow 바로가기](https://work-flow.online)
+
+### [사용 가이드](https://feather-almanac-87a.notion.site/Work-Flow-254abb21a36d40bbaf70fb6f065c21d3)
 
 ## ERD
 
@@ -28,10 +32,6 @@ Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 | Multer, S3       | 파일 업로드 및 다운로드를 처리하여 사용자가 파일을 업로드, 다운로드 할 수 있게 하기 위하여 사용                                                                                                                                                                                                              |
 
 ## [시연영상](https://youtu.be/15mqNHn4vmM)
-
-### [Work-Flow 바로가기](https://work-flow.online)
-
-### [사용 가이드](https://feather-almanac-87a.notion.site/Work-Flow-254abb21a36d40bbaf70fb6f065c21d3)
 
 ## 주요 기능
 
