@@ -12,6 +12,19 @@ onemonthPayBtn.addEventListener('click', async () => {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
+      if (!data.length) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'error',
+          text: '워크스페이스 생성 후 이용 하실 수 있는 서비스입니다.',
+        }).then(() => {
+          $(paymentModal).modal('hide');
+          $('#modal-basic4').modal('show');
+        });
+      }
       paymentModal.innerHTML = `
         <div class="modal-dialog modal-md" role="document">
           <div class="modal-content modal-bg-white">
