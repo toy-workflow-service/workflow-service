@@ -60,6 +60,7 @@ export class CardsService {
     fileSizes: string[],
     originalnames: string[],
     memberIds: string[],
+    checkList: string[],
     loginUserId: number,
     loginUserName: string
   ) {
@@ -97,6 +98,7 @@ export class CardsService {
       file_original_name: originalnames,
       file_size: fileSizes,
       members: memberIds,
+      check_list: checkList,
     });
     await this.auditLogService.createCardLog(board.workspace.id, cardInfo.name, loginUserId, loginUserName);
 
@@ -112,6 +114,7 @@ export class CardsService {
     originalnames: string[],
     fileSizes: string[],
     memberIds: string[],
+    checkList: string[],
     loginUserId: number,
     loginUserName: string
   ) {
@@ -176,6 +179,7 @@ export class CardsService {
         file_original_name: originalnames,
         file_size: fileSizes,
         members: memberIds,
+        check_list: checkList,
       }
     );
 
@@ -237,5 +241,12 @@ export class CardsService {
         await this.cardRepository.update({ id: cardId }, { members: member });
       });
     });
+  }
+
+  //카드 체크리스트 상태 수정
+  async UpdateCheckListStatus(cardId: number, checkList: string[]) {
+    const card = await this.cardRepository.findOneBy({ id: cardId });
+    if (!card) throw new NotFoundException('해당 칼럼은 존재하지 않습니다.');
+    await this.cardRepository.update({ id: cardId }, { check_list: checkList });
   }
 }
