@@ -47,6 +47,7 @@ export class CardsController {
     @Body('members') memberIds: string[],
     @Req() req: MulterRequest,
     @Body('originalnames') originalnames: string[],
+    @Body('checkList') checkList: string[],
     @Res() res: Response,
     @GetUser() user: AccessPayload
   ) {
@@ -72,6 +73,7 @@ export class CardsController {
       fileSizeArray,
       originalnames,
       memberIds,
+      checkList,
       user.id,
       user.name
     );
@@ -98,6 +100,7 @@ export class CardsController {
     @Body('fileSize') fileSize: string[],
     @Body('alreadyfileSize') alreadyfileSize: string[],
     @Body('alreadyFileCount') alreadyFileCount: number,
+    @Body('checkList') checkList: string[],
     @Req() req: MulterRequest,
     @Res() res: Response,
     @GetUser() user: AccessPayload
@@ -149,6 +152,7 @@ export class CardsController {
       fileName,
       fileSizes,
       memberIds,
+      checkList,
       user.id,
       user.name
     );
@@ -181,5 +185,12 @@ export class CardsController {
     @Body() data: UpdateCardSequenceDto
   ) {
     await this.cardsService.UpdateCardSequence(board_column_Id, cardId, data.sequence);
+  }
+
+  //카드 체크리스트 상태 수정
+  @Put('/:cardId/checklistStatus')
+  @UseGuards(AuthGuard)
+  async UpdateCheckListStatus(@Param('cardId') cardId: number, @Body('checkList') checkList: string[]) {
+    await this.cardsService.UpdateCheckListStatus(cardId, checkList);
   }
 }

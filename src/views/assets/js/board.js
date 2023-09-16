@@ -353,8 +353,6 @@ async function BoardColumns(data, search) {
             icon: 'error',
             title: 'error',
             text: error.responseJSON.message[0],
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -445,8 +443,14 @@ async function BoardColumns(data, search) {
       selectedMembers = [];
       selectedMemberNumber = [];
       document.querySelector('.file-list').innerHTML = '';
+
+      checklistNo = 0;
+      checkListContentArr = [];
+      document.querySelector('#checkListBox').children[1].innerHTML = '';
+      $('#checkListBox').hide();
     });
   });
+
   document.getElementById('CardCreateBtn').addEventListener('click', async () => {
     const cardTitle = document.getElementById('cardTitleCreate').value;
     const cardColor = document.getElementById('cardColorCreate').value;
@@ -469,6 +473,21 @@ async function BoardColumns(data, search) {
         formData.append('members', selectedMemberNumber[i]);
       }
     }
+
+    // 카드 생성 버튼 누렀을때 formData에 체크리스트의 내용 넣기.
+    let number = 1;
+    checklistNo = 0;
+    checkListContentArr = [];
+    document.querySelectorAll('#checkListContent').forEach((data) => {
+      checkListContentArr.push({ num: number, content: data.value, status: 0 });
+      number++;
+    });
+    if (checkListContentArr) {
+      for (let i = 0; i < checkListContentArr.length; i++) {
+        formData.append('checkList', [checkListContentArr[i].content, 0]);
+      }
+    }
+
     formData.append('name', cardTitle);
     formData.append('color', cardColor);
     formData.append('content', cardContent);
@@ -539,8 +558,6 @@ async function BoardColumnNameUpdate(columnId, name) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -621,8 +638,6 @@ async function CardCreate(columnId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -683,8 +698,6 @@ function createComment(columnId, cardId) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -831,8 +844,7 @@ document.addEventListener('click', function (event) {
 
 // 카드 세부 정보 모달을 생성하는 함수
 function createCardDetailModal(cardData, commentsData, columnId, cardId, users) {
-  // 모달 바디의 HTML을 생성
-
+  $('#checkListViewBox').hide();
   // 멤버 리스트의 HTML을 생성
   let membersHTML = '';
   selectedMembers = [];
@@ -885,6 +897,59 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
       fileHTML += `<a href="${cardData.file_url}" download=""> ${cardData.file_original_name} </a><br>`;
     }
   }
+  let checkListHTML = '';
+  if (cardData.check_list) {
+    if (typeof cardData.check_list != 'string' && cardData.check_list.length > 0) {
+      for (let i in cardData.check_list) {
+        const checklist = cardData.check_list[i].split(',');
+        let check;
+        if (checklist[checklist.length - 1] == 1) {
+          check = 'checked';
+        } else {
+          check = '';
+        }
+        for (let j = 1; j < checklist.length - 1; j) {
+          checklist[0] += ',' + checklist[j];
+          checklist.splice(j, 1);
+        }
+        checkListHTML += `<li style="margin-bottom: 3%;">
+                            <div class="checkbox-group d-flex">
+                              <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex" id="check-list-view" data-cardId=${cardId}>
+                                  <input class="checkbox" type="checkbox" id="check-grp-${String(cardId) + i}" ${check}>
+                                  <label for="check-grp-${String(cardId) + i}" class=" strikethrough">
+                                    ${checklist[0]}
+                                  </label>
+                              </div>
+                            </div>
+                        </li>`;
+      }
+    } else if (typeof cardData.check_list == 'string') {
+      const checklist = cardData.check_list.split(',');
+      let check;
+      if (checklist[checklist.length - 1] == 1) {
+        check = 'checked';
+      } else {
+        check = '';
+      }
+      for (let j = 1; j < checklist.length - 1; j) {
+        checklist[0] += ',' + checklist[j];
+        checklist.splice(j, 1);
+      }
+      checkListHTML += `<li style="margin-bottom: 3%;">
+                          <div class="checkbox-group d-flex">
+                            <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex" id="check-list-view" data-cardId=${cardId}>
+                                <input class="checkbox" type="checkbox" id="check-grp-${String(cardId) + 1}" ${check}>
+                                <label for="check-grp-${String(cardId) + 1}" class=" strikethrough">
+                                ${checklist[0]}
+                                </label>
+                            </div>
+                          </div>
+                      </li>`;
+    }
+    $('#editCheckListStatus').show();
+  } else {
+    $('#editCheckListStatus').hide();
+  }
   const buttons = `<div class="kanban-modal__header">
     <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
  </div>
@@ -903,6 +968,8 @@ id="cardDeleteBtn" data-column-id="${columnId}" data-card-id="${cardData.id}" on
   document.querySelector('#cardDetailImgFile').innerHTML = fileHTML;
   document.querySelector('#cardDetailDescription').value = cardData.content;
   document.querySelector('#cardDetailButtons').innerHTML = buttons;
+  document.querySelector('#editCheckListStatus').setAttribute('data-cardId', cardId);
+  document.querySelector('#checkListViewBox').children[1].innerHTML = checkListHTML;
 
   // 모달을 화면에 표시
   $('#exampleModal').modal('show');
@@ -1033,6 +1100,37 @@ async function DetailCardGet(columnId, cardId) {
   openUpdateCardModal(cardData, columnId, cardId);
 }
 
+// 체크리스트 상태 수정 버튼
+document.querySelector(`#editCheckListStatus`).addEventListener('click', async (btn) => {
+  let checklist = [];
+  let checklistCardId = btn.target.getAttribute('data-cardId');
+
+  document.querySelectorAll('#check-list-view').forEach((data) => {
+    let status = 0;
+    if (data.children[0].checked) {
+      status = 1;
+    }
+    checklist.push(`${data.children[1].outerText},${status}`);
+  });
+  // 여기서 부터 작업 -- 체크리스트 상태 변경 api가 필요.
+
+  await $.ajax({
+    type: 'PUT',
+    url: `cards/${checklistCardId}/checklistStatus`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    data: JSON.stringify({ checkList: checklist }),
+    success: () => {
+      location.reload();
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+});
+
 // card sequence update api
 async function CardSequenceUpdate(columnId, cardId, sequence) {
   $.ajax({
@@ -1099,6 +1197,54 @@ function openUpdateCardModal(cardData, columnId, cardId) {
       fileNo++;
     }
   }
+
+  // 체크리스트 초기화 및 저장된 데이터 뿌려주기.
+  // 데이터를 받아와서 값 뿌려주기. , for문을 돌려 checklistNo++
+  // 여기선 저장된 값들을 뿌려주는 곳이니 놔두고
+  // get 에서 해야지: check box가 checked면 1, 아니면 0, check cancel이면 2? -> 2는 일단 보류
+  checklistNo = 0;
+  checkListContentArr = [];
+  const checkBox = document.querySelector('#editCheckListBox').children[1];
+  checkBox.innerHTML = '';
+  $('#editCheckListBox').hide();
+
+  if (cardData.check_list) {
+    if (typeof cardData.check_list != 'string' && cardData.check_list.length > 0) {
+      for (let i in cardData.check_list) {
+        const checklist = cardData.check_list[i].split(',');
+        for (let j = 1; j < checklist.length - 1; j) {
+          checklist[0] += ',' + checklist[j];
+          checklist.splice(j, 1);
+        }
+        const num = ++checklistNo;
+        const checkListHTML = `<li id="checkList${num}">
+                                <div class="mb-30" style="margin-top: 5%" >
+                                  <input type="text" id="checkListEditContent" data-status=${
+                                    checklist[checklist.length - 1]
+                                  } value="${checklist[0]}"/>
+                                  <a class="delete" onclick="deleteCheckList(${num})"><i class="far fa-minus-square"></i></a>
+                                </div>
+                              </li>`;
+        checkBox.innerHTML += checkListHTML;
+      }
+    } else if (typeof cardData.check_list == 'string') {
+      const checklist = cardData.check_list.split(',');
+      for (let j = 1; j < checklist.length - 1; j) {
+        checklist[0] += ',' + checklist[j];
+        checklist.splice(j, 1);
+      }
+      const num = ++checklistNo;
+      const checkListHTML = `<li id="checkList${num}">
+                                <div class="mb-30" style="margin-top: 5%" >
+                                  <input type="text" id="checkListEditContent" data-status=${
+                                    checklist[checklist.length - 1]
+                                  } value="${checklist[0]}"/>
+                                  <a class="delete" onclick="deleteCheckList(${num})"><i class="far fa-minus-square"></i></a>
+                                </div>
+                              </li>`;
+      checkBox.innerHTML += checkListHTML;
+    }
+  }
 }
 
 document.addEventListener('click', function (event) {
@@ -1119,6 +1265,11 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
   // 멤버는 이미 선택된 것을 사용하므로 selectedMemberNumber를 그대로 사용
   const updatedCardColor = document.getElementById('cardColorUpdate').value;
 
+  let number = 1;
+  document.querySelectorAll('#checkListEditContent').forEach((data) => {
+    checkListContentArr.push({ num: number, content: data.value, status: data.getAttribute('data-status') });
+    number++;
+  });
   // 폼데이터 담기
   let form = document.querySelector('form');
   const updatedData = new FormData(form);
@@ -1148,6 +1299,15 @@ document.getElementById('CardUpdateBtn').addEventListener('click', () => {
     for (let j = 0; j < selectedMemberNumber.length; j++) {
       updatedData.append('members', selectedMemberNumber[j]);
     }
+  }
+
+  if (checkListContentArr.length > 0) {
+    console.log(checkListContentArr);
+    for (let i = 0; i < checkListContentArr.length; i++) {
+      updatedData.append('checkList', [checkListContentArr[i].content, checkListContentArr[i].status]);
+    }
+  } else {
+    updatedData.append('checkList', []);
   }
   updatedData.append('name', updatedCardName);
   updatedData.append('color', updatedCardColor);
@@ -1211,8 +1371,6 @@ async function CardAllUpdate(columnId, cardId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1283,16 +1441,7 @@ function deleteComment(commentId, cardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success',
-        text: '댓글을 삭제하였습니다.',
-      }).then(() => {
-        location.reload();
-      });
+      location.reload();
     },
     error: (error) => {
       console.log(error);
@@ -1352,8 +1501,6 @@ async function CommentUpdate(commentId, columnId, cardId, data) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1440,8 +1587,6 @@ function createreply(columnId, cardId, reply_id, replayComment) {
           icon: 'error',
           title: 'error',
           text: error.responseJSON.message[0],
-        }).then(() => {
-          window.location.reload();
         });
       }
     },
@@ -1588,4 +1733,75 @@ document.querySelector('.search-form').addEventListener('submit', (event) => {
     document.querySelector('.mobile-search-result').innerHTML = '';
   }
   BoardColumnsGet(searchInput);
+});
+
+// 카드 생성 때 체크리스트 보이기 및 가리기
+document.querySelectorAll('#checkListBoxOnOff').forEach((data) => {
+  data.addEventListener('click', () => {
+    if ($('#checkListBox').css('display') == 'none') {
+      $('#checkListBox').show();
+    } else {
+      $('#checkListBox').hide();
+    }
+  });
+});
+
+// 카드 생성시 체크리스트 추가하기 카드 생성하는 곳으로 이동해야할듯
+let checkListContentArr = [];
+let checklistNo = 0;
+document.querySelector('#addCheckList').addEventListener('click', () => {
+  const checkBox = document.querySelector('#checkListBox').children[1];
+
+  const num = ++checklistNo;
+  const checkListHTML = `<li id="checkList${num}">
+                          <div class="mb-30" style="margin-top: 5%" >
+                            <input type="text" id="checkListContent"/>
+                            <a class="delete" onclick="deleteCheckList(${num})"><i class="far fa-minus-square"></i></a>
+                          </div>
+                        </li>`;
+  checkBox.innerHTML += checkListHTML;
+});
+
+/* 체크리스트 삭제 */
+function deleteCheckList(num) {
+  document.querySelector(`#checkList${num}`).remove();
+  checkListContentArr = checkListContentArr.filter((data) => data.num != num);
+}
+
+// 카드 조회 때 체크리스트 보이기 및 가리기
+document.querySelectorAll('#checkListViewBoxOnOff').forEach((data) => {
+  data.addEventListener('click', () => {
+    if ($('#checkListViewBox').css('display') == 'none') {
+      $('#checkListViewBox').show();
+    } else {
+      $('#checkListViewBox').hide();
+    }
+  });
+});
+
+// 카드 수정 시 체크리스트 버튼
+document.querySelectorAll('#editCheckListBoxOnOff').forEach((data) => {
+  data.addEventListener('click', () => {
+    if ($('#editCheckListBox').css('display') == 'none') {
+      $('#editCheckListBox').show();
+    } else {
+      $('#editCheckListBox').hide();
+    }
+  });
+});
+
+// 카드 수정시 체크리스트 추가
+document.querySelectorAll('#addEditCheckList').forEach((data) => {
+  data.addEventListener('click', () => {
+    const checkBox = document.querySelector('#editCheckListBox').children[1];
+
+    const num = ++checklistNo;
+    const checkListHTML = `<li id="checkList${num}">
+                            <div class="mb-30" style="margin-top: 5%" >
+                              <input type="text" id="checkListEditContent" data-status=0/>
+                              <a class="delete" onclick="deleteCheckList(${num})"><i class="far fa-minus-square"></i></a>
+                            </div>
+                          </li>`;
+    checkBox.innerHTML += checkListHTML;
+  });
 });

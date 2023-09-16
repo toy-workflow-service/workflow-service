@@ -968,16 +968,7 @@ function deleteMessage(data) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
         return;
       },
       error: (error) => {
@@ -1008,16 +999,7 @@ function deletePrivateMessage(data) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
         return;
       },
       error: (error) => {
@@ -1579,16 +1561,7 @@ function deletePrivateRoom(data) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
       },
       error: (error) => {
         console.error(error);
