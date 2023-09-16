@@ -946,6 +946,9 @@ function createCardDetailModal(cardData, commentsData, columnId, cardId, users) 
                           </div>
                       </li>`;
     }
+    $('#editCheckListStatus').show();
+  } else {
+    $('#editCheckListStatus').hide();
   }
   const buttons = `<div class="kanban-modal__header">
     <h5 class="modal-title" id="exampleModalLabel">${cardData.name}</h5>
