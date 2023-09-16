@@ -175,6 +175,15 @@ function announceCardParticipationMessage(boardId, cardName, date) {
   document.getElementById('notificationAlarm').className = 'nav-item-toggle icon-active';
 }
 
+function acceptVideoCallByModal(callRoomId, senderId, senderName, receiverId, receiverName) {
+  window.open(
+    `/videoCall?senderId=${senderId}&senderName=${senderName}&receiverId=${receiverId}&receiverName=${receiverName}&callRoomId=${callRoomId}`,
+    '_blank',
+    'width=860, height=730'
+  );
+  window.location.reload();
+}
+
 function acceptVideoCall(data) {
   const callRoomId = data.getAttribute('callRoomId');
   const senderId = data.getAttribute('senderId');
@@ -199,6 +208,24 @@ function refuseVideoCall(data) {
 }
 
 function announceInviteVideoCall(callRoomId, senderId, senderName, receiverId, receiverName) {
+  Swal.fire({
+    customClass: {
+      container: 'my-swal',
+    },
+    icon: 'question',
+    title: `${senderName}님의 영상통화 요청`,
+    text: `수락하시겠습니까?`,
+
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+    cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+    confirmButtonText: '수락', // confirm 버튼 텍스트 지정
+    cancelButtonText: '닫기', // cancel 버튼 텍스트 지정
+  }).then((result) => {
+    if (result.isConfirmed) {
+      acceptVideoCallByModal(callRoomId, senderId, senderName, receiverId, receiverName);
+    }
+  });
   const inviteCallAlarmList = document.getElementById('inviteCallAlarmList');
   if (inviteCallAlarmList) {
     const inviteCallHtml = `<li class="nav-notification__single nav-notification__single--unread d-flex flex-wrap">

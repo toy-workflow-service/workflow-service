@@ -244,6 +244,47 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     });
   }
+
+  @SubscribeMessage('typingMessage')
+  handleTypingMessage(client: Socket, data: { room: string; receiverId: string; message: string }) {
+    let user = [];
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.receiverId)) {
+        user.push(key);
+      }
+    }
+    user.forEach((sock) => {
+      this.server.to(sock).emit('typingMessage', {
+        room: data.room,
+        message: data.message,
+      });
+    });
+  }
+
+  @SubscribeMessage('existTypingMessage')
+  handleDeleteTypingMessage(client: Socket, data: { room: string; senderId: string; receiverId: string }) {
+    let user = [];
+    for (let key in this.connectedClients) {
+      if (this.connectedClients[key] === Number(data.receiverId)) {
+        user.push(key);
+      }
+    }
+    user.forEach((sock) => {
+      this.server.to(sock).emit('existTypingMessage', {
+        room: data.room,
+        senderId: client.id,
+      });
+    });
+  }
+
+  @SubscribeMessage('existTypinginital')
+  handdleTypingInital(client: Socket, data: { room: string; senderId: string; result: string }) {
+    this.server.to(data.senderId).emit('existTypinginital', {
+      room: data.room,
+      result: data.result,
+    });
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////
   @SubscribeMessage('existUser')
   handleExistUserMessage(client: Socket, data: { senderId: string }) {
