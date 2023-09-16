@@ -92,7 +92,26 @@
                     <div id="cardDetailImgFile"></div>
                   </div>
                 </div>
-
+                <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="checkListViewBoxOnOff">
+                  체크리스트
+                </button>
+                <div class="kanban-modal__list" id="checkListViewBox" style="display: none; margin-top: 5%;">
+                  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="editCheckListStatus">
+                    상태 수정
+                  </button>
+                  <ul style="margin-top: 3%;">
+                     <li style="margin-bottom: 3%;">
+                        <div class="checkbox-group d-flex">
+                           <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
+                              <input class="checkbox" type="checkbox" id="check-grp-1">
+                              <label for="check-grp-1" class=" strikethrough">
+                                 File Manager Design
+                              </label>
+                           </div>
+                        </div>
+                     </li>
+                  </ul>
+                </div>
                 <div class="kanban-modal__research mt-30">
                   <h6>참여자</h6>
                 </div>
@@ -235,7 +254,16 @@
                     </div>
                   </div>
                 </div>
-
+                <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="checkListBoxOnOff">
+                  체크리스트
+                </button>
+                <div class="kanban-modal__list" id="checkListBox" style="display: none;">
+                  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addCheckList">
+                    체크리스트 추가
+                  </button>
+                  <ul>
+                  </ul>
+                </div>
                 <div class="kanban-modal__research mt-30">
                   <h6>참여자</h6>
                 </div>
@@ -316,7 +344,16 @@
                     </div>
                   </div>
                 </div>
-
+                <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="editCheckListBoxOnOff">
+                  체크리스트
+                </button>
+                <div class="kanban-modal__list" id="editCheckListBox" style="display: none;">
+                  <button class="btn btn-primary btn-sm btn-squared btn-transparent-primary" id="addEditCheckList">
+                    체크리스트 추가
+                  </button>
+                  <ul>
+                  </ul>
+                </div>
                 <div class="kanban-modal__research mt-30">
                   <h6>참여자</h6>
                 </div>

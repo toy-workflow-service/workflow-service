@@ -20,32 +20,24 @@
           </div>
         </div>
       </div>
-      <div class="row calendar-grid justify-content-center">
+      <div class="dm-calendar-left" style="margin: auto 22% auto 22%;">
+        <button
+        class="btn btn-primary btn-lg btn-create-event"
+        id="modal-open"
+        data-bs-toggle="modal"
+        data-bs-target="#c-event-modal"
+      >
+        <img class="svg" src="./assets/img/svg/plus.svg" alt="" />일정 추가
+      </button>
+      </div>
+      <div class="row calendar-grid justify-content-center" style="margin: 3% 20% auto auto;">
         <div class="col-xxl-3 col-xl-5 col-md-6 col-sm-8">
-          <div class="dm-calendar-left">
-            <button
-              class="btn btn-primary btn-lg btn-create-event"
-              id="modal-open"
-              data-bs-toggle="modal"
-              data-bs-target="#c-event-modal"
-            >
-              <img class="svg" src="./assets/img/svg/plus.svg" alt="" />일정 추가
-            </button>
-            <div class="card card-md mb-4">
-              <div class="card-body px-10">
-                <div class="date-picker">
-                  <div class="date-picker__calendar"></div>
-                  <!-- ends: .date-picker__calendar -->
-                </div>
-              </div>
-            </div>
             <div class="card card-md mb-4">
               <div class="card-body" style="display: none">
                 <div class="draggable-events" id="draggable-events"></div>
               </div>
             </div>
             <!-- ends: .card -->
-          </div>
         </div>
         <!-- ends: .col-lg-3 -->
         <div class="col-xxl-9 col-xl-7">

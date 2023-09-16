@@ -36,6 +36,9 @@ export class Card {
   @Column({ type: 'json', nullable: true })
   members: string[];
 
+  @Column({ type: 'json', nullable: true })
+  check_list: string[];
+
   @Column()
   color: string;
 
@@ -55,5 +58,4 @@ export class Card {
     nullable: false,
   })
   board_column: Board_Column;
-  column: any;
 }

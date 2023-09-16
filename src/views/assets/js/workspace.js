@@ -414,8 +414,6 @@ createBoardBtn.addEventListener('click', async (event) => {
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -462,8 +460,6 @@ async function createBoardMember(boardId, saveUserId) {
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -662,8 +658,6 @@ async function putBoard(boardId, name, description, deadline, startDate) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
         });
       }
       console.error(err);
@@ -710,8 +704,6 @@ async function putBoardMember(boardId, userIdArray) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
         });
       }
       console.log(err);
@@ -760,16 +752,7 @@ async function deleteBoard(boardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success!',
-        text: data.message,
-      }).then(() => {
-        window.location.reload();
-      });
+      window.location.reload();
     },
     error: (error) => {
       Swal.fire({
