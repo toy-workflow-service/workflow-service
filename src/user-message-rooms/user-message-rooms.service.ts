@@ -52,6 +52,28 @@ export class UserMessageRoomsService {
       .getRawMany();
   }
 
+  async getUserDetailMessageRoom(roomId: number): Promise<any> {
+    return await this.userMessageRoomsRepository
+      .createQueryBuilder('room')
+      .innerJoinAndSelect('room.sender', 'sender')
+      .innerJoinAndSelect('room.receiver', 'receiver')
+      .select([
+        'room.id',
+        'sender.id',
+        'sender.name',
+        'sender.email',
+        'sender.phone_number',
+        'sender.profile_url',
+        'receiver.id',
+        'receiver.name',
+        'receiver.email',
+        'receiver.phone_number',
+        'receiver.profile_url',
+      ])
+      .where('room.id=:roomId', { roomId })
+      .getRawOne();
+  }
+
   async deleteUserMessageRoom(roomId: number): Promise<void> {
     await this.userMessageRoomsRepository.delete({ id: roomId });
   }

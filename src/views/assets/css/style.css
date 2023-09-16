@@ -15234,7 +15234,10 @@ input[type='checkbox']:checked + label.strikethrough {
   box-shadow: 0 10px 20px rgba(173, 180, 210, 0.1490196078);
   border-radius: 10px 10px 0 0;
   height: 95px;
+  width: 600px;
 }
+
+
 @media only screen and (max-width: 1399px) {
   .chat-body .chat-header {
     padding: 25px 20px;

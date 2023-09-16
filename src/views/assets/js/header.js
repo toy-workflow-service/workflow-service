@@ -405,6 +405,93 @@ function getNotification() {
   }
 }
 
+function searchVideoCall() {
+  const searchResult = document.querySelector('#searchVideoCallResult');
+  const email = document.querySelector('#searchVideoCall').value;
+  if (!email) {
+    searchResult.innerHTML = `<p style="margin: 7% auto 0 32%"> 검색할 이메일을 입력해 주세요. </p>`;
+    return;
+  }
+  searchResult.innerHTML = '';
+  $.ajax({
+    method: 'GET',
+    url: `/users/searchEmail/${email}`,
+    success: (data) => {
+      const { user } = data;
+      if (!user) {
+        searchResult.innerHTML = `<p style="margin: 7% auto 0 25%"> 검색한 유저가 없습니다. 다시 검색해 주세요. </p>`;
+        return;
+      }
+
+      searchResult.innerHTML = `<div style="margin: 7% auto 0 5%" >
+                                  <input type="radio"
+                                  name="chatUser"
+                                  value="${user.id}" /> ${user.name}
+                                </div>`;
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+function inviteVideoCallModal() {
+  const userId = $('input[type=radio][name=chatUser]:checked').val();
+
+  if (!userId) {
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      icon: 'error',
+      title: 'Error',
+      text: '채팅에 초대할 유저를 선택해 주세요. ',
+    });
+    return;
+  }
+
+  $.ajax({
+    method: 'GET',
+    url: `/users/userInfos/${userId}`,
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
+    },
+    success: (data) => {
+      const { senderId, senderName, receiverId, receiverName } = data;
+      if (senderId === receiverId) {
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          icon: 'error',
+          title: 'Error',
+          text: '자기 자신에게는 이용할 수 없는 기능입니다. ',
+        });
+      } else {
+        document.querySelector('#searchVideoCall').value = '';
+        document.querySelector('#searchVideoCallResult').innerHTML = '';
+        $('#newVideoCallModal').modal('hide');
+        window.open(
+          `/videoCall?senderId=${senderId}&senderName=${senderName}&receiverId=${receiverId}&receiverName=${receiverName}`,
+          '_blank',
+          'width=860, height=730'
+        );
+      }
+    },
+    error: (error) => {
+      Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      });
+      return;
+    },
+  });
+}
+
 // const darkModeToggle = document.querySelector('[data-layout="dark"]');
 // const lightModeToggle = document.querySelector('[data-layout="light"]');
 // const sideLayoutToggle = document.querySelector('[data-layout="side"]');

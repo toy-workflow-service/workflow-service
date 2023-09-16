@@ -183,7 +183,14 @@
                 </a>
                 <div class="dropdown-parent-wrapper" id="inviteCallAlarmContainer">
                   <div class="dropdown-wrapper">
-                    <h2 class="dropdown-wrapper__title">음성 및 영상통화 요청</h2>
+                    <h2
+                      class="dropdown-wrapper__title"
+                      style="cursor: pointer"
+                      data-bs-toggle="modal"
+                      data-bs-target="#newVideoCallModal"
+                    >
+                      영상통화 걸기
+                    </h2>
                     <ul id="inviteCallAlarmList"></ul>
                   </div>
                 </div>
@@ -448,5 +455,51 @@
       </div>
     </div>
     <!-- 워크스페이스 생성모달 끝 -->
+    <div class="modal-basic modal fade show" id="newVideoCallModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content modal-bg-white">
+          <div class="modal-header">
+            <h6 class="modal-title">영상통화 걸기</h6>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <img src="./assets/img/svg/x.svg" alt="x" class="svg" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-25">
+              <span class="search-icon uil uil-search"></span>
+              <label style="margin-bottom: 10px">이메일 검색</label>
+              <div style="display: flex">
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  id="searchVideoCall"
+                  style="width: 80%; margin-right: 10px"
+                  placeholder="유저의 이메일을 입력하세요."
+                />
+                <button
+                  type="button"
+                  id="searchVideoCallBtn"
+                  class="btn btn-primary btn-sm"
+                  style="width: 15%; height: 50px"
+                  onclick="searchVideoCall()"
+                >
+                  검색
+                </button>
+              </div>
+              <div id="searchVideoCallResult"></div>
+              <div class="ap-img d-flex justify-content-center" style="display: inline-flex; margin-top: 7%">
+                <button
+                  class="btn btn-primary btn-default btn-squared text-capitalize"
+                  onclick="inviteVideoCallModal()"
+                >
+                  영상통화 걸기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ends: .modal-Basic -->
   </body>
 </html>
