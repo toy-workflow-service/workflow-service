@@ -5,7 +5,6 @@ import { Board_Member } from './board-member.entity';
 import { Board_Message } from './board-message.entity';
 import { Comment } from './comment.entity';
 import { Direct_Message } from './direct-message.entity';
-import { Reminder } from './reminder.entity';
 import { Payment } from './payment.entity';
 import { Audit_log } from './audit-log.entity';
 import { User_Message_Room } from './user-message-room.entity';
@@ -72,11 +71,6 @@ export class User {
     cascade: true,
   })
   direct_messages: Direct_Message[];
-
-  @OneToMany(() => Reminder, (reminder) => reminder.user, {
-    cascade: true,
-  })
-  reminders: Reminder[];
 
   @OneToMany(() => Payment, (payment) => payment.user, {
     nullable: true,
