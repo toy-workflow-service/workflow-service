@@ -56,15 +56,25 @@ $(document).ready(async () => {
       const messageBtn = document.getElementById(`privateRoom${roomId}`);
       const privateChatList = document.querySelector(`#chat-list-privateRoom${roomId}-tab`);
       const privateRoomChatList = document.querySelector(`#chat-list-privateRoom${roomId}`);
+      const room = `privateRoom${roomId}`;
+      const receiverId = messageBtn
+        .getAttribute('userList')
+        .split(' ')
+        .filter((id) => id !== loginUserId);
+      const senderId = messageBtn
+        .getAttribute('userList')
+        .split(' ')
+        .filter((id) => id === loginUserId);
 
       privateInputMessage.addEventListener('keyup', function (event) {
-        const receiverId = messageBtn
-          .getAttribute('userList')
-          .split(' ')
-          .filter((id) => id !== loginUserId);
         if (event.key === 'Enter') {
-          sendPrivateRoomMessage(`privateRoom${roomId}`, roomName, receiverId[0]);
+          sendPrivateRoomMessage(room, roomName, receiverId[0]);
         }
+        socket.emit('typingMessage', {
+          room,
+          receiverId: receiverId[0],
+          message: privateInputMessage.value,
+        });
       });
 
       privateChatList.addEventListener('click', () => {
@@ -72,6 +82,9 @@ $(document).ready(async () => {
         privateRoomChatList.classList.toggle('active');
         $(`#privateRoom${roomId}-chat-list`).scrollTop($(`#privateRoom${roomId}-chat-list`)[0].scrollHeight);
       });
+
+      // 현재 상대방이 메시지를 보내는 중인지 확인하기
+      existTypingMessage(room, senderId, receiverId);
     });
   }
 
@@ -276,50 +289,76 @@ async function getChatRooms() {
             });
 
             if (data.user_id === loginUserId) {
-              const message = data.message_message
-                ? data.message_message
-                : `<a class="color-gray" href="${data.message_file_url}" target="_blank">${data.message_file_original_name}</a>`;
+              let message;
+              if (data.message_message) {
+                message = data.message_message;
+              } else {
+                const result = isImg(data.message_file_original_name);
+                if (result) {
+                  message = `
+                            <div>
+                              <div style="margin-bottom:10px; text-align: center; ">
+                                <img src="${data.message_file_url}" style="object-fit: cover; width:200px; height:200px; background-color:white;"/>
+                              </div>
+                              <a class="color-gray" href="${data.message_file_url}" target="_blank" >${data.message_file_original_name}</a>
+                            </div>
+                            `;
+                } else {
+                  message = `<a class="color-gray" href="${data.message_file_url}" target="_blank">${data.message_file_original_name}</a>`;
+                }
+              }
               //내가 보낸 메시지
               const messageHtml = `<!-- Start: Outgoing -->
                                     <div class="flex-1 justify-content-end d-flex outgoing-chat mt-20">
-                                        <div class="chat-text-box">
-                                          <div class="media ">
-                                              <div class="media-body">
-                                                <div class="chat-text-box__content">
-                                                    <div class="chat-text-box__title d-flex align-items-center justify-content-end mb-2">
-                                                      <span class="chat-text-box__time fs-12 color-light fw-400">${time}</span>
+                                      <div class="chat-text-box">
+                                        <div class="media">
+                                          <div class="media-body">
+                                            <div class="chat-text-box__content" >
+                                              <div class="chat-text-box__title d-flex align-items-right justify-content-end mb-2" >
+                                                <span class="chat-text-box__time fs-12 color-light fw-400 ms-15">${time}</span>
+                                              </div>
+                                              <div class="d-flex align-items-center justify-content-end">
+                                                <div class="chat-text-box__other d-flex">
+                                                  <div class="px-15">
+                                                    <div class="dropdown dropdown-click">
+                                                      <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                                      </button>
+                                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu-right dropdown-menu" >
+                                                          <button class="dropdown-item" id="${data.message_id}" onclick="deleteMessage(this)">삭제하기</button>
+                                                        </div>
                                                     </div>
-                                                    <div class="d-flex align-items-center justify-content-end">
-                                                      <div class="chat-text-box__other d-flex">
-                                                          <div class="px-15">
-
-                                                            <div class="dropdown dropdown-click">
-                                                                <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                  <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                                                </button>
-                                                                <div class="dropdown-default dropdown-bottomRight dropdown-menu-right dropdown-menu" style="">
-                                                                  <button class="dropdown-item" id="${data.message_id}" onclick="deleteMessage(this)">삭제하기</button>
-                                                                </div>
-                                                            </div>
-
-                                                          </div>
-                                                      </div>
-                                                      <div class="chat-text-box__subtitle p-20 bg-deep">
-                                                          <p class="color-gray">${message}</p>
-                                                      </div>
-
-                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div class="chat-text-box__subtitle p-20 bg-deep">
+                                                  <p class="color-gray">${message}</p>
                                                 </div>
                                               </div>
+                                            </div>
                                           </div>
                                         </div>
+                                      </div>
                                     </div>
                                   <!-- End: Outgoing  -->`;
               messages.push(messageHtml);
             } else {
-              const message = data.message_message
-                ? data.message_message
-                : `<a class="color-white" href="${data.message_file_url}" target="_blank">${data.message_file_original_name}</a>`;
+              let message;
+              if (data.message_message) {
+                message = data.message_message;
+              } else {
+                const result = isImg(data.message_file_original_name);
+                if (result) {
+                  message = `<div>
+                              <div style="margin-bottom:10px; text-align: center; ">
+                                <img src="${data.message_file_url}" style="object-fit: cover; width:200px; height:200px; background-color:white;"/>
+                              </div>
+                              <a class="color-white" href="${data.message_file_url}" target="_blank">${data.message_file_original_name}</a>
+                             </div>
+                            `;
+                } else {
+                  message = `<a class="color-white" href="${data.message_file_url}" target="_blank">${data.message_file_original_name}</a>`;
+                }
+              }
               const img = data.user_profile_url ? data.user_profile_url : '../assets/img/favicon.png';
               //상대방이 보낸 메시지
               const messageHtml = `<!-- Start: Incomming -->
@@ -330,21 +369,21 @@ async function getChatRooms() {
                                                 <img src="${img}" class="align-self-start me-15 wh-46" data-bs-toggle="modal" data-bs-target="#new-member${data.user_id}" alt="img" />
                                             </div>
                                             <div class="media-body">
-                                                <div class="chat-text-box__content">
-                                                  <div class="chat-text-box__title d-flex align-items-center">
-                                                      <h6 class="fs-14">${data.user_name}</h6>
-                                                      <span class="chat-text-box__time fs-12 color-light fw-400 ms-15">${time}</span>
-                                                  </div>
-                                                  <div class="d-flex align-items-center mb-20 mt-10">
-                                                      <div class="chat-text-box__subtitle p-20 bg-primary">
-                                                        <p class="color-white">${message}</p>
-                                                      </div>
-                                                      <div class="chat-text-box__other d-flex">
-                                                        <div class="chat-text-box__reaction px-sm-15 px-2">
-                                                        </div>
-                                                      </div>
-                                                  </div>
+                                              <div class="chat-text-box__content">
+                                                <div class="chat-text-box__title d-flex align-items-center">
+                                                    <h6 class="fs-14">${data.user_name}</h6>
+                                                    <span class="chat-text-box__time fs-12 color-light fw-400 ms-15">${time}</span>
                                                 </div>
+                                                <div class="d-flex align-items-center mb-20 mt-10">
+                                                    <div class="chat-text-box__subtitle p-20 bg-primary">
+                                                    <p class="color-white">${message}</p>
+                                                    </div>
+                                                    <div class="chat-text-box__other d-flex">
+                                                      <div class="chat-text-box__reaction px-sm-15 px-2">
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                              </div>
                                             </div>
                                           </div>
                                       </div>
@@ -466,7 +505,19 @@ async function uploadFile(data) {
       return;
     },
   });
-  const message = `<a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>`;
+  const result = isImg(originalname);
+  let message;
+  if (result) {
+    message = ` <div>
+                  <div style="margin-bottom:10px; text-align: center; ">
+                    <img src="${fileUrl}" style="object-fit: cover; width:200px; height:200px; background-color:white;"/>
+                  </div>
+                  <a class="color-white" href="${fileUrl}" target="_blank" >${originalname}</a>
+                </div>
+              `;
+  } else {
+    message = `<a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>`;
+  }
   date = new Date(new Date(date).getTime() - offset);
 
   socket.emit('chatMessage', {
@@ -606,7 +657,19 @@ async function uploadPrivateFile(data) {
       return;
     },
   });
-  const message = `<a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>`;
+  const result = isImg(originalname);
+  let message;
+  if (result) {
+    message = ` <div>
+                  <div style="margin-bottom:10px; text-align: center; ">
+                    <img src="${fileUrl}" style="object-fit: cover; width:200px; height:200px;"/>
+                  </div>
+                  <a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>
+                </div>
+              `;
+  } else {
+    message = `<a class="color-white" href="${fileUrl}" target="_blank">${originalname}</a>`;
+  }
   date = new Date(new Date(date).getTime() - offset);
 
   socket.emit('chatPrivateMessage', {
@@ -711,6 +774,9 @@ function appendMessage(
     minute: '2-digit',
   });
 
+  if (fileUpload) {
+  }
+
   if (loginUserId / 1 === userId) {
     if (fileUpload) message = message.replace('class="color-white"', 'class="color-gray"');
 
@@ -727,7 +793,6 @@ function appendMessage(
                                             <div class="d-flex align-items-center justify-content-end">
                                               <div class="chat-text-box__other d-flex">
                                                   <div class="px-15">
-
                                                     <div class="dropdown dropdown-click">
                                                         <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                           <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -736,13 +801,11 @@ function appendMessage(
                                                         <button class="dropdown-item" id="${messageId}" onclick="deleteMessage(this)">삭제하기</button>
                                                       </div>
                                                     </div>
-
                                                   </div>
                                               </div>
                                               <div class="chat-text-box__subtitle p-20 bg-deep">
                                                   <p class="color-gray">${message}</p>
                                               </div>
-
                                             </div>
                                         </div>
                                       </div>
@@ -769,10 +832,6 @@ function appendMessage(
                                           <div class="d-flex align-items-center mb-20 mt-10">
                                               <div class="chat-text-box__subtitle p-20 bg-primary">
                                                 <p class="color-white">${message}</p>
-                                              </div>
-                                              <div class="chat-text-box__other d-flex">
-                                                <div class="chat-text-box__reaction px-sm-15 px-2">
-                                                </div>
                                               </div>
                                           </div>
                                         </div>
@@ -822,45 +881,47 @@ function appendPrivateMessage(userId, userName, messageId, message, room, date, 
     minute: '2-digit',
   });
 
+  const existTypingMessage = document.querySelector(`#typingMessage${room}`);
+  if (existTypingMessage) {
+    chatList.removeChild(existTypingMessage);
+  }
+
   if (loginUserId / 1 === userId) {
     if (fileUpload) message = message.replace('class="color-white"', 'class="color-gray"');
 
     //내가 보낸 메시지
     const messageHtml = `<!-- Start: Outgoing -->
-                            <div class="flex-1 justify-content-end d-flex outgoing-chat mt-20">
-                                <div class="chat-text-box">
-                                  <div class="media ">
-                                      <div class="media-body">
-                                        <div class="chat-text-box__content">
-                                            <div class="chat-text-box__title d-flex align-items-center justify-content-end mb-2">
-                                              <span class="chat-text-box__time fs-12 color-light fw-400">${time}</span>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-end">
-                                              <div class="chat-text-box__other d-flex">
-                                                  <div class="px-15">
-
-                                                    <div class="dropdown dropdown-click">
-                                                        <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                          <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
-                                                        </button>
-                                                        <div class="dropdown-default dropdown-bottomRight dropdown-menu-right dropdown-menu" style="">
-                                                        <button class="dropdown-item" id="${messageId}" onclick="deletePrivateMessage(this)">삭제하기</button>
-                                                      </div>
-                                                    </div>
-
-                                                  </div>
+                          <div class="flex-1 justify-content-end d-flex outgoing-chat mt-20">
+                            <div class="chat-text-box">
+                              <div class="media">
+                                <div class="media-body">
+                                  <div class="chat-text-box__content" >
+                                    <div class="chat-text-box__title d-flex align-items-right justify-content-end mb-2">
+                                      <span class="chat-text-box__time fs-12 color-light fw-400">${time}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-end">
+                                      <div class="chat-text-box__other d-flex">
+                                        <div class="px-15">
+                                          <div class="dropdown dropdown-click">
+                                            <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
+                                            </button>
+                                              <div class="dropdown-default dropdown-bottomRight dropdown-menu-right dropdown-menu" >
+                                                <button class="dropdown-item" id="${messageId}" onclick="deleteMessage(this)">삭제하기</button>
                                               </div>
-                                              <div class="chat-text-box__subtitle p-20 bg-deep">
-                                                  <p class="color-gray">${message}</p>
-                                              </div>
-
-                                            </div>
+                                          </div>
                                         </div>
                                       </div>
+                                      <div class="chat-text-box__subtitle p-20 bg-deep">
+                                        <p class="color-gray">${message}</p>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+                              </div>
                             </div>
-                          <!-- End: Outgoing  -->`;
+                          </div>
+                        <!-- End: Outgoing  -->`;
     chatList.innerHTML += messageHtml;
   } else {
     //상대방이 보낸 메시지
@@ -918,6 +979,8 @@ function updateChatList(userName, message, room, boardName, date, profileUrl, fi
   });
   if (fileUpload) message = '파일을 보냈습니다. ';
 
+  if (message.length > 15) message = message.substring(0, 15) + '...';
+
   const chatListHtml = `<div class="avatar avatar-circle ms-0">
                           <img
                             src="${profileUrl}"
@@ -968,16 +1031,7 @@ function deleteMessage(data) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
         return;
       },
       error: (error) => {
@@ -1008,16 +1062,7 @@ function deletePrivateMessage(data) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success',
-          text: data.message,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
         return;
       },
       error: (error) => {
@@ -1260,7 +1305,7 @@ async function createChatRoom() {
     );
     return;
   }
-
+  let roomId;
   await $.ajax({
     method: 'POST',
     url: `/userMessageRooms/${userId}`,
@@ -1268,14 +1313,13 @@ async function createChatRoom() {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      const roomId = data.roomId;
+      roomId = data.roomId;
       window.location.href = `/chat?roomId=${roomId}`;
     },
   });
 }
 
 async function getPrivateChatRooms() {
-  let loginUserName;
   await $.ajax({
     method: 'GET',
     url: `/userMessageRooms/${privateRoomId}`,
@@ -1284,7 +1328,6 @@ async function getPrivateChatRooms() {
     },
     success: async (data) => {
       const { rooms, messages } = await data;
-      loginUserName = data.userName;
       if (rooms) {
         rooms.forEach((room, idx) => {
           let userId, userName, userEmail, userPhoneNumber, userProfileUrl;
@@ -1387,9 +1430,23 @@ async function getPrivateChatRooms() {
                 minute: '2-digit',
               });
               if (message.user_id === loginUserId) {
-                const userMessage = message.message_message
-                  ? message.message_message
-                  : `<a class="color-gray" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>`;
+                let userMessage;
+                if (message.message_message) {
+                  userMessage = message.message_message;
+                } else {
+                  const result = isImg(message.message_file_original_name);
+                  if (result) {
+                    userMessage = `<div>
+                                     <div style="margin-bottom:10px; text-align: center; ">
+                                      <img src="${message.message_file_url}" style="object-fit: cover; width:200px; height:200px; background-color:white;"/>
+                                     </div>
+                                     <a class="color-gray" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>
+                                   </div>
+                                    `;
+                  } else {
+                    userMessage = `<a class="color-gray" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>`;
+                  }
+                }
                 // 내가 보낸 메시지
                 const messageHtml = `<!-- Start: Outgoing -->
                                       <div class="flex-1 justify-content-end d-flex outgoing-chat mt-20">
@@ -1403,7 +1460,6 @@ async function getPrivateChatRooms() {
                                                       <div class="d-flex align-items-center justify-content-end">
                                                         <div class="chat-text-box__other d-flex">
                                                             <div class="px-15">
-
                                                               <div class="dropdown dropdown-click">
                                                                   <button class="btn-link border-0 bg-transparent p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <img src="../assets/img/svg/more-horizontal.svg" alt="more-horizontal" class="svg">
@@ -1412,13 +1468,11 @@ async function getPrivateChatRooms() {
                                                                     <button class="dropdown-item" id="${message.message_id}" onclick="deletePrivateMessage(this)">삭제하기</button>
                                                                   </div>
                                                               </div>
-
                                                             </div>
                                                         </div>
                                                         <div class="chat-text-box__subtitle p-20 bg-deep">
                                                             <p class="color-gray">${userMessage}</p>
                                                         </div>
-
                                                       </div>
                                                   </div>
                                                 </div>
@@ -1428,9 +1482,21 @@ async function getPrivateChatRooms() {
                                     <!-- End: Outgoing  -->`;
                 messageInfos.push(messageHtml);
               } else {
-                const userMessage = message.message_message
-                  ? message.message_message
-                  : `<a class="color-white" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>`;
+                let userMessage;
+                if (message.message_message) {
+                  userMessage = message.message_message;
+                } else {
+                  const result = isImg(message.message_file_original_name);
+                  if (result) {
+                    userMessage = ` <div style="margin-bottom:10px; text-align: center; ">
+                                      <img src="${message.message_file_url}" style="object-fit: cover; width:200px; height:200px; background-color:white;"/>
+                                    </div>
+                                    <a class="color-white" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>
+                                  `;
+                  } else {
+                    userMessage = `<a class="color-white" href="${message.message_file_url}" target="_blank">${message.message_file_original_name}</a>`;
+                  }
+                }
                 const img = message.user_profile_url ? message.user_profile_url : '../assets/img/favicon.png';
                 //상대방이 보낸 메시지
                 const messageHtml = `<!-- Start: Incomming -->
@@ -1443,17 +1509,13 @@ async function getPrivateChatRooms() {
                                                 <div class="media-body">
                                                     <div class="chat-text-box__content">
                                                       <div class="chat-text-box__title d-flex align-items-center">
-                                                          <h6 class="fs-14">${message.user_name}</h6>
-                                                          <span class="chat-text-box__time fs-12 color-light fw-400 ms-15">${time}</span>
+                                                        <h6 class="fs-14">${message.user_name}</h6>
+                                                        <span class="chat-text-box__time fs-12 color-light fw-400 ms-15">${time}</span>
                                                       </div>
                                                       <div class="d-flex align-items-center mb-20 mt-10">
-                                                          <div class="chat-text-box__subtitle p-20 bg-primary">
-                                                            <p class="color-white">${userMessage}</p>
-                                                          </div>
-                                                          <div class="chat-text-box__other d-flex">
-                                                            <div class="chat-text-box__reaction px-sm-15 px-2">
-                                                            </div>
-                                                          </div>
+                                                        <div class="chat-text-box__subtitle p-20 bg-primary">
+                                                          <p class="color-white">${userMessage}</p>
+                                                        </div>                                                      
                                                       </div>
                                                     </div>
                                                 </div>
@@ -1531,7 +1593,6 @@ async function getPrivateChatRooms() {
       console.log(error);
     },
   });
-
   joinPrivateRoom(privateRoomIdList, loginUserName);
 }
 
@@ -1546,6 +1607,7 @@ function deleteToggleActive() {
   const privateTab = document.querySelector('#second-tab');
 
   groupTab.addEventListener('click', () => {
+    console.log(privateRoomIdList);
     if (privateRoomIdList.length) {
       privateRoomIdList.forEach((roomId) => {
         const privateTabs = document.getElementById(`chat-list-privateRoom${roomId}-tab`);
@@ -1587,7 +1649,7 @@ function deletePrivateRoom(data) {
           title: 'Success',
           text: data.message,
         }).then(() => {
-          window.location.reload();
+          window.location.href = '/chat';
         });
       },
       error: (error) => {
@@ -1665,3 +1727,81 @@ function inviteVideoCall(data) {
     'width=860, height=730'
   );
 }
+
+function isImg(fileName) {
+  const allowedExtensions = ['png', 'jpg', 'jpeg', 'jfif', 'exif', 'tiff', 'bmp', 'gif'];
+  const fileNameArray = fileName.split('.');
+  if (allowedExtensions.includes(fileNameArray[fileNameArray.length - 1])) {
+    return true;
+  }
+  return false;
+}
+
+function appendTypingMessage(room, message) {
+  if (message) {
+    const existTypingMessage = document.querySelector(`#typingMessage${room}`);
+    if (!existTypingMessage) {
+      const chatList = document.getElementById(`${room}-chat-list`);
+      const messageHtml = `<div class="flex-1 incoming-chat" id="typingMessage${room}">
+                            <div class="chat-text-box ">
+                              <div class="media d-flex">
+                                <div class="media-body">
+                                  <div class="chat-text-box__content">
+                                    <div class="chat-text-box__title d-flex align-items-center">
+                                      <h6 class="fs-14"></h6>
+                                      <span class="chat-text-box__time fs-12 color-light fw-400 ms-15"></span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-20 mt-10">
+                                      <div class="chat-text-box__subtitle p-20 bg-primary">
+                                        <p class="color-white">메시지 작성중...</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                           </div>`;
+      chatList.innerHTML += messageHtml;
+      chatList.scrollTop = chatList.scrollHeight;
+    }
+  } else {
+    const chatList = document.getElementById(`${room}-chat-list`);
+    const existTypingMessage = document.querySelector(`#typingMessage${room}`);
+    if (existTypingMessage) {
+      chatList.removeChild(existTypingMessage);
+    }
+  }
+}
+
+function existTypingMessage(room, senderId, receiverId) {
+  localStorage.removeItem(`typingInital${room}`);
+  socket.emit('existTypingMessage', { room, senderId, receiverId });
+}
+
+function existTyping(room) {
+  const privateInputMessage = document.getElementById(`${room}-messageInput`);
+  if (privateInputMessage) {
+    if (privateInputMessage.value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+socket.on('typingMessage', ({ room, message }) => {
+  appendTypingMessage(room, message);
+});
+
+socket.on('existTypingMessage', ({ room, senderId }) => {
+  const result = existTyping(room);
+  socket.emit('existTypinginital', { room, senderId, result });
+});
+
+socket.on('existTypinginital', ({ room, result }) => {
+  if (localStorage.getItem(`typingInital${room}`, 'true')) return;
+  else {
+    const message = result ? '메시지 있음' : '';
+    appendTypingMessage(room, message);
+    localStorage.setItem(`typingInital${room}`, 'true');
+  }
+});

@@ -135,16 +135,7 @@ function deleteUser() {
     },
     data: JSON.stringify(payload),
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success',
-        text: data.message,
-      }).then(() => {
-        window.location.href = '/';
-      });
+      window.location.href = '/';
       return;
     },
     error: (error) => {
@@ -740,16 +731,7 @@ async function cancelPoint(paymentId, amount) {
       },
       data: JSON.stringify({ amount }),
       success: () => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: 'Success!',
-          text: '충전 취소 성공!',
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
       },
       error: (err) => {
         Swal.fire({
@@ -778,17 +760,7 @@ async function cancelMembership(paymentId, workspaceId) {
         xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
       },
       success: (data) => {
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          icon: 'success',
-          title: '결제 취소 완료!',
-          text: `잔여일 : ${data.remainingDays}일, 
-                 환불금액 : ${data.roundedRefundPrice.toLocaleString()}원`,
-        }).then(() => {
-          window.location.reload();
-        });
+        window.location.reload();
       },
       error: (err) => {
         Swal.fire({

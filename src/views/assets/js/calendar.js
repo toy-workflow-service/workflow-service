@@ -130,7 +130,7 @@
       var calendar = new FullCalendar.Calendar(fullCalendar, {
         headerToolbar: {
           left: 'today,prev,title,next',
-          right: 'timeGridDay,dayGridMonth',
+          right: 'dayGridMonth',
         },
         views: {
           listMonth: {
@@ -147,7 +147,7 @@
         //달력의 보기 영역 높이를 설정
         contentHeight: 800,
         //캘린더가 로드될 때의 초기 보기 - 'dayGridWeek', 'timeGridDay','listWeek'등이 있음
-        initialView: 'timeGridDay',
+        initialView: 'dayGridMonth',
         // draggable false -> 드래그 없앤 이유: drop이나 stop 이후 수정이 되야하는데 해당 이벤트를 받을 수 없음. 위에서도 마찬가지.
         eventStartEditable: false,
         //한국어 설정
@@ -418,16 +418,7 @@ async function DeleteCalendarApi(calendarId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken} `);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success',
-        text: data.message,
-      }).then(() => {
-        location.reload();
-      });
+      location.reload();
     },
     error: (error) => {
       Swal.fire({

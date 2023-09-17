@@ -158,10 +158,12 @@ async function getMyBoards() {
 function boardHTML(board) {
   let check = '';
   let result = '';
-  const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-  if (count == 100) {
+  const count = board.deadline
+    ? Number(moment(board.deadline).format('YYYYMMDD')) - Number(moment(new Date().toString()).format('YYYYMMDD'))
+    : 1;
+  if (count <= 0) {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
-  } else {
+  } else if (count > 0) {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
   }
   const offset = new Date().getTimezoneOffset() * 60 * 1000;
@@ -274,10 +276,12 @@ function boardHTML(board) {
 function boardListHTML(board) {
   let check = '';
   let result = '';
-  const count = Math.round((board.cardCount.done / board.cardCount.total) * 100) || 0;
-  if (count == 100) {
+  const count = board.deadline
+    ? Number(moment(board.deadline).format('YYYYMMDD')) - Number(moment(new Date().toString()).format('YYYYMMDD'))
+    : 1;
+  if (count <= 0) {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white bg-primary">완료</span>`;
-  } else {
+  } else if (count > 0) {
     check = `<span class="my-sm-0 my-2 media-badge text-uppercase color-white " style="background-color: green;">진행중</span>`;
   }
   const offset = new Date().getTimezoneOffset() * 60 * 1000;
@@ -414,8 +418,6 @@ createBoardBtn.addEventListener('click', async (event) => {
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -462,8 +464,6 @@ async function createBoardMember(boardId, saveUserId) {
             icon: 'error',
             title: 'error',
             text: err.responseJSON.message,
-          }).then(() => {
-            window.location.reload();
           });
         }
       },
@@ -662,8 +662,6 @@ async function putBoard(boardId, name, description, deadline, startDate) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
         });
       }
       console.error(err);
@@ -710,8 +708,6 @@ async function putBoardMember(boardId, userIdArray) {
           icon: 'error',
           title: 'error',
           text: err.responseJSON.message,
-        }).then(() => {
-          window.location.reload();
         });
       }
       console.log(err);
@@ -760,16 +756,7 @@ async function deleteBoard(boardId) {
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
     success: (data) => {
-      Swal.fire({
-        customClass: {
-          container: 'my-swal',
-        },
-        icon: 'success',
-        title: 'Success!',
-        text: data.message,
-      }).then(() => {
-        window.location.reload();
-      });
+      window.location.reload();
     },
     error: (error) => {
       Swal.fire({

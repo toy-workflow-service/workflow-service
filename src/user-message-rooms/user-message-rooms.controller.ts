@@ -53,6 +53,16 @@ export class UserMessageRoomsController {
     return res.status(HttpStatus.OK).json({ rooms, messages, userName: user.name });
   }
 
+  @Get('roomDetail/:roomId')
+  async getUserDetailMessageRoom(
+    @Param('roomId') roomId: number,
+    @GetUser() user: AccessPayload,
+    @Res() res: Response
+  ): Promise<Object> {
+    const result = await this.userMessageRoomsService.getUserDetailMessageRoom(roomId);
+    return res.status(HttpStatus.OK).json({ room: result, userName: user.name });
+  }
+
   @Delete(':roomId')
   async deleteUserMessageRoom(@Param('roomId') roomId: number, @Res() res: Response): Promise<Object> {
     await this.userMessageRoomsService.deleteUserMessageRoom(roomId);

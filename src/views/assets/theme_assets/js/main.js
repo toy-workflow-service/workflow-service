@@ -1432,31 +1432,33 @@
 
   /* Sidebar Change */
   const layoutChangeBtns = document.querySelectorAll('[data-layout]');
+  const savedMode = localStorage.getItem('mode');
+
+  // 페이지 로드 시 저장된 모드를 적용
+  if (savedMode === 'dark') {
+    $('body').addClass('layout-dark');
+  } else if (savedMode === 'light') {
+    $('body').addClass('layout-light');
+  }
 
   function changeLayout(e) {
     e.preventDefault();
-    if (this.dataset.layout === 'light') {
+    const selectedMode = this.dataset.layout;
+    localStorage.setItem('mode', selectedMode);
+
+    if (selectedMode === 'light') {
       $('ul.l_sidebar li a,.l_sidebar a').removeClass('active');
       $(this).addClass('active');
       $('body').removeClass('layout-dark');
       $('body').addClass('layout-light');
-    } else if (this.dataset.layout === 'dark') {
+    } else if (selectedMode === 'dark') {
       $('ul.l_sidebar li a,.l_sidebar a').removeClass('active');
       $(this).addClass('active');
       $('body').removeClass('layout-light');
       $('body').addClass('layout-dark');
-    } else if (this.dataset.layout === 'side') {
-      $('ul.l_navbar li a,.l_navbar a').removeClass('active');
-      $(this).addClass('active');
-      $('body').removeClass('top-menu');
-      $('body').addClass('side-menu');
-    } else if (this.dataset.layout === 'top') {
-      $('ul.l_navbar li a,.l_navbar a').removeClass('active');
-      $(this).addClass('active');
-      $('body').removeClass('side-menu');
-      $('body').addClass('top-menu');
     }
   }
+
   $('.enable-dark-mode').click(function () {
     $('body').toggleClass('layout-dark');
     $('.enable-dark-mode a').toggleClass('active');
@@ -1464,37 +1466,37 @@
 
   if (layoutChangeBtns) {
     layoutChangeBtns.forEach((layoutChangeBtn) => layoutChangeBtn.addEventListener('click', changeLayout));
-    layoutChangeBtns.forEach((layoutChangeBtn) => layoutChangeBtn.addEventListener('click', closeCustomizer));
+    //   layoutChangeBtns.forEach((layoutChangeBtn) => layoutChangeBtn.addEventListener('click', closeCustomizer));
   }
 
-  /* Customizing */
-  const customizerBtn = document.querySelector('.customizer-trigger');
-  const customizer = document.querySelector('.customizer-wrapper');
-  const customizerClose = document.querySelector('.customizer-close');
-  const customizerOverlay = document.querySelector('.customizer-overlay');
+  // /* Customizing */
+  // const customizerBtn = document.querySelector('.customizer-trigger');
+  // const customizer = document.querySelector('.customizer-wrapper');
+  // const customizerClose = document.querySelector('.customizer-close');
+  // const customizerOverlay = document.querySelector('.customizer-overlay');
 
-  function toggleCustomizer(e) {
-    e.preventDefault();
-    this.classList.toggle('show');
-    customizer.classList.toggle('show');
-    $('.customizer-overlay').addClass('show');
-  }
+  // function toggleCustomizer(e) {
+  //   e.preventDefault();
+  //   this.classList.toggle('show');
+  //   customizer.classList.toggle('show');
+  //   $('.customizer-overlay').addClass('show');
+  // }
 
-  function closeCustomizer(e) {
-    e.preventDefault();
-    customizer.classList.remove('show');
-    customizerBtn.classList.remove('show');
-    customizerOverlay.classList.remove('show');
-  }
+  // function closeCustomizer(e) {
+  //   e.preventDefault();
+  //   customizer.classList.remove('show');
+  //   customizerBtn.classList.remove('show');
+  //   customizerOverlay.classList.remove('show');
+  // }
 
-  if (customizerBtn) {
-    customizerBtn.addEventListener('click', toggleCustomizer);
-  }
+  // if (customizerBtn) {
+  //   customizerBtn.addEventListener('click', toggleCustomizer);
+  // }
 
-  if (customizerClose && customizerOverlay) {
-    customizerClose.addEventListener('click', closeCustomizer);
-    customizerOverlay.addEventListener('click', closeCustomizer);
-  }
+  // if (customizerClose && customizerOverlay) {
+  //   customizerClose.addEventListener('click', closeCustomizer);
+  //   customizerOverlay.addEventListener('click', closeCustomizer);
+  // }
 
   $('.search-toggle').on('click', function (e) {
     e.preventDefault();

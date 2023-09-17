@@ -69,6 +69,19 @@ export class UsersController {
     return res.status(HttpStatus.OK).json({ user });
   }
 
+  @Get('userInfos/:userId')
+  @UseGuards(AuthGuard)
+  async getUserInfos(
+    @Param('userId') userId: number,
+    @GetUser() user: AccessPayload,
+    @Res() res: Response
+  ): Promise<Object> {
+    const result = await this.usersService.findUserById(userId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ senderId: user.id, senderName: user.name, receiverId: result.id, receiverName: result.name });
+  }
+
   @Post('logout')
   @UseGuards(AuthGuard)
   async logout(@Req() req: Request, @Res() res: Response): Promise<Object> {
