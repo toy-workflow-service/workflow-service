@@ -258,7 +258,8 @@ function boardHTML(board) {
                         </div>
                         <div class="mt-20 px-30">
                           <p class="fs-13 color-light mb-10">참여 멤버</p>
-                          <ul class="d-flex flex-wrap user-group-people__parent">`;
+                          <ul class="d-flex flex-wrap user-group-people__parent">
+                          `;
   for (const member of board.boardMembers) {
     let Img = '';
     member.profile_url ? (Img = `${member.profile_url}`) : (Img = `/assets/img/favicon.png`);
