@@ -7,6 +7,8 @@
 Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 자신의 작업 공간에 팀원들 초대해서 함께 작업하고 서로 의견을 나눠보세요.
 
+### [시연영상](https://youtu.be/15mqNHn4vmM)
+
 ### [Work-Flow 바로가기](https://work-flow.online)
 
 ### [사용 가이드](https://feather-almanac-87a.notion.site/Work-Flow-254abb21a36d40bbaf70fb6f065c21d3)
@@ -30,8 +32,6 @@ Work Flow는 사람들과의 협업을 위한 서비스 입니다.
 | TypeORM          | 워크스페이스를 생성하게 되면 유저는 도메인(생성자), 매니저, 외부인 등으로 각각 다양하게 연계가 돼있어 효율적인 서버 관리를 위해 관계형 데이터베이스를 선택                                                                                                                                                   |
 | Web RTC          | 웹기반 영상 통화 및 화면 공유 등의 실시간 통신을 구현하기 위하여 사용                                                                                                                                                                                                                                        |
 | Multer, S3       | 파일 업로드 및 다운로드를 처리하여 사용자가 파일을 업로드, 다운로드 할 수 있게 하기 위하여 사용                                                                                                                                                                                                              |
-
-## [시연영상](https://youtu.be/15mqNHn4vmM)
 
 ## 주요 기능
 
