@@ -101,6 +101,7 @@ function changeSelect() {
   printBoard.innerHTML = result;
   equalHeight($('.board-description'));
 }
+
 // 보드 전체 조회
 async function getMyBoards() {
   await $.ajax({
@@ -220,16 +221,14 @@ function boardHTML(board) {
                                   <span class="color-light fs-12">시작일</span>
                                   <p class="fs-14 fw-500 color-dark mb-0">${
                                     board.startDate
-                                      ? '20' + startSendTime.substring(0, 10).replace('-', '.').replace('-', '.')
+                                      ? '20' + startSendTime.substring(0, 10).replace('-', '.')
                                       : '____.__.__'
                                   }</p>
                                 </div>
                                 <div class="media-ui__start">
                                   <span class="color-light fs-12">마감일</span>
                                   <p class="fs-14 fw-500 color-dark mb-0">${
-                                    board.deadline
-                                      ? '20' + sendTime.substring(0, 10).replace('-', '.').replace('-', '.')
-                                      : '____.__.__'
+                                    board.deadline ? '20' + sendTime.substring(0, 10).replace('-', '.') : '____.__.__'
                                   }</p>
                                 </div>
                               </div>
@@ -756,7 +755,7 @@ async function deleteBoard(boardId) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', `Bearer ${accessToken}`);
     },
-    success: (data) => {
+    success: () => {
       window.location.reload();
     },
     error: (error) => {
